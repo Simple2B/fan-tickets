@@ -6,6 +6,8 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
+from .users_tickets import users_tickets
+from .users_reviews import users_reviews
 
 
 from enum import Enum
@@ -80,10 +82,12 @@ class User(db.Model, UserMixin, ModelMixin):
 
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
         "Ticket",
+        secondary=users_tickets,
         back_populates="seller",
     )
     tickets_bought: orm.Mapped[list["Ticket"]] = orm.relationship(
         "Ticket",
+        secondary=users_tickets,
         back_populates="buyer",
     )
     notifications: orm.Mapped[list["Notification"]] = orm.relationship(
@@ -92,10 +96,12 @@ class User(db.Model, UserMixin, ModelMixin):
     )
 
     reviews: orm.Mapped[list["Review"]] = orm.relationship(
+        secondary=users_reviews,
         back_populates="reviewer",
     )
 
     receivers: orm.Mapped[list["Review"]] = orm.relationship(
+        secondary=users_reviews,
         back_populates="receiver",
     )
 
