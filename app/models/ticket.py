@@ -5,6 +5,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin, gen_uuid
+from .users_tickets import users_tickets
 
 
 if TYPE_CHECKING:
@@ -143,10 +144,12 @@ class Ticket(db.Model, ModelMixin):
 
     seller: orm.Mapped["User"] = orm.relationship(
         "User",
+        secondary=users_tickets,
         back_populates="tickets_for_sale",
     )
     buyer: orm.Mapped["User"] = orm.relationship(
         "User",
+        secondary=users_tickets,
         back_populates="tickets_bought",
     )
 
