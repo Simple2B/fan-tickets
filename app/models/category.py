@@ -5,6 +5,9 @@ from .utils import ModelMixin
 
 
 class Category(db.Model, ModelMixin):
+
+    __tablename__ = "categories"
+
     """
     Model for categories of events
 
@@ -15,6 +18,12 @@ class Category(db.Model, ModelMixin):
     - delete
     - set a foreign key from events to categories
     """
+
+    id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer,
+        primary_key=True,
+        nullable=False,
+    )
 
     name: orm.Mapped[str] = orm.mapped_column(
         sa.String(64),

@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -5,10 +8,19 @@ from app.database import db
 from .utils import ModelMixin
 
 
+
+
 if TYPE_CHECKING:
-    from .user import User
-    from .category import Category
-    from .location import Location
+    # from .user import User
+    # from .category import Category
+    # from .location import Location
+    
+    
+class TicketType(Enum):
+    TRACK = "track"
+    BOX = "box"
+    BACK_STAGE = "back_stage"
+
 
 
 class Ticket(db.Model, ModelMixin):
@@ -32,24 +44,24 @@ class Ticket(db.Model, ModelMixin):
     - the amount the buyer should pay
     """
 
-    name: orm.Mapped[str] = orm.mapped_column(
-        sa.String(64),
+    __tablename__ = "tickets"
+
+
+
+
+
+
+    description: orm.Mapped[str] = orm.mapped_column(
+        sa.String(512),
         unique=False,
         nullable=False,
     )
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=False)
-
-    category_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
+    
+    
+    
+    
+    
+    
+    ticket_type: orm.Mapped[str] = orm.mapped_column(
+        sa.String(32), default=TicketType.TRACK.value
     )
-    category: orm.Mapped[Category] = orm.relationship("Category", backref="events")
-
-    location_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
-    )
-    location: orm.Mapped["Location"] = orm.relationship("Location", backref="events")
-
-    creator_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("users.id"), nullable=True
-    )
-    creator: orm.Mapped["User"] = orm.relationship("User", backref="events")

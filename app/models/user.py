@@ -7,10 +7,17 @@ from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
+from enum import Enum
 from app.database import db
 from .utils import ModelMixin
 from app.logger import log
 from app import schema as s
+
+
+class UserRole(Enum):
+    admin = "admin"
+    client = "client"
 
 
 def gen_password_reset_id() -> str:
@@ -44,6 +51,10 @@ class User(db.Model, UserMixin, ModelMixin):
     reset_password_uid: orm.Mapped[str] = orm.mapped_column(
         sa.String(64),
         default=gen_password_reset_id,
+    )
+
+    role: orm.Mapped[str] = orm.mapped_column(
+        sa.String(32), default=UserRole.client.value
     )
 
     @hybrid_property

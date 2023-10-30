@@ -6,6 +6,15 @@ from .utils import ModelMixin
 
 
 class Location(db.Model, ModelMixin):
+
+    __tablename__ = "locations"
+
+    id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer,
+        primary_key=True,
+        nullable=False,
+    )
+
     name: orm.Mapped[str] = orm.mapped_column(
         sa.String(64),
         unique=True,

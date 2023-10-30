@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
@@ -11,13 +13,9 @@ if TYPE_CHECKING:
     from .location import Location
 
 
-class EventType:
-    TRACK = "track"
-    BOX = "box"
-    BACK_STAGE = "back_stage"
-
-
 class Event(db.Model, ModelMixin):
+
+    __tablename__ = "events"
     """
     Model for events
 
@@ -40,6 +38,7 @@ class Event(db.Model, ModelMixin):
         unique=False,
         nullable=False,
     )
+
     image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=False)
 
     url: orm.Mapped[str] = orm.mapped_column(
@@ -48,32 +47,34 @@ class Event(db.Model, ModelMixin):
         nullable=True,
     )
 
-    event_type: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=EventType.BOX.value
-    )
-
-    category_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
-    )
-    category: orm.Mapped[Category] = orm.relationship("Category", backref="events")
-
-    location_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
-    )
-    location: orm.Mapped["Location"] = orm.relationship("Location", backref="events")
-
-    creator_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("users.id"), nullable=True
-    )
-    creator: orm.Mapped["User"] = orm.relationship("User", backref="events")
-
     observations: orm.Mapped[str] = orm.mapped_column(
         sa.String(512),
         unique=False,
         nullable=True,
     )
     warning: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512),
-        unique=False,
-        nullable=True,
+        sa.String(512), unique=False, nullable=True
     )
+    # event_type: orm.Mapped[str] = orm.mapped_column(
+    #     sa.String(32), default=EventType.BOX.value
+    # )
+    date_time: orm.Mapped[datetime] = orm.mapped_column(
+        sa.DateTime,
+        nullable=False,
+    )
+
+    category_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey(Category.id), nullable=True
+    )
+
+    location_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey(Location.id), nullable=True
+    )
+
+    creator_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey(User.id), nullable=True
+    )
+
+    location: orm.Mapped["Location"] = orm.relationship(backref="events")
+    category: orm.Mapped["Category"] = orm.relationship(backref="events")
+    creator: orm.Mapped["User"] = orm.relationship(backref="events")
