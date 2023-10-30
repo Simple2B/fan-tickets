@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
-
+from typing import TYPE_CHECKING
 from flask_login import UserMixin, AnonymousUserMixin
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -13,6 +13,11 @@ from app.database import db
 from .utils import ModelMixin
 from app.logger import log
 from app import schema as s
+
+
+if TYPE_CHECKING:
+    from .ticket import Ticket
+    from .notification import Notification
 
 
 class UserRole(Enum):
@@ -55,6 +60,19 @@ class User(db.Model, UserMixin, ModelMixin):
 
     role: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=UserRole.client.value
+    )
+
+    tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
+        "Ticket",
+        back_populates="seller",
+    )
+    tickets_bought: orm.Mapped[list["Ticket"]] = orm.relationship(
+        "Ticket",
+        back_populates="buyer",
+    )
+    notifications: orm.Mapped[list["Notification"]] = orm.relationship(
+        "Notification",
+        back_populates="user",
     )
 
     @hybrid_property

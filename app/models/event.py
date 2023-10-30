@@ -11,10 +11,10 @@ if TYPE_CHECKING:
     from .user import User
     from .category import Category
     from .location import Location
+    from .ticket import Ticket
 
 
 class Event(db.Model, ModelMixin):
-
     __tablename__ = "events"
     """
     Model for events
@@ -33,6 +33,11 @@ class Event(db.Model, ModelMixin):
     - insert warning
     """
 
+    id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer,
+        primary_key=True,
+        nullable=False,
+    )
     name: orm.Mapped[str] = orm.mapped_column(
         sa.String(64),
         unique=False,
@@ -55,9 +60,6 @@ class Event(db.Model, ModelMixin):
     warning: orm.Mapped[str] = orm.mapped_column(
         sa.String(512), unique=False, nullable=True
     )
-    # event_type: orm.Mapped[str] = orm.mapped_column(
-    #     sa.String(32), default=EventType.BOX.value
-    # )
     date_time: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
         nullable=False,
@@ -78,3 +80,7 @@ class Event(db.Model, ModelMixin):
     location: orm.Mapped["Location"] = orm.relationship(backref="events")
     category: orm.Mapped["Category"] = orm.relationship(backref="events")
     creator: orm.Mapped["User"] = orm.relationship(backref="events")
+    tickets: orm.Mapped[list["Ticket"]] = orm.relationship(
+        "Ticket",
+        back_populates="event",
+    )
