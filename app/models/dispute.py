@@ -2,12 +2,23 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 class Dispute(db.Model, ModelMixin):
     """
-    Model for disputes
+    Model for disputes between buyers and sellers.
+
+    Routes:
+    - POST /disputes/create
+    - GET /disputes
+    - GET /disputes/{dispute_unique_id}
+    - GET /disputes/by_user/{user_unique_id}
+    - GET /disputes/by_event/{event_unique_id}
+    - GET /disputes/by_ticket/{ticket_unique_id}
+    - PUT /disputes/update/{dispute_unique_id}
+    - PUT /disputes/close/{dispute_unique_id}
+
     """
 
     ___tablename__ = "disputes"
@@ -16,6 +27,10 @@ class Dispute(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         autoincrement=True,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
     description: orm.Mapped[str] = orm.mapped_column(
         sa.String(512),

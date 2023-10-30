@@ -1,18 +1,7 @@
-# Database instances
+# Check routes list
 
-- User
-- Location
-- Category
-- Event
-- Ticket
-- Dispute
-- Message
-- ChatRoom
-- Notification
-- Review
-- Rate
+- go through all models and see what routes we need
 
-- add to all models uuid
 
 # Questions:
 - tickets types: options and their meaning (in the doc mentioned track, backstage ...)

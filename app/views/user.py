@@ -93,6 +93,9 @@ def create():
         return redirect(url_for("user.get_all"))
 
 
+# TODO: create admins and clients separately (by admin only)
+
+
 @bp.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete(id: int):

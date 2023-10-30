@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
@@ -12,6 +12,20 @@ if TYPE_CHECKING:
 class Review(db.Model, ModelMixin):
     """
     Model for clients' reviews
+
+    A review is supposed to be added from both:
+    seller and buyer to each other and not supposed to be updated.
+
+    Routes:
+    - POST /reviews/create
+    - GET /reviews
+    - GET /reviews/{reviewer_unique_id}/{receiver_unique_id}
+    - GET /reviews/{review_unique_id}
+    - GET /reviews/made/{reviewer_unique_id}
+    - GET /reviews/received/{receiver_unique_id}
+    - DELETE /reviews/delete/{review_unique_id}
+    - DELETE /reviews/delete_by_user/{user_unique_id}
+
     """
 
     __tablename__ = "reviews"
@@ -20,6 +34,10 @@ class Review(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         autoincrement=True,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
 
     rate: orm.Mapped[int] = orm.mapped_column(

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
@@ -30,6 +30,15 @@ class Event(db.Model, ModelMixin):
     Questions:
     - observations/conditions
     - insert warning
+
+    Routes:
+    - POST /events/create
+    - GET /events
+    - GET /events/{event_unique_id}
+    - GET /events/by_location/{location_unique_id}
+    - PUT /events/update/{event_unique_id}
+    - DELETE /events/delete/{event_unique_id}
+
     """
 
     __tablename__ = "events"
@@ -38,6 +47,10 @@ class Event(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         nullable=False,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
     name: orm.Mapped[str] = orm.mapped_column(
         sa.String(64),

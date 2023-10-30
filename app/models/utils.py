@@ -1,4 +1,5 @@
 from app import db
+from uuid import uuid4
 
 
 class ModelMixin(object):
@@ -10,4 +11,5 @@ class ModelMixin(object):
         return self
 
 
-# Add your own utility classes and functions here.
+def gen_uuid() -> str:
+    return str(uuid4())

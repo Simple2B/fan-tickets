@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
@@ -29,17 +29,17 @@ class Ticket(db.Model, ModelMixin):
     """
     Model for events
 
-    Actions in admin section:
-    - create
-    - read
-    - delete
-
-    - quantity, original value, sales value
-    - observations/conditions
-    - read ticket barcode / QRcode
-    - insert warning
-    - net amount (price)
-    - the amount the buyer should pay
+    Routes:
+    - POST /tickets/create
+    - GET /tickets
+    - GET /tickets/{ticket_unique_id}
+    - GET /tickets/by_event/{event_unique_id}
+    - GET /tickets/by_user/{user_unique_id}
+    - GET /tickets/by_location/{location_unique_id}
+    - GET /tickets/by_category/{category_unique_id}
+    - PUT /tickets/update/{ticket_unique_id} - ???
+    - DELETE /tickets/delete/{ticket_unique_id}
+    - DELETE /tickets/delete_by_event/{event_unique_id}
     """
 
     __tablename__ = "tickets"
@@ -48,6 +48,11 @@ class Ticket(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         autoincrement=True,
+    )
+
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
 
     description: orm.Mapped[str] = orm.mapped_column(

@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 class Category(db.Model, ModelMixin):
@@ -17,6 +17,14 @@ class Category(db.Model, ModelMixin):
     - update
     - delete
     - set a foreign key from events to categories
+
+    Routes:
+    - POST /categories/create
+    - GET /categories
+    - GET /categories/{category_unique_id}
+    - PUT /categories/update/{category_unique_id}
+    - DELETE /categories/delete/{category_unique_id}
+
     """
 
     __tablename__ = "categories"
@@ -25,6 +33,10 @@ class Category(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         nullable=False,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
 
     name: orm.Mapped[str] = orm.mapped_column(

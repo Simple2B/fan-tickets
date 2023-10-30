@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
@@ -13,7 +13,17 @@ if TYPE_CHECKING:
 
 class Message(db.Model, ModelMixin):
     """
-    Model for chat or dispute messages
+    Model for chat or dispute messages.
+
+    Routes:
+    - GET /messages/room/{room_unique_id}/
+    - GET /messages/user/{user_unique_id}/
+    - POST /messages/room/{room_unique_id}/
+    - PUT /messages/update/{message_unique_id}
+    - DELETE /messages/delete/{message_unique_id}
+    - DELETE /messages/delete_by_room/{room_unique_id}
+    - DELETE /messages/delete_by_user/{user_unique_id}
+
     """
 
     __tablename__ = "messages"
@@ -22,6 +32,10 @@ class Message(db.Model, ModelMixin):
         sa.Integer,
         primary_key=True,
         autoincrement=True,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
     sender_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,

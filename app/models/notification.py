@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
@@ -25,12 +25,23 @@ class NotificationType(Enum):
 class Notification(db.Model, ModelMixin):
     """
     Model for chat or dispute messages
+
+    Routes:
+    - POST /notifications/create
+    - GET /notifications
+    - GET /notifications/{notification_unique_id}
+    - GET /notifications/by_user/{user_unique_id}
+
     """
 
     id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
         primary_key=True,
         autoincrement=True,
+    )
+    unique_id: orm.Mapped[str] = orm.mapped_column(
+        sa.String(36),
+        default=gen_uuid,
     )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),

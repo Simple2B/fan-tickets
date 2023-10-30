@@ -31,6 +31,20 @@ def gen_password_reset_id() -> str:
 
 
 class User(db.Model, UserMixin, ModelMixin):
+    """
+    Routes:
+    - POST /users/create_admin
+    - POST /users/create_client
+    - GET /users
+    - GET /users/{user_unique_id}
+    - GET /users/by_roles/{user_role}
+    - PUT /users/update/{user_unique_id}
+    - DELETE /users/delete/{user_unique_id}
+
+    Auth routes are in views/auth.py
+
+    """
+
     __tablename__ = "users"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
