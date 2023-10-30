@@ -1,4 +1,4 @@
-# Simple Flask App
+# Fan Ticket App
 
 1. Run
 
