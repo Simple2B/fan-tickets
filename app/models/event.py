@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class Event(db.Model, ModelMixin):
-    __tablename__ = "events"
     """
     Model for events
 
@@ -32,6 +31,8 @@ class Event(db.Model, ModelMixin):
     - observations/conditions
     - insert warning
     """
+
+    __tablename__ = "events"
 
     id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
@@ -61,25 +62,25 @@ class Event(db.Model, ModelMixin):
         sa.String(512), unique=False, nullable=True
     )
     date_time: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         nullable=False,
     )
 
     category_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey(Category.id), nullable=True
+        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
     )
 
     location_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey(Location.id), nullable=True
+        sa.Integer, sa.ForeignKey("locations.id"), nullable=True
     )
 
     creator_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey(User.id), nullable=True
+        sa.Integer, sa.ForeignKey("users.id"), nullable=True
     )
 
-    location: orm.Mapped["Location"] = orm.relationship(backref="events")
-    category: orm.Mapped["Category"] = orm.relationship(backref="events")
-    creator: orm.Mapped["User"] = orm.relationship(backref="events")
+    location: orm.Mapped["Location"] = orm.relationship()
+    category: orm.Mapped["Category"] = orm.relationship()
+    creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(
         "Ticket",
         back_populates="event",

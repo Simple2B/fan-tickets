@@ -25,16 +25,16 @@ class Message(db.Model, ModelMixin):
     )
     sender_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(User.id),
+        sa.ForeignKey("users.id"),
         nullable=False,
     )
     room_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(Room.id),
+        sa.ForeignKey("rooms.id"),
         nullable=False,
     )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
     viewed: orm.Mapped[bool] = orm.mapped_column(

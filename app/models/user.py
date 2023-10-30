@@ -18,6 +18,7 @@ from app import schema as s
 if TYPE_CHECKING:
     from .ticket import Ticket
     from .notification import Notification
+    from .review import Review
 
 
 class UserRole(Enum):
@@ -73,6 +74,14 @@ class User(db.Model, UserMixin, ModelMixin):
     notifications: orm.Mapped[list["Notification"]] = orm.relationship(
         "Notification",
         back_populates="user",
+    )
+
+    reviews: orm.Mapped[list["Review"]] = orm.relationship(
+        back_populates="reviewer",
+    )
+
+    receivers: orm.Mapped[list["Review"]] = orm.relationship(
+        back_populates="receiver",
     )
 
     @hybrid_property

@@ -72,12 +72,8 @@ class Ticket(db.Model, ModelMixin):
         sa.String(512), unique=False, nullable=True
     )
 
-    seller_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey(User.id), nullable=False
-    )
-
     created_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
 
@@ -125,14 +121,17 @@ class Ticket(db.Model, ModelMixin):
         nullable=False,
         default=False,
     )
+    seller_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("users.id"), nullable=False
+    )
 
     buyer_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(User.id),
+        sa.ForeignKey("users.id"),
         nullable=True,
     )
     event_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey(Event.id), nullable=False
+        sa.Integer, sa.ForeignKey("events.id"), nullable=False
     )
 
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")

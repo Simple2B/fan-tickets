@@ -1,5 +1,3 @@
-from datetime import datetime
-from enum import Enum
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -8,8 +6,7 @@ from .utils import ModelMixin
 
 
 if TYPE_CHECKING:
-    from .ticket import Ticket
-    from .message import Message
+    from .user import User
 
 
 class Review(db.Model, ModelMixin):
@@ -24,24 +21,26 @@ class Review(db.Model, ModelMixin):
         primary_key=True,
         autoincrement=True,
     )
-    buyer_id: orm.Mapped[int] = orm.mapped_column(
+
+    rate: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(Ticket.id),
+        nullable=True,
+    )
+    text: orm.Mapped[str] = orm.mapped_column(sa.String(512), nullable=True)
+
+    reviewer_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer,
+        sa.ForeignKey("users.id"),
         nullable=False,
     )
-    buyer: orm.Mapped["Ticket"] = orm.relationship(
-        "Ticket",
-        back_populates="buyer",
-    )
-
-    seller_id: orm.Mapped[int] = orm.mapped_column(
+    receiver_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(Ticket.id),
+        sa.ForeignKey("users.id"),
         nullable=False,
     )
-    seller: orm.Mapped["Ticket"] = orm.relationship(
-        "Ticket",
-        back_populates="seller",
+    reviewer: orm.Mapped["User"] = orm.relationship(
+        back_populates="reviews",
     )
-
-    # Rate of the seller
+    receiver: orm.Mapped["User"] = orm.relationship(
+        back_populates="receivers",
+    )

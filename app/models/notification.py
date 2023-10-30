@@ -33,7 +33,7 @@ class Notification(db.Model, ModelMixin):
         autoincrement=True,
     )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
     type_of: orm.Mapped[str] = orm.mapped_column(
@@ -41,7 +41,7 @@ class Notification(db.Model, ModelMixin):
     )
     user_id: orm.Mapped[int] = orm.mapped_column(
         sa.Integer,
-        sa.ForeignKey(User.id),
+        sa.ForeignKey("users.id"),
         nullable=False,
     )
     text: orm.Mapped[str] = orm.mapped_column(

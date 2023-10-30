@@ -6,7 +6,6 @@ from .utils import ModelMixin
 
 
 class Location(db.Model, ModelMixin):
-
     __tablename__ = "locations"
 
     id: orm.Mapped[int] = orm.mapped_column(
@@ -21,7 +20,7 @@ class Location(db.Model, ModelMixin):
         nullable=False,
     )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime,
+        sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
 
