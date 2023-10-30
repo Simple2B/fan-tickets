@@ -16,14 +16,10 @@ class Message(db.Model, ModelMixin):
     Model for chat or dispute messages.
 
     Routes:
-    - GET /messages/room/{room_unique_id}/
-    - GET /messages/user/{user_unique_id}/
-    - POST /messages/room/{room_unique_id}/
-    - PUT /messages/update/{message_unique_id}
-    - DELETE /messages/delete/{message_unique_id}
-    - DELETE /messages/delete_by_room/{room_unique_id}
-    - DELETE /messages/delete_by_user/{user_unique_id}
-
+    # - GET /messages/room/{room_unique_id}/ - do not need this
+    - POST /messages/room/{room_unique_id}/ (admin/client)
+    - PUT /messages/update/{message_unique_id} (admin/client)
+    - DELETE /messages/delete/{message_unique_id} (admin/client)
     """
 
     __tablename__ = "messages"

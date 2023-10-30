@@ -30,16 +30,16 @@ class Ticket(db.Model, ModelMixin):
     Model for events
 
     Routes:
-    - POST /tickets/create
-    - GET /tickets
-    - GET /tickets/{ticket_unique_id}
-    - GET /tickets/by_event/{event_unique_id}
-    - GET /tickets/by_user/{user_unique_id}
-    - GET /tickets/by_location/{location_unique_id}
-    - GET /tickets/by_category/{category_unique_id}
-    - PUT /tickets/update/{ticket_unique_id} - ???
-    - DELETE /tickets/delete/{ticket_unique_id}
-    - DELETE /tickets/delete_by_event/{event_unique_id}
+    - POST /tickets/create (client)
+    - GET /tickets (client)
+    - GET /tickets/{ticket_unique_id} (client)
+    - GET /tickets/by_event/{event_unique_id} (client, ajax sort query params)
+    - GET /tickets/by_user/{user_unique_id} (client, ajax sort query params)
+    - GET /tickets/by_location/{location_unique_id} (client, ajax sort query params)
+    - GET /tickets/by_category/{category_unique_id} (client, ajax sort query params)
+    - PUT /tickets/update/{ticket_unique_id} - do not need this
+    - DELETE /tickets/delete/{ticket_unique_id} (admin)
+    - DELETE /tickets/delete_by_event/{event_unique_id} (admin)
     """
 
     __tablename__ = "tickets"

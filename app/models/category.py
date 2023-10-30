@@ -19,11 +19,11 @@ class Category(db.Model, ModelMixin):
     - set a foreign key from events to categories
 
     Routes:
-    - POST /categories/create
-    - GET /categories
-    - GET /categories/{category_unique_id}
-    - PUT /categories/update/{category_unique_id}
-    - DELETE /categories/delete/{category_unique_id}
+    - POST /admin/categories/create (admin)
+    - GET /admin/categories (admin/user)
+    - GET /admin/categories/{category_unique_id} (admin, ajax)
+    - PUT /admin/categories/update/{category_unique_id} (admin, ajax)
+    - DELETE /admin/categories/delete/{category_unique_id} (admin, ajax)
 
     """
 

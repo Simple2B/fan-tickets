@@ -32,12 +32,12 @@ class Event(db.Model, ModelMixin):
     - insert warning
 
     Routes:
-    - POST /events/create
+    - POST /events/create (admin/user)
     - GET /events
     - GET /events/{event_unique_id}
-    - GET /events/by_location/{location_unique_id}
-    - PUT /events/update/{event_unique_id}
-    - DELETE /events/delete/{event_unique_id}
+    - GET /events/by_location/{location_unique_id} (client, ajax sort)
+    - PUT /events/update/{event_unique_id} (admin)
+    - DELETE /events/delete/{event_unique_id} (admin)
 
     """
 

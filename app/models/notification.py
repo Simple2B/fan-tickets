@@ -29,8 +29,8 @@ class Notification(db.Model, ModelMixin):
     Routes:
     - POST /notifications/create
     - GET /notifications
-    - GET /notifications/{notification_unique_id}
-    - GET /notifications/by_user/{user_unique_id}
+    - GET /notifications/{notification_unique_id} - do not need this
+    - GET /notifications/by_user/{user_unique_id} - do not need this
 
     """
 

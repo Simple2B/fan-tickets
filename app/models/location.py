@@ -10,13 +10,13 @@ class Location(db.Model, ModelMixin):
     Model for events' locations.
 
     Routes:
-    - POST /locations/create
-    - GET /locations
-    - GET /locations/{location_unique_id}
-    - GET /locations/nearby/{coordinates}
-    - GET /locations/by_event/{event_unique_id}
-    - PUT /locations/update/{location_unique_id}
-    - DELETE /locations/delete/{location_unique_id}
+    - POST /admin/locations/create (admin)
+    - GET /admin/locations (admin)
+    - GET /admin/locations/{location_unique_id} (admin)
+    - GET /admin/locations/nearby/{coordinates} (admin, ajax sort)
+    - GET /admin/locations/by_event/{event_unique_id} (admin, ajax sort)
+    - PUT /admin/locations/update/{location_unique_id} (admin)
+    - DELETE /admin/locations/delete/{location_unique_id} (admin)
 
     """
 
