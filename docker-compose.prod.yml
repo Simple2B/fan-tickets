@@ -15,7 +15,7 @@ services:
       PGUSER: ${POSTGRES_USER:-postgres}
 
   app:
-    image: simple2b/flask-app:latest
+    image: simple2b/fan_ticket
     restart: always
     command: sh ./start_server.sh
     environment:
