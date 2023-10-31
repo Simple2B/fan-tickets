@@ -66,6 +66,5 @@ class Notification(db.Model, ModelMixin):
     is_viewed: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     user: orm.Mapped["User"] = orm.relationship(
-        "User",
         back_populates="notifications",
     )

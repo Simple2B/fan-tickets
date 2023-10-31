@@ -6,8 +6,6 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
-from .users_tickets import users_tickets
-from .users_reviews import users_reviews
 
 
 from enum import Enum
@@ -87,28 +85,26 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.String(32), default=UserRole.client.value
     )
 
+    # TODO: two different tables (two secondary tables)
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
-        "Ticket",
-        secondary=users_tickets,
+        foreign_keys="Ticket.seller_id",
         back_populates="seller",
     )
     tickets_bought: orm.Mapped[list["Ticket"]] = orm.relationship(
-        "Ticket",
-        secondary=users_tickets,
+        foreign_keys="Ticket.buyer_id",
         back_populates="buyer",
     )
     notifications: orm.Mapped[list["Notification"]] = orm.relationship(
-        "Notification",
         back_populates="user",
     )
 
-    reviews: orm.Mapped[list["Review"]] = orm.relationship(
-        secondary=users_reviews,
+    reviewers: orm.Mapped[list["Review"]] = orm.relationship(
+        foreign_keys="Review.reviewer_id",
         back_populates="reviewer",
     )
 
     receivers: orm.Mapped[list["Review"]] = orm.relationship(
-        secondary=users_reviews,
+        foreign_keys="Review.receiver_id",
         back_populates="receiver",
     )
 

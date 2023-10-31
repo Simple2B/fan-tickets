@@ -70,3 +70,5 @@ class Room(db.Model, ModelMixin):
         "Message",
         back_populates="room",
     )
+
+    # TODO: add relations to chat participants

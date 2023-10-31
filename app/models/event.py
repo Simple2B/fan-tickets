@@ -51,6 +51,7 @@ class Event(db.Model, ModelMixin):
         nullable=False,
     )
 
+    # TODO: make images as a separate model (blob, size, type, name) and store here a foreign key
     image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
 
     url: orm.Mapped[str] = orm.mapped_column(

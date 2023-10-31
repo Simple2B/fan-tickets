@@ -54,3 +54,5 @@ class Dispute(db.Model, ModelMixin):
         sa.ForeignKey("tickets.id"),
         nullable=False,
     )
+
+    # TODO: add seller, room, attachments (later)

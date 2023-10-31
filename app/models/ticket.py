@@ -5,7 +5,6 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin, gen_uuid
-from .users_tickets import users_tickets
 
 
 if TYPE_CHECKING:
@@ -111,6 +110,7 @@ class Ticket(db.Model, ModelMixin):
     )
 
     # The ticket file could be a PDF or a stringed QR code
+    # TODO: add relation to many tickets (one to many relationship)
     file: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
     wallet_qr_code: orm.Mapped[bytes] = orm.mapped_column(sa.String(512), nullable=True)
 
@@ -183,18 +183,15 @@ class Ticket(db.Model, ModelMixin):
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")
 
     seller: orm.Mapped["User"] = orm.relationship(
-        "User",
-        secondary=users_tickets,
+        foreign_keys=[seller_id],
         back_populates="tickets_for_sale",
     )
     buyer: orm.Mapped["User"] = orm.relationship(
-        "User",
-        secondary=users_tickets,
+        foreign_keys=[buyer_id],
         back_populates="tickets_bought",
     )
 
     rooms: orm.Mapped[list["Room"]] = orm.relationship(
-        "Room",
         back_populates="ticket",
     )
 

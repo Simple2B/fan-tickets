@@ -36,6 +36,7 @@ class Location(db.Model, ModelMixin):
         unique=True,
         nullable=False,
     )
+    # TODO: add image
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
         default=datetime.utcnow,

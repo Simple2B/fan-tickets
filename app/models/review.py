@@ -3,7 +3,6 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin, gen_uuid
-from .users_reviews import users_reviews
 
 
 if TYPE_CHECKING:
@@ -59,11 +58,11 @@ class Review(db.Model, ModelMixin):
     )
 
     reviewer: orm.Mapped["User"] = orm.relationship(
-        secondary=users_reviews,
-        back_populates="reviews",
+        foreign_keys=[reviewer_id],
+        back_populates="reviewers",
     )
 
     receiver: orm.Mapped["User"] = orm.relationship(
-        secondary=users_reviews,
+        foreign_keys=[receiver_id],
         back_populates="receivers",
     )
