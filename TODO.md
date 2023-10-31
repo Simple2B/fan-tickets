@@ -1,6 +1,22 @@
 # Check routes list
+- At the moment supposed routes are listed in each of models' doc strings
 
-- go through all models and see what routes we need
+# Payment system actions:
+- reserve
+- buy
+- cancel
+- refund
+- transfer
+- send_to_buyer
+- mark_as_paid
+- confirm_receive
+- mark_as_sold
+- mark_as_available
+- mark_as_unavailable
+- mark_as_in_cart
+- delete_from_cart
+
+Change payment credentials
 
 
 # Questions:

@@ -44,7 +44,7 @@ class Category(db.Model, ModelMixin):
         unique=True,
         nullable=False,
     )
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=False)
+    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
 
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True), default=datetime.utcnow

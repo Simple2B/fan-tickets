@@ -41,6 +41,24 @@ class Ticket(db.Model, ModelMixin):
     - PUT /tickets/update/{ticket_unique_id} - ???
     - DELETE /tickets/delete/{ticket_unique_id}
     - DELETE /tickets/delete_by_event/{event_unique_id}
+
+    Payment system actions:
+    reserve
+    buy
+    cancel
+    refund
+    transfer
+    send_to_buyer
+    mark_as_paid
+    confirm_receive
+    mark_as_sold
+    mark_as_available
+    mark_as_unavailable
+    mark_as_in_cart
+    delete_from_cart
+
+    Change payment credentials
+
     """
 
     __tablename__ = "tickets"

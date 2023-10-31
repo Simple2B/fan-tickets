@@ -55,6 +55,7 @@ class User(db.Model, UserMixin, ModelMixin):
         unique=True,
         nullable=False,
     )
+    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
     email: orm.Mapped[str] = orm.mapped_column(
         sa.String(255),
         unique=True,

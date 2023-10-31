@@ -18,15 +18,6 @@ class Event(db.Model, ModelMixin):
     """
     Model for events
 
-    Actions in admin section:
-    - create
-    - read
-    - update
-    - delete
-    - set a foreign key from events to locations
-    - set a foreign key from events to categories
-    - set a foreign key from tickets to events
-
     Questions:
     - observations/conditions
     - insert warning
@@ -58,7 +49,7 @@ class Event(db.Model, ModelMixin):
         nullable=False,
     )
 
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=False)
+    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
 
     url: orm.Mapped[str] = orm.mapped_column(
         sa.String(255),
