@@ -22,14 +22,13 @@ class Room(db.Model, ModelMixin):
     Model for chat or dispute messages.
 
     Routes:
-    - GET /rooms
-    - GET /rooms/{room_unique_id}
-    - GET /rooms/by_ticket/{ticket_unique_id}
-    - GET /rooms/by_user/{user_unique_id}
-    - POST /rooms/create
-    - PUT /rooms/update/{room_unique_id} - to change room type from chat to dispute (to save messages' history)
-    - DELETE /rooms/delete/{room_unique_id}
-    - DELETE /rooms/delete_by_ticket/{ticket_unique_id}
+    - GET /rooms (admin/client)
+    - GET /rooms/{room_unique_id} (admin/client)
+    - GET /rooms/by_ticket/{ticket_unique_id} (admin, ajax sort)
+    - GET /rooms/by_user/{user_unique_id} (admin, ajax sort)
+    - POST /rooms/create (admin/client)
+    - DELETE /rooms/delete/{room_unique_id}  (admin/client)
+    - DELETE /rooms/delete_by_ticket/{ticket_unique_id} - do not need this
 
     """
 

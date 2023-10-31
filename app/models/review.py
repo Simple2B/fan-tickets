@@ -20,12 +20,12 @@ class Review(db.Model, ModelMixin):
     Routes:
     - POST /reviews/create
     - GET /reviews
-    - GET /reviews/{reviewer_unique_id}/{receiver_unique_id}
-    - GET /reviews/{review_unique_id}
-    - GET /reviews/made/{reviewer_unique_id}
-    - GET /reviews/received/{receiver_unique_id}
-    - DELETE /reviews/delete/{review_unique_id}
-    - DELETE /reviews/delete_by_user/{user_unique_id}
+    - GET /reviews/{reviewer_unique_id}/{receiver_unique_id} - do not need this
+    - GET /reviews/{review_unique_id} - do not need this
+    - GET /reviews/made/{reviewer_unique_id} - do not need this
+    - GET /reviews/received/{receiver_unique_id} - do not need this
+    - DELETE /reviews/delete/{review_unique_id}  (admin)
+    - DELETE /reviews/delete_by_user/{user_unique_id} (admin, ajax sort)
 
     """
 
