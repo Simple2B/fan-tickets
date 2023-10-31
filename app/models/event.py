@@ -30,6 +30,8 @@ class Event(db.Model, ModelMixin):
     - PUT /events/update/{event_unique_id} (admin)
     - DELETE /events/delete/{event_unique_id} (admin)
 
+    Notice that on the event page there should be a swithcer to show/hide tickets
+
     """
 
     __tablename__ = "events"

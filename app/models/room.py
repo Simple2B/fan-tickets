@@ -21,6 +21,9 @@ class Room(db.Model, ModelMixin):
     """
     Model for chat or dispute messages.
 
+    Remark:
+    - rooms'/conversations' list should be displayed on the room page
+
     Routes:
     - GET /rooms (admin/client)
     - GET /rooms/{room_unique_id} (admin/client)

@@ -34,14 +34,20 @@ def gen_password_reset_id() -> str:
 
 class User(db.Model, UserMixin, ModelMixin):
     """
+    Questions:
+    - how to verificate personal info from the admin side
+
+
     Routes:
-    - POST /admin/users/create_admin ()
+    - POST /admin/users/create_admin (admin)
     - POST /admin/users/create_client  (admin)
     - GET /admin/users
     - GET /profile (client)
     - GET /users/{user_unique_id} (client)
     - GET /users/by_roles/{user_role} (admin, ajax sort)
     - PUT /users/update/{user_unique_id} (client)
+    - PUT /users/email_change/{user_unique_id} (client)
+    - PUT /users/person_verification/{user_unique_id} (client)
     - DELETE /users/delete/{user_unique_id} (admin)
 
     Auth routes are in views/auth.py

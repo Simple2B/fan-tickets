@@ -30,10 +30,32 @@ class Ticket(db.Model, ModelMixin):
     """
     Model for events
 
+    Questions:
+    - how to compare tickets
+
     Routes:
     - POST /tickets/create
-    - GET /tickets
+    - POST /tickets/select_event
+    - POST /tickets/type
+    - POST /tickets/upload
+    - POST /tickets/image_list
+    - POST /tickets/add_details
+    - POST /tickets/set_price
+    - POST /tickets/user_details
+    - POST /tickets/payment_overview_ticket_details
+    - POST /tickets/payment_overview_bank_info
+    - POST /tickets/phone_number
+    - POST /tickets/share
+
+    - GET /tickets_for_sale
+    - GET /tickets_buy
     - GET /tickets/{ticket_unique_id}
+    - GET /tickets/cart
+    - GET /tickets/payment_method
+    - GET /tickets/credit_card
+    - GET /tickets/billing_address
+    - GET /tickets/thank_you_page
+    - GET /tickets/compare/{ticket_unique_id}/{ticket_unique_id}
     - GET /tickets/by_event/{event_unique_id}
     - GET /tickets/by_user/{user_unique_id}
     - GET /tickets/by_location/{location_unique_id}

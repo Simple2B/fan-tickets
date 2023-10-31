@@ -1,6 +1,10 @@
 # Check routes list
 - At the moment supposed routes are listed in each of models' doc strings
 
+# Client model
+- add a client model
+- create contact us form
+
 # Payment system actions:
 - reserve
 - buy

@@ -26,6 +26,9 @@ class Notification(db.Model, ModelMixin):
     """
     Model for chat or dispute messages
 
+    Remark:
+    - notifications' list should be displayed on the user's/admin's profile page
+
     Routes:
     - POST /notifications/create
     - GET /notifications
