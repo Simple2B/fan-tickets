@@ -32,6 +32,7 @@ poetry version $1
 new_version=$(poetry version -s)
 
 # Build UI
+yarn
 yarn build
 
 # Commit the change
