@@ -117,8 +117,8 @@ jobs:
           username: ${{ env.DEPLOY_USER_NAME }}
           key: ${{ env.DEPLOY_SSH_KEY }}
           port: ${{ env.DEPLOY_SSH_PORT }}
-          source: docker-compose.staging.yml
-          target: ~/upwork
+          source: docker-compose.prod.yml
+          target: ~/fan_ticket
       - name: deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -127,8 +127,8 @@ jobs:
           key: ${{ env.DEPLOY_SSH_KEY }}
           port: ${{ env.DEPLOY_SSH_PORT }}
           script: |
-            cd ~/upwork &&
-            mv docker-compose.staging.yml docker-compose.yaml &&
+            cd ~/fan_ticket &&
+            mv docker-compose.prod.yml docker-compose.yaml &&
             docker compose pull &&
             docker compose up -d &&
             docker system prune -f
