@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint
 from flask_login import login_required
-from app import models as m
+from app import models as m, db
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -74,3 +74,9 @@ def get_disputes():
 def get_notifications():
     notifications = m.Notification.all()
     return render_template("demo/notifications.html", notifications=notifications)
+
+
+@main_blueprint.route("/room/<room_unique_id>")
+def get_room(room_unique_id: str):
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+    return render_template("demo/room.html", room=room)

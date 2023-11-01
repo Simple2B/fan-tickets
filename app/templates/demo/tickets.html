@@ -61,7 +61,7 @@
           {{ ticket.event.location.name }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.event.creator }}
+          {{ ticket.seller.username }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ ticket.section }}
@@ -98,7 +98,9 @@
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {% for room in ticket.rooms %}
-          {{ room.ticket.seller.username }} - {{ room.ticket.buyer.username }} |
+          <a href="{{ url_for('main.get_room', room_unique_id=room.unique_id) }}" class="text-blue-700 font-semibold">
+            {{ room.ticket.seller.username }} - {{ room.ticket.buyer.username }} |
+          </a>
           {% endfor %}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
