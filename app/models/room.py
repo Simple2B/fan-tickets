@@ -71,4 +71,7 @@ class Room(db.Model, ModelMixin):
         back_populates="room",
     )
 
+    def __repr__(self):
+        return f"<{self.id}: {self.ticket_id}>"
+
     # TODO: add relations to chat participants

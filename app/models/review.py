@@ -66,3 +66,6 @@ class Review(db.Model, ModelMixin):
         foreign_keys=[receiver_id],
         back_populates="receivers",
     )
+
+    def __repr__(self):
+        return f"<{self.id}: {self.reviewer} - {self.receiver}>"

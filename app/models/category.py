@@ -49,3 +49,6 @@ class Category(db.Model, ModelMixin):
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True), default=datetime.utcnow
     )
+
+    def __repr__(self):
+        return f"<{self.id}: {self.name}>"

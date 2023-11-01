@@ -195,6 +195,9 @@ class Ticket(db.Model, ModelMixin):
         back_populates="ticket",
     )
 
+    def __repr__(self):
+        return f"<{self.id}: {self.event}>"
+
     @property
     def is_available(self):
         if self.created_at > datetime.utcnow():

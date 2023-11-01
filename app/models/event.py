@@ -88,7 +88,7 @@ class Event(db.Model, ModelMixin):
     location: orm.Mapped["Location"] = orm.relationship()
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
-    tickets: orm.Mapped[list["Ticket"]] = orm.relationship(
-        "Ticket",
-        back_populates="event",
-    )
+    tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")
+
+    def __repr__(self):
+        return f"<{self.id}: {self.name}>"

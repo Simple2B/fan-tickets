@@ -59,3 +59,6 @@ class Message(db.Model, ModelMixin):
 
     sender: orm.Mapped["User"] = orm.relationship()
     room: orm.Mapped["Room"] = orm.relationship(back_populates="messages")
+
+    def __repr__(self):
+        return f"<{self.id}: {self.text[:7]}>"
