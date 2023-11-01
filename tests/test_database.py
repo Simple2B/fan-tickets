@@ -13,6 +13,9 @@ def test_generate_users(client):
     admins_query = m.User.select().where(m.User.role == m.UserRole.admin.value)
     admins = list(db.session.scalars(admins_query))
     assert len(admins) == 3
+    reviews_query = m.Review.select()
+    reviews = list(db.session.scalars(reviews_query))
+    assert len(reviews) == TESTING_USERS_NUMBER * 2 + 2
 
 
 def test_generate_events(client):
@@ -35,3 +38,6 @@ def test_generate_events(client):
     messages_query = m.Message.select()
     messages = list(db.session.scalars(messages_query))
     assert len(messages) == 576 * 5
+    notifications_query = m.Notification.select()
+    notifications = list(db.session.scalars(notifications_query))
+    assert len(notifications) == 408
