@@ -50,3 +50,27 @@ def get_categories():
 def get_events():
     events = m.Event.all()
     return render_template("demo/events.html", events=events)
+
+
+@main_blueprint.route("/tickets")
+def get_tickets():
+    tickets = m.Ticket.all()
+    return render_template("demo/tickets.html", tickets=tickets)
+
+
+@main_blueprint.route("/reviews")
+def get_reviews():
+    reviews = m.Review.all()
+    return render_template("demo/reviews.html", reviews=reviews)
+
+
+@main_blueprint.route("/disputes")
+def get_disputes():
+    disputes = m.Dispute.all()
+    return render_template("demo/disputes.html", disputes=disputes)
+
+
+@main_blueprint.route("/notifications")
+def get_notifications():
+    notifications = m.Notification.all()
+    return render_template("demo/notifications.html", notifications=notifications)

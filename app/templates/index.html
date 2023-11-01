@@ -113,7 +113,7 @@
                         {{tickets_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
+                        <a href="{{ url_for('main.get_tickets') }}">
                             <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
                         </a>
                     </td>
@@ -134,7 +134,7 @@
                         {{reviews_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
+                        <a href="{{ url_for('main.get_reviews') }}">
                             <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
                         </a>
                     </td>
@@ -155,7 +155,7 @@
                         {{disputes_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
+                        <a href="{{ url_for('main.get_disputes') }}">
                             <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
                         </a>
                     </td>
@@ -176,7 +176,7 @@
                         {{notifications_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
+                        <a href="{{ url_for('main.get_notifications') }}">
                             <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
                         </a>
                     </td>
@@ -197,9 +197,6 @@
                         {{rooms_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
-                            <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
-                        </a>
                     </td>
                 </tr>
 
@@ -218,9 +215,6 @@
                         {{messages_number}}
                     </td>
                     <td class="p-4 space-x-2 whitespace-nowrap">
-                        <a href="{{ url_for('user.get_all') }}">
-                            <button class="py-1 px-2 rounded-md bg-blue-300 text-white">see all</button>
-                        </a>
                     </td>
                 </tr>
             </tbody>

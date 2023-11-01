@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <p class="mt-5 mb-2 ml-3 text-3xl">Tickets</p>
+  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3">#</th>
+        <th scope="col" class="px-6 py-3">Event Name</th>
+        <th scope="col" class="px-6 py-3">ticket_type</th>
+        <th scope="col" class="px-6 py-3">ticket_category</th>
+        <th scope="col" class="px-6 py-3">description</th>
+        <th scope="col" class="px-6 py-3">warning</th>
+        <th scope="col" class="px-6 py-3">date_time</th>
+        <th scope="col" class="px-6 py-3">location</th>
+        <th scope="col" class="px-6 py-3">created_by</th>
+        <th scope="col" class="px-6 py-3">section</th>
+        <th scope="col" class="px-6 py-3">queue</th>
+        <th scope="col" class="px-6 py-3">seat</th>
+        <th scope="col" class="px-6 py-3">price_net</th>
+        <th scope="col" class="px-6 py-3">price_gross</th>
+        <th scope="col" class="px-6 py-3">quantity</th>
+        <th scope="col" class="px-6 py-3">is_in_cart</th>
+        <th scope="col" class="px-6 py-3">is_reserved</th>
+        <th scope="col" class="px-6 py-3">is_sold</th>
+        <th scope="col" class="px-6 py-3">seller</th>
+        <th scope="col" class="px-6 py-3">buyer</th>
+        <th scope="col" class="px-6 py-3">chat rooms</th>
+        <th scope="col" class="px-6 py-3">is_available</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <td class="w-4 p-4">
+          <div class="flex items-center">
+            {{ loop.index }}
+          </div>
+        </td>
+        <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+          <div class="pl-3">
+            <div class="text-base font-semibold">{{ ticket.event.name }}</div>
+          </div>
+        </td>
+        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+          {{ ticket.ticket_type }}
+        </td>
+        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
+          {{ ticket.ticket_category }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.description[:23] }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.warning[:23] }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.event.date_time }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.event.location.name }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.event.creator }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.section }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.queue }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.seat }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.price_net }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.price_gross }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.quantity }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.is_in_cart }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.is_reserved }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.is_sold }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.seller.username }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.buyer.username }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {% for room in ticket.rooms %}
+          {{ room.ticket.seller.username }} - {{ room.ticket.buyer.username }} |
+          {% endfor %}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ ticket.is_available }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

@@ -1,8 +1,14 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin, gen_uuid
+
+
+if TYPE_CHECKING:
+    from .user import User
+    from .ticket import Ticket
 
 
 class Dispute(db.Model, ModelMixin):
@@ -54,5 +60,7 @@ class Dispute(db.Model, ModelMixin):
         sa.ForeignKey("tickets.id"),
         nullable=False,
     )
+    buyer: orm.Mapped["User"] = orm.relationship()
+    ticket: orm.Mapped["Ticket"] = orm.relationship()
 
     # TODO: add seller, room, attachments (later)
