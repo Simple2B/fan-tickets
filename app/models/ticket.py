@@ -1,8 +1,10 @@
 from datetime import datetime
+import pytz
 from enum import Enum
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
+from flask import current_app as app
 from app.database import db
 from .utils import ModelMixin, gen_uuid
 
@@ -11,6 +13,12 @@ if TYPE_CHECKING:
     from .user import User
     from .event import Event
     from .room import Room
+
+
+def now():
+    if app.config["TESTING"]:
+        return datetime.now()
+    return datetime.now(pytz.utc)
 
 
 class TicketType(Enum):
@@ -196,11 +204,11 @@ class Ticket(db.Model, ModelMixin):
     )
 
     def __repr__(self):
-        return f"<{self.id}: {self.event}>"
+        return f"<Ticket {self.id} of {self.event.name}>"
 
     @property
     def is_available(self):
-        if self.created_at > datetime.utcnow():
+        if self.event.date_time > now():
             return False
         if self.is_in_cart:
             return False

@@ -15,6 +15,7 @@
     "jsonify",
     "pydantic",
     "pytest",
+    "pytz",
     "sqlalchemy",
     "tailwindcss",
     "werkzeug",

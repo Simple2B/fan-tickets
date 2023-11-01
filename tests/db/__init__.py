@@ -96,11 +96,19 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             name=category_name,
         ).save()
     for i in range(NUM_TEST_EVENTS):
+        location_id = randint(1, len(TEST_LOCATIONS))
+        location_name = m.Location.get(location_id).name
+        category_id = randint(1, len(TEST_CATEGORIES))
+        category_name = m.Category.get(category_id).name
+        seller_id = randint(1, NUM_TEST_USERS)
         event = m.Event(
-            name=f"Event {i}",
+            name=f"{location_name} {category_name} {i}",
+            url=f"https://{location_name.lower().replace(' ', '-')}-{category_name.lower().replace(' ', '-')}-{i}.com",
             observations=faker.text(max_nb_chars=200),
-            location_id=randint(1, len(TEST_LOCATIONS)),
-            category_id=randint(1, len(TEST_CATEGORIES)),
+            warning="don't forget to bring your ID",
+            location_id=location_id,
+            category_id=category_id,
+            creator_id=seller_id,
             date_time=faker.date_time_between(start_date="-3m", end_date="+3m"),
         ).save()
         for j in range(12):
@@ -109,7 +117,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             is_in_cart = True if j <= 1 else False
             is_reserved = True if 2 <= j <= 4 else False
             is_sold = True if 5 <= j <= 7 else False
-            seller_id = randint(1, NUM_TEST_USERS)
+            # seller_id = randint(1, NUM_TEST_USERS)
             buyer_id = randint(1, NUM_TEST_USERS)
             ticket = m.Ticket(
                 event_id=event.id,

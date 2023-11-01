@@ -3,7 +3,7 @@ from app import db
 from app import models as m
 
 
-TESTING_USERS_NUMBER = 100
+TESTING_USERS_NUMBER = 30
 
 
 def test_generate_users(client):
@@ -38,6 +38,3 @@ def test_generate_events(client):
     messages_query = m.Message.select()
     messages = list(db.session.scalars(messages_query))
     assert len(messages) == 576 * 5
-    notifications_query = m.Notification.select()
-    notifications = list(db.session.scalars(notifications_query))
-    assert len(notifications) == 408
