@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from random import randint
 from faker import Faker
 from app import db
@@ -109,7 +110,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             location_id=location_id,
             category_id=category_id,
             creator_id=seller_id,
-            date_time=faker.date_time_between(start_date="-3m", end_date="+3m"),
+            date_time=datetime.now() + timedelta(days=randint(-10, 100)),
         ).save()
         for j in range(12):
             price_net = randint(10, 1000)
@@ -117,7 +118,6 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             is_in_cart = True if j <= 1 else False
             is_reserved = True if 2 <= j <= 4 else False
             is_sold = True if 5 <= j <= 7 else False
-            # seller_id = randint(1, NUM_TEST_USERS)
             buyer_id = randint(1, NUM_TEST_USERS)
             ticket = m.Ticket(
                 event_id=event.id,
@@ -173,6 +173,8 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                     type_of=type_of,
                     ticket_id=ticket.id,
                     is_open=is_open,
+                    seller_id=seller_id,
+                    buyer_id=randint(1, NUM_TEST_USERS),
                 ).save()
                 for _ in range(5):
                     m.Message(

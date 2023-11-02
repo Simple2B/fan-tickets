@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from .ticket import Ticket
     from .notification import Notification
     from .review import Review
+    from .room import Room
 
 
 class UserRole(Enum):
@@ -106,6 +107,15 @@ class User(db.Model, UserMixin, ModelMixin):
     receivers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.receiver_id",
         back_populates="receiver",
+    )
+
+    seller_chat_rooms: orm.Mapped[list["Room"]] = orm.relationship(
+        foreign_keys="Room.seller_id",
+        back_populates="seller",
+    )
+    buyer_chat_rooms: orm.Mapped[list["Room"]] = orm.relationship(
+        foreign_keys="Room.buyer_id",
+        back_populates="buyer",
     )
 
     @hybrid_property

@@ -10,7 +10,8 @@
         <th scope="col" class="px-6 py-3">url</th>
         <th scope="col" class="px-6 py-3">observations</th>
         <th scope="col" class="px-6 py-3">warning</th>
-        <th scope="col" class="px-6 py-3">date_time</th>
+        <th scope="col" class="px-6 py-3">date</th>
+        <th scope="col" class="px-6 py-3">days from now</th>
         <th scope="col" class="px-6 py-3">location</th>
         <th scope="col" class="px-6 py-3">category</th>
         <th scope="col" class="px-6 py-3">created_by</th>
@@ -40,7 +41,10 @@
           {{ event.warning }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.date_time }}
+          {{ date_from_datetime(event.date_time) }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ time_delta(event.date_time) }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ event.location.name }}
@@ -49,7 +53,7 @@
           {{ event.category.name }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.creator }}
+          {{ event.creator.username }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ event.tickets }}

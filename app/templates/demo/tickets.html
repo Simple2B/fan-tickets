@@ -11,7 +11,8 @@
         <th scope="col" class="px-6 py-3">ticket_category</th>
         <th scope="col" class="px-6 py-3">description</th>
         <th scope="col" class="px-6 py-3">warning</th>
-        <th scope="col" class="px-6 py-3">date_time</th>
+        <th scope="col" class="px-6 py-3">date</th>
+        <th scope="col" class="px-6 py-3">days from now</th>
         <th scope="col" class="px-6 py-3">location</th>
         <th scope="col" class="px-6 py-3">created_by</th>
         <th scope="col" class="px-6 py-3">section</th>
@@ -55,7 +56,10 @@
           {{ ticket.warning[:23] }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.event.date_time }}
+          {{ date_from_datetime(ticket.event.date_time) }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ time_delta(ticket.event.date_time) }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ ticket.event.location.name }}
@@ -99,7 +103,7 @@
         <td class="p-4 space-x-2 whitespace-nowrap">
           {% for room in ticket.rooms %}
           <a href="{{ url_for('main.get_room', room_unique_id=room.unique_id) }}" class="text-blue-700 font-semibold">
-            {{ room.ticket.seller.username }} - {{ room.ticket.buyer.username }} |
+            {{ room.seller.username }} - {{ room.buyer.username }} |
           </a>
           {% endfor %}
         </td>

@@ -8,6 +8,7 @@ from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
+    from .user import User
     from .ticket import Ticket
     from .message import Message
 
@@ -62,10 +63,30 @@ class Room(db.Model, ModelMixin):
         nullable=False,
     )
 
+    seller_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("users.id"), nullable=False
+    )
+
+    buyer_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer,
+        sa.ForeignKey("users.id"),
+        nullable=True,
+    )
+
     ticket: orm.Mapped["Ticket"] = orm.relationship(
         "Ticket",
         back_populates="rooms",
     )
+
+    seller: orm.Mapped["User"] = orm.relationship(
+        foreign_keys=[seller_id],
+        back_populates="seller_chat_rooms",
+    )
+    buyer: orm.Mapped["User"] = orm.relationship(
+        foreign_keys=[buyer_id],
+        back_populates="buyer_chat_rooms",
+    )
+
     messages: orm.Mapped[list["Message"]] = orm.relationship(
         "Message",
         back_populates="room",

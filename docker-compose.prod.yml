@@ -26,7 +26,7 @@ services:
     #   - 127.0.0.1:${LOCAL_WEB_PORT:-8000}:8000
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fan_ticket.rule=Host(`fan_ticket.simple2b.net`)"
+      - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
       - "traefik.http.routers.fan_ticket.tls=true"
       - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
 

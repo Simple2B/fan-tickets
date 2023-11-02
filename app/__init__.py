@@ -60,4 +60,15 @@ def create_app(environment="development"):
     def handle_http_error(exc):
         return render_template("error.html", error=exc), exc.code
 
+    # Jinja globals
+    from app.controllers.jinja_globals import (
+        date_from_datetime,
+        time_delta,
+        cut_seconds,
+    )
+
+    app.jinja_env.globals["date_from_datetime"] = date_from_datetime
+    app.jinja_env.globals["time_delta"] = time_delta
+    app.jinja_env.globals["cut_seconds"] = cut_seconds
+
     return app
