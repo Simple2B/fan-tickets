@@ -1,5 +1,11 @@
 import pytz
 from datetime import datetime
+from flask_wtf import FlaskForm
+
+
+def form_hidden_tag():
+    form = FlaskForm()
+    return form.hidden_tag()
 
 
 def date_from_datetime(created_at: datetime):
