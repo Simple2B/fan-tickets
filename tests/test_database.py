@@ -48,16 +48,20 @@ def test_whatsapp_endpoint(client, monkeypatch):
     monkeypatch.setattr("app.views.main.send_events_to_webhook", send_events_to_webhook)
 
     populate(23)
+
+    TEST_USER_ID = 12
     testing_event = db.session.scalar(m.Event.select())
     test_location_name = testing_event.location.name
     date_from = (testing_event.date_time - timedelta(days=3)).isoformat()
     date_to = (testing_event.date_time + timedelta(days=3)).isoformat()
     payload = {
+        "user_id": TEST_USER_ID,
         "token": "testing_whatsapp_token",
         "location": test_location_name,
         "date_from": date_from,
         "date_to": date_to,
     }
-    response = client.get("/whatsapp", json=payload)
+    response = client.post("/whatsapp", json=payload)
     assert response.status_code == 200
     assert response.json["events"][0]["location_id"] == testing_event.location.id
+    assert response.json["user_id"] == TEST_USER_ID

@@ -95,8 +95,9 @@ def get_room(room_unique_id: str):
     return render_template("demo/room.html", room=room)
 
 
-@main_blueprint.route("/whatsapp")
+@main_blueprint.route("/whatsapp", methods=["GET", "POST"])
 def get_events_json():
+    user_id = request.json.get("user_id")
     token = request.json.get("token")
     location = request.json.get("location")
     date_from = request.json.get("date_from")
@@ -115,7 +116,7 @@ def get_events_json():
         m.Event.location.has(m.Location.name == location)
     )
     events = db.session.scalars(events_query_by_location).all()
-    events = s.Events(events=events)
+    events = s.Events(events=events, user_id=user_id)
 
     send_events_to_webhook(events)
 

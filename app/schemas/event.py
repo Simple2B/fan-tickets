@@ -23,6 +23,7 @@ class Event(BaseModel):
 
 
 class Events(BaseModel):
+    user_id: int
     events: list[Event]
 
     class Config:
