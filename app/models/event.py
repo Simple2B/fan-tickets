@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy import orm
+from app import schemas as s
 from app.database import db
 from .utils import ModelMixin, gen_uuid
 
@@ -89,6 +90,11 @@ class Event(db.Model, ModelMixin):
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")
+
+    @property
+    def json(self):
+        event = s.Event.from_orm(self)
+        return event.json()
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"
