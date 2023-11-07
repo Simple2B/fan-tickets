@@ -1,4 +1,3 @@
-import requests
 import sqlalchemy as sa
 from flask import request, render_template, Blueprint
 from flask_login import login_required
@@ -7,16 +6,6 @@ from app import models as m, db
 
 
 main_blueprint = Blueprint("main", __name__)
-
-
-def send_events_to_webhook(events):
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(
-        "https://hook.eu2.make.com/wkvym9hn8wx19jloarddqamkh3sis7xz",
-        headers=headers,
-        data=events.json(),
-    )
-    assert response
 
 
 @main_blueprint.route("/")
@@ -116,8 +105,4 @@ def get_events_json():
         m.Event.location.has(m.Location.name == location)
     )
     events = db.session.scalars(events_query_by_location).all()
-    events = s.Events(events=events, user_id=user_id)
-
-    send_events_to_webhook(events)
-
-    return events.dict()
+    return s.Events(events=events, user_id=user_id).dict()

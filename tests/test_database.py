@@ -42,13 +42,7 @@ def test_generate_events(client):
 
 
 def test_whatsapp_endpoint(client, monkeypatch):
-    def send_events_to_webhook(*args, **kwargs):
-        return
-
-    monkeypatch.setattr("app.views.main.send_events_to_webhook", send_events_to_webhook)
-
     populate(23)
-
     TEST_USER_ID = 12
     testing_event = db.session.scalar(m.Event.select())
     test_location_name = testing_event.location.name
