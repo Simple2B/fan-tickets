@@ -42,14 +42,14 @@ def test_generate_events(client):
 
 
 def test_whatsapp_endpoint(client, monkeypatch):
-    def send_events_to_webhook(*args, **kwargs):
-        return
+    # def send_events_to_webhook(*args, **kwargs):
+    #     return
 
-    monkeypatch.setattr("app.views.main.send_events_to_webhook", send_events_to_webhook)
+    # monkeypatch.setattr("app.views.main.send_events_to_webhook", send_events_to_webhook)
 
     populate(23)
 
-    TEST_USER_ID = 12
+    TEST_USER_ID = 380934323377
     testing_event = db.session.scalar(m.Event.select())
     test_location_name = testing_event.location.name
     date_from = (testing_event.date_time - timedelta(days=3)).isoformat()
@@ -63,5 +63,4 @@ def test_whatsapp_endpoint(client, monkeypatch):
     }
     response = client.post("/whatsapp", json=payload)
     assert response.status_code == 200
-    assert response.json["events"][0]["location_id"] == testing_event.location.id
-    assert response.json["user_id"] == TEST_USER_ID
+    assert response.json

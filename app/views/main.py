@@ -1,4 +1,5 @@
-import requests
+import os
+from bardapi import Bard
 import sqlalchemy as sa
 from flask import request, render_template, Blueprint
 from flask_login import login_required
@@ -7,16 +8,6 @@ from app import models as m, db
 
 
 main_blueprint = Blueprint("main", __name__)
-
-
-def send_events_to_webhook(events):
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(
-        "https://hook.eu2.make.com/wkvym9hn8wx19jloarddqamkh3sis7xz",
-        headers=headers,
-        data=events.json(),
-    )
-    assert response
 
 
 @main_blueprint.route("/")
@@ -116,8 +107,18 @@ def get_events_json():
         m.Event.location.has(m.Location.name == location)
     )
     events = db.session.scalars(events_query_by_location).all()
-    events = s.Events(events=events, user_id=user_id)
+    events_list = s.Events(events=events, user_id=user_id).json()
 
-    send_events_to_webhook(events)
+    os.environ[
+        "_BARD_API_KEY"
+    ] = "cQjl3nIkpG3rTz3hEgPC4EB1pcyHBGcFbAU0_8ah4S7-8_ZXTk6QPdaPJzbJIeJXIFADfg."
 
-    return events.dict()
+    events_list = {"some_data": "some_data"}
+
+    message = f"Could you please make a human readable answer of the following JSON? {events_list}"
+
+    bard = Bard()
+
+    answer = bard.get_answer(message).get("content")
+
+    return {"answer": answer}

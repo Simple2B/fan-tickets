@@ -19,6 +19,7 @@ pydantic = "^1.10.7"
 alchemical = "^0.7.1"
 pytz = "^2023.3.post1"
 requests = "^2.31.0"
+bardapi = "^0.1.38"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.1"
