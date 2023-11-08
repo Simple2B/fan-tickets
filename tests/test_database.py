@@ -41,7 +41,7 @@ def test_generate_events(client):
     assert len(messages) == 576 * 5
 
 
-def test_whatsapp_endpoint(client, monkeypatch):
+def test_get_events(client):
     populate(23)
     TEST_USER_ID = 12
     testing_event = db.session.scalar(m.Event.select())
@@ -55,7 +55,20 @@ def test_whatsapp_endpoint(client, monkeypatch):
         "date_from": date_from,
         "date_to": date_to,
     }
-    response = client.post("/whatsapp", json=payload)
+    response = client.post("/events/", json=payload)
     assert response.status_code == 200
     assert response.json["events"][0]["location_id"] == testing_event.location.id
     assert response.json["user_id"] == TEST_USER_ID
+
+
+def test_get_event_by_id(client):
+    populate(23)
+
+    event = db.session.scalar(m.Event.select())
+
+    response = client.get(f"/events/by_id?event_unique_id={event.unique_id}")
+    assert response.status_code == 200
+    assert response.json["name"] == event.name
+    assert response.json["unique_id"] == event.unique_id
+    assert response.json["url"] == event.url
+    assert response.json["observations"] == event.observations

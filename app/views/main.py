@@ -1,7 +1,5 @@
-import sqlalchemy as sa
-from flask import request, render_template, Blueprint
+from flask import render_template, Blueprint
 from flask_login import login_required
-from app import schemas as s
 from app import models as m, db
 
 
@@ -82,27 +80,3 @@ def get_notifications():
 def get_room(room_unique_id: str):
     room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
     return render_template("demo/room.html", room=room)
-
-
-@main_blueprint.route("/whatsapp", methods=["GET", "POST"])
-def get_events_json():
-    user_id = request.json.get("user_id")
-    token = request.json.get("token")
-    location = request.json.get("location")
-    date_from = request.json.get("date_from")
-    date_to = request.json.get("date_to")
-
-    if not token == "testing_whatsapp_token":
-        return {"error": "Invalid token"}, 403
-    if not location:
-        return {"error": "Missing location"}, 400
-    if not date_from:
-        return {"error": "Missing date_from"}, 400
-    if not date_to:
-        return {"error": "Missing date_to"}, 400
-
-    events_query_by_location = sa.select(m.Event).where(
-        m.Event.location.has(m.Location.name == location)
-    )
-    events = db.session.scalars(events_query_by_location).all()
-    return s.Events(events=events, user_id=user_id).dict()

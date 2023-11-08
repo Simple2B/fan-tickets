@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 
 class Event(BaseModel):
+    unique_id: str
     name: str
     image: bytes | None = None
     url: str
