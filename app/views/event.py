@@ -41,4 +41,16 @@ def get_event_by_id():
 
     if not event:
         return {"error": "Event not found"}, 404
-    return s.Event.from_orm(event).dict()
+    # return s.Event.from_orm(event).dict()
+    return s.Event(
+        unique_id=event.unique_id,
+        name=event.name,
+        image=event.image,
+        url=event.url,
+        observations=event.observations,
+        warning=event.warning,
+        date_time=event.date_time.isoformat(),
+        location_id=event.location_id,
+        category_id=event.category_id,
+        creator_id=event.creator_id,
+    ).dict()
