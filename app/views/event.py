@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from flask import request, Blueprint
-from app import schemas as s
+from app import schema as s
 from app import models as m, db
 
 
@@ -16,7 +16,10 @@ def get_events():
     date_to = request.json.get("date_to")
 
     if not user_id:
-        return {"error": "Missing user_id"}, 400
+        return (
+            s.GenericError(error="BAD_REQUEST", details="Missing user_id").dict(),
+            400,
+        )
     if not token == "testing_whatsapp_token":
         return {"error": "Invalid token"}, 403
     if not location:

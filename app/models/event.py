@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy import orm
-from app import schemas as s
+from app import schema as s
 from app.database import db
 from .utils import ModelMixin, gen_uuid
 
