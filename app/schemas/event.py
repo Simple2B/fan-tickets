@@ -19,7 +19,7 @@ class Event(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {
-            datetime: lambda dt: dt.isoformat(),
+            datetime: lambda dt: dt.isoformat("%Y-%m-%d %H:%M"),
         }
 
 
