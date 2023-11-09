@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic_settings import SettingsConfigDict
 
 
 class User(BaseModel):
@@ -7,5 +8,4 @@ class User(BaseModel):
     email: str
     activated: bool
 
-    class Config:
-        orm_mode = True
+    model_config = SettingsConfigDict(from_attributes=True)

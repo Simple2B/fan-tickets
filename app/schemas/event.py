@@ -1,5 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
+from pydantic_settings import SettingsConfigDict
 
 
 class Event(BaseModel):
@@ -14,18 +15,11 @@ class Event(BaseModel):
     category_id: int
     creator_id: int
 
-    # model_config: ConfigDict = ConfigDict(from_attributes=True)
-
-    class Config:
-        orm_mode = True
-        json_encoders = {
-            datetime: lambda dt: dt.isoformat(),
-        }
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class Events(BaseModel):
     user_id: int
     events: list[Event]
 
-    class Config:
-        orm_mode = True
+    model_config = SettingsConfigDict(from_attributes=True)

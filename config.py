@@ -1,6 +1,6 @@
 import os
 from functools import lru_cache
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from flask import Flask
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,9 +39,8 @@ class BaseConfig(BaseSettings):
         # Implement this method to do further configuration on your app.
         pass
 
-    class Config:
-        # `.env` takes priority over `project.env`
-        env_file = "project.env", ".env"
+    # `.env` takes priority over `project.env`
+    model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
 class DevelopmentConfig(BaseConfig):
@@ -52,12 +51,7 @@ class DevelopmentConfig(BaseConfig):
         BASE_DIR, "database-dev.sqlite3"
     )
 
-    class Config:
-        fields = {
-            "ALCHEMICAL_DATABASE_URL": {
-                "env": "DEVEL_DATABASE_URL",
-            }
-        }
+    model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
 class TestingConfig(BaseConfig):
@@ -69,12 +63,7 @@ class TestingConfig(BaseConfig):
         BASE_DIR, "database-test.sqlite3"
     )
 
-    class Config:
-        fields = {
-            "ALCHEMICAL_DATABASE_URL": {
-                "env": "TEST_DATABASE_URL",
-            }
-        }
+    model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
 class ProductionConfig(BaseConfig):
@@ -83,14 +72,9 @@ class ProductionConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = os.environ.get(
         "DATABASE_URL", "sqlite:///" + os.path.join(BASE_DIR, "database.sqlite3")
     )
-    WTF_CSRF_ENABLED = True
+    WTF_CSRF_ENABLED: bool = True
 
-    class Config:
-        fields = {
-            "ALCHEMICAL_DATABASE_URL": {
-                "env": "DATABASE_URL",
-            }
-        }
+    model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
 @lru_cache
