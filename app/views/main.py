@@ -9,6 +9,14 @@ main_blueprint = Blueprint("main", __name__)
 @main_blueprint.route("/")
 @login_required
 def index():
+    return render_template(
+        "index.html",
+    )
+
+
+@main_blueprint.route("/admin")
+@login_required
+def admin():
     users_number = m.User.count()
     locations_number = m.Location.count()
     categories_number = m.Category.count()
@@ -20,7 +28,7 @@ def index():
     rooms_number = m.Room.count()
     messages_number = m.Message.count()
     return render_template(
-        "index.html",
+        "admin.html",
         users_number=users_number,
         locations_number=locations_number,
         categories_number=categories_number,
