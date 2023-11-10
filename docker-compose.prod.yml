@@ -15,6 +15,9 @@ services:
       PGUSER: ${POSTGRES_USER:-postgres}
 
   app:
+    build:
+        context: .
+        dockerfile: Dockerfile
     image: simple2b/fan_ticket
     restart: always
     command: sh ./start_web.sh
@@ -29,6 +32,9 @@ services:
       - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
 
   api:
+    build:
+        context: .
+        dockerfile: DockerfileApi
     image: simple2b/fan_ticket
     restart: always
     command: sh ./start_api.sh
