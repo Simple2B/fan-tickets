@@ -33,10 +33,6 @@ def gen_password_reset_id() -> str:
 
 class User(db.Model, UserMixin, ModelMixin):
     """
-    Questions:
-    - how to verificate personal info from the admin side
-
-
     Routes:
     - POST /admin/users/create_admin (admin)
     - POST /admin/users/create_client  (admin)
