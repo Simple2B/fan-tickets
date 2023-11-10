@@ -1,6 +1,7 @@
 import os
 import tomllib
 from functools import lru_cache
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from flask import Flask
 
@@ -59,8 +60,9 @@ class DevelopmentConfig(BaseConfig):
     """Development configuration."""
 
     DEBUG: bool = True
-    ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
-        BASE_DIR, "database-dev.sqlite3"
+    ALCHEMICAL_DATABASE_URL: str = Field(
+        alias="DEVEL_DATABASE_URL",
+        default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
     )
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
@@ -81,8 +83,9 @@ class TestingConfig(BaseConfig):
 class ProductionConfig(BaseConfig):
     """Production configuration."""
 
-    ALCHEMICAL_DATABASE_URL: str = os.environ.get(
-        "DATABASE_URL", "sqlite:///" + os.path.join(BASE_DIR, "database.sqlite3")
+    ALCHEMICAL_DATABASE_URL: str = Field(
+        alias="DATABASE_URL",
+        default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
     )
     WTF_CSRF_ENABLED: bool = True
 

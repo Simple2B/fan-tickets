@@ -36,3 +36,7 @@ def init(app: Flask):
             password=app.config["ADMIN_PASSWORD"],
         ).save()
         print("admin created")
+
+    @app.cli.command("print-users")
+    def print_users():
+        print(m.User.all())

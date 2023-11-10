@@ -1,4 +1,5 @@
 sleep 2
+poetry run flask print-users
 echo Run db upgrade
 poetry run flask db upgrade
 # echo Run app

@@ -113,9 +113,7 @@ class User(db.Model, UserMixin, ModelMixin):
         foreign_keys="Room.buyer_id",
         back_populates="buyer",
     )
-    is_deleted: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean, server_default=sa.false()
-    )
+    is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     @hybrid_property
     def password(self):
