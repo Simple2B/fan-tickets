@@ -31,9 +31,6 @@ def get_engine_url():
         return str(get_engine().url).replace("%", "%%")
 
 
-print(get_engine_url())
-
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
