@@ -15,9 +15,6 @@ services:
       PGUSER: ${POSTGRES_USER:-postgres}
 
   app:
-    build:
-        context: .
-        dockerfile: Dockerfile
     image: simple2b/fan_ticket
     restart: always
     command: sh ./start_web.sh
@@ -25,8 +22,6 @@ services:
       APP_ENV: production
     depends_on:
       - db
-    ports:
-      - 127.0.0.1:${LOCAL_WEB_PORT:-8012}:8012
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
@@ -34,9 +29,6 @@ services:
       - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
 
   api:
-    build:
-        context: .
-        dockerfile: DockerfileApi
     image: simple2b/fan_ticket
     restart: always
     command: sh ./start_api.sh
@@ -46,13 +38,11 @@ services:
       ALCHEMICAL_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-passwd}@db:5432/db
     depends_on:
       - db
-    ports:
-      - 127.0.0.1:${LOCAL_WEB_PORT:-8007}:8007
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
-      - "traefik.http.routers.fan_ticket.tls=true"
-      - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
+      - "traefik.http.routers.fan_ticket_api.rule=Host(`fan-ticket.simple2b.net`)"
+      - "traefik.http.routers.fan_ticket_api.tls=true"
+      - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
 
 volumes:
   db_data:
