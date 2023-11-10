@@ -25,6 +25,8 @@ services:
       APP_ENV: production
     depends_on:
       - db
+    ports:
+      - 127.0.0.1:${LOCAL_WEB_PORT:-8012}:8012
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
@@ -44,6 +46,8 @@ services:
       ALCHEMICAL_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-passwd}@db:5432/db
     depends_on:
       - db
+    ports:
+      - 127.0.0.1:${LOCAL_WEB_PORT:-8007}:8007
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
