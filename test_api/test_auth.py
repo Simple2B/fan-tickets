@@ -19,5 +19,5 @@ def test_auth(db, client: TestClient, test_data: TestData):
     assert token.access_token
     assert token.token_type == "bearer"
     header = dict(Authorization=f"Bearer {token.access_token}")
-    # res = client.get("api/users/me", headers=header)
-    # assert res.status_code == 200
+    res = client.get("api/users/me", headers=header)
+    assert res.status_code == 200
