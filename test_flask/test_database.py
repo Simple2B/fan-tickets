@@ -67,8 +67,10 @@ def test_get_event_by_id(client):
     event = db.session.scalar(m.Event.select())
 
     response = client.get(f"/events/by_id?event_unique_id={event.unique_id}")
+
     assert response.status_code == 200
     assert response.json["name"] == event.name
     assert response.json["unique_id"] == event.unique_id
     assert response.json["url"] == event.url
     assert response.json["observations"] == event.observations
+    assert response.json["date_time"] == event.date_time.isoformat()

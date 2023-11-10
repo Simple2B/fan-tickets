@@ -60,7 +60,8 @@ jobs:
       - name: Run pytest
         working-directory: .
         run: |
-          poetry run pytest
+          poetry run pytest test_flask
+          poetry run pytest test_api
 
   build:
     name: Build and Push

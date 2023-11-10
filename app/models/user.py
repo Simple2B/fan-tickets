@@ -117,6 +117,9 @@ class User(db.Model, UserMixin, ModelMixin):
         foreign_keys="Room.buyer_id",
         back_populates="buyer",
     )
+    is_deleted: orm.Mapped[bool] = orm.mapped_column(
+        sa.Boolean, server_default=sa.false()
+    )
 
     @hybrid_property
     def password(self):
@@ -127,12 +130,19 @@ class User(db.Model, UserMixin, ModelMixin):
         self.password_hash = generate_password_hash(password)
 
     @classmethod
-    def authenticate(cls, user_id, password):
+    def authenticate(
+        cls,
+        user_id,
+        password,
+        session: orm.Session | None = None,
+    ):
+        if not session:
+            session = db.session
         query = cls.select().where(
             (sa.func.lower(cls.username) == sa.func.lower(user_id))
             | (sa.func.lower(cls.email) == sa.func.lower(user_id))
         )
-        user = db.session.scalar(query)
+        user = session.scalar(query)
         if not user:
             log(log.WARNING, "user:[%s] not found", user_id)
 
@@ -149,8 +159,8 @@ class User(db.Model, UserMixin, ModelMixin):
 
     @property
     def json(self):
-        u = s.User.from_orm(self)
-        return u.json()
+        u = s.User.model_validate(self)
+        return u.model_dump_json()
 
 
 class AnonymousUser(AnonymousUserMixin):

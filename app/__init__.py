@@ -15,7 +15,7 @@ migration = Migrate()
 mail = Mail()
 
 
-def create_app(environment="development"):
+def create_app(environment="development") -> Flask:
     from config import config
     from app.views import (
         main_blueprint,

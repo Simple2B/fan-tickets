@@ -93,8 +93,8 @@ class Event(db.Model, ModelMixin):
 
     @property
     def json(self):
-        event = s.Event.from_orm(self)
-        return event.json()
+        event = s.Event.model_validate(self)
+        return event.model_dump_json()
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"

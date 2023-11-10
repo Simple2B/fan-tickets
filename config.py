@@ -1,4 +1,5 @@
 import os
+import tomllib
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from flask import Flask
@@ -7,11 +8,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_ENV = os.environ.get("APP_ENV", "development")
 
 
+def get_version() -> str:
+    with open("pyproject.toml", "rb") as f:
+        return tomllib.load(f)["tool"]["poetry"]["version"]
+
+
 class BaseConfig(BaseSettings):
     """Base configuration."""
 
     ENV: str = "base"
     APP_NAME: str = "Fan Ticket"
+    VERSION: str = get_version()
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     WTF_CSRF_ENABLED: bool = False
@@ -33,6 +40,11 @@ class BaseConfig(BaseSettings):
     # Pagination
     DEFAULT_PAGE_SIZE: int
     PAGE_LINKS_NUMBER: int
+
+    # API
+    IS_API: bool = False
+    JWT_SECRET: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
 
     @staticmethod
     def configure(app: Flask):

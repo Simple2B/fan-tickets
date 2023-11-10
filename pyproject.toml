@@ -20,6 +20,9 @@ pytz = "^2023.3.post1"
 requests = "^2.31.0"
 pydantic = "^2.4.2"
 pydantic-settings = "^2.0.3"
+fastapi = "^0.104.1"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.1"
@@ -30,3 +33,11 @@ faker = "^18.3.1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*cgi.*:DeprecationWarning",
+    'ignore:.*werkzeug\.urls\.url.*:DeprecationWarning',
+    'ignore:.*flask\.Markup.*:DeprecationWarning',
+]
+testpaths = ["test_flask", "test_api"]

@@ -4,7 +4,7 @@ from flask.testing import FlaskClient
 
 from app import create_app, db
 from app import models as m
-from tests.utils import register
+from test_flask.utils import register
 
 
 @pytest.fixture()
