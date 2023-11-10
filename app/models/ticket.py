@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import pytz
 from enum import Enum
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
 
 def now():
-    if app.config["TESTING"]:
+    if app.config["TESTING"] or os.environ["APP_ENV"]:
         return datetime.now()
     return datetime.now(pytz.utc)
 
