@@ -12,4 +12,4 @@ class TestUser(BaseModel):
 class TestData(BaseModel):
     __test__ = False
 
-    test_users: list[TestUser]
+    authorized_users: list[TestUser]

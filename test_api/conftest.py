@@ -52,7 +52,7 @@ def db(test_data: TestData) -> Generator[orm.Session, None, None]:
     with db.Session() as session:
         db.Model.metadata.drop_all(bind=session.bind)
         db.Model.metadata.create_all(bind=session.bind)
-        for test_user in test_data.test_users:
+        for test_user in test_data.authorized_users:
             user = m.User(
                 username=test_user.username,
                 email=test_user.email,
@@ -91,7 +91,7 @@ def headers(
     test_data: TestData,
 ) -> Generator[dict[str, str], None, None]:
     """Returns an authorized test client for the API"""
-    user = test_data.test_users[0]
+    user = test_data.authorized_users[0]
     response = client.post(
         "/api/auth/login",
         data={

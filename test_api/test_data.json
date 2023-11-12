@@ -1,5 +1,5 @@
 {
-  "test_users": [
+  "authorized_users": [
     {
       "username": "user1",
       "email": "testemail1@gmail.com",
