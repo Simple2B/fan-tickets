@@ -66,25 +66,25 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
     users_number = m.User.count()
     log(log.INFO, "[%d] users generated", users_number)
 
-    for i in range(users_number):
-        review_given = m.Review(
-            rate=randint(1, 5),
-            text=faker.text(max_nb_chars=200),
-            reviewer_id=i + 1,
-            receiver_id=randint(1, users_number),
-        )
-        db.session.add(review_given)
-        log(log.INFO, "Review generated: [%s]", review_given)
+    # for i in range(users_number):
+    #     review_given = m.Review(
+    #         rate=randint(1, 5),
+    #         text=faker.text(max_nb_chars=200),
+    #         reviewer_id=i + 1,
+    #         receiver_id=randint(1, users_number),
+    #     )
+    #     db.session.add(review_given)
+    #     log(log.INFO, "Review generated: [%s]", review_given)
 
-        review_got = m.Review(
-            rate=randint(1, 5),
-            text=faker.text(max_nb_chars=200),
-            reviewer_id=randint(1, users_number),
-            receiver_id=i + 1,
-        )
-        db.session.add(review_got)
-        log(log.INFO, "Review generated: [%s]", review_given)
-    db.session.commit()
+    #     review_got = m.Review(
+    #         rate=randint(1, 5),
+    #         text=faker.text(max_nb_chars=200),
+    #         reviewer_id=randint(1, users_number),
+    #         receiver_id=i + 1,
+    #     )
+    #     db.session.add(review_got)
+    #     log(log.INFO, "Review generated: [%s]", review_given)
+    # db.session.commit()
 
 
 def generate_test_events(num_objects: int = NUM_TEST_EVENTS):

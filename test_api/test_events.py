@@ -12,7 +12,12 @@ CFG = config("testing")
 
 @pytest.mark.skipif(not CFG.IS_API, reason="API is not enabled")
 def test_get_event_by_id(
-    client: TestClient, headers: dict[str, str], test_data: TestData
+    client: TestClient,
+    headers: dict[str, str],
+    test_data: TestData,
 ):
-    response = client.get("/api/events/by_id", headers=headers)
+    response = client.get(
+        "/api/events/by_id?event_unique_id=some-unique-id",
+        headers=headers,
+    )
     assert response.status_code == 200

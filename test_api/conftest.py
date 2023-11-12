@@ -1,3 +1,4 @@
+from random import randint
 from typing import Generator
 import pytest
 from dotenv import load_dotenv
@@ -15,6 +16,35 @@ from api import app
 from .test_data import TestData
 
 
+NUM_TEST_USERS = 30
+
+
+def generate_test_users(num_objects: int = NUM_TEST_USERS, session: orm.Session = None):
+    from faker import Faker
+
+    fake = Faker()
+
+    DOMAINS = ("com", "com.br", "net", "net.br", "org", "org.br", "gov", "gov.br")
+
+    for i in range(num_objects):
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        company = fake.company().split()[0].strip(",")
+        dns_org = fake.random_choices(elements=DOMAINS, length=1)[0]
+        email = f"{first_name.lower()}.{last_name.lower()}@{company.lower()}.{dns_org}"
+        role = m.UserRole.admin if i < 3 else m.UserRole.client
+        activated = True if i - num_objects == 3 else False
+        user = m.User(
+            username=f"{first_name}{last_name}{randint(10, 99)}",
+            email=email,
+            role=role.value,
+            password="pass",
+            activated=activated,
+        )
+        session.add(user)
+    session.commit()
+
+
 @pytest.fixture
 def db(test_data: TestData) -> Generator[orm.Session, None, None]:
     from app.database import db, get_db
@@ -30,6 +60,7 @@ def db(test_data: TestData) -> Generator[orm.Session, None, None]:
             )
             session.add(user)
         session.commit()
+        # generate_test_users(session=session)
 
         def override_get_db() -> Generator:
             yield session
