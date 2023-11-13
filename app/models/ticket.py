@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def now():
-    if os.environ["APP_ENV"] == "testing" or os.environ["APP_ENV"] == "production":
+    if os.environ["APP_ENV"] == "testing":
         return datetime.now()
     return datetime.now(pytz.utc)
 
