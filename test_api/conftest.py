@@ -40,6 +40,7 @@ def db(test_data: TestData) -> Generator[orm.Session, None, None]:
         app.dependency_overrides[get_db] = override_get_db
         yield session
         # clean up
+        session.rollback()
         db.Model.metadata.drop_all(bind=session.bind)
 
 
