@@ -65,3 +65,11 @@ class Events(BaseModel):
     events: list[Event]
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class EventsInput(BaseModel):
+    location: str | None = None
+    date_from: str | None = None
+    date_to: str | None = None
+
+    model_config = SettingsConfigDict(from_attributes=True)

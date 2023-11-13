@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from flask import request, Blueprint
-from app import schemas as s
+from app import schema as s
 from app import models as m, db
 
 

@@ -5,7 +5,6 @@ from enum import Enum
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
-from flask import current_app as app
 from app.database import db
 from .utils import ModelMixin, gen_uuid
 
@@ -17,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def now():
-    if app.config["TESTING"] or os.environ["APP_ENV"]:
+    if os.environ["APP_ENV"] == "testing" or os.environ["APP_ENV"] == "production":
         return datetime.now()
     return datetime.now(pytz.utc)
 

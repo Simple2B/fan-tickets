@@ -1,3 +1,4 @@
+import os
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
@@ -15,6 +16,7 @@ def app():
             "TESTING": True,
         }
     )
+    os.environ["APP_ENV"] = "testing"
 
     yield app
 
