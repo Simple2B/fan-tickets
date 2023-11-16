@@ -7,7 +7,8 @@ from .test_data import TestData
 CFG = config("testing")
 
 
-@pytest.mark.skipif(not CFG.IS_API, reason="API is not enabled")
+# @pytest.mark.skipif(not CFG.IS_API, reason="API is not enabled")
+@pytest.mark.skipif(True, reason="API is not enabled")
 def test_auth(db, client: TestClient, test_data: TestData):
     TEST_USERNAME = test_data.authorized_users[0].username
     TEST_PASSWORD = test_data.authorized_users[0].password

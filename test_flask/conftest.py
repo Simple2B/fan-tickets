@@ -4,8 +4,8 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from app import create_app, db
-from app import models as m
 from test_flask.utils import register
+from .db import populate
 
 
 @pytest.fixture()
@@ -46,13 +46,14 @@ def runner(app, client):
 
 
 @pytest.fixture
-def populate(client: FlaskClient):
-    NUM_TEST_USERS = 100
-    for i in range(NUM_TEST_USERS):
-        m.User(
-            username=f"user{i+1}",
-            email=f"user{i+1}@mail.com",
-            password="password",
-        ).save(False)
-    db.session.commit()
+def client_with_data(client: FlaskClient):
+    # NUM_TEST_USERS = 100
+    # for i in range(NUM_TEST_USERS):
+    #     m.User(
+    #         username=f"user{i+1}",
+    #         email=f"user{i+1}@mail.com",
+    #         password="password",
+    #     ).save(False)
+    # db.session.commit()
+    populate()
     yield client
