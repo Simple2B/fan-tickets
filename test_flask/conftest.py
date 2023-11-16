@@ -47,13 +47,5 @@ def runner(app, client):
 
 @pytest.fixture
 def client_with_data(client: FlaskClient):
-    # NUM_TEST_USERS = 100
-    # for i in range(NUM_TEST_USERS):
-    #     m.User(
-    #         username=f"user{i+1}",
-    #         email=f"user{i+1}@mail.com",
-    #         password="password",
-    #     ).save(False)
-    # db.session.commit()
     populate()
     yield client

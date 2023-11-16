@@ -22,6 +22,7 @@ def create_app(environment="development") -> Flask:
         auth_blueprint,
         user_blueprint,
         events_blueprint,
+        tickets_blueprint,
     )
     from app import models as m
 
@@ -46,6 +47,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(main_blueprint)
     app.register_blueprint(user_blueprint)
     app.register_blueprint(events_blueprint)
+    app.register_blueprint(tickets_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader

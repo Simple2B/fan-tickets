@@ -2,4 +2,5 @@
 from .auth import auth_blueprint
 from .main import main_blueprint
 from .user import bp as user_blueprint
-from .event import events_blueprint
+from .events import events_blueprint
+from .tickets import tickets_blueprint

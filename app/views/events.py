@@ -15,4 +15,4 @@ def get_events():
         events_query = events_query.where(m.Event.category.has(name=category_name))
 
     events = db.session.scalars(events_query).all()
-    return render_template("events.html", events=events)
+    return render_template("events/events.html", events=events)
