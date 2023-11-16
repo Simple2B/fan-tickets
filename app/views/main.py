@@ -10,7 +10,7 @@ main_blueprint = Blueprint("main", __name__)
 @login_required
 def index():
     return render_template(
-        "index.html",
+        "landing/home/index.html",
     )
 
 
