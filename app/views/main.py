@@ -7,7 +7,6 @@ main_blueprint = Blueprint("main", __name__)
 
 
 @main_blueprint.route("/")
-@login_required
 def index():
     return render_template(
         "index.html",
@@ -40,6 +39,11 @@ def admin():
         rooms_number=rooms_number,
         messages_number=messages_number,
     )
+
+
+@main_blueprint.route("/help")
+def help():
+    return render_template("help.html")
 
 
 @main_blueprint.route("/locations")
