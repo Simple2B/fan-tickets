@@ -6,7 +6,7 @@ from flask import (
     redirect,
     url_for,
 )
-from flask_login import login_required
+from flask_login import login_required, current_user
 import sqlalchemy as sa
 from app.controllers import create_pagination
 
@@ -110,3 +110,20 @@ def delete(id: int):
     log(log.INFO, "User deleted. User: [%s]", u)
     flash("User deleted!", "success")
     return "ok", 200
+
+
+@bp.route("/<user_unique_id>", methods=["GET"])
+@login_required
+def user_profile(user_unique_id: str):
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user = db.session.scalar(user_query)
+    if not user:
+        log(log.INFO, "There is no user with id: [%s]", id)
+        flash("There is no such user", "danger")
+        return redirect(
+            url_for(
+                "user.user_profile",
+                user_unique_id=current_user.unique_id,
+            )
+        )
+    return render_template("user/profile.html", user_unique_id=user.unique_id)
