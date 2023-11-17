@@ -53,7 +53,7 @@ class Message(db.Model, ModelMixin):
         default=False,
     )
     text: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512),
+        sa.Text,
         nullable=False,
     )
 

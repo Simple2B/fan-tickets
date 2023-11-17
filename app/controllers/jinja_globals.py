@@ -1,3 +1,4 @@
+import os
 import pytz
 from datetime import datetime
 from flask_wtf import FlaskForm
@@ -13,7 +14,10 @@ def date_from_datetime(created_at: datetime):
 
 
 def time_delta(created_at: datetime):
-    return (datetime.now(pytz.utc) - created_at).days * -1
+    now = datetime.now(pytz.utc)
+    if os.environ.get("APP_ENV") == "testing":
+        now = datetime.now()
+    return (now - created_at).days * -1
 
 
 def cut_seconds(created_at: datetime):
