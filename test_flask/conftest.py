@@ -17,6 +17,7 @@ def app():
         }
     )
     os.environ["APP_ENV"] = "testing"
+    os.environ["_BARD_API_KEY"] = "some_bard_key."
 
     yield app
 
