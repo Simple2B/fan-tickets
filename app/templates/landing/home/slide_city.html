@@ -1,9 +1,11 @@
+{% for location in locations %}
 <a href="#" class="swiper-slide items-center justify-center">
   <img
     class="h-full w-full absolute"
-    src="{{url_for('static',filename='img/slider/san_paulo.png')}}"
-    alt="people" />
+    src="{{ location.image }}"
+    alt="{{ location.name }}" />
   <div class="flex flex-col relative">
-    <p class="py-60 text-3xl">San Paulo</p>
+    <p class="py-60 text-3xl">{{ location.name }}</p>
   </div>
 </a>
+{% endfor %}
