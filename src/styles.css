@@ -6,10 +6,34 @@
   color: red;
 }
 
-.color-amarelo {
-  color: #f2b705;
+.bg-photo-image {
+  background-image: url('/static/img/photo_people_line.png'),
+    url('/static/img/background_dark_rectangle.png');
+  background-position: left top, right top;
+  background-repeat: no-repeat;
+  background-size: contain, cover;
 }
 
-.color-dark-black {
-  color: #1c1c1c;
+.swiper-button-prev {
+  position: static !important;
+  display: block !important;
+  color: #99a1a3 !important;
+  cursor: pointer;
+}
+
+.swiper-button-next {
+  display: block !important;
+  position: static !important;
+  color: #99a1a3 !important;
+  cursor: pointer;
+}
+
+.swiper {
+  position: relative;
+  max-width: 1280px;
+}
+
+.swiper-slide {
+  display: flex !important;
+  /* width: 70% !important; */
 }

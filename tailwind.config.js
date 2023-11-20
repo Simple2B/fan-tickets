@@ -21,6 +21,9 @@ module.exports = {
         'categories-sport': "url('/static/img/categories/sport.png')",
         'categories-theatre': "url('/static/img/categories/theatre.png')",
         'review-people': "url('/static/img/reviews_people.png')",
+        'slider-rio': "url('/static/img/slider/rio.png')",
+        'slider-san-paulo': "url('/static/img/slider/san_paulo.png')",
+        'slider-rio': "url('/static/img/slider/florianopolis.png')",
         footer: "url('/static/img/background_footer.png')",
       },
       borderRadius: {
@@ -30,8 +33,10 @@ module.exports = {
         primary: '#fff',
         secondary: '#f2b705',
         grey: '#99a1a3',
+        'light-grey': '#cecece',
         'middle-grey': '#5a5a5a',
         'dark-grey': '#2c2c2c',
+        'ultra-dark-grey': '#1c1c1c',
       }),
       height: ({theme}) => ({
         600: '600px',

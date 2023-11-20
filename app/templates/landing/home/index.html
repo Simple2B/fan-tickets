@@ -1,10 +1,10 @@
 {% extends "landing/base.html" %} {% block main_content %}
 <main class="col-span-12 flex flex-col justify-center items-center">
   <h1 class="mb-3 text-center text-6xl">
-    Seu lugar para <span class="color-amarelo">comprar</span> e
-    <span class="color-amarelo">vender</span>
+    Seu lugar para <span class="text-secondary">comprar</span> e
+    <span class="text-secondary">vender</span>
     <br />
-    <span class="color-amarelo">ingressos</span> de fã para fã
+    <span class="text-secondary">ingressos</span> de fã para fã
   </h1>
   <p class="mb-16 text-center text-lg">
     Pagamento seguro com ingresso garantido
@@ -41,7 +41,7 @@
       <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M46.5552 3H40.164C38.712 3 37.3872 3.7608 36.5784 4.968C34.5096 8.052 30.9936 10.0824 27 10.0824C23.0064 10.0824 19.4904 8.052 17.4216 4.968C16.6128 3.7608 15.288 3 13.836 3H7.4448C4.9896 3 3 4.9896 3 7.4448V46.5552C3 49.0104 4.9896 51 7.4448 51H13.836C15.2904 51 16.6128 50.2392 17.4216 49.032C19.4904 45.948 23.0088 43.9176 27 43.9176C30.9912 43.9176 34.5096 45.948 36.5784 49.032C37.3872 50.2392 38.712 51 40.164 51H46.5552C49.0104 51 51 49.0104 51 46.5552V7.4448C51 4.9896 49.0104 3 46.5552 3Z" stroke="#F2B705" stroke-width="5" /> <path d="M18.6265 20.0751H35.3741C36.3658 20.0751 37.1695 19.2749 37.1695 18.2875C37.1695 17.3002 36.3658 16.5 35.3741 16.5H18.6265C17.6348 16.5 16.8311 17.3002 16.8311 18.2875C16.8311 19.2749 17.6348 20.0751 18.6265 20.0751Z" fill="#F2B705" /> <path d="M19.0411 25.435C19.0411 24.4477 18.2374 23.6475 17.2457 23.6475H12.9439C11.9522 23.6475 11.1484 24.4477 11.1484 25.435C11.1484 26.4223 11.9522 27.2225 12.9439 27.2225H17.2457C18.2374 27.2225 19.0411 26.4223 19.0411 25.435Z" fill="#F2B705" /> <path d="M41.0548 23.6475H24.3072C23.3155 23.6475 22.5117 24.4477 22.5117 25.435C22.5117 26.4223 23.3155 27.2225 24.3072 27.2225H41.0548C42.0464 27.2225 42.8502 26.4223 42.8502 25.435C42.8502 24.4477 42.0464 23.6475 41.0548 23.6475Z" fill="#F2B705" /> <path d="M33.3321 31.319C29.8409 34.7949 24.1602 34.7949 20.669 31.319C19.9694 30.6202 18.8328 30.6202 18.1309 31.319C17.429 32.0155 17.429 33.1471 18.1309 33.8459C20.5761 36.2804 23.7889 37.4976 26.9994 37.4976C30.2099 37.4976 33.4249 36.2804 35.8679 33.8459C36.5698 33.1494 36.5698 32.0178 35.8679 31.319C35.1683 30.6202 34.0317 30.6202 33.3298 31.319H33.3321Z" fill="#F2B705" /> </svg>
       <h2 class="text-6xl">3 motivos para usar</h2>
     </div>
-    <div class="flex gap-8 h-264">
+    <div class="grid grid-cols-3 gap-8 h-264">
       <div
         class="max-w-sm px-6 py-16 flex flex-col gap-6 justify-center items-center bg-ticket-outline bg-no-repeat bg-cover">
         <!-- prettier-ignore -->
@@ -73,13 +73,7 @@
   </section>
 </main>
 {% endblock %} {% block content %}
-<section class="relative bg-no-repeat bg-right bg-dark-rectangle-line">
-  <div class="absolute h-full">
-    <img
-      class="h-full"
-      src="{{url_for('static',filename='img/photo_people_line.png')}}"
-      alt="people" />
-  </div>
+<section class="relative bg-photo-image">
   <div class="max-w-7xl my-0 mx-auto pt-40 pb-28 grid grid-cols-6 gap-8">
     <div class="col-start-3 col-span-4 flex flex-col">
       <h2 class="mb-3 text-6xl">
@@ -108,7 +102,7 @@
     </div>
   </div>
 </section>
-<section class="pt-16 pb-16 bg-no-repeat bg-right bg-categories-event">
+<section class="pt-16 pb-16 bg-no-repeat bg-categories-event bg-cover">
   <div class="max-w-7xl my-0 mx-auto">
     <h2 class="mb-3 text-center text-6xl">
       Categorias de <span class="text-secondary">Eventos</span>
@@ -162,8 +156,48 @@
     </div>
   </div>
 </section>
-<section class="py-16 bg-no-repeat bg-review-people">
-  <div class="max-w-7xl my-0 mx-auto">
+<section
+  class="pt-16 pb-32 flex flex-col items-center bg-no-repeat bg-ultra-dark-grey">
+  <h2 class="mb-3 text-center text-6xl">
+    <span class="text-secondary">Eventos</span> por Localização
+  </h2>
+  <p class="mb-16 text-center">
+    Busque eventos pelos lugares mais <br />
+    populares
+  </p>
+  <div class="my-0 mb-16 mx-auto">
+    <div class="swiper-container flex items-center gap-6">
+      <!-- Slider main container -->
+      <div class="swiper-button-prev text-grey"></div>
+      <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          <!-- prettier-ignore -->
+          {% include 'landing/home/slide_city.html' %}
+            {% include 'landing/home/slide_city.html' %}
+            {% include 'landing/home/slide_city.html' %}
+            {% include 'landing/home/slide_city.html' %}
+            {% include 'landing/home/slide_city.html' %}
+            {% include 'landing/home/slide_city.html' %}
+        </div>
+        <!-- If we need navigation buttons -->
+      </div>
+      <div class="swiper-button-next"></div>
+    </div>
+  </div>
+  <a
+    class="py-4 px-8 text-center text-secondary border rounded-2xl border-secondary"
+    href="#"
+    >Listar todos os eventos
+  </a>
+</section>
+<section class="bg-no-repeat relative bg-gradient-to-r to-white via-gray-200">
+  <img
+    class="absolute right-10 h-full"
+    src="{{url_for('static',filename='img/people_avatars.png')}}"
+    alt="avatar" />
+  <div class="max-w-7xl my-0 mx-auto py-16">
     <div class="flex gap-8">
       <!-- prettier-ignore -->
       <svg width="67" height="64" viewBox="0 0 67 64" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M58.436 4.174C59.543 4.174 60.6047 4.61376 61.3875 5.39654C62.1703 6.17932 62.61 7.24099 62.61 8.348V41.74C62.61 42.847 62.1703 43.9087 61.3875 44.6915C60.6047 45.4743 59.543 45.914 58.436 45.914H48.001C46.705 45.914 45.4268 46.2158 44.2677 46.7953C43.1085 47.3749 42.1002 48.2164 41.3226 49.2532L33.392 59.826L25.4614 49.2532C24.6838 48.2164 23.6755 47.3749 22.5163 46.7953C21.3572 46.2158 20.079 45.914 18.783 45.914H8.348C7.24099 45.914 6.17932 45.4743 5.39654 44.6915C4.61376 43.9087 4.174 42.847 4.174 41.74V8.348C4.174 7.24099 4.61376 6.17932 5.39654 5.39654C6.17932 4.61376 7.24099 4.174 8.348 4.174H58.436ZM8.348 0C6.13398 0 4.01063 0.879519 2.44507 2.44507C0.879519 4.01063 0 6.13398 0 8.348L0 41.74C0 43.954 0.879519 46.0774 2.44507 47.6429C4.01063 49.2085 6.13398 50.088 8.348 50.088H18.783C19.431 50.088 20.0701 50.2389 20.6497 50.5287C21.2293 50.8185 21.7334 51.2392 22.1222 51.7576L30.0528 62.3304C30.4416 62.8488 30.9458 63.2695 31.5253 63.5593C32.1049 63.8491 32.744 64 33.392 64C34.04 64 34.6791 63.8491 35.2587 63.5593C35.8383 63.2695 36.3424 62.8488 36.7312 62.3304L44.6618 51.7576C45.0506 51.2392 45.5548 50.8185 46.1343 50.5287C46.7139 50.2389 47.353 50.088 48.001 50.088H58.436C60.6501 50.088 62.7734 49.2085 64.339 47.6429C65.9045 46.0774 66.784 43.954 66.784 41.74V8.348C66.784 6.13398 65.9045 4.01063 64.339 2.44507C62.7734 0.879519 60.6501 0 58.436 0L8.348 0Z" fill="#F2B705"/> <path d="M29.4939 19.8684C28.6808 18.6022 27.4787 17.6341 26.0683 17.1096C24.6579 16.5852 23.1154 16.5326 21.6726 16.9599C20.2297 17.3872 18.9646 18.2712 18.0672 19.4792C17.1699 20.6871 16.6888 22.1537 16.6964 23.6584C16.6971 24.9045 17.0325 26.1275 17.6674 27.1997C18.3024 28.2719 19.2136 29.1539 20.3059 29.7536C21.3982 30.3532 22.6315 30.6486 23.8769 30.6087C25.1224 30.5689 26.3343 30.1953 27.386 29.5271C26.8392 31.1507 25.8207 32.8829 24.1428 34.6193C23.8218 34.9514 23.6458 35.3975 23.6536 35.8593C23.6615 36.3211 23.8524 36.761 24.1845 37.082C24.5166 37.403 24.9627 37.579 25.4245 37.5712C25.8863 37.5633 26.3262 37.3724 26.6472 37.0403C32.8498 30.6123 32.0442 23.625 29.4939 19.8768V19.8684ZM46.1899 19.8684C45.3768 18.6022 44.1747 17.6341 42.7643 17.1096C41.3539 16.5852 39.8114 16.5326 38.3686 16.9599C36.9257 17.3872 35.6606 18.2712 34.7632 19.4792C33.8659 20.6871 33.3848 22.1537 33.3924 23.6584C33.3931 24.9045 33.7285 26.1275 34.3634 27.1997C34.9984 28.2719 35.9096 29.1539 37.0019 29.7536C38.0942 30.3532 39.3275 30.6486 40.5729 30.6087C41.8184 30.5689 43.0303 30.1953 44.082 29.5271C43.5352 31.1507 42.5168 32.8829 40.8388 34.6193C40.5178 34.9514 40.3418 35.3975 40.3496 35.8593C40.3575 36.3211 40.5484 36.761 40.8805 37.082C41.2126 37.403 41.6587 37.579 42.1205 37.5712C42.5824 37.5633 43.0222 37.3724 43.3432 37.0403C49.5458 30.6123 48.7402 23.625 46.1899 19.8768V19.8684Z" fill="#1C1C1C"/> </svg>
@@ -171,23 +205,68 @@
         Quem usou e <span class="text-secondary">curtiu</span>!
       </h2>
     </div>
-    <div>
-      <div class="p-6 max-w-lg flex items-center gap-6 border rounded-2xl">
-        <div class="rounded-50%">
-          <img
-            src="{{url_for('static',filename='img/girl-temp-avatar.png')}}"
-            alt="avatar" />
+    <div class="swiper-container slider-review flex items-center gap-6 w-10/12">
+      <!-- prettier-ignore -->
+      <!-- Slider main container -->
+      <div class="swiper-button-prev swiper-review-button"></div>
+      <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          <!-- prettier-ignore -->
+          {% include 'landing/home/slide_review.html' %}
+          {% include 'landing/home/slide_review.html' %}
+          {% include 'landing/home/slide_review.html' %}
+          {% include 'landing/home/slide_review.html' %}
+          {% include 'landing/home/slide_review.html' %}
+          {% include 'landing/home/slide_review.html' %}
         </div>
-        <div class="flex flex-col">
-          <p class="text-2xl text-black">Letícia Fagundes</p>
-          <p class="mb-2 text-grey">Minas Gerais/MG</p>
-          <p class="ml-5 text-sm text-grey">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor
-            elementum convallis.
-          </p>
-        </div>
+        <!-- If we need navigation buttons -->
       </div>
+      <div class="swiper-button-next swiper-review-button"></div>
     </div>
   </div>
 </section>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  document
+    .querySelectorAll('.swiper-container')
+    .forEach(function (swiperContainer) {
+      let swiper = swiperContainer.querySelector('.swiper');
+      isReview = swiperContainer.classList.contains('slider-review');
+      console.log('isReview', isReview);
+      let next = swiperContainer.querySelector('.swiper-button-next');
+      console.log(next);
+      let prev = swiperContainer.querySelector('.swiper-button-prev');
+      console.log(prev);
+
+      new Swiper(swiper, {
+        navigation: {
+          nextEl: next,
+          prevEl: prev,
+        },
+        slidesPerView: isReview ? 2 : 3,
+        spaceBetween: 32,
+        loop: true,
+      });
+    });
+  // const swiper = new Swiper('.swiper', {
+  //   // Optional parameters
+  //   loop: true,
+
+  //   // Navigation arrows
+  //   navigation: {
+  //     nextEl: '.swiper-button-next',
+  //     prevEl: '.swiper-button-prev',
+  //   },
+  //   slidesPerView: 3,
+  //   spaceBetween: 32,
+  // });
+</script>
+
+<script
+  src="{{ url_for('static', filename='js/home.js') }}"
+  type="text/javascript"
+  defer></script>
 {% endblock %}
