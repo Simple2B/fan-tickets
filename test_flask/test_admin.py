@@ -1,3 +1,4 @@
+import os
 from PIL import Image
 from io import BytesIO
 from flask.testing import FlaskClient
@@ -38,3 +39,28 @@ def test_picture_upload(client: FlaskClient):
         assert response.status_code == 200
         assert response.json["image upload status"] == "success"
         assert m.Picture.count() == previous_images_number + 1
+
+    previous_images_number = m.Picture.count()
+
+    with open("test_flask/fan_ticket_logo.jpg", "rb") as img_file:
+        m.Picture(
+            filename="fan_ticket_logo.jpg",
+            file=img_file.read(),
+            mimetype="image/jpeg",
+        ).save()
+        assert m.Picture.count() == previous_images_number + 1
+
+
+def test_location_images(client: FlaskClient):
+    previous_images_number = m.Picture.count()
+    folder_path = "test_flask/locations_pictures"  # replace with your folder path
+
+    for filename in os.listdir(folder_path):
+        with open(f"{folder_path}/{filename}", "rb") as img_file:
+            filename = filename.split(".")[0]
+            m.Picture(
+                filename=filename,
+                file=img_file.read(),
+                mimetype="png",
+            ).save()
+    assert m.Picture.count() == previous_images_number + 3

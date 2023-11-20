@@ -60,7 +60,7 @@ class BaseConfig(BaseSettings):
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""
 
-    DEBUG: bool = True
+    # DEBUG: bool = True
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DEVEL_DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
