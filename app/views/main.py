@@ -63,7 +63,7 @@ def get_categories():
 @main_blueprint.route("/events")
 def get_events():
     events = m.Event.all()
-    return render_template("demo/events.html", events=events)
+    return render_template("events/events.html", events=events)
 
 
 @main_blueprint.route("/tickets")

@@ -96,8 +96,9 @@
       <div class="max-w-7xl my-0 mx-auto">
         <!-- prettier-ignore -->
         {% include 'landing/header.html' %}
-        {% block main_content %}
-        {% endblock %}
+        <main class="flex flex-col justify-center items-center">
+          {% block main_content %} {% endblock %}
+        </main>
       </div>
     </div>
     <!-- prettier-ignore -->
