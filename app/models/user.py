@@ -16,6 +16,7 @@ from app import schema as s
 
 
 if TYPE_CHECKING:
+    from .picture import Picture
     from .ticket import Ticket
     from .notification import Notification
     from .review import Review
@@ -57,7 +58,9 @@ class User(db.Model, UserMixin, ModelMixin):
         unique=True,
         nullable=False,
     )
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
+    picture_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
+    )
     email: orm.Mapped[str] = orm.mapped_column(
         sa.String(255),
         unique=True,
@@ -82,7 +85,7 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.String(32), default=UserRole.client.value
     )
 
-    # TODO: two different tables (two secondary tables)
+    picture: orm.Mapped["Picture"] = orm.relationship()
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
         foreign_keys="Ticket.seller_id",
         back_populates="seller",

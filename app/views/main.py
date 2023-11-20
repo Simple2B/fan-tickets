@@ -1,7 +1,7 @@
 from datetime import datetime
 from bardapi import Bard
 from flask import render_template, Blueprint, request
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app import models as m, db
 
 
@@ -12,34 +12,6 @@ main_blueprint = Blueprint("main", __name__)
 def index():
     return render_template(
         "landing/home/index.html",
-    )
-
-
-@main_blueprint.route("/admin")
-@login_required
-def admin():
-    users_number = m.User.count()
-    locations_number = m.Location.count()
-    categories_number = m.Category.count()
-    events_number = m.Event.count()
-    tickets_number = m.Ticket.count()
-    reviews_number = m.Review.count()
-    disputes_number = m.Dispute.count()
-    notifications_number = m.Notification.count()
-    rooms_number = m.Room.count()
-    messages_number = m.Message.count()
-    return render_template(
-        "admin.html",
-        users_number=users_number,
-        locations_number=locations_number,
-        categories_number=categories_number,
-        events_number=events_number,
-        tickets_number=tickets_number,
-        reviews_number=reviews_number,
-        disputes_number=disputes_number,
-        notifications_number=notifications_number,
-        rooms_number=rooms_number,
-        messages_number=messages_number,
     )
 
 

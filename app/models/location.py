@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin, gen_uuid
+
+
+if TYPE_CHECKING:
+    from .picture import Picture
 
 
 class Location(db.Model, ModelMixin):
@@ -36,11 +41,15 @@ class Location(db.Model, ModelMixin):
         unique=True,
         nullable=False,
     )
-    # TODO: add image
+    picture_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
+    )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
+
+    picture: orm.Mapped["Picture"] = orm.relationship()
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"

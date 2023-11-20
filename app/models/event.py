@@ -9,6 +9,7 @@ from .utils import ModelMixin, gen_uuid
 
 
 if TYPE_CHECKING:
+    from .picture import Picture
     from .user import User
     from .category import Category
     from .location import Location
@@ -52,8 +53,9 @@ class Event(db.Model, ModelMixin):
         nullable=False,
     )
 
-    # TODO: make images as a separate model (blob, size, type, name) and store here a foreign key
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
+    picture_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
+    )
 
     url: orm.Mapped[str] = orm.mapped_column(
         sa.String(255),
@@ -90,6 +92,7 @@ class Event(db.Model, ModelMixin):
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")
+    picture: orm.Mapped["Picture"] = orm.relationship()
 
     @property
     def json(self):

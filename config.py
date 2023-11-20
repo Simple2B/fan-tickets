@@ -46,6 +46,7 @@ class BaseConfig(BaseSettings):
     IS_API: bool = False
     JWT_SECRET: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
+    IMAGE_MAX_WIDTH: int = 512
 
     @staticmethod
     def configure(app: Flask):
