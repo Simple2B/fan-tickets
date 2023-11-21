@@ -208,3 +208,33 @@ def save_phone():
         user.save()
 
     return render_template("user/phone_save.html", user=user)
+
+
+@bp.route("/edit_card")
+def edit_card():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+    return render_template("user/card_edit.html", user=user)
+
+
+@bp.route("/save_card", methods=["GET", "POST"])
+def save_card():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+
+    form = f.CardEditForm()
+    if form.validate_on_submit():
+        user.card = form.card.data
+        user.save()
+
+    return render_template("user/card_save.html", user=user)

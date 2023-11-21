@@ -99,3 +99,17 @@ class PhoneEditForm(FlaskForm):
         )
         if db.session.scalar(query):
             raise ValidationError("This phone is already registered.")
+
+
+class CardEditForm(FlaskForm):
+    card = StringField("card", [DataRequired()])
+    submit = SubmitField("Save")
+
+    def validate_card(self, field):
+        query = (
+            m.User.select()
+            .where(m.User.card == field.data)
+            .where(m.User.id != current_user.id)
+        )
+        if db.session.scalar(query):
+            raise ValidationError("This card is already registered.")
