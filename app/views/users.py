@@ -159,7 +159,7 @@ def edit_email():
         log(log.INFO, "User not found")
         flash("Incorrect reset password link", "danger")
         return redirect(url_for("main.index"))
-    return render_template("user/edit_email.html", user=user)
+    return render_template("user/email_edit.html", user=user)
 
 
 @bp.route("/save_email", methods=["GET", "POST"])
@@ -177,4 +177,34 @@ def save_email():
         user.email = form.email.data
         user.save()
 
-    return render_template("user/save_email.html", user=user)
+    return render_template("user/email_save.html", user=user)
+
+
+@bp.route("/edit_phone")
+def edit_phone():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+    return render_template("user/phone_edit.html", user=user)
+
+
+@bp.route("/save_phone", methods=["GET", "POST"])
+def save_phone():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+
+    form = f.PhoneEditForm()
+    if form.validate_on_submit():
+        user.phone = form.phone.data
+        user.save()
+
+    return render_template("user/phone_save.html", user=user)

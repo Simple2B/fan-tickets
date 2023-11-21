@@ -14,11 +14,18 @@
             <p>Endereço de Email</p>
             <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
                 hx-swap="innerHTML">
-                {% include 'user/save_email.html' %}
+                {% include 'user/email_save.html' %}
             </form>
         </div>
 
-        <p>phone</p>
+        <div class="py-3 border border-black">
+            <p>Phone</p>
+            <form method="post" id="profile_phone" hx-post="{{ url_for('user.save_phone') }}" hx-target="#profile_phone"
+                hx-swap="innerHTML">
+                {% include 'user/phone_save.html' %}
+            </form>
+        </div>
+
         <p>verification</p>
         <p>subscriptions</p>
 
