@@ -2,13 +2,31 @@
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">User's profile</p>
+    {{ current_user }}
     <div id="profile_image">
         <img src="data:image/png;base64,{{ stream_picture(user.picture_id) }}">
     </div>
     <input type="file" id="sidebar-image-input" class="" accept=".png, .jpg">
 
+    <p>email</p>
+    <p>phone</p>
+    <p>verification</p>
+    <p>subscriptions</p>
+
+    <h3>Finances</h3>
+    <p>payments</p>
+    <p>card</p>
+
+    <h3>Config</h3>
+    <p>Email notifications settings</p>
+    <p>Language</p>
+
+    <p>export my data</p>
+    <p>delete my account</p>
+
 </div>
 
 {% endblock %}
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
 {% endblock %}

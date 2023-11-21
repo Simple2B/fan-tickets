@@ -1,11 +1,11 @@
 import io
 from PIL import Image
 from flask import request, redirect, url_for, flash, current_app as app
-from app import models as m, db
+from app import models as m
 from app.logger import log
 
 
-def image_upload(user):
+def image_upload(user: m.User):
     if request.method == "POST":
         # Upload image image file
         file = request.files["file"]
@@ -33,14 +33,13 @@ def image_upload(user):
             return redirect(url_for("auth.image_upload", user_unique_id=user.unique_id))
 
         try:
-            db.session.add(
-                m.Picture(
-                    filename=file.filename.split("/")[-1],
-                    file=img_byte_arr,
-                    mimetype=file.content_type,
-                )
-            )
-            db.session.commit()
+            picture = m.Picture(
+                filename=file.filename.split("/")[-1],
+                file=img_byte_arr,
+                mimetype=file.content_type,
+            ).save()
+            user.picture_id = picture.id
+            user.save()
             flash("Logo uploaded", "success")
         except Exception as e:
             log(log.ERROR, "Error saving image: [%s]", e)

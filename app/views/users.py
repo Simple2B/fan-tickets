@@ -140,4 +140,4 @@ def logo_upload():
 
     image_upload(user)
 
-    return 200
+    return {"upload logo status": "ok"}, 200

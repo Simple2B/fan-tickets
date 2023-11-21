@@ -1,5 +1,5 @@
-import { Modal } from 'flowbite';
-import type { ModalOptions, ModalInterface } from 'flowbite';
+import {Modal} from 'flowbite';
+import type {ModalOptions, ModalInterface} from 'flowbite';
 
 // /*
 //  * $editUserModal: required
@@ -129,11 +129,11 @@ function handleImageUpload(file: File) {
 
   const reader = new FileReader();
   reader.onload = function (e) {
-    fetch('/auth/sidebar-logo-upload', {
+    fetch('/user/logo-upload', {
       method: 'POST',
       body: formData,
     })
-      .then(response => console.log(response))
+      .then(response => console.log('response', response))
       .then(() => window.location.reload())
       .catch(error => {
         console.error('Error:', error);
