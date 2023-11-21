@@ -30,6 +30,7 @@
 
 .swiper {
   position: relative;
+  width: 90vw;
   max-width: 1280px;
 }
 
