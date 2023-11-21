@@ -13,8 +13,3 @@
 .color-dark-black {
   color: #1c1c1c;
 }
-
-.border-gradient-black-white {
-  border-image: linear-gradient(to right, #828282, #323232);
-  border-image-slice: 1;
-}
