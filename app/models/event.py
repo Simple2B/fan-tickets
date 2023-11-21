@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
-
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app import schema as s
 from app.database import db
 from .utils import ModelMixin, gen_uuid
+from .users_events import users_events
 
 
 if TYPE_CHECKING:
@@ -93,6 +93,10 @@ class Event(db.Model, ModelMixin):
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")
     picture: orm.Mapped["Picture"] = orm.relationship()
+    subscribers: orm.Mapped[list["User"]] = orm.relationship(
+        secondary=users_events,
+        back_populates="subscribed_events",
+    )
 
     @property
     def json(self):

@@ -6,6 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
+from .users_events import users_events
 
 
 from enum import Enum
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
     from .notification import Notification
     from .review import Review
     from .room import Room
+    from .event import Event
 
 
 class UserRole(Enum):
@@ -66,6 +68,16 @@ class User(db.Model, UserMixin, ModelMixin):
         unique=True,
         nullable=False,
     )
+    phone: orm.Mapped[str] = orm.mapped_column(
+        sa.String(32),
+        unique=True,
+        nullable=False,
+    )
+    card: orm.Mapped[str] = orm.mapped_column(
+        sa.String(16),
+        unique=True,
+        nullable=False,
+    )
     password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(255), default="")
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
@@ -80,9 +92,11 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.String(64),
         default=gen_password_reset_id,
     )
-
     role: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=UserRole.client.value
+    )
+    picture_id: orm.Mapped[int] = orm.mapped_column(
+        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
     )
 
     picture: orm.Mapped["Picture"] = orm.relationship()
@@ -115,6 +129,10 @@ class User(db.Model, UserMixin, ModelMixin):
     buyer_chat_rooms: orm.Mapped[list["Room"]] = orm.relationship(
         foreign_keys="Room.buyer_id",
         back_populates="buyer",
+    )
+    subscribed_events: orm.Mapped[list["Event"]] = orm.relationship(
+        secondary=users_events,
+        back_populates="subscribers",
     )
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 

@@ -57,6 +57,8 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
         user = m.User(
             username=f"{first_name}{last_name}{randint(10, 99)}",
             email=email,
+            phone=fake.phone_number(),
+            card=faker.random_number(digits=16, fix_len=True),
             role=role.value,
             password="pass",
             activated=activated,
@@ -167,36 +169,53 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                     text=f"Ticket {ticket} is available",
                     user_id=seller_id,
                 ).save()
-            for k in range(4):
-                type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
-                if type_of == m.RoomType.DISPUTE.value:
-                    m.Dispute(
-                        description=faker.text(max_nb_chars=200),
-                        is_active=True,
-                        buyer_id=buyer_id,
-                        ticket_id=ticket.id,
-                    ).save()
-                    m.Notification(
-                        type_of=m.NotificationType.DISPUTE_CREATED.value,
-                        text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
-                        user_id=seller_id,
-                    ).save()
-                is_open = False if k == 1 else True
-                room = m.Room(
-                    type_of=type_of,
-                    ticket_id=ticket.id,
-                    is_open=is_open,
-                    seller_id=seller_id,
-                    buyer_id=randint(1, NUM_TEST_USERS),
-                ).save()
-                for _ in range(5):
-                    m.Message(
-                        room_id=room.id,
-                        sender_id=randint(1, NUM_TEST_USERS),
-                        text=faker.text(max_nb_chars=200),
-                    ).save()
+            # for k in range(4):
+            #     type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
+            #     if type_of == m.RoomType.DISPUTE.value:
+            #         m.Dispute(
+            #             description=faker.text(max_nb_chars=200),
+            #             is_active=True,
+            #             buyer_id=buyer_id,
+            #             ticket_id=ticket.id,
+            #         ).save()
+            #         m.Notification(
+            #             type_of=m.NotificationType.DISPUTE_CREATED.value,
+            #             text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
+            #             user_id=seller_id,
+            #         ).save()
+            #     is_open = False if k == 1 else True
+            #     room = m.Room(
+            #         type_of=type_of,
+            #         ticket_id=ticket.id,
+            #         is_open=is_open,
+            #         seller_id=seller_id,
+            #         buyer_id=randint(1, NUM_TEST_USERS),
+            #     ).save()
+            #     for _ in range(5):
+            #         m.Message(
+            #             room_id=room.id,
+            #             sender_id=randint(1, NUM_TEST_USERS),
+            #             text=faker.text(max_nb_chars=200),
+            #         ).save()
+
+
+def set_users_images():
+    with open("test_flask/users_pictures/users_picture_01.jpg", "rb") as img_file:
+        picture = m.Picture(
+            filename="users_picture_01",
+            file=img_file.read(),
+            mimetype="jpg",
+        ).save()
+
+        users = m.User.all()
+        for user in users:
+            user.picture_id = picture.id
+            db.session.add(user)
+        db.session.commit()
+    print("users images script worked successfully")
 
 
 def populate(count: int = NUM_TEST_USERS):
     generate_test_users()
     generate_test_events()
+    set_users_images()

@@ -10,3 +10,4 @@ from .review import Review
 from .notification import Notification, NotificationType
 from .message import Message
 from .picture import Picture
+from .payment import Payment

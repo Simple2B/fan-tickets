@@ -111,10 +111,10 @@ def delete(id: int):
     return "ok", 200
 
 
-@bp.route("/<user_unique_id>", methods=["GET"])
+@bp.route("/profile", methods=["GET"])
 @login_required
-def user_profile(user_unique_id: str):
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+def user_profile():
+    user_query = m.User.select().where(m.User.unique_id == current_user.unique_id)
     user = db.session.scalar(user_query)
     if not user:
         log(log.INFO, "There is no user with id: [%s]", id)

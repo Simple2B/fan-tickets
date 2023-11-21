@@ -33,6 +33,8 @@ def init(app: Flask):
         m.User(
             username=app.config["ADMIN_USERNAME"],
             email=app.config["ADMIN_EMAIL"],
+            phone="+380000000000",
+            card="0000000000000000",
             password=app.config["ADMIN_PASSWORD"],
         ).save()
         print("admin created")
@@ -43,17 +45,8 @@ def init(app: Flask):
 
     @app.cli.command("set-users-images")
     def set_users_images():
-        with open("test_flask/users_pictures/users_picture_01.jpg", "rb") as img_file:
-            picture = m.Picture(
-                filename="users_picture_01",
-                file=img_file.read(),
-                mimetype="jpg",
-            ).save()
+        from test_flask.db import set_users_images
 
-        users = m.User.all()
-        for user in users:
-            user.picture_id = picture.id
-            db.session.add(user)
-        db.session.commit()
+        set_users_images()
 
         print("users images are set")

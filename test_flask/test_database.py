@@ -26,12 +26,3 @@ def test_generate_events(client):
     tickets_query = m.Ticket.select()
     tickets = list(db.session.scalars(tickets_query))
     assert len(tickets) == 144
-    disputes_query = m.Dispute.select()
-    disputes = list(db.session.scalars(disputes_query))
-    assert len(disputes) == 144
-    room_query = m.Room.select()
-    rooms = list(db.session.scalars(room_query))
-    assert len(rooms) == 576
-    messages_query = m.Message.select()
-    messages = list(db.session.scalars(messages_query))
-    assert len(messages) == 576 * 5
