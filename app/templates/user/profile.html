@@ -12,9 +12,10 @@
     <div class="mt-5">
         <div class="py-3 border border-black">
             <p>Endereço de Email</p>
-            <div id="profile_email">
+            <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
+                hx-swap="innerHTML">
                 {% include 'user/save_email.html' %}
-            </div>
+            </form>
         </div>
 
         <p>phone</p>

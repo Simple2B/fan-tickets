@@ -171,4 +171,10 @@ def save_email():
         log(log.INFO, "User not found")
         flash("Incorrect reset password link", "danger")
         return redirect(url_for("main.index"))
+
+    form = f.EmailEditForm()
+    if form.validate_on_submit():
+        user.email = form.email.data
+        user.save()
+
     return render_template("user/save_email.html", user=user)
