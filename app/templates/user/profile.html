@@ -10,10 +10,13 @@
 
     <p>Perfil</p>
     <div class="mt-5">
-        <div>
+        <div class="py-3 border border-black">
             <p>Endereço de Email</p>
-            <p>{{ user.email }}</p>
+            <div id="profile_email">
+                {% include 'user/save_email.html' %}
+            </div>
         </div>
+
         <p>phone</p>
         <p>verification</p>
         <p>subscriptions</p>
@@ -28,6 +31,9 @@
 
         <p>export my data</p>
         <p>delete my account</p>
+
+        Payments:
+        {{ payments }}
     </div>
 
 </div>

@@ -125,7 +125,14 @@ def user_profile():
                 user_unique_id=current_user.unique_id,
             )
         )
-    return render_template("user/profile.html", user=user)
+
+    payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
+    payments = db.session.scalars(payments_query).all()
+    return render_template(
+        "user/profile.html",
+        user=user,
+        payments=payments,
+    )
 
 
 @bp.route("/logo-upload", methods=["GET", "POST"])
@@ -141,3 +148,27 @@ def logo_upload():
     image_upload(user)
 
     return {"upload logo status": "ok"}, 200
+
+
+@bp.route("/edit_email")
+def edit_email():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+    return render_template("user/edit_email.html", user=user)
+
+
+@bp.route("/save_email", methods=["GET", "POST"])
+def save_email():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+    return render_template("user/save_email.html", user=user)

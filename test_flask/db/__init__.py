@@ -158,6 +158,12 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 user_id=seller_id,
             ).save()
             if is_sold:
+                m.Payment(
+                    buyer_id=buyer_id,
+                    event_id=event.id,
+                    ticket_id=ticket.id,
+                    description=faker.text(max_nb_chars=200),
+                ).save()
                 m.Notification(
                     type_of=m.NotificationType.TICKET_SOLD.value,
                     text=f"Ticket {ticket.id} of user {seller_id} is sold",

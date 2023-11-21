@@ -50,3 +50,10 @@ def init(app: Flask):
         set_users_images()
 
         print("users images are set")
+
+    @app.cli.command("get-buyers")
+    def get_buyers():
+        sold_tickets_query = m.Ticket.select().where(m.Ticket.is_sold.is_(True))
+        sold_tickets = db.session.scalars(sold_tickets_query).all()
+        for ticket in sold_tickets:
+            print(ticket.buyer.username)

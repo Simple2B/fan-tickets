@@ -1,8 +1,15 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
 from .utils import ModelMixin
+
+
+if TYPE_CHECKING:
+    from .user import User
+    from .event import Event
+    from .ticket import Ticket
 
 
 class Payment(db.Model, ModelMixin):
@@ -37,3 +44,10 @@ class Payment(db.Model, ModelMixin):
         sa.DateTime,
         default=datetime.utcnow,
     )
+
+    event: orm.Mapped["Event"] = orm.relationship()
+    ticket: orm.Mapped["Ticket"] = orm.relationship()
+    buyer: orm.Mapped["User"] = orm.relationship()
+
+    def __repr__(self):
+        return f"<{self.id}:<{self.event.name}>|<{self.buyer.username}"
