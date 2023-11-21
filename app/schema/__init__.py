@@ -2,4 +2,4 @@
 from .pagination import Pagination
 from .user import User
 from .token import Token, TokenData, Auth
-from .event import Event, Events, EventsInput
+from .event import Event, Events, EventsInput, EventFilter
