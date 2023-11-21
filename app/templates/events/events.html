@@ -1,7 +1,7 @@
 {% extends "landing/base.html" %}
 <!-- prettier-ignore -->
 {% block main_content %}
-{% set all_filters = "[name='location'], [name='date'], [name='categories'], [name='event_per_page']" %}
+{% set all_filters = "[name='location'], [name='date_from'], [name='date_to'], [name='categories'], [name='event_per_page']" %}
 
 <div class="my-16 self-start flex flex-col gap-2">
   <h1 class="text-6xl">Buscar Eventos</h1>
@@ -22,7 +22,9 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52" fill="none"> <rect x="1" y="1" width="50" height="50" rx="13" stroke="#F2B705" stroke-width="2"/> <path d="M26.3333 26.6667C25.4493 26.6667 24.6014 26.3155 23.9763 25.6904C23.3512 25.0652 23 24.2174 23 23.3333C23 22.4493 23.3512 21.6014 23.9763 20.9763C24.6014 20.3512 25.4493 20 26.3333 20C27.2174 20 28.0652 20.3512 28.6904 20.9763C29.3155 21.6014 29.6667 22.4493 29.6667 23.3333C29.6667 23.7711 29.5804 24.2045 29.4129 24.6089C29.2454 25.0134 28.9999 25.3808 28.6904 25.6904C28.3808 25.9999 28.0134 26.2454 27.6089 26.4129C27.2045 26.5804 26.7711 26.6667 26.3333 26.6667ZM26.3333 14C23.858 14 21.484 14.9833 19.7337 16.7337C17.9833 18.484 17 20.858 17 23.3333C17 30.3333 26.3333 38 26.3333 38C26.3333 38 35.6667 30.3333 35.6667 23.3333C35.6667 20.858 34.6833 18.484 32.933 16.7337C31.1827 14.9833 28.8087 14 26.3333 14Z" fill="#F2B705"/> </svg>
       <div>
         <p class="text-2xl">Localização</p>
-        <span class="text-sm text-grey">Selecione</span>
+        <span id="events-filter-location-status" class="text-sm text-grey"
+          >Selecione</span
+        >
       </div>
       <!-- prettier-ignore -->
       <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6"> <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" /> </svg>
@@ -38,15 +40,19 @@
         list="events-filter-location-list"
         id="events-filter-location-input"
         name="location"
-        placeholder="choose location"
-        hx-trigger="change"
-        hx-swap="innerHTML"
-        hx-target="#events-list"
-        hx-include="{{ all_filters }}"
-        hx-get="{{ url_for('events.search_events') }}" />
+        placeholder="choose location" />
       <datalist id="events-filter-location-list">
         {% for location in locations %}
-        <option value="{{ location.name }}">{{ location.name }}</option>
+        <option
+          hx-param="location={{ location.name }}"
+          hx-trigger="click"
+          hx-swap="innerHTML"
+          hx-target="#events-list"
+          hx-include="{{ all_filters }}"
+          hx-get="{{ url_for('events.search_events', location=location.name) }}"
+          value="{{ location.name }}">
+          {{ location.name }}
+        </option>
         {% endfor %}
       </datalist>
     </div>
@@ -181,11 +187,7 @@
 
 <!-- TODO: block if else -->
 <!-- if -->
-{% if events|length == 0 %}
-<div class="self-start flex flex-col gap-2">
-  <h2 class="text-5xl">Nenhum evento encontrado</h2>
-  <p class="text-grey">Seus filtros não tiveram nenhum resultado.</p>
-</div>
+{% if events|length == 0 %} {% include "events/no_events_header.html" %}
 <!-- else -->
 {% else %}
 <div class="self-stretch flex flex-col gap-8">
@@ -212,7 +214,7 @@
           class="flex items-center gap-2 py-1 px-3 bg-middle-grey rounded-full">
           <!-- prettier-ignore -->
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M14.8215 1.37708L14.8218 1.3766C14.9876 1.12906 15.2388 1 15.485 1H18.148C18.6187 1 19 1.38128 19 1.852V18.148C19 18.6187 18.6187 19 18.148 19H15.485C15.2388 19 14.9876 18.8709 14.8218 18.6234L14.8215 18.6229C13.7818 17.0731 12.0105 16.049 10 16.049C7.98951 16.049 6.21822 17.0731 5.17854 18.6229L5.17822 18.6234C5.01219 18.8712 4.76191 19 4.515 19H1.852C1.38128 19 1 18.6187 1 18.148V1.852C1 1.38128 1.38128 1 1.852 1H4.515C4.76122 1 5.01237 1.12906 5.17822 1.3766L5.17854 1.37708C6.21815 2.92685 7.9884 3.951 10 3.951C12.0116 3.951 13.7818 2.92685 14.8215 1.37708Z" stroke="#F2B705" stroke-width="2"/> </svg>
-          <span>3</span>
+          <span>{{ events.tickets|length }}</span>
         </div>
       </div>
     </a>
@@ -231,7 +233,9 @@
   </a>
 </div>
 {% endif %} {% endblock %} {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js"
+  defer></script>
 <script
   src="{{ url_for('static', filename='js/event.js') }}"
   type="text/javascript"
