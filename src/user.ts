@@ -1,5 +1,5 @@
-import {Modal} from 'flowbite';
-import type {ModalOptions, ModalInterface} from 'flowbite';
+import { Modal } from 'flowbite';
+import type { ModalOptions, ModalInterface } from 'flowbite';
 
 // /*
 //  * $editUserModal: required
@@ -106,4 +106,38 @@ function editUser(user: IUser) {
   input = document.querySelector('#user-edit-next_url');
   input.value = window.location.href;
   modal.show();
+}
+
+const imageUploadInput = document.querySelector(
+  '#sidebar-image-input',
+) as HTMLInputElement;
+
+if (imageUploadInput) {
+  imageUploadInput.addEventListener('change', function (e: Event) {
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      handleImageUpload(file);
+    }
+  });
+}
+
+function handleImageUpload(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    fetch('/auth/sidebar-logo-upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => console.log(response))
+      .then(() => window.location.reload())
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+  reader.readAsDataURL(file);
 }

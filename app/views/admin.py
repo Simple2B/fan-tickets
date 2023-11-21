@@ -1,17 +1,14 @@
-import io
 from flask import (
     Blueprint,
     render_template,
-    request,
     redirect,
     url_for,
     flash,
-    current_app as app,
 )
 from flask_login import current_user, login_required
-from PIL import Image
 from app.logger import log
 from app import models as m, db
+from app.controllers import image_upload
 
 
 admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
@@ -43,50 +40,6 @@ def admin():
         rooms_number=rooms_number,
         messages_number=messages_number,
     )
-
-
-def image_upload(user):
-    if request.method == "POST":
-        # Upload image image file
-        file = request.files["file"]
-        log(log.INFO, "File uploaded: [%s]", file)
-
-        IMAGE_MAX_WIDTH = app.config["IMAGE_MAX_WIDTH"]
-        img = Image.open(file.stream)
-        width, height = img.size
-
-        if width > IMAGE_MAX_WIDTH:
-            log(log.INFO, "Resizing image")
-            ratio = IMAGE_MAX_WIDTH / width
-            new_width = IMAGE_MAX_WIDTH
-            new_height = int(height * ratio)
-            resized_img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-            img = resized_img
-
-        try:
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format="PNG")
-            img_byte_arr = img_byte_arr.getvalue()
-        except Exception as e:
-            log(log.ERROR, "Error saving image: [%s]", e)
-            flash("Error saving image", "danger")
-            return redirect(url_for("auth.image_upload", user_unique_id=user.unique_id))
-
-        try:
-            db.session.add(
-                m.Picture(
-                    filename=file.filename.split("/")[-1],
-                    file=img_byte_arr,
-                    mimetype=file.content_type,
-                )
-            )
-            db.session.commit()
-            flash("Logo uploaded", "success")
-        except Exception as e:
-            log(log.ERROR, "Error saving image: [%s]", e)
-            flash("Error saving image", "danger")
-            return redirect(url_for("main.index"))
-        log(log.INFO, "Uploaded image for user: [%s]", user)
 
 
 @admin_blueprint.route("/picture-upload", methods=["GET", "POST"])

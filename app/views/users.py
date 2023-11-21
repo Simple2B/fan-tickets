@@ -8,8 +8,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
-from app.controllers import create_pagination
-
+from app.controllers import create_pagination, image_upload
 from app import models as m, db
 from app import forms as f
 from app.logger import log
@@ -126,4 +125,19 @@ def user_profile(user_unique_id: str):
                 user_unique_id=current_user.unique_id,
             )
         )
-    return render_template("user/profile.html", user_unique_id=user.unique_id)
+    return render_template("user/profile.html", user=user)
+
+
+@bp.route("/logo-upload", methods=["GET", "POST"])
+def logo_upload():
+    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user: m.User | None = db.session.scalar(query)
+
+    if not user:
+        log(log.INFO, "User not found")
+        flash("Incorrect reset password link", "danger")
+        return redirect(url_for("main.index"))
+
+    image_upload(user)
+
+    return 200

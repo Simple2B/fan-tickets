@@ -1,4 +1,14 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">User's profile</p>
+    <div id="profile_image">
+        <img src="data:image/png;base64,{{ stream_picture(user.picture_id) }}">
+    </div>
+    <input type="file" id="sidebar-image-input" class="" accept=".png, .jpg">
+
+</div>
+
+{% endblock %}
+{% block scripts %}
 {% endblock %}

@@ -40,3 +40,20 @@ def init(app: Flask):
     @app.cli.command("print-users")
     def print_users():
         print(m.User.all())
+
+    @app.cli.command("set-users-images")
+    def set_users_images():
+        with open("test_flask/users_pictures/users_picture_01.jpg", "rb") as img_file:
+            picture = m.Picture(
+                filename="users_picture_01",
+                file=img_file.read(),
+                mimetype="jpg",
+            ).save()
+
+        users = m.User.all()
+        for user in users:
+            user.picture_id = picture.id
+            db.session.add(user)
+        db.session.commit()
+
+        print("users images are set")
