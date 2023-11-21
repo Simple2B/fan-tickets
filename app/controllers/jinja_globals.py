@@ -29,6 +29,8 @@ def cut_seconds(created_at: datetime):
 def stream_picture(picture_id):
     picture_query = m.Picture.select().where(m.Picture.id == picture_id)
     picture = db.session.scalar(picture_query)
+    if not picture:
+        return None
     img_byte_arr = picture.file
     base64_img = base64.b64encode(img_byte_arr).decode("utf-8")
     return base64_img
