@@ -4,7 +4,7 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from app import models as m
-from app.controllers import image_upload
+from app.controllers.image_upload import image_upload
 
 
 admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")

@@ -72,13 +72,11 @@ def create_app(environment="development") -> Flask:
         date_from_datetime,
         time_delta,
         cut_seconds,
-        stream_picture,
     )
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
     app.jinja_env.globals["time_delta"] = time_delta
     app.jinja_env.globals["cut_seconds"] = cut_seconds
-    app.jinja_env.globals["stream_picture"] = stream_picture
 
     return app
