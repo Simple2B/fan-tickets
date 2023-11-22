@@ -114,18 +114,7 @@ def delete(id: int):
 @bp.route("/profile", methods=["GET"])
 @login_required
 def user_profile():
-    user_query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user = db.session.scalar(user_query)
-    if not user:
-        log(log.INFO, "There is no user with id: [%s]", id)
-        flash("There is no such user", "danger")
-        return redirect(
-            url_for(
-                "user.user_profile",
-                user_unique_id=current_user.unique_id,
-            )
-        )
-
+    user: m.User = current_user
     payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
     payments = db.session.scalars(payments_query).all()
     return render_template(
@@ -136,41 +125,22 @@ def user_profile():
 
 
 @bp.route("/logo-upload", methods=["GET", "POST"])
+@login_required
 def logo_upload():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
-
-    image_upload(user)
-
-    return {"upload logo status": "ok"}, 200
+    image_upload(current_user)
+    return {}, 200
 
 
 @bp.route("/edit_email")
+@login_required
 def edit_email():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
-    return render_template("user/email_edit.html", user=user)
+    return render_template("user/email_edit.html", user=current_user)
 
 
 @bp.route("/save_email", methods=["GET", "POST"])
+@login_required
 def save_email():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
+    user: m.User = current_user
 
     form = f.EmailEditForm()
     if form.validate_on_submit():
@@ -181,26 +151,15 @@ def save_email():
 
 
 @bp.route("/edit_phone")
+@login_required
 def edit_phone():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
-    return render_template("user/phone_edit.html", user=user)
+    return render_template("user/phone_edit.html", user=current_user)
 
 
 @bp.route("/save_phone", methods=["GET", "POST"])
+@login_required
 def save_phone():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
+    user: m.User = current_user
 
     form = f.PhoneEditForm()
     if form.validate_on_submit():
@@ -211,26 +170,15 @@ def save_phone():
 
 
 @bp.route("/edit_card")
+@login_required
 def edit_card():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
-    return render_template("user/card_edit.html", user=user)
+    return render_template("user/card_edit.html", user=current_user)
 
 
 @bp.route("/save_card", methods=["GET", "POST"])
+@login_required
 def save_card():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
+    user: m.User = current_user
 
     form = f.CardEditForm()
     if form.validate_on_submit():

@@ -60,25 +60,10 @@ class User(db.Model, UserMixin, ModelMixin):
         unique=True,
         nullable=False,
     )
-    picture_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
-    )
-    email: orm.Mapped[str] = orm.mapped_column(
-        sa.String(255),
-        unique=True,
-        nullable=False,
-    )
-    phone: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32),
-        unique=True,
-        nullable=False,
-    )
-    card: orm.Mapped[str] = orm.mapped_column(
-        sa.String(16),
-        unique=True,
-        nullable=False,
-    )
-    password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(255), default="")
+    email: orm.Mapped[str] = orm.mapped_column(sa.String(256))
+    phone: orm.Mapped[str] = orm.mapped_column(sa.String(32))
+    card: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
@@ -95,9 +80,7 @@ class User(db.Model, UserMixin, ModelMixin):
     role: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=UserRole.client.value
     )
-    picture_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
-    )
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
     picture: orm.Mapped["Picture"] = orm.relationship()
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(

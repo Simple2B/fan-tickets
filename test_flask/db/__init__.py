@@ -91,11 +91,11 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
 
 
 def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
-    folder_path = "test_flask/locations_pictures"  # replace with your folder path
+    FOLDER_PATH = "test_flask/locations_pictures"  # replace with your folder path
 
-    for filename in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, filename)):
-            with open(f"{folder_path}/{filename}", "rb") as img_file:
+    for filename in os.listdir(FOLDER_PATH):
+        if os.path.isfile(os.path.join(FOLDER_PATH, filename)):
+            with open(f"{FOLDER_PATH}/{filename}", "rb") as img_file:
                 filename = filename.split(".")[0]
                 m.Picture(
                     filename=filename,
@@ -105,7 +105,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
     for location_name in TEST_LOCATIONS:
         m.Location(
             name=location_name,
-            picture_id=randint(1, len(os.listdir(folder_path))),
+            picture_id=randint(1, len(os.listdir(FOLDER_PATH))),
         ).save()
     for category_name in TEST_CATEGORIES:
         m.Category(
@@ -160,7 +160,6 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             if is_sold:
                 m.Payment(
                     buyer_id=buyer_id,
-                    event_id=event.id,
                     ticket_id=ticket.id,
                     description=faker.text(max_nb_chars=200),
                 ).save()
@@ -210,7 +209,7 @@ def set_users_images():
         picture = m.Picture(
             filename="users_picture_01",
             file=img_file.read(),
-            mimetype="jpg",
+            mimetype="image/png",
         ).save()
 
         users = m.User.all()

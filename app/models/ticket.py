@@ -92,22 +92,14 @@ class Ticket(db.Model, ModelMixin):
 
     __tablename__ = "tickets"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
 
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
 
-    description: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512),
-        unique=False,
-        nullable=False,
-    )
+    description: orm.Mapped[str] = orm.mapped_column(sa.String(512))
 
     ticket_type: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=TicketType.TRACK.value
@@ -119,74 +111,33 @@ class Ticket(db.Model, ModelMixin):
 
     # The ticket file could be a PDF or a stringed QR code
     # TODO: add relation to many tickets (one to many relationship)
-    file: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
-    wallet_qr_code: orm.Mapped[bytes] = orm.mapped_column(sa.String(512), nullable=True)
+    file: orm.Mapped[bytes | None] = orm.mapped_column(sa.LargeBinary)
+    wallet_qr_code: orm.Mapped[bytes | None] = orm.mapped_column(sa.String(512))
 
-    warning: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512), unique=False, nullable=True
-    )
+    warning: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
 
-    section: orm.Mapped[str] = orm.mapped_column(
-        sa.String(16),
-        nullable=False,
-    )
-    queue: orm.Mapped[str] = orm.mapped_column(
-        sa.String(16),
-        nullable=False,
-    )
+    section: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    queue: orm.Mapped[str] = orm.mapped_column(sa.String(16))
 
-    seat: orm.Mapped[str] = orm.mapped_column(
-        sa.String(16),
-        nullable=False,
-    )
+    seat: orm.Mapped[str] = orm.mapped_column(sa.String(16))
 
-    price_net: orm.Mapped[float] = orm.mapped_column(
-        sa.Float,
-        nullable=False,
-    )
-    price_gross: orm.Mapped[float] = orm.mapped_column(
-        sa.Float,
-        nullable=False,
-    )
+    price_net: orm.Mapped[float] = orm.mapped_column(sa.Float)
+    price_gross: orm.Mapped[float] = orm.mapped_column(sa.Float)
 
-    quantity: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        nullable=False,
-        default=1,
-    )
+    quantity: orm.Mapped[int] = orm.mapped_column(default=1)
 
-    is_in_cart: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-    )
-    is_reserved: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-    )
-    is_sold: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-    )
-    seller_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("users.id"), nullable=False
-    )
+    is_in_cart: orm.Mapped[bool] = orm.mapped_column(default=False)
+    is_reserved: orm.Mapped[bool] = orm.mapped_column(default=False)
+    is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
+    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=True,
-    )
-    event_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("events.id"), nullable=False
-    )
+    buyer_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
 
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")
 

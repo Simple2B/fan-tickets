@@ -48,6 +48,15 @@ class BaseConfig(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     IMAGE_MAX_WIDTH: int = 512
 
+    # User's form
+    USER_USERNAME_MIN_LENGTH: int = 3
+    USER_USERNAME_MAX_LENGTH: int = 30
+    USER_PHONE_MIN_LENGTH: int = 7
+    USER_PHONE_MAX_LENGTH: int = 16
+    USER_CARD_LENGTH: int = 16
+    USER_PASSWORD_MIN_LENGTH: int = 6
+    USER_PASSWORD_MAX_LENGTH: int = 30
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

@@ -14,7 +14,6 @@ def app():
     app.config.update(
         {
             "TESTING": True,
-            "DEBUG": True,
         }
     )
     os.environ["APP_ENV"] = "testing"

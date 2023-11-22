@@ -33,24 +33,14 @@ class Category(db.Model, ModelMixin):
 
     __tablename__ = "categories"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        nullable=False,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
 
-    name: orm.Mapped[str] = orm.mapped_column(
-        sa.String(64),
-        unique=True,
-        nullable=False,
-    )
-    picture_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("pictures.id"), nullable=True
-    )
+    name: orm.Mapped[str] = orm.mapped_column(sa.String(64), unique=True)
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True), default=datetime.utcnow
     )

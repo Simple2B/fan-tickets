@@ -1,13 +1,9 @@
 from flask import (
     Blueprint,
     render_template,
-    redirect,
-    url_for,
-    flash,
 )
 from flask_login import current_user, login_required
-from app.logger import log
-from app import models as m, db
+from app import models as m
 from app.controllers import image_upload
 
 
@@ -45,14 +41,6 @@ def admin():
 @admin_blueprint.route("/picture-upload", methods=["GET", "POST"])
 @login_required
 def picture_upload():
-    query = m.User.select().where(m.User.unique_id == current_user.unique_id)
-    user: m.User | None = db.session.scalar(query)
-
-    if not user:
-        log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
-        return redirect(url_for("main.index"))
-
+    user: m.User = current_user
     image_upload(user)
-
-    return {"image upload status": "success"}, 200
+    return {}, 200

@@ -24,38 +24,19 @@ class Message(db.Model, ModelMixin):
 
     __tablename__ = "messages"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
-    sender_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=False,
-    )
-    room_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("rooms.id"),
-        nullable=False,
-    )
+    sender_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    room_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("rooms.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
-    viewed: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-    )
-    text: orm.Mapped[str] = orm.mapped_column(
-        sa.Text,
-        nullable=False,
-    )
+    viewed: orm.Mapped[bool] = orm.mapped_column(default=False)
+    text: orm.Mapped[str] = orm.mapped_column(sa.Text)
 
     sender: orm.Mapped["User"] = orm.relationship()
     room: orm.Mapped["Room"] = orm.relationship(back_populates="messages")
