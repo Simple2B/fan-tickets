@@ -39,8 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
     element: HTMLElement,
     otherElement?: HTMLElement[],
   ) {
-    console.log(otherElement);
-
     if (
       !element.contains(event.target as Node) &&
       !otherElement.some(el => el.contains(event.target as Node))
@@ -65,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  buttonFilterDate.addEventListener('click', function () {
+  buttonFilterDate.addEventListener('click', () => {
     const datePickers = document.querySelectorAll('.datepicker');
     const datePickerArray: HTMLElement[] = Array.from(
       datePickers,
@@ -74,15 +72,15 @@ document.addEventListener('DOMContentLoaded', function () {
     addHideEventsForElement(dropdownFilterDate, datePickerArray);
   });
 
-  buttonDateApply.addEventListener('click', function () {
+  buttonDateApply.addEventListener('click', () => {
     dropdownFilterDate.classList.toggle('hidden');
   });
 
-  buttonLocation.addEventListener('click', function () {
+  buttonLocation.addEventListener('click', () => {
     addHideEventsForElement(dropdownFilterLocation);
   });
 
-  buttonCategories.addEventListener('click', function () {
+  buttonCategories.addEventListener('click', () => {
     addHideEventsForElement(dropdownFilterCategories);
   });
 
@@ -105,13 +103,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const text = inputLocation.value.toUpperCase();
     for (let index in datalistLocation.options) {
       const option: HTMLOptionElement = datalistLocation.options[index];
-      if (option.value.toUpperCase().indexOf(text) > -1) {
-        option.style.display = 'block';
-      } else {
-        option.style.display = 'none';
-      }
+      option.value.toUpperCase().indexOf(text) > -1
+        ? (option.style.display = 'block')
+        : (option.style.display = 'none');
     }
   };
+
   let currentFocus = -1;
   inputLocation.onkeydown = function (e) {
     if (e.keyCode == 40) {

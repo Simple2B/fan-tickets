@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import request, Blueprint, render_template
 from app import models as m, db
 from app import schema as s
-from sqlalchemy import or_
+from app.logger import log
 
 
 events_blueprint = Blueprint("events", __name__, url_prefix="/events")
@@ -20,35 +20,46 @@ def get_filter_events():
         events_query = events_query.where(
             m.Event.location.has(name=event_filter.location)
         )
+
+        log(log.INFO, "Applied location filter: [%s]", event_filter.location)
     if len(categories) > 0:
-        category_filters = [m.Category.name == category for category in categories]
-        events_query = events_query.join(m.Event.category).filter(
-            or_(*category_filters)
+        events_query = events_query.filter(
+            m.Event.category.has(m.Category.name.in_(categories))
         )
+
+        log(log.INFO, "Applied categories filter: [%s]", categories)
     if event_filter.event_per_page:
         limit_events = event_filter.event_per_page
         limit_events += events_per_page
         events_query = events_query.limit(limit_events)
 
+        log(
+            log.INFO, "Applied event_per_page filter: [%s]", event_filter.event_per_page
+        )
     if event_filter.date_from:
         date_from = datetime.strptime(event_filter.date_from, date_format)
         events_query = events_query.where(m.Event.date_time >= date_from)
 
+        log(log.INFO, "Applied date_from filter: [%s]", event_filter.date_from)
     if event_filter.date_to:
         date_to = datetime.strptime(event_filter.date_to, date_format)
         events_query = events_query.where(m.Event.date_time <= date_to)
 
+        log(log.INFO, "Applied date_to filter: [%s]", event_filter.date_to)
+
     events = db.session.scalars(events_query).all()
 
+    log(log.INFO, "Return events from function: [%s]", events)
     return events
 
 
 @events_blueprint.route("/", methods=["GET", "POST"])
 def get_events():
     events = get_filter_events()
-    categories = db.session.scalars(m.Category.select()).all()
-    locations = db.session.scalars(m.Location.select()).all()
+    categories = db.session.scalars(m.Category.select())
+    locations = db.session.scalars(m.Location.select())
 
+    log(log.INFO, "Render template events/events.html with events: [%s]", events)
     return render_template(
         "events/events.html", events=events, categories=categories, locations=locations
     )
@@ -58,4 +69,5 @@ def get_events():
 def search_events():
     events = get_filter_events()
 
+    log(log.INFO, "Render template events/events_list.html with events: [%s]", events)
     return render_template("events/events_list.html", events=events)

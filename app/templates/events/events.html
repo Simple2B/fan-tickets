@@ -36,14 +36,17 @@
       <input
         autocomplete="off"
         list="browsers"
-        class="w-full text-white bg-middle-grey placeholder-gray-300 border-transparent focus:border-transparent focus:ring-0"
+        class="w-full h-9 p-1 text-white text-lg bg-middle-grey placeholder-gray-300 border-transparent outline-none focus:border-transparent focus:ring-0"
         list="events-filter-location-list"
         id="events-filter-location-input"
         name="location"
         placeholder="choose location" />
-      <datalist id="events-filter-location-list">
+      <datalist
+        class="absolute inset-x-0 p-1 max-h-40 overflow-y-auto bg-datalist-location"
+        id="events-filter-location-list">
         {% for location in locations %}
         <option
+          class="p-1 text-lg cursor-pointer bg-option-location hover:bg-light-grey"
           hx-param="location={{ location.name }}"
           hx-trigger="click"
           hx-swap="innerHTML"
@@ -171,10 +174,9 @@
   </div>
 </div>
 
-<!-- TODO: block if else -->
-<!-- if -->
-{% if events|length == 0 %} {% include "events/no_events_header.html" %}
-<!-- else -->
+<!-- prettier-ignore -->
+{% if events|length == 0 %} {
+  % include "events/no_events_header.html" %}
 {% else %}
 <div class="self-stretch flex flex-col gap-8">
   <div class="grid grid-cols-3 gap-8" id="events-list">
@@ -219,11 +221,8 @@
   </a>
 </div>
 {% endif %} {% endblock %} {% block scripts %}
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js"
-  defer></script>
-<script
-  src="{{ url_for('static', filename='js/event.js') }}"
-  type="text/javascript"
-  defer></script>
+<!-- prettier-ignore -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js" defer></script>
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/event.js') }}" type="text/javascript" defer></script>
 {% endblock %}
