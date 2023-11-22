@@ -1,14 +1,15 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
-
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app import schema as s
 from app.database import db
 from .utils import ModelMixin, gen_uuid
+from .users_events import users_events
 
 
 if TYPE_CHECKING:
+    from .picture import Picture
     from .user import User
     from .category import Category
     from .location import Location
@@ -37,59 +38,38 @@ class Event(db.Model, ModelMixin):
 
     __tablename__ = "events"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        nullable=False,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
-    name: orm.Mapped[str] = orm.mapped_column(
-        sa.String(64),
-        unique=False,
-        nullable=False,
+    name: orm.Mapped[str] = orm.mapped_column(sa.String(64))
+
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+
+    url: orm.Mapped[str | None] = orm.mapped_column(
+        sa.String(256),
     )
 
-    # TODO: make images as a separate model (blob, size, type, name) and store here a foreign key
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
+    observations: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
+    warning: orm.Mapped[str | None] = orm.mapped_column()
+    date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
 
-    url: orm.Mapped[str] = orm.mapped_column(
-        sa.String(255),
-        unique=False,
-        nullable=True,
-    )
+    category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
 
-    observations: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512),
-        unique=False,
-        nullable=True,
-    )
-    warning: orm.Mapped[str] = orm.mapped_column(
-        sa.String(512), unique=False, nullable=True
-    )
-    date_time: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime(timezone=True),
-        nullable=False,
-    )
+    location_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("locations.id"))
 
-    category_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("categories.id"), nullable=True
-    )
-
-    location_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("locations.id"), nullable=True
-    )
-
-    creator_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("users.id"), nullable=True
-    )
+    creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     location: orm.Mapped["Location"] = orm.relationship()
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")
+    picture: orm.Mapped["Picture"] = orm.relationship()
+    subscribers: orm.Mapped[list["User"]] = orm.relationship(
+        secondary=users_events,
+        back_populates="subscribed_events",
+    )
 
     @property
     def json(self):

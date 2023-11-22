@@ -46,7 +46,17 @@ const homeConfig = {
   },
 };
 
-const configs = [baseConfig, userConfig, homeConfig].map(conf =>
+const eventConfig = {
+  entry: {
+    main: './src/event.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/event.js', // <--- Will be compiled to this single file
+  },
+};
+
+const configs = [baseConfig, userConfig, eventConfig, homeConfig].map(conf =>
   merge(defaultConfig, conf),
 );
 

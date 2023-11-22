@@ -31,6 +31,8 @@ def test_register(client):
             data=dict(
                 username="sam",
                 email=TEST_EMAIL,
+                phone="+480000000000",
+                card="9999888877776666",
                 password="password",
                 password_confirmation="password",
             ),
@@ -83,6 +85,8 @@ def test_forgot(client):
     user = m.User(
         username="sam",
         email=TEST_EMAIL,
+        phone="+480000000000",
+        card="9999888877776666",
         password="password",
     )
     user.save()
@@ -123,7 +127,12 @@ def test_forgot(client):
 def test_login_and_logout(client):
     # Access to logout view before login should fail.
     response = logout(client)
-    register("sam", "sam@test.com")
+    register(
+        "sam",
+        "sam@test.com",
+        phone="+480000000011",
+        card="99998888777755",
+    )
     response = login(client, "sam")
     assert b"Login successful." in response.data
     # Incorrect login credentials should fail.
