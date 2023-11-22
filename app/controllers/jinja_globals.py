@@ -1,9 +1,7 @@
 import os
-import base64
 import pytz
 from datetime import datetime
 from flask_wtf import FlaskForm
-from app import models as m, db
 
 
 def form_hidden_tag():
