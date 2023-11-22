@@ -11,3 +11,4 @@ from .notification import Notification, NotificationType
 from .message import Message
 from .picture import Picture
 from .payment import Payment
+from .notifications_config import NotificationsConfig

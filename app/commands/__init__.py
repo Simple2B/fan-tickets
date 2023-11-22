@@ -53,7 +53,33 @@ def init(app: Flask):
 
     @app.cli.command("get-buyers")
     def get_buyers():
-        sold_tickets_query = m.Ticket.select().where(m.Ticket.is_sold.is_(True))
-        sold_tickets = db.session.scalars(sold_tickets_query).all()
-        for ticket in sold_tickets:
-            print(ticket.buyer.username)
+        # sold_tickets_query = (
+        #     sa.select(m.Ticket.buyer_id)
+        #     .where(m.Ticket.is_sold.is_(True))
+        #     .group_by(m.Ticket.buyer_id)
+        #     .order_by(m.Ticket.buyer_id)
+        # )
+        sold_tickets_query = (
+            sa.select(m.User.username)
+            .select_from(sa.join(m.Ticket, m.User, m.Ticket.buyer_id == m.User.id))
+            .where(m.Ticket.is_sold.is_(True))
+            .group_by(m.User.username)
+            .order_by(m.User.username)
+        )
+        sold_tickets_buyers = db.session.scalars(sold_tickets_query).all()
+        print(sold_tickets_buyers)
+
+    @app.cli.command("set-subscriptions")
+    @click.option("--username", type=str)
+    def set_subscriptions(username: str):
+        user_query = m.User.select().where(m.User.username == username)
+        user = db.session.scalar(user_query)
+        events_query = m.Event.select().limit(3)
+        events = db.session.scalars(events_query).all()
+
+        print(user)
+
+        user.subscribed_events.extend(events)
+        user.save()
+
+        print(user.subscribed_events)

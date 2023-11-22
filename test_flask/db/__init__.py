@@ -64,7 +64,11 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             activated=activated,
         )
         db.session.add(user)
+        db.session.flush()
         log(log.INFO, "User generated: [%s]", user)
+
+        notification_config = m.NotificationsConfig(user_id=user.id)
+        db.session.add(notification_config)
     db.session.commit()
     users_number = m.User.count()
     log(log.INFO, "[%d] users generated", users_number)
