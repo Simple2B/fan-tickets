@@ -24,7 +24,7 @@ module.exports = {
         'slider-rio': "url('/static/img/slider/rio.png')",
         'slider-san-paulo': "url('/static/img/slider/san_paulo.png')",
         'slider-rio': "url('/static/img/slider/florianopolis.png')",
-        footer: "url('/static/img/background_footer.png')",
+        // footer: "url('/static/img/background_footer.png')",
       },
       borderRadius: {
         '50%': '50%',

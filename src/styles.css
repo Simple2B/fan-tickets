@@ -38,3 +38,7 @@
   display: flex !important;
   /* width: 70% !important; */
 }
+
+.bg-footer {
+  background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
+}
