@@ -6,10 +6,39 @@
   color: red;
 }
 
-.color-amarelo {
-  color: #f2b705;
-}
-
 .color-dark-black {
   color: #1c1c1c;
+}
+
+.bg-datalist-location {
+  background: radial-gradient(
+    130.96% 130.96% at 93.3% 91.9%,
+    rgba(130, 130, 130, 0.1) 0%,
+    rgba(50, 50, 50, 0.1) 100%
+  );
+  border: 1px solid var(--Degrade-contorno, #828282);
+  border-radius: 0 0 5px 5px;
+  border-top: none;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.bg-option-location {
+  margin-bottom: 1px;
+  background: radial-gradient(
+    130.96% 130.96% at 93.3% 91.9%,
+    rgba(130, 130, 130, 0.1) 0%,
+    rgba(50, 50, 50, 0.1) 100%
+  );
+  backdrop-filter: blur(15px);
+}
+
+/* NOTE: temp filter, delete in the future */
+.bg-filter {
+  background: radial-gradient(
+    130.96% 130.96% at 93.3% 91.9%,
+    rgba(130, 130, 130, 0.1) 0%,
+    rgba(50, 50, 50, 0.1) 100%
+  );
+  backdrop-filter: blur(15px);
 }

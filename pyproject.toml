@@ -26,6 +26,7 @@ python-multipart = "^0.0.6"
 httpx = "^0.25.1"
 uvicorn = "^0.24.0.post1"
 bardapi = "^0.1.38"
+pillow = "^10.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.1"

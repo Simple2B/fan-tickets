@@ -1,5 +1,4 @@
 from flask import current_app as app
-from flask_login import current_user
 from flask.testing import FlaskClient, FlaskCliRunner
 from click.testing import Result
 from app import models as m, db
@@ -46,10 +45,6 @@ def test_delete_user(client: FlaskClient):
 
 def test_user_profile(client: FlaskClient):
     login(client)
-    response = client.get(f"/user/{current_user.unique_id}")
+    response = client.get("/user/profile")
     assert response.status_code == 200
     # assert "Profile" in response.data.decode()
-
-    response = client.get("/user/left_unique_id")
-    assert response.status_code == 302
-    assert response.location == f"/user/{current_user.unique_id}"

@@ -37,11 +37,7 @@ class Notification(db.Model, ModelMixin):
 
     """
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
@@ -53,15 +49,9 @@ class Notification(db.Model, ModelMixin):
     type_of: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=NotificationType.TICKET_PUBLISHED.value
     )
-    user_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=False,
-    )
+    user_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
     text: orm.Mapped[str] = orm.mapped_column(
         sa.String(512),
-        unique=False,
-        nullable=False,
     )
     is_viewed: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 

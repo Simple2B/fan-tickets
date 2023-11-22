@@ -1,0 +1,5 @@
+<p>{{ user.card }}</p>
+<button class="bg-blue-300 text-white py-1 px-2 rounded-md" hx-get="{{ url_for('user.edit_card') }}"
+    hx-target="#profile_card" hx-swap="outerHTML" hx-trigger="click">
+    edit
+</button>
