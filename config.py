@@ -41,11 +41,22 @@ class BaseConfig(BaseSettings):
     # Pagination
     DEFAULT_PAGE_SIZE: int
     PAGE_LINKS_NUMBER: int
+    EVENTS_PER_PAGE: int
 
     # API
     IS_API: bool = False
     JWT_SECRET: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
+    IMAGE_MAX_WIDTH: int = 512
+
+    # User's form
+    USER_USERNAME_MIN_LENGTH: int = 3
+    USER_USERNAME_MAX_LENGTH: int = 30
+    USER_PHONE_MIN_LENGTH: int = 7
+    USER_PHONE_MAX_LENGTH: int = 16
+    USER_CARD_LENGTH: int = 16
+    USER_PASSWORD_MIN_LENGTH: int = 6
+    USER_PASSWORD_MAX_LENGTH: int = 30
 
     @staticmethod
     def configure(app: Flask):
@@ -59,7 +70,7 @@ class BaseConfig(BaseSettings):
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""
 
-    DEBUG: bool = True
+    # DEBUG: bool = True
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DEVEL_DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),

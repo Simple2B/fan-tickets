@@ -4,3 +4,4 @@ from .main import main_blueprint
 from .users import bp as user_blueprint
 from .events import events_blueprint
 from .tickets import tickets_blueprint
+from .admin import admin_blueprint

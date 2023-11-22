@@ -38,11 +38,7 @@ class Room(db.Model, ModelMixin):
 
     __tablename__ = "rooms"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
@@ -57,21 +53,11 @@ class Room(db.Model, ModelMixin):
         default=datetime.utcnow,
     )
 
-    ticket_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("tickets.id"),
-        nullable=False,
-    )
+    ticket_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("tickets.id"))
 
-    seller_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer, sa.ForeignKey("users.id"), nullable=False
-    )
+    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=True,
-    )
+    buyer_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     ticket: orm.Mapped["Ticket"] = orm.relationship(
         "Ticket",

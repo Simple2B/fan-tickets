@@ -30,32 +30,17 @@ class Review(db.Model, ModelMixin):
 
     __tablename__ = "reviews"
 
-    id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
 
-    rate: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        nullable=True,
-    )
-    text: orm.Mapped[str] = orm.mapped_column(sa.String(512), nullable=True)
+    rate: orm.Mapped[int | None] = orm.mapped_column()
+    text: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
-    reviewer_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=False,
-    )
-    receiver_id: orm.Mapped[int] = orm.mapped_column(
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        nullable=False,
-    )
+    reviewer_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    receiver_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     reviewer: orm.Mapped["User"] = orm.relationship(
         foreign_keys=[reviewer_id],

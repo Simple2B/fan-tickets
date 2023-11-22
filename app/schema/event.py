@@ -73,3 +73,14 @@ class EventsInput(BaseModel):
     date_to: str | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class EventFilter(BaseModel):
+    location: str | None = None
+    date_from: str | None = None
+    date_to: str | None = None
+    event_per_page: int | None = None
+    # TODO: ask how to get list from params
+    # categories: list[str] | None = None
+
+    model_config = SettingsConfigDict(from_attributes=True)

@@ -1,4 +1,67 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">User's profile</p>
+    {{ current_user }}
+    <div id="profile_image">
+        <img src="{{ user.picture.base64_src }}">
+    </div>
+    <input type="file" id="sidebar-image-input" class="" accept=".png, .jpg">
+
+    <p>Perfil</p>
+    <div class="mt-5">
+        <div class="py-3 border border-black">
+            <p>Endereço de Email</p>
+            <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
+                hx-swap="innerHTML">
+                {% include 'user/email_save.html' %}
+            </form>
+        </div>
+
+        <div class="py-3 border border-black">
+            <p>Phone</p>
+            <form method="post" id="profile_phone" hx-post="{{ url_for('user.save_phone') }}" hx-target="#profile_phone"
+                hx-swap="innerHTML">
+                {% include 'user/phone_save.html' %}
+            </form>
+        </div>
+
+        <div class="py-3 border border-black">
+            <p>Verification</p>
+            <p>Your email is verified</p>
+            <p>Your phone is not verified</p>
+        </div>
+
+        <div class="py-3 border border-black">
+            <p>Subscriptions</p>
+            {{ user.subscribed_events }}
+        </div>
+
+        <div class="py-3 border border-black">
+            <p>Finances</p>
+            <p>payments:</p>
+            {% for payment in payments %}
+            <p>{{ payment }}</p>
+            {% endfor %}
+            <p>card:</p>
+            <form method="post" id="profile_card" hx-post="{{ url_for('user.save_card') }}" hx-target="#profile_card"
+                hx-swap="innerHTML">
+                {% include 'user/card_save.html' %}
+            </form>
+        </div>
+        <h3></h3>
+
+        <h3>Config</h3>
+        <p>Email notifications settings</p>
+        <p>Language</p>
+
+        <p>export my data</p>
+        <p>delete my account</p>
+    </div>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
 {% endblock %}

@@ -8,8 +8,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
-from app.controllers import create_pagination
-
+from app.controllers import create_pagination, image_upload
 from app import models as m, db
 from app import forms as f
 from app.logger import log
@@ -112,18 +111,78 @@ def delete(id: int):
     return "ok", 200
 
 
-@bp.route("/<user_unique_id>", methods=["GET"])
+@bp.route("/profile", methods=["GET"])
 @login_required
-def user_profile(user_unique_id: str):
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user = db.session.scalar(user_query)
-    if not user:
-        log(log.INFO, "There is no user with id: [%s]", id)
-        flash("There is no such user", "danger")
-        return redirect(
-            url_for(
-                "user.user_profile",
-                user_unique_id=current_user.unique_id,
-            )
-        )
-    return render_template("user/profile.html", user_unique_id=user.unique_id)
+def user_profile():
+    user: m.User = current_user
+    payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
+    payments = db.session.scalars(payments_query).all()
+    return render_template(
+        "user/profile.html",
+        user=user,
+        payments=payments,
+    )
+
+
+@bp.route("/logo-upload", methods=["GET", "POST"])
+@login_required
+def logo_upload():
+    image_upload(current_user)
+    return {}, 200
+
+
+@bp.route("/edit_email")
+@login_required
+def edit_email():
+    return render_template("user/email_edit.html", user=current_user)
+
+
+@bp.route("/save_email", methods=["GET", "POST"])
+@login_required
+def save_email():
+    user: m.User = current_user
+
+    form = f.EmailEditForm()
+    if form.validate_on_submit():
+        user.email = form.email.data
+        user.save()
+
+    return render_template("user/email_save.html", user=user)
+
+
+@bp.route("/edit_phone")
+@login_required
+def edit_phone():
+    return render_template("user/phone_edit.html", user=current_user)
+
+
+@bp.route("/save_phone", methods=["GET", "POST"])
+@login_required
+def save_phone():
+    user: m.User = current_user
+
+    form = f.PhoneEditForm()
+    if form.validate_on_submit():
+        user.phone = form.phone.data
+        user.save()
+
+    return render_template("user/phone_save.html", user=user)
+
+
+@bp.route("/edit_card")
+@login_required
+def edit_card():
+    return render_template("user/card_edit.html", user=current_user)
+
+
+@bp.route("/save_card", methods=["GET", "POST"])
+@login_required
+def save_card():
+    user: m.User = current_user
+
+    form = f.CardEditForm()
+    if form.validate_on_submit():
+        user.card = form.card.data
+        user.save()
+
+    return render_template("user/card_save.html", user=user)

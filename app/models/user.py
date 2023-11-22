@@ -6,6 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
+from .users_events import users_events
 
 
 from enum import Enum
@@ -16,10 +17,12 @@ from app import schema as s
 
 
 if TYPE_CHECKING:
+    from .picture import Picture
     from .ticket import Ticket
     from .notification import Notification
     from .review import Review
     from .room import Room
+    from .event import Event
 
 
 class UserRole(Enum):
@@ -57,13 +60,10 @@ class User(db.Model, UserMixin, ModelMixin):
         unique=True,
         nullable=False,
     )
-    image: orm.Mapped[bytes] = orm.mapped_column(sa.LargeBinary, nullable=True)
-    email: orm.Mapped[str] = orm.mapped_column(
-        sa.String(255),
-        unique=True,
-        nullable=False,
-    )
-    password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(255), default="")
+    email: orm.Mapped[str] = orm.mapped_column(sa.String(256))
+    phone: orm.Mapped[str] = orm.mapped_column(sa.String(32))
+    card: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
@@ -77,12 +77,12 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.String(64),
         default=gen_password_reset_id,
     )
-
     role: orm.Mapped[str] = orm.mapped_column(
         sa.String(32), default=UserRole.client.value
     )
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
-    # TODO: two different tables (two secondary tables)
+    picture: orm.Mapped["Picture"] = orm.relationship()
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
         foreign_keys="Ticket.seller_id",
         back_populates="seller",
@@ -112,6 +112,10 @@ class User(db.Model, UserMixin, ModelMixin):
     buyer_chat_rooms: orm.Mapped[list["Room"]] = orm.relationship(
         foreign_keys="Room.buyer_id",
         back_populates="buyer",
+    )
+    subscribed_events: orm.Mapped[list["Event"]] = orm.relationship(
+        secondary=users_events,
+        back_populates="subscribers",
     )
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 

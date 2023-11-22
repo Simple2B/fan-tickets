@@ -1,0 +1,7 @@
+<form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
+    hx-swap="innerHTML">
+    <input name="email" type="email" id="email_input" type="text" value="{{user.email}}">
+    <button type="submit" class="bg-blue-300 text-white py-1 px-2 rounded-md">
+        save
+    </button>
+</form>
