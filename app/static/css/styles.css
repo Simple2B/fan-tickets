@@ -2570,14 +2570,6 @@ input:checked + .toggle-bg {
   color: red;
 }
 
-.color-amarelo {
-  color: #f2b705;
-}
-
-.color-dark-black {
-  color: #1c1c1c;
-}
-
 .hover\:border-blue-800:hover {
   --tw-border-opacity: 1;
   border-color: rgb(30 66 159 / var(--tw-border-opacity));
