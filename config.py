@@ -41,6 +41,7 @@ class BaseConfig(BaseSettings):
     # Pagination
     DEFAULT_PAGE_SIZE: int
     PAGE_LINKS_NUMBER: int
+    EVENTS_PER_PAGE: int
 
     # API
     IS_API: bool = False

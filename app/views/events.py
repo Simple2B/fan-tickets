@@ -1,7 +1,10 @@
 from datetime import datetime
+
+from flask import current_app as app
 from flask import request, Blueprint, render_template
-from app import models as m, db
+
 from app import schema as s
+from app import models as m, db
 from app.logger import log
 
 
@@ -9,12 +12,13 @@ events_blueprint = Blueprint("events", __name__, url_prefix="/events")
 
 
 def get_filter_events():
-    events_per_page = 3
+    EVENTS_PER_PAGE: int = app.config["EVENTS_PER_PAGE"]
+    events_on_page = EVENTS_PER_PAGE
     event_filter = s.EventFilter.model_validate(dict(request.args))
     categories = request.args.getlist("categories")
     date_format = "%m/%d/%Y"
 
-    events_query = m.Event.select().limit(events_per_page)
+    events_query = m.Event.select().limit(events_on_page)
 
     if event_filter.location:
         events_query = events_query.where(
@@ -22,7 +26,7 @@ def get_filter_events():
         )
 
         log(log.INFO, "Applied location filter: [%s]", event_filter.location)
-    if len(categories) > 0:
+    if categories:
         events_query = events_query.filter(
             m.Event.category.has(m.Category.name.in_(categories))
         )
@@ -30,7 +34,7 @@ def get_filter_events():
         log(log.INFO, "Applied categories filter: [%s]", categories)
     if event_filter.event_per_page:
         limit_events = event_filter.event_per_page
-        limit_events += events_per_page
+        limit_events += events_on_page
         events_query = events_query.limit(limit_events)
 
         log(
