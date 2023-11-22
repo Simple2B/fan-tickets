@@ -18,43 +18,45 @@ def image_upload(user: m.User = None):
 
     Currently the default format of the image is PNG.
     """
-    if request.method == "POST":
-        # Upload image image file
-        file = request.files["file"]
-        log(log.INFO, "File uploaded: [%s]", file)
+    if request.method != "POST":
+        return
 
-        IMAGE_MAX_WIDTH = app.config["IMAGE_MAX_WIDTH"]
-        img = Image.open(file.stream)
-        width, height = img.size
+    # Upload image image file
+    file = request.files["file"]
+    log(log.INFO, "File uploaded: [%s]", file)
 
-        if width > IMAGE_MAX_WIDTH:
-            log(log.INFO, "Resizing image")
-            ratio = IMAGE_MAX_WIDTH / width
-            new_width = IMAGE_MAX_WIDTH
-            new_height = int(height * ratio)
-            resized_img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-            img = resized_img
+    IMAGE_MAX_WIDTH = app.config["IMAGE_MAX_WIDTH"]
+    img = Image.open(file.stream)
+    width, height = img.size
 
-        try:
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format="PNG")
-            img_byte_arr = img_byte_arr.getvalue()
-        except Exception as e:
-            log(log.ERROR, "Error saving image: [%s]", e)
-            flash("Error saving image", "danger")
-            return {"error": "Error saving img_byte_arr"}, 400
+    if width > IMAGE_MAX_WIDTH:
+        log(log.INFO, "Resizing image")
+        ratio = IMAGE_MAX_WIDTH / width
+        new_width = IMAGE_MAX_WIDTH
+        new_height = int(height * ratio)
+        resized_img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        img = resized_img
 
-        try:
-            picture = m.Picture(
-                filename=file.filename.split("/")[-1],
-                file=img_byte_arr,
-            ).save()
-            user.picture_id = picture.id
-            user.save()
-            log(log.INFO, "Uploaded image for user: [%s]", user)
-            flash("Logo uploaded", "success")
-            return {}, 200
-        except Exception as e:
-            log(log.ERROR, "Error saving image: [%s]", e)
-            flash("Error saving image", "danger")
-            return {"error": "Error saving picture"}, 400
+    try:
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format="PNG")
+        img_byte_arr = img_byte_arr.getvalue()
+    except Exception as e:
+        log(log.ERROR, "Error saving image: [%s]", e)
+        flash("Error saving image", "danger")
+        return {"error": "Error saving img_byte_arr"}, 400
+
+    try:
+        picture = m.Picture(
+            filename=file.filename.split("/")[-1],
+            file=img_byte_arr,
+        ).save()
+        user.picture_id = picture.id
+        user.save()
+        log(log.INFO, "Uploaded image for user: [%s]", user)
+        flash("Logo uploaded", "success")
+        return {}, 200
+    except Exception as e:
+        log(log.ERROR, "Error saving image: [%s]", e)
+        flash("Error saving image", "danger")
+        return {"error": "Error saving picture"}, 400
