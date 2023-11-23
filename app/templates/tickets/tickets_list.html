@@ -2,8 +2,8 @@
 {% if tickets|length == 0 %}
 {% include "tickets/no_tickets_header.html" %}
 {% else %}
-<div class="self-stretch flex flex-col gap-8">
-    <div class="grid grid-cols-3 gap-8" id="tickets-list">
+<div class="self-stretch flex flex-col gap-8" id="tickets-list">
+    <div class="grid grid-cols-2 gap-8">
         <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" />
         {% for ticket in tickets %}
         <a class="flex-grow" href="">

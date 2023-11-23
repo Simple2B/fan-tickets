@@ -7,9 +7,12 @@ tickets_blueprint = Blueprint("tickets", __name__, url_prefix="/tickets")
 
 @tickets_blueprint.route("/", methods=["GET", "POST"])
 def get_all():
+    tickets_limit = 10
+    if request.args.get("tickets_per_page"):
+        tickets_limit += int(request.args.get("tickets_per_page"))
     location_name = request.args.get("location")
     category_name = request.args.get("categories")
-    tickets_query = m.Ticket.select()
+    tickets_query = m.Ticket.select().limit(tickets_limit)
 
     if location_name:
         location_query = m.Location.select().where(m.Location.name == location_name)
@@ -38,6 +41,7 @@ def get_all():
         or request.args.get("location")
         or request.args.get("date_from")
         or request.args.get("date_to")
+        or request.args.get("tickets_per_page")
     ):
         template = "tickets/tickets_list.html"
     else:
