@@ -142,6 +142,7 @@ function handleImageUpload(file: File) {
   reader.readAsDataURL(file);
 }
 
+// function to make dropdowns in user profile
 function openCloseDropdown(
   button: HTMLButtonElement,
   container: HTMLDivElement,
@@ -151,16 +152,6 @@ function openCloseDropdown(
   container.classList.contains('dropdown-close')
     ? (button.innerHTML = 'Mostrar')
     : (button.innerHTML = 'Ocultar');
-}
-
-function maskCardNumber(cardNumber: string) {
-  if (cardNumber.length === 16) {
-    cardNumber = cardNumber.replace(
-      /(\d{4})(\d{0,2})(\d{0,4})(\d{0,4}).*/,
-      '$1 - $2** - **** - $4',
-    );
-  }
-  return cardNumber;
 }
 
 const subscribeButton: HTMLButtonElement = document.querySelector(
