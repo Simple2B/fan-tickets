@@ -48,4 +48,5 @@ def test_user_profile(client: FlaskClient):
     login(client)
     response = client.get("/user/profile")
     assert response.status_code == 200
-    # assert "Profile" in response.data.decode()
+    assert "profile" in response.data.decode()
+    assert "Endereço de Email" in response.data.decode()
