@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         concert: "url('/static/img/concert.png')",
-        'concert-blur': "url('/static/img/concert-blur.png')",
+        'concert-blur': "url('/static/img/blur-trim-concert.png')",
         'ticket-outline': "url('/static/img/ticket-outline.svg')",
         'dark-rectangle-line':
           "url('/static/img/background_dark_rectangle.png')",
