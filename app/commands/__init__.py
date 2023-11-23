@@ -90,3 +90,10 @@ def init(app: Flask):
     def activated_users():
         query = m.User.select().where(m.User.activated.is_(True))
         print(db.session.scalars(query).all())
+
+    @app.cli.command("get-tickets")
+    def get_tickets():
+        query = m.Ticket.select()
+        tickets = db.session.scalars(query).all()
+        for ticket in tickets:
+            print(ticket, ticket.quantity)

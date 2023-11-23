@@ -1,4 +1,4 @@
-from app.models import User
+from app.models import User, NotificationsConfig
 
 TEST_ADMIN_NAME = "bob"
 TEST_ADMIN_EMAIL = "bob@test.com"
@@ -20,6 +20,8 @@ def register(
     user.password = password
     user.activated = True
     user.save()
+
+    NotificationsConfig(user_id=user.id).save()
     return user.id
 
 
