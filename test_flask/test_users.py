@@ -38,10 +38,10 @@ def test_create_admin(runner: FlaskCliRunner):
 
 def test_delete_user(client: FlaskClient):
     login(client)
-    uc = db.session.query(m.User).count()
+    user: m.User = db.session.scalar(m.User.select())
     response = client.delete("/user/delete/1")
-    assert db.session.query(m.User).count() < uc
     assert response.status_code == 200
+    assert user.activated is False
 
 
 def test_user_profile(client: FlaskClient):
@@ -50,3 +50,108 @@ def test_user_profile(client: FlaskClient):
     assert response.status_code == 200
     assert "profile" in response.data.decode()
     assert "Endereço de Email" in response.data.decode()
+
+
+def test_user_email_edit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+    response = client.get("/user/profile")
+    assert response.status_code == 200
+    assert user.username in response.data.decode()
+    assert user.email in response.data.decode()
+
+    response = client.get("/user/edit_email")
+    assert response.status_code == 200
+
+    response = client.post(
+        "/user/save_email",
+        data={"email": "new@email.com"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert user.email == "new@email.com"
+
+
+def test_user_phone_edit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+    response = client.get("/user/edit_phone")
+    assert response.status_code == 200
+
+    response = client.post(
+        "/user/save_phone",
+        data={"phone": "123456789"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert user.phone == "123456789"
+
+
+def test_user_card_edit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    response = client.get("/user/edit_card")
+    assert response.status_code == 200
+
+    response = client.post(
+        "/user/save_card",
+        data={"card": "0000111122223333"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert user.card == "0000111122223333"
+
+
+def test_user_notifications_edit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+    assert user.notifications_config.new_event
+    assert user.notifications_config.new_ticket
+    assert user.notifications_config.new_message
+    assert user.notifications_config.new_buyers_payment
+    assert user.notifications_config.your_payment_received
+    assert user.notifications_config.ticket_transfer_confirmed
+    assert user.notifications_config.dispute_started
+    assert user.notifications_config.dispute_resolved
+
+    notification_data = dict(
+        new_message=True,
+        new_buyers_payment=True,
+    )
+    response = client.post(
+        "/user/set_notifications",
+        data=notification_data,
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+
+    assert not user.notifications_config.new_event
+    assert not user.notifications_config.new_ticket
+    assert user.notifications_config.new_message
+    assert user.notifications_config.new_buyers_payment
+    assert not user.notifications_config.your_payment_received
+    assert not user.notifications_config.ticket_transfer_confirmed
+    assert not user.notifications_config.dispute_started
+    assert not user.notifications_config.dispute_resolved
+
+
+def test_user_export_data(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    response = client.get("/user/export")
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "text/csv; charset=utf-8"
+    assert response.headers["Content-Disposition"].startswith("attachment;")
+    assert user.username in response.data.decode()
+    assert user.email in response.data.decode()
+
+
+def test_user_deactivate_account(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    response = client.get("/user/deactivate")
+    assert response.status_code == 302
+    assert user.activated is False

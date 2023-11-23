@@ -102,15 +102,16 @@ def create():
 @bp.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete(id: int):
-    u = db.session.scalar(m.User.select().where(m.User.id == id))
-    if not u:
+    user_query = m.User.select().where(m.User.id == id)
+    user: m.User = db.session.scalar(user_query)
+    if not user:
         log(log.INFO, "There is no user with id: [%s]", id)
         flash("There is no such user", "danger")
         return "no user", 404
 
-    db.session.delete(u)
-    db.session.commit()
-    log(log.INFO, "User deleted. User: [%s]", u)
+    user.activated = False
+    user.save()
+    log(log.INFO, "User deleted. User: [%s]", user)
     flash("User deleted!", "success")
     return "ok", 200
 
@@ -123,7 +124,7 @@ def deactivate():
     user.save()
     log(log.INFO, "User deactivated. User: [%s]", user)
     flash("User deactivated!", "success")
-    return redirect(url_for("user.user_profile"))
+    return redirect(url_for("auth.login"))
 
 
 @bp.route("/profile", methods=["GET"])
