@@ -18,6 +18,7 @@ def register(
     user.phone = phone
     user.card = card
     user.password = password
+    user.activated = True
     user.save()
     return user.id
 

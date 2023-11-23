@@ -65,7 +65,8 @@
           </div>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ user.tickets_for_sale | length }}
+          <!-- {{ user.tickets_for_sale | length }} -->
+          {{user.role}}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           <button type="button" data-target="{{user.json}}"
@@ -88,6 +89,7 @@
             Delete user
           </button>
         </td>
+        <td>{{user.activated}}</td>
       </tr>
       {% endfor %}
     </tbody>

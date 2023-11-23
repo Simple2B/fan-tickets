@@ -1,3 +1,6 @@
+import io
+from datetime import datetime
+import csv
 from flask import (
     Blueprint,
     render_template,
@@ -5,6 +8,7 @@ from flask import (
     flash,
     redirect,
     url_for,
+    send_file,
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
@@ -111,6 +115,17 @@ def delete(id: int):
     return "ok", 200
 
 
+@bp.route("/deactivate", methods=["GET"])
+@login_required
+def deactivate():
+    user: m.User = current_user
+    user.activated = False
+    user.save()
+    log(log.INFO, "User deactivated. User: [%s]", user)
+    flash("User deactivated!", "success")
+    return redirect(url_for("user.user_profile"))
+
+
 @bp.route("/profile", methods=["GET"])
 @login_required
 def user_profile():
@@ -213,3 +228,39 @@ def set_notifications():
         log(log.ERROR, "Notifications settings save errors: [%s]", form.errors)
         flash(f"{form.errors}", "danger")
     return render_template("user/notifications_save.html", user=user)
+
+
+@bp.route("/export", methods=["GET", "POST"])
+@login_required
+def export():
+    with io.StringIO() as proxy:
+        writer = csv.writer(proxy)
+        row = [
+            "username",
+            "email",
+            "phone",
+            "card",
+        ]
+        writer.writerow(row)
+        row = [
+            current_user.username,
+            current_user.email,
+            current_user.phone,
+            current_user.card,
+        ]
+        writer.writerow(row)
+
+        # Creating the byteIO object from the StringIO Object
+        file_bytes = io.BytesIO()
+        file_bytes.write(proxy.getvalue().encode("utf-8"))
+        file_bytes.seek(0)
+
+    now = datetime.now()
+    return send_file(
+        file_bytes,
+        as_attachment=True,
+        download_name=f"report_{current_user.username}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+        mimetype="text/csv",
+        max_age=0,
+        last_modified=now,
+    )

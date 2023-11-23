@@ -36,6 +36,8 @@ def init(app: Flask):
             phone="+380000000000",
             card="0000000000000000",
             password=app.config["ADMIN_PASSWORD"],
+            activated=True,
+            role=m.UserRole.admin.value,
         ).save()
         print("admin created")
 
@@ -83,3 +85,8 @@ def init(app: Flask):
         user.save()
 
         print(user.subscribed_events)
+
+    @app.cli.command("activated-users")
+    def activated_users():
+        query = m.User.select().where(m.User.activated.is_(True))
+        print(db.session.scalars(query).all())

@@ -53,7 +53,7 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
         dns_org = fake.random_choices(elements=DOMAINS, length=1)[0]
         email = f"{first_name.lower()}.{last_name.lower()}@{company.lower()}.{dns_org}"
         role = m.UserRole.admin if i < 3 else m.UserRole.client
-        activated = True if i - num_objects == 3 else False
+        # activated = True if i - num_objects == 3 else False
         user = m.User(
             username=f"{first_name}{last_name}{randint(10, 99)}",
             email=email,
@@ -61,14 +61,15 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             card=faker.random_number(digits=16, fix_len=True),
             role=role.value,
             password="pass",
-            activated=activated,
-        )
-        db.session.add(user)
-        db.session.flush()
+            activated=True,
+        ).save()
+        # db.session.add(user)
+        # db.session.flush()
         log(log.INFO, "User generated: [%s]", user)
 
-        notification_config = m.NotificationsConfig(user_id=user.id)
-        db.session.add(notification_config)
+        # notification_config = m.NotificationsConfig(user_id=user.id)
+        # db.session.add(notification_config)
+        m.NotificationsConfig(user_id=user.id).save()
     db.session.commit()
     users_number = m.User.count()
     log(log.INFO, "[%d] users generated", users_number)

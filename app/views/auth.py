@@ -61,7 +61,7 @@ def login():
     if form.validate_on_submit():
         user = m.User.authenticate(form.user_id.data, form.password.data)
         log(log.INFO, "Form submitted. User: [%s]", user)
-        if user:
+        if user and user.activated:
             login_user(user)
             log(log.INFO, "Login successful.")
             flash("Login successful.", "success")
