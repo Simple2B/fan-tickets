@@ -11,7 +11,7 @@ def get_all():
     if request.args.get("tickets_per_page"):
         tickets_limit += int(request.args.get("tickets_per_page"))
     location_name = request.args.get("location")
-    category_name = request.args.get("categories")
+    categories = request.args.getlist("categories")
     tickets_query = m.Ticket.select().limit(tickets_limit)
 
     if location_name:
@@ -19,10 +19,13 @@ def get_all():
         location = db.session.scalar(location_query)
         tickets_query = tickets_query.where(m.Ticket.event.has(location_id=location.id))
 
-    if category_name:
-        category_query = m.Category.select().where(m.Category.name == category_name)
-        category = db.session.scalar(category_query)
-        tickets_query = tickets_query.where(m.Ticket.event.has(category_id=category.id))
+    if categories:
+        tickets_query = (
+            db.session.query(m.Ticket)
+            .join(m.Event)
+            .join(m.Category)
+            .filter(m.Category.name.in_(categories))
+        )
 
     if request.args.get("date_from"):
         tickets_query = tickets_query.where(
