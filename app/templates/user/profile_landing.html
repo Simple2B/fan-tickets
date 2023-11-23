@@ -1,5 +1,5 @@
 {% extends 'landing/base.html' %} {% block main_content %}
-<div class="flex flex-col gap-8">
+<div class="mt-16 flex flex-col gap-8">
   <div class="relative self-center" id="profile_image">
     <button
       class="bottom-0 right-0 absolute"
@@ -52,8 +52,29 @@
         </div>
 
         <div class="py-8 border-b border-grey">
-          <p class="font-medium text-3xl">Seguindo</p>
-          {{ user.subscribed_events }}
+          <p class="mb-3 font-medium text-3xl">Seguindo</p>
+          <p class="mb-4 text-grey">
+            Uma visão geral de tudo o que você segue na FanTicket
+          </p>
+          <div
+            id="user-profile-subscribe-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
+            {% for subscribe in user.subscribed_events %}
+            <div class="flex gap-6">
+              <!-- prettier-ignore -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <rect width="24" height="24" rx="12" fill="#5D4B15"/> <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
+              <p>
+                <!-- prettier-ignore -->
+                {{ subscribe.name }} - {{ subscribe.date_time.strftime('%a, %d %b') }}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+          <button
+            class="text-secondary underline"
+            id="user-profile-subscribe-btn">
+            Mostrar
+          </button>
         </div>
 
         <div class="py-8">
@@ -86,23 +107,29 @@
           <p class="mb-4 text-grey">
             Uma visão geral de todos os seus pagamentos
           </p>
-          {% for payment in payments %}
-          <p>{{ payment }}</p>
-          {% endfor %}
-          <p>card:</p>
-          <form
-            method="post"
-            id="profile_card"
-            hx-post="{{ url_for('user.save_card') }}"
-            hx-target="#profile_card"
-            hx-swap="innerHTML">
-            {% include 'user/card_save.html' %}
-          </form>
+          <div
+            id="user-profile-payment-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
+            {% for payment in payments %}
+            <div class="flex gap-6">
+              <!-- prettier-ignore -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <rect width="24" height="24" rx="12" fill="#5D4B15"/> <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
+              <p>
+                {{ payment.ticket.event.name }} - {{
+                payment.ticket.event.date_time.strftime('%a, %d %b') }}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+          <button
+            class="text-secondary underline"
+            id="user-profile-payment-btn">
+            Mostrar
+          </button>
         </div>
 
         <div class="py-8 border-b border-grey">
           <p class="mb-3 font-medium text-3xl">Dados bancários</p>
-          <p class="mb-4 text-grey">123-445-</p>
           <form
             method="post"
             id="profile_card"
@@ -111,15 +138,6 @@
             hx-swap="innerHTML">
             {% include 'user/card_save.html' %}
           </form>
-        </div>
-
-        <div class="flex">
-          <a class="m-2 cursor-pointer" href="{{url_for('user.export')}}">
-            export my data
-          </a>
-          <a class="m-2 cursor-pointer" href="{{url_for('user.deactivate')}}">
-            delete my account
-          </a>
         </div>
       </div>
     </div>
@@ -132,7 +150,15 @@
           <p class="mb-4 text-grey">
             Controle quais e-mails você deseja receber
           </p>
-          {% include 'user/notifications_save.html' %}
+
+          <div
+            id="user-profile-email-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
+            {% include 'user/notifications_save.html' %}
+          </div>
+          <button class="text-secondary underline" id="user-profile-email-btn">
+            Mostrar
+          </button>
         </div>
 
         <div class="pt-8">

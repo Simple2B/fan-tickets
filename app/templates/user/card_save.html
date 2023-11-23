@@ -1,4 +1,6 @@
-<p>{{ user.card }}</p>
+<p id="user-profile-card-number" class="mb-4 text-grey">
+  {{ card_mask(user.card) }}
+</p>
 <button
   class="text-secondary underline"
   hx-get="{{ url_for('user.edit_card') }}"
