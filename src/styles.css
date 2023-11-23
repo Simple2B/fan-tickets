@@ -42,3 +42,18 @@
 .bg-footer {
   background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
 }
+
+/* .scroll-container {
+  width: 300px;
+  height: 264px;
+  overflow: hidden;
+}
+
+.scroll-modules {
+  height: 264px;
+  padding: 5px;
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+} */
