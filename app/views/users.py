@@ -133,7 +133,7 @@ def user_profile():
     payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
     payments = db.session.scalars(payments_query).all()
     return render_template(
-        "user/profile.html",
+        "user/profile_landing.html",
         user=user,
         payments=payments,
     )
