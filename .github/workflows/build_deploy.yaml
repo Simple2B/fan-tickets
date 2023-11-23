@@ -15,20 +15,6 @@ env:
   DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
-  on-develop-branch-check:
-    runs-on: Linux
-    outputs:
-      on_develop: ${{ steps.contains_tag.outputs.retval }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: rickstaa/action-contains-tag@v1
-        id: contains_tag
-        with:
-          reference: "develop"
-          tag: "${{ github.ref }}"
-
   test:
     name: Test
     runs-on: Linux
@@ -106,9 +92,8 @@ jobs:
     name: Deploy to staging
     runs-on: Linux
     needs:
-      - on-develop-branch-check
       - build
-    if: ${{ needs.on-develop-branch-check.outputs.on_develop == 'true' }}
+
     steps:
       - uses: actions/checkout@v3
       - name: update compose file
