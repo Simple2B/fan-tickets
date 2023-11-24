@@ -7,12 +7,17 @@ tickets_blueprint = Blueprint("tickets", __name__, url_prefix="/tickets")
 
 @tickets_blueprint.route("/", methods=["GET", "POST"])
 def get_all():
+    search_query = request.args.get("q")
     tickets_limit = 10
     if request.args.get("tickets_per_page"):
         tickets_limit += int(request.args.get("tickets_per_page"))
     location_name = request.args.get("location")
     categories = request.args.getlist("categories")
     tickets_query = m.Ticket.select().limit(tickets_limit)
+    if search_query:
+        tickets_query = tickets_query.where(
+            m.Ticket.event.has(m.Event.name.ilike(f"%{search_query}%"))
+        )
 
     if location_name:
         location_query = m.Location.select().where(m.Location.name == location_name)
@@ -40,7 +45,8 @@ def get_all():
     tickets = db.session.scalars(tickets_query).all()
 
     if (
-        request.args.get("categories")
+        request.args.get("q")
+        or request.args.get("categories")
         or request.args.get("location")
         or request.args.get("date_from")
         or request.args.get("date_to")
