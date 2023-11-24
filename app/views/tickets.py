@@ -13,7 +13,8 @@ def get_all():
         tickets_limit += int(request.args.get("tickets_per_page"))
     location_name = request.args.get("location")
     categories = request.args.getlist("categories")
-    tickets_query = m.Ticket.select().limit(tickets_limit)
+    tickets_query = m.Ticket.select()
+
     if search_query:
         tickets_query = tickets_query.where(
             m.Ticket.event.has(m.Event.name.ilike(f"%{search_query}%"))
@@ -40,6 +41,9 @@ def get_all():
         tickets_query = tickets_query.where(
             m.Ticket.event.date_time <= request.args.get("date_to")
         )
+
+    tickets_query = tickets_query.limit(tickets_limit)
+
     categories = db.session.scalars(m.Category.select())
     locations = db.session.scalars(m.Location.select())
     tickets = db.session.scalars(tickets_query).all()

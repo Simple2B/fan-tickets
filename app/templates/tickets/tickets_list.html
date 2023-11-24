@@ -8,7 +8,7 @@
 
 <div class="self-stretch flex flex-col gap-8" id="tickets-list">
     <div class="grid grid-cols-2 gap-8">
-        <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" />
+        <!-- <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" /> -->
         {% for ticket in tickets %}
         <a class="flex-grow" href="">
             <div class="flex justify-between px-6 py-4 bg-dark-grey rounded-2xl">
@@ -37,7 +37,8 @@
     </div>
     <p>{{ all_filters }}</p>
     <a class="flex gap-4 justify-center items-center cursor-pointer" hx-trigger="click" hx-swap="innerHTML"
-        hx-target="#tickets-list" hx-include="{{ all_filters }}" hx-get="{{ url_for('tickets.get_all' ) }}">
+        hx-target="#tickets-list" hx-include="{{ all_filters }}"
+        hx-get="{{ url_for('tickets.get_all', tickets_per_page=tickets|length) }}">
         <!-- prettier-ignore -->
         <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none">
             <circle cx="20.5" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
