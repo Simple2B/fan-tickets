@@ -141,3 +141,53 @@ function handleImageUpload(file: File) {
   };
   reader.readAsDataURL(file);
 }
+
+function openCloseDropdown(
+  button: HTMLButtonElement,
+  container: HTMLDivElement,
+) {
+  container.classList.toggle('dropdown-close');
+  container.classList.toggle('dropdown-open');
+  container.classList.contains('dropdown-close')
+    ? (button.innerHTML = 'Mostrar')
+    : (button.innerHTML = 'Ocultar');
+}
+
+function maskCardNumber(cardNumber: string) {
+  if (cardNumber.length === 16) {
+    cardNumber = cardNumber.replace(
+      /(\d{4})(\d{0,2})(\d{0,4})(\d{0,4}).*/,
+      '$1 - $2** - **** - $4',
+    );
+  }
+  return cardNumber;
+}
+
+const subscribeButton: HTMLButtonElement = document.querySelector(
+  '#user-profile-subscribe-btn',
+);
+const paymentButton: HTMLButtonElement = document.querySelector(
+  '#user-profile-payment-btn',
+);
+const emailButton: HTMLButtonElement = document.querySelector(
+  '#user-profile-email-btn',
+);
+const subscribeContainer: HTMLDivElement = document.querySelector(
+  '#user-profile-subscribe-container',
+);
+const paymentContainer: HTMLDivElement = document.querySelector(
+  '#user-profile-payment-container',
+);
+const emailContainer: HTMLDivElement = document.querySelector(
+  '#user-profile-email-container',
+);
+
+subscribeButton.addEventListener('click', () => {
+  openCloseDropdown(subscribeButton, subscribeContainer);
+});
+paymentButton.addEventListener('click', () => {
+  openCloseDropdown(paymentButton, paymentContainer);
+});
+emailButton.addEventListener('click', () => {
+  openCloseDropdown(emailButton, emailContainer);
+});

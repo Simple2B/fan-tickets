@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from .review import Review
     from .room import Room
     from .event import Event
+    from .notifications_config import NotificationsConfig
 
 
 class UserRole(Enum):
@@ -93,6 +94,10 @@ class User(db.Model, UserMixin, ModelMixin):
     )
     notifications: orm.Mapped[list["Notification"]] = orm.relationship(
         back_populates="user",
+    )
+
+    notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(
+        back_populates="user"
     )
 
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(

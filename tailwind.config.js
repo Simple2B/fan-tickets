@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         concert: "url('/static/img/concert.png')",
-        'concert-blur': "url('/static/img/concert-blur.png')",
+        'concert-blur': "url('/static/img/blur-trim-concert.png')",
         'ticket-outline': "url('/static/img/ticket-outline.svg')",
         'dark-rectangle-line':
           "url('/static/img/background_dark_rectangle.png')",
@@ -29,6 +29,7 @@ module.exports = {
       colors: ({colors}) => ({
         primary: '#fff',
         secondary: '#f2b705',
+        black: '#1c1c1c',
         'ultra-black': '#151515',
         'light-grey': '#a9a9a9',
         grey: '#99a1a3',
