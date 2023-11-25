@@ -1,3 +1,6 @@
+import io
+from datetime import datetime
+import csv
 from flask import (
     Blueprint,
     render_template,
@@ -5,6 +8,7 @@ from flask import (
     flash,
     redirect,
     url_for,
+    send_file,
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
@@ -98,17 +102,29 @@ def create():
 @bp.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete(id: int):
-    u = db.session.scalar(m.User.select().where(m.User.id == id))
-    if not u:
+    user_query = m.User.select().where(m.User.id == id)
+    user: m.User = db.session.scalar(user_query)
+    if not user:
         log(log.INFO, "There is no user with id: [%s]", id)
         flash("There is no such user", "danger")
         return "no user", 404
 
-    db.session.delete(u)
-    db.session.commit()
-    log(log.INFO, "User deleted. User: [%s]", u)
+    user.activated = False
+    user.save()
+    log(log.INFO, "User deleted. User: [%s]", user)
     flash("User deleted!", "success")
     return "ok", 200
+
+
+@bp.route("/deactivate", methods=["GET"])
+@login_required
+def deactivate():
+    user: m.User = current_user
+    user.activated = False
+    user.save()
+    log(log.INFO, "User deactivated. User: [%s]", user)
+    flash("User deactivated!", "success")
+    return redirect(url_for("auth.login"))
 
 
 @bp.route("/profile", methods=["GET"])
@@ -118,7 +134,7 @@ def user_profile():
     payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
     payments = db.session.scalars(payments_query).all()
     return render_template(
-        "user/profile.html",
+        "user/profile_landing.html",
         user=user,
         payments=payments,
     )
@@ -186,3 +202,66 @@ def save_card():
         user.save()
 
     return render_template("user/card_save.html", user=user)
+
+
+@bp.route("/set_notifications", methods=["GET", "POST"])
+@login_required
+def set_notifications():
+    form = f.NotificationsConfigForm()
+    if form.validate_on_submit():
+        user: m.User = current_user
+        user.notifications_config.new_event = form.new_event.data
+        user.notifications_config.new_ticket = form.new_ticket.data
+        user.notifications_config.new_message = form.new_message.data
+        user.notifications_config.new_buyers_payment = form.new_buyers_payment.data
+        user.notifications_config.your_payment_received = (
+            form.your_payment_received.data
+        )
+        user.notifications_config.ticket_transfer_confirmed = (
+            form.ticket_transfer_confirmed.data
+        )
+        user.notifications_config.dispute_started = form.dispute_started.data
+        user.notifications_config.dispute_resolved = form.dispute_resolved.data
+        user.save()
+        log(log.INFO, "Notifications settings saved. User: [%s]", user)
+        flash("Notifications settings saved!", "success")
+    else:
+        log(log.ERROR, "Notifications settings save errors: [%s]", form.errors)
+        flash(f"{form.errors}", "danger")
+    return render_template("user/notifications_save.html", user=user)
+
+
+@bp.route("/export", methods=["GET", "POST"])
+@login_required
+def export():
+    with io.StringIO() as proxy:
+        writer = csv.writer(proxy)
+        row = [
+            "username",
+            "email",
+            "phone",
+            "card",
+        ]
+        writer.writerow(row)
+        row = [
+            current_user.username,
+            current_user.email,
+            current_user.phone,
+            current_user.card,
+        ]
+        writer.writerow(row)
+
+        # Creating the byteIO object from the StringIO Object
+        file_bytes = io.BytesIO()
+        file_bytes.write(proxy.getvalue().encode("utf-8"))
+        file_bytes.seek(0)
+
+    now = datetime.now()
+    return send_file(
+        file_bytes,
+        as_attachment=True,
+        download_name=f"report_{current_user.username}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+        mimetype="text/csv",
+        max_age=0,
+        last_modified=now,
+    )

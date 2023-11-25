@@ -3,6 +3,7 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">User's profile</p>
     {{ current_user }}
+    <p>user.activated = {{user.activated}}</p>
     <div id="profile_image">
         <img src="{{ user.picture.base64_src }}">
     </div>
@@ -49,14 +50,25 @@
                 {% include 'user/card_save.html' %}
             </form>
         </div>
-        <h3></h3>
 
-        <h3>Config</h3>
-        <p>Email notifications settings</p>
-        <p>Language</p>
+        <div class="py-3 border border-black">
+            <p>Config</p>
 
-        <p>export my data</p>
-        <p>delete my account</p>
+            {% include 'user/notifications_save.html' %}
+
+            <p>Language</p>
+            <p>Portugal</p>
+
+        </div>
+
+        <div class="flex">
+            <a class="m-2 cursor-pointer" href="{{url_for('user.export')}}">
+                export my data
+            </a>
+            <a class="m-2 cursor-pointer" href="{{url_for('user.deactivate')}}">
+                delete my account
+            </a>
+        </div>
     </div>
 
 </div>

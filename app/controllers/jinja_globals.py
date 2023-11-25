@@ -22,3 +22,7 @@ def time_delta(created_at: datetime):
 
 def cut_seconds(created_at: datetime):
     return created_at.strftime("%Y-%m-%d %H:%M")
+
+
+def card_mask(card_number: str):
+    return f"{card_number[:4]} **** **** {card_number[-4:]}"

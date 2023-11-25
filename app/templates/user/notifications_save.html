@@ -1,0 +1,138 @@
+<form
+  action="{{ url_for('user.set_notifications') }}"
+  method="post"
+  id="profile_notifications"
+  hx-post="{{ url_for('user.set_notifications') }}"
+  hx-target="#profile_notifications"
+  hx-swap="innerHTML">
+  <p class="pt-3">Email notifications settings</p>
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.new_event %}
+    <input
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      type="checkbox"
+      name="new_event"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="new_event"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>New Event</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.new_ticket %}
+    <input
+      type="checkbox"
+      name="new_ticket"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="new_ticket"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>New ticket (Subscriptions)</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.new_message %}
+    <input
+      type="checkbox"
+      name="new_message"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="new_message"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>New message</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.new_buyers_payment %}
+    <input
+      type="checkbox"
+      name="new_buyers_payment"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="new_buyers_payment"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>Buyer's payment received by the system</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.ticket_transfer_confirmed %}
+    <input
+      type="checkbox"
+      name="ticket_transfer_confirmed"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="ticket_transfer_confirmed"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>Ticket transfer confirmed</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.dispute_started %}
+    <input
+      type="checkbox"
+      name="dispute_started"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="dispute_started"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>Dispute started</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.dispute_resolved %}
+    <input
+      type="checkbox"
+      name="dispute_resolved"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="dispute_resolved"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>Dispute resolved</p>
+  </div>
+
+  <div class="flex items-center my-2">
+    {% if user.notifications_config.your_payment_received %}
+    <input
+      type="checkbox"
+      name="your_payment_received"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary"
+      checked />
+    {% else %}
+    <input
+      type="checkbox"
+      name="your_payment_received"
+      class="mx-2 text-secondary border-secondary rounded focus:ring-secondary" />
+    {% endif %}
+    <p>Your payment received by the system</p>
+  </div>
+
+  <button type="submit" class="text-secondary underline">Ahorrar</button>
+</form>

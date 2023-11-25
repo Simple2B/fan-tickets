@@ -113,3 +113,15 @@ class CardEditForm(FlaskForm):
         )
         if db.session.scalar(query):
             raise ValidationError("This card is already registered.")
+
+
+class NotificationsConfigForm(FlaskForm):
+    new_event = BooleanField("new_event")
+    new_ticket = BooleanField("new_ticket")
+    new_message = BooleanField("new_message")
+    new_buyers_payment = BooleanField("new_buyers_payment")
+    ticket_transfer_confirmed = BooleanField("ticket_transfer_confirmed")
+    your_payment_received = BooleanField("your_payment_received")
+    dispute_started = BooleanField("dispute_started")
+    dispute_resolved = BooleanField("dispute_resolved")
+    submit = SubmitField("Save")
