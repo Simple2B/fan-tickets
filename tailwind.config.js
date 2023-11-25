@@ -9,9 +9,10 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        concert: "url('/static/img/concert.png')",
-        'concert-blur': "url('/static/img/concert-blur.png')",
-        'ticket-outline': "url('/static/img/ticket-outline.svg')",
+        concert: "url('/static/img/backgrounds/concert.png')",
+        'concert-mobile': "url('/static/img/backgrounds/concert_mobile.png')",
+        'concert-blur': "url('/static/img/backgrounds/blur_trim_concert.png')",
+        'ticket-outline': "url('/static/img/icons/ticket-outline.svg')",
         'dark-rectangle-line':
           "url('/static/img/background_dark_rectangle.png')",
         'categories-event': "url('/static/img/background_categories.png')",
@@ -43,6 +44,9 @@ module.exports = {
       height: ({theme}) => ({
         600: '600px',
         264: '264px',
+      }),
+      margin: ({theme}) => ({
+        '50%': '50%',
       }),
       width: ({theme}) => ({
         728: '728px',

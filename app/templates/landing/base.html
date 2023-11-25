@@ -96,12 +96,13 @@
 {% endif %}
 {% endwith %}
     <!-- prettier-ignore -->
-    {% set background = "bg-concert" %}
-    {% if "help" in request.path %}
-        {% set background = "bg-concert" %}
+    {% set background = "concert" %}
+    {% if "help" in request.path or "profile" in request.path or "events" in request.path   %}
+        {% set background = "concert-blur" %}
     {% endif %}
     {% block body %}
-    <div class="pt-8 px-8 pb-24 bg-no-repeat bg-cover {{ background }}">
+    <div
+      class="relative pt-8 px-6 pb-24 bg-no-repeat bg-cover bg-main-mobile lg:bg-{{ background }}">
       <div class="max-w-7xl my-0 mx-auto">
         <!-- prettier-ignore -->
         {% include 'landing/header.html' %}
