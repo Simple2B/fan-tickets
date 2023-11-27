@@ -45,9 +45,13 @@ module.exports = {
       height: ({theme}) => ({
         600: '600px',
         264: '264px',
+        517: '517px',
       }),
       margin: ({theme}) => ({
         '50%': '50%',
+      }),
+      top: ({theme}) => ({
+        '60%': '50%',
       }),
       width: ({theme}) => ({
         728: '728px',

@@ -16,6 +16,11 @@
   background: linear-gradient(341deg, #393939 0.3%, #151515 32.12%);
 }
 
+.bg-main-review {
+  background: linear-gradient(0deg, #fff 0%, #fff 100%),
+    linear-gradient(270deg, #e9ecf4 81.17%, rgba(233, 236, 244, 0) 116.25%);
+}
+
 .crop-image-50 {
   width: 100%;
   height: auto;
