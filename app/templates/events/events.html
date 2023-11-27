@@ -11,7 +11,7 @@
 </div>
 
 <!-- Filters -->
-<div class="mb-8 self-start flex gap-8">
+<div class="mb-8 self-start flex flex-col lg:flex-row gap-8">
   <!-- Location   -->
   <div class="relative">
     <button
@@ -179,7 +179,7 @@
   % include "events/no_events_header.html" %}
 {% else %}
 <div class="self-stretch flex flex-col gap-8">
-  <div class="grid grid-cols-3 gap-8" id="events-list">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8" id="events-list">
     <input
       type="hidden"
       name="event_per_page"

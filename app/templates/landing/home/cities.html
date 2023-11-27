@@ -7,12 +7,9 @@
       <div class="swiper-wrapper">
         <!-- Slides -->
         <!-- prettier-ignore -->
+        {% for location in locations %}
         {% include 'landing/home/slide_city.html' %}
-          {% include 'landing/home/slide_city.html' %}
-          {% include 'landing/home/slide_city.html' %}
-          {% include 'landing/home/slide_city.html' %}
-          {% include 'landing/home/slide_city.html' %}
-          {% include 'landing/home/slide_city.html' %}
+        {% endfor %}
       </div>
       <!-- If we need navigation buttons -->
     </div>

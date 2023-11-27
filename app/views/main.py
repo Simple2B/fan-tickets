@@ -10,8 +10,8 @@ main_blueprint = Blueprint("main", __name__)
 
 @main_blueprint.route("/")
 def index():
-    events = db.session.scalars(m.Event.select().limit(8))
-    locations = db.session.scalars(m.Location.select())
+    events = db.session.scalars(m.Event.select().limit(8)).all()
+    locations = db.session.scalars(m.Location.select()).all()
     return render_template(
         "landing/home/index.html",
         events=events,

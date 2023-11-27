@@ -42,6 +42,9 @@ module.exports = {
         'dark-grey': '#2c2c2c',
         'ultra-dark-grey': '#1c1c1c',
       }),
+      fontFamily: {
+        body: ['Space Grotesk', 'sans-serif'],
+      },
       height: ({theme}) => ({
         600: '600px',
         264: '264px',
