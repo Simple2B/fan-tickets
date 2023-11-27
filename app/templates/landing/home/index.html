@@ -28,8 +28,6 @@
       class="block w-full px-9 py-4 ps-12 text-sm bg-black border rounded-2xl"
       placeholder="Busque por evento, categoria ou palavra-chave"
       required />
-    <!-- <button type="submit"
-                        class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button> -->
     <button class="absolute inset-y-0 right-0 pe-5">
       <!-- prettier-ignore -->
       <svg width="19" height="12" viewBox="0 0 19 12" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M8.5 12H10.5C11.05 12 11.5 11.55 11.5 11C11.5 10.45 11.05 10 10.5 10H8.5C7.95 10 7.5 10.45 7.5 11C7.5 11.55 7.95 12 8.5 12ZM0.5 1C0.5 1.55 0.95 2 1.5 2H17.5C18.05 2 18.5 1.55 18.5 1C18.5 0.45 18.05 0 17.5 0H1.5C0.95 0 0.5 0.45 0.5 1ZM4.5 7H14.5C15.05 7 15.5 6.55 15.5 6C15.5 5.45 15.05 5 14.5 5H4.5C3.95 5 3.5 5.45 3.5 6C3.5 6.55 3.95 7 4.5 7Z" fill="#99A1A3" /> </svg>
@@ -80,6 +78,7 @@
     <svg class="right-0" xmlns="http://www.w3.org/2000/svg" width="339" height="334" viewBox="0 0 339 334" fill="none"> <path d="M778.497 27.4106L780.205 25.7035H780.14C814.545 -6.8702 868.779 -6.29962 902.38 27.4095L902.381 27.4106C936.671 61.7013 936.67 117.227 902.382 151.405L902.38 151.406C781.866 272.032 623.265 332.347 464.882 332.347C306.5 332.347 148.011 272.033 27.384 151.406C-6.90663 117.115 -6.90499 61.589 27.3829 27.4118L27.384 27.4106C61.6747 -6.88002 117.201 -6.87838 151.378 27.4095L151.379 27.4106C324.277 200.309 605.599 200.309 778.497 27.4106Z" stroke="url(#paint0_linear_145_4081)" stroke-width="2"/> <defs> <linearGradient id="paint0_linear_145_4081" x1="464.882" y1="0.693115" x2="464.882" y2="333.347" gradientUnits="userSpaceOnUse"> <stop stop-color="#F2B705"/> <stop offset="1" stop-color="#F2B705" stop-opacity="0"/> </linearGradient> </defs> </svg>
   </div>
 </section>
+<!-- TODO: Move to one separate component if client doesn't want to change -->
 <section class="hidden lg:block relative bg-main-events">
   <img
     id="home-event-left-image"
@@ -187,13 +186,14 @@
   </div>
 </section>
 {% endblock %} {% block scripts %}
+<!-- TODO: Move to ts file -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
   document
     .querySelectorAll('.swiper-container')
     .forEach(function (swiperContainer) {
       let swiper = swiperContainer.querySelector('.swiper');
-      isReview = swiperContainer.classList.contains('slider-review');
+      const isReview = swiperContainer.classList.contains('slider-review');
       console.log('isReview', isReview);
       let next = swiperContainer.querySelector('.swiper-button-next');
       console.log(next);
@@ -210,22 +210,7 @@
         loop: true,
       });
     });
-  // const swiper = new Swiper('.swiper', {
-  //   // Optional parameters
-  //   loop: true,
-
-  //   // Navigation arrows
-  //   navigation: {
-  //     nextEl: '.swiper-button-next',
-  //     prevEl: '.swiper-button-prev',
-  //   },
-  //   slidesPerView: 3,
-  //   spaceBetween: 32,
-  // });
 </script>
-
-<script
-  src="{{ url_for('static', filename='js/home.js') }}"
-  type="text/javascript"
-  defer></script>
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/home.js') }}" type="text/javascript" defer></script>
 {% endblock %}
