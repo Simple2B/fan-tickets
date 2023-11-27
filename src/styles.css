@@ -37,23 +37,10 @@
 }
 
 .header-sticky {
-  /* right: 50%;
-  transform: translateX(50%); */
   background: rgba(10, 10, 10, 0.4);
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
 }
-
-/* 
-@media (min-width: 1024px) {
-  .motivos {
-    display: flex;
-  }
-
-  .motivos-mobile {
-    display: none;
-  }
-} */
 
 .scroll-top-anchor-open {
   left: 50%;
@@ -93,7 +80,6 @@
 
 .swiper-slide {
   display: flex !important;
-  /* width: 70% !important; */
 }
 
 .bg-footer {
@@ -105,8 +91,6 @@
 }
 
 .scroll-x-modules {
-  /* height: 173px; */
-  /* padding: 5px; */
   white-space: nowrap;
   overflow-y: hidden;
   overflow-x: scroll;
@@ -126,9 +110,6 @@
 
 .scroll-x-module {
   display: inline-block;
-  /* width: 320px; */
-  /* height: 173px; */
-  /* line-height: 50px; */
   text-align: center;
 }
 
@@ -160,8 +141,7 @@
   backdrop-filter: blur(15px);
 }
 
-/* NOTE: temp filter, delete in the future */
-.bg-filter {
+.bg-filter-gradient-grey {
   background: radial-gradient(
     130.96% 130.96% at 93.3% 91.9%,
     rgba(130, 130, 130, 0.1) 0%,
