@@ -41,4 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
   setEventImageWidth();
   showLimitEvents();
   window.addEventListener('resize', showLimitEvents);
+
+  // TODO: delete it if client accepts slider not from design
+  // function to set middle scroll position for modules
+  const scrollContainers = document.querySelectorAll('.scroll-x-modules');
+
+  scrollContainers.forEach((scrollContainer: HTMLDivElement) => {
+    let totalModulesWidth = 0;
+    const modules: HTMLCollection = scrollContainer.children;
+    for (let i = 0; i < modules.length; i++) {
+      totalModulesWidth += (modules[i] as HTMLDivElement)['offsetWidth'];
+    }
+    scrollContainer.scrollLeft = (totalModulesWidth - window.innerWidth) / 2;
+  });
 });
