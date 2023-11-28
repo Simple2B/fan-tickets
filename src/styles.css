@@ -50,6 +50,12 @@
   transition: max-height 1s ease-in;
 }
 
+.link:hover {
+  color: #1c1c1c;
+  background-color: #f2b705;
+  border-color: #f2b705;
+}
+
 .scroll-top-anchor-close {
   left: 50%;
   transform: translateX(-50%);

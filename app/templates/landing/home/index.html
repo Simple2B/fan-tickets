@@ -67,8 +67,8 @@
         {% endfor %}
       </div>
       <a
-        class="mb-48 py-4 px-8 lg:self-end text-center text-secondary border rounded-2xl border-secondary hover:scale-105 transform transition-transform duration-300"
-        href="#"
+        class="link mb-48 py-4 px-8 lg:self-end lg:justify-self-end text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300"
+        href="{{ url_for('events.get_events') }}"
         >Listar todos os eventos</a
       >
     </div>
@@ -109,8 +109,8 @@
     {% endfor %}
     </div>
     <a
-      class="col-start-3 py-4 px-8 w-max self-end text-center text-secondary border rounded-2xl border-secondary hover:scale-105 transform transition-transform duration-300"
-      href="#"
+      class="link col-start-3 py-4 px-8 w-max self-end lg:justify-self-end text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300"
+      href="{{ url_for('events.get_events') }}"
       >Listar todos os eventos</a
     >
   </div>
@@ -155,7 +155,7 @@
   </div>
   <div class="hidden lg:block">{% include 'landing/home/cities.html' %}</div>
   <a
-    class="py-4 px-8 text-center text-secondary border rounded-2xl border-secondary hover:scale-105 transform transition-transform duration-300"
+    class="link py-4 px-8 text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300"
     href="#"
     >Listar todos os eventos
   </a>
