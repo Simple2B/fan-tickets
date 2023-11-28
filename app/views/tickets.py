@@ -50,7 +50,7 @@ def get_all_tickets(filter: s.TicketFilter) -> list[m.Ticket]:
             )
 
     return db.session.scalars(
-        tickets_query.limit(filter.ticket_per_page + CFG.TICKETS_PER_PAGE)
+        tickets_query.limit(filter.tickets_per_page + CFG.TICKETS_PER_PAGE)
     ).all()
 
 
@@ -68,7 +68,7 @@ def get_all():
         or filter.date_from
         or filter.date_to
         or filter.categories
-        or filter.ticket_per_page
+        or filter.tickets_per_page
     ):
         template = "tickets/tickets_list.html"
     else:

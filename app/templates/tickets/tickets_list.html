@@ -8,7 +8,8 @@
 
 <div class="self-stretch flex flex-col gap-8" id="tickets-list">
   <div class="grid grid-cols-2 gap-8">
-    <!-- <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" /> -->
+    <!-- prettier-ignore -->
+    <input type="hidden" name="tickets_per_page" id="tickets_per_page" value="{{ tickets|length }}" />
     {% for ticket in tickets %}
     <!-- prettier-ignore -->
     {% if config.TESTING %}
@@ -38,20 +39,16 @@
     </a>
     {% endfor %}
   </div>
-  <p>{{ all_filters }}</p>
+  <!-- <p>{{ all_filters }}</p> -->
   <a
     class="flex gap-4 justify-center items-center cursor-pointer"
     hx-trigger="click"
     hx-swap="innerHTML"
     hx-target="#tickets-list"
     hx-include="{{ all_filters }}"
-    hx-get="{{ url_for('tickets.get_all', tickets_per_page=tickets|length) }}">
+    hx-get="{{ url_for('tickets.get_all') }}">
     <!-- prettier-ignore -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none">
-            <circle cx="20.5" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path d="M20.5 20V10M20.5 20V30M20.5 20H30.5M20.5 20H10.5" stroke="#F2B705" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none"> <circle cx="20.5" cy="20" r="19" stroke="#F2B705" stroke-width="2" /> <path d="M20.5 20V10M20.5 20V30M20.5 20H30.5M20.5 20H10.5" stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /> </svg>
     <p class="text-xl">Mais ingressos</p>
   </a>
 </div>
