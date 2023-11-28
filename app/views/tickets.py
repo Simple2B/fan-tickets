@@ -1,56 +1,74 @@
+from datetime import datetime
 from flask import request, Blueprint, render_template
 from app import models as m, db
+from app import schema as s
+
+from config import config
+
+CFG = config()
 
 
 tickets_blueprint = Blueprint("tickets", __name__, url_prefix="/tickets")
 
 
+def get_all_tickets(filter: s.TicketFilter) -> list[m.Ticket]:
+    tickets_query = m.Ticket.select()
+
+    if filter.event_id:
+        tickets_query = tickets_query.where(m.Ticket.event_id == filter.event_id)
+    else:
+        if filter.q:
+            tickets_query = tickets_query.where(
+                m.Ticket.event.has(m.Event.name.ilike(f"%{filter.q}%"))
+            )
+
+        if filter.location:
+            location_query = m.Location.select().where(
+                m.Location.name == filter.location
+            )
+            location = db.session.scalar(location_query)
+            tickets_query = tickets_query.where(
+                m.Ticket.event.has(location_id=location.id)
+            )
+
+        if filter.categories:
+            tickets_query = tickets_query.filter(
+                m.Ticket.event.has(
+                    m.Event.category.has(m.Category.name.in_(filter.categories))
+                )
+            )
+
+        if filter.date_from:
+            date_from = datetime.strptime(filter.date_from, CFG.DATE_PICKER_FORMAT)
+            tickets_query = tickets_query.where(
+                m.Ticket.event.has(m.Event.date_time >= date_from)
+            )
+        if filter.date_to:
+            date_to = datetime.strptime(filter.date_to, CFG.DATE_PICKER_FORMAT)
+            tickets_query = tickets_query.where(
+                m.Ticket.event.has(m.Event.date_time <= date_to)
+            )
+
+    return db.session.scalars(
+        tickets_query.limit(filter.tickets_per_page + CFG.TICKETS_PER_PAGE)
+    ).all()
+
+
 @tickets_blueprint.route("/", methods=["GET", "POST"])
 def get_all():
-    search_query = request.args.get("q")
-    tickets_limit = 10
-    if request.args.get("tickets_per_page"):
-        tickets_limit += int(request.args.get("tickets_per_page"))
-    location_name = request.args.get("location")
-    categories = request.args.getlist("categories")
-    tickets_query = m.Ticket.select().limit(tickets_limit)
-    if search_query:
-        tickets_query = tickets_query.where(
-            m.Ticket.event.has(m.Event.name.ilike(f"%{search_query}%"))
-        )
+    data = dict(request.args)
+    data["categories"] = request.args.getlist("categories")
+    filter = s.TicketFilter.model_validate(data)
 
-    if location_name:
-        location_query = m.Location.select().where(m.Location.name == location_name)
-        location = db.session.scalar(location_query)
-        tickets_query = tickets_query.where(m.Ticket.event.has(location_id=location.id))
-
-    if categories:
-        tickets_query = (
-            db.session.query(m.Ticket)
-            .join(m.Event)
-            .join(m.Category)
-            .filter(m.Category.name.in_(categories))
-        )
-
-    if request.args.get("date_from"):
-        tickets_query = tickets_query.where(
-            m.Ticket.event.date_time >= request.args.get("date_from")
-        )
-    if request.args.get("date_to"):
-        tickets_query = tickets_query.where(
-            m.Ticket.event.date_time <= request.args.get("date_to")
-        )
-    categories = db.session.scalars(m.Category.select())
-    locations = db.session.scalars(m.Location.select())
-    tickets = db.session.scalars(tickets_query).all()
+    tickets = get_all_tickets(filter)
 
     if (
-        request.args.get("q")
-        or request.args.get("categories")
-        or request.args.get("location")
-        or request.args.get("date_from")
-        or request.args.get("date_to")
-        or request.args.get("tickets_per_page")
+        filter.q
+        or filter.location
+        or filter.date_from
+        or filter.date_to
+        or filter.categories
+        or filter.tickets_per_page
     ):
         template = "tickets/tickets_list.html"
     else:
@@ -59,6 +77,6 @@ def get_all():
     return render_template(
         template,
         tickets=tickets,
-        categories=categories,
-        locations=locations,
+        categories=m.Category.all(),
+        locations=m.Location.all(),
     )

@@ -60,16 +60,16 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             phone=fake.phone_number(),
             card=faker.random_number(digits=16, fix_len=True),
             role=role.value,
-            password="pass",
+            # password="pass",
             activated=True,
-        ).save()
+        ).save(commit=False)
         # db.session.add(user)
         # db.session.flush()
         log(log.INFO, "User generated: [%s]", user)
 
         # notification_config = m.NotificationsConfig(user_id=user.id)
         # db.session.add(notification_config)
-        m.NotificationsConfig(user_id=user.id).save()
+        m.NotificationsConfig(user=user).save(False)
     db.session.commit()
     users_number = m.User.count()
     log(log.INFO, "[%d] users generated", users_number)
@@ -106,21 +106,25 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                     filename=filename,
                     file=img_file.read(),
                     mimetype="png",
-                ).save()
+                ).save(False)
+    test_locations: list[m.Location] = []
     for location_name in TEST_LOCATIONS:
-        m.Location(
+        location = m.Location(
             name=location_name,
             picture_id=randint(1, len(os.listdir(FOLDER_PATH))),
-        ).save()
+        ).save(False)
+        test_locations.append(location)
+    test_categories: list[m.Category] = []
     for category_name in TEST_CATEGORIES:
-        m.Category(
+        category = m.Category(
             name=category_name,
-        ).save()
+        ).save(False)
+        test_categories.append(category)
     for i in range(NUM_TEST_EVENTS):
         location_id = randint(1, len(TEST_LOCATIONS))
-        location_name = m.Location.get(location_id).name
+        location_name = test_locations[location_id - 1].name
         category_id = randint(1, len(TEST_CATEGORIES))
-        category_name = m.Category.get(category_id).name
+        category_name = test_categories[category_id - 1].name
         seller_id = randint(1, NUM_TEST_USERS)
         event = m.Event(
             name=f"{location_name} {category_name} {i}",
@@ -131,7 +135,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             category_id=category_id,
             creator_id=seller_id,
             date_time=datetime.now() + timedelta(days=randint(-10, 100)),
-        ).save()
+        ).save(False)
         for j in range(12):
             price_net = randint(10, 1000)
             price_gross = price_net * 1.08
@@ -140,7 +144,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             is_sold = True if 5 <= j <= 7 else False
             buyer_id = randint(1, NUM_TEST_USERS)
             ticket = m.Ticket(
-                event_id=event.id,
+                event=event,
                 description=faker.text(max_nb_chars=200),
                 ticket_type=TEST_TICKET_TYPES[randint(0, 2)],
                 ticket_category=TEST_TICKET_CATEGORIES[randint(0, 2)],
@@ -156,29 +160,29 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 is_sold=is_sold,
                 seller_id=seller_id,
                 buyer_id=buyer_id,
-            ).save()
+            ).save(False)
             m.Notification(
                 type_of=m.NotificationType.TICKET_PUBLISHED.value,
-                text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
+                text=f"Dispute created for ticket {ticket.unique_id} of user {seller_id}",
                 user_id=seller_id,
-            ).save()
+            ).save(False)
             if is_sold:
                 m.Payment(
                     buyer_id=buyer_id,
-                    ticket_id=ticket.id,
+                    ticket=ticket,
                     description=faker.text(max_nb_chars=200),
-                ).save()
+                ).save(False)
                 m.Notification(
                     type_of=m.NotificationType.TICKET_SOLD.value,
-                    text=f"Ticket {ticket.id} of user {seller_id} is sold",
+                    text=f"Ticket {ticket.unique_id} of user {seller_id} is sold",
                     user_id=seller_id,
-                ).save()
+                ).save(False)
             if ticket.is_available:
                 m.Notification(
                     type_of=m.NotificationType.TICKET_AVAILABLE.value,
-                    text=f"Ticket {ticket} is available",
+                    text=f"Ticket {ticket.unique_id} is available",
                     user_id=seller_id,
-                ).save()
+                ).save(False)
             # for k in range(4):
             #     type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
             #     if type_of == m.RoomType.DISPUTE.value:
@@ -207,6 +211,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             #             sender_id=randint(1, NUM_TEST_USERS),
             #             text=faker.text(max_nb_chars=200),
             #         ).save()
+    db.session.commit()
 
 
 def set_users_images():
@@ -215,12 +220,12 @@ def set_users_images():
             filename="users_picture_01",
             file=img_file.read(),
             mimetype="image/png",
-        ).save()
+        ).save(False)
 
         users = m.User.all()
         for user in users:
-            user.picture_id = picture.id
-            db.session.add(user)
+            user.picture = picture
+            user.save(False)
         db.session.commit()
     print("users images script worked successfully")
 
