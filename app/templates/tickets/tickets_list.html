@@ -7,45 +7,52 @@
 [name='search_args'], [name='tickets_per_page']" %}
 
 <div class="self-stretch flex flex-col gap-8" id="tickets-list">
-    <div class="grid grid-cols-2 gap-8">
-        <!-- <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" /> -->
-        {% for ticket in tickets %}
-        <a class="flex-grow" href="">
-            <div class="flex justify-between px-6 py-4 bg-dark-grey rounded-2xl">
-                <div class="">
-                    <h5 class="text-xl">{{ ticket.event.name }}</h5>
-                    <div class="flex text-xs gap-1 text-grey">
-                        <p>{{ ticket.event.date_time.strftime('%a, %d %b') }}</p>
-                        <span>&#8226;</span>
-                        <p>{{ ticket.event.location.name }}</p>
-                        <span>&#8226;</span>
-                        <p>{{ ticket.event.category.name }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 py-1 px-3 bg-middle-grey rounded-full">
-                    <!-- prettier-ignore -->
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M14.8215 1.37708L14.8218 1.3766C14.9876 1.12906 15.2388 1 15.485 1H18.148C18.6187 1 19 1.38128 19 1.852V18.148C19 18.6187 18.6187 19 18.148 19H15.485C15.2388 19 14.9876 18.8709 14.8218 18.6234L14.8215 18.6229C13.7818 17.0731 12.0105 16.049 10 16.049C7.98951 16.049 6.21822 17.0731 5.17854 18.6229L5.17822 18.6234C5.01219 18.8712 4.76191 19 4.515 19H1.852C1.38128 19 1 18.6187 1 18.148V1.852C1 1.38128 1.38128 1 1.852 1H4.515C4.76122 1 5.01237 1.12906 5.17822 1.3766L5.17854 1.37708C6.21815 2.92685 7.9884 3.951 10 3.951C12.0116 3.951 13.7818 2.92685 14.8215 1.37708Z"
-                            stroke="#F2B705" stroke-width="2" />
-                    </svg>
-                    <span>{{ ticket.quantity }}</span>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
-    <p>{{ all_filters }}</p>
-    <a class="flex gap-4 justify-center items-center cursor-pointer" hx-trigger="click" hx-swap="innerHTML"
-        hx-target="#tickets-list" hx-include="{{ all_filters }}"
-        hx-get="{{ url_for('tickets.get_all', tickets_per_page=tickets|length) }}">
-        <!-- prettier-ignore -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none">
+  <div class="grid grid-cols-2 gap-8">
+    <!-- <input type="hidden" name="tickets_per_page" id="events_per_page" value="{{ tickets|length }}" /> -->
+    {% for ticket in tickets %}
+    <!-- prettier-ignore -->
+    {% if config.TESTING %}
+    <!--
+        TICKET_ID:{{ ticket.unique_id }}
+     -->
+    {% endif %}
+    <a class="flex-grow" href="">
+      <div class="flex justify-between px-6 py-4 bg-dark-grey rounded-2xl">
+        <div class="">
+          <h5 class="text-xl">{{ ticket.event.name }}</h5>
+          <div class="flex text-xs gap-1 text-grey">
+            <p>{{ ticket.event.date_time.strftime('%a, %d %b') }}</p>
+            <span>&#8226;</span>
+            <p>{{ ticket.event.location.name }}</p>
+            <span>&#8226;</span>
+            <p>{{ ticket.event.category.name }}</p>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-2 py-1 px-3 bg-middle-grey rounded-full">
+          <!-- prettier-ignore -->
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M14.8215 1.37708L14.8218 1.3766C14.9876 1.12906 15.2388 1 15.485 1H18.148C18.6187 1 19 1.38128 19 1.852V18.148C19 18.6187 18.6187 19 18.148 19H15.485C15.2388 19 14.9876 18.8709 14.8218 18.6234L14.8215 18.6229C13.7818 17.0731 12.0105 16.049 10 16.049C7.98951 16.049 6.21822 17.0731 5.17854 18.6229L5.17822 18.6234C5.01219 18.8712 4.76191 19 4.515 19H1.852C1.38128 19 1 18.6187 1 18.148V1.852C1 1.38128 1.38128 1 1.852 1H4.515C4.76122 1 5.01237 1.12906 5.17822 1.3766L5.17854 1.37708C6.21815 2.92685 7.9884 3.951 10 3.951C12.0116 3.951 13.7818 2.92685 14.8215 1.37708Z" stroke="#F2B705" stroke-width="2" /> </svg>
+          <span>{{ ticket.quantity }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <p>{{ all_filters }}</p>
+  <a
+    class="flex gap-4 justify-center items-center cursor-pointer"
+    hx-trigger="click"
+    hx-swap="innerHTML"
+    hx-target="#tickets-list"
+    hx-include="{{ all_filters }}"
+    hx-get="{{ url_for('tickets.get_all', tickets_per_page=tickets|length) }}">
+    <!-- prettier-ignore -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none">
             <circle cx="20.5" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
             <path d="M20.5 20V10M20.5 20V30M20.5 20H30.5M20.5 20H10.5" stroke="#F2B705" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <p class="text-xl">Mais ingressos</p>
-    </a>
+    <p class="text-xl">Mais ingressos</p>
+  </a>
 </div>
 {% endif %}

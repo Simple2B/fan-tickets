@@ -15,10 +15,11 @@ events_blueprint = Blueprint("events", __name__, url_prefix="/events")
 
 
 def get_filter_events():
-    event_filter = s.EventFilter.model_validate(dict(request.args))
-    categories = request.args.getlist("categories")
+    data = dict(request.args)
+    data["categories"] = request.args.getlist("categories")
+    event_filter = s.EventFilter.model_validate(data)
 
-    events_query = m.Event.select().limit(CFG.EVENTS_PER_PAGE)
+    events_query = m.Event.select()
 
     if event_filter.location:
         events_query = events_query.where(
@@ -26,20 +27,13 @@ def get_filter_events():
         )
 
         log(log.INFO, "Applied location filter: [%s]", event_filter.location)
-    if categories:
+    if event_filter.categories:
         events_query = events_query.filter(
-            m.Event.category.has(m.Category.name.in_(categories))
+            m.Event.category.has(m.Category.name.in_(event_filter.categories))
         )
 
-        log(log.INFO, "Applied categories filter: [%s]", categories)
-    if event_filter.event_per_page:
-        limit_events = event_filter.event_per_page
-        limit_events += CFG.EVENTS_PER_PAGE
-        events_query = events_query.limit(limit_events)
+        log(log.INFO, "Applied categories filter: [%s]", event_filter.categories)
 
-        log(
-            log.INFO, "Applied event_per_page filter: [%s]", event_filter.event_per_page
-        )
     if event_filter.date_from:
         date_from = datetime.strptime(event_filter.date_from, CFG.DATE_PICKER_FORMAT)
         events_query = events_query.where(m.Event.date_time >= date_from)
@@ -51,10 +45,9 @@ def get_filter_events():
 
         log(log.INFO, "Applied date_to filter: [%s]", event_filter.date_to)
 
-    events = db.session.scalars(events_query).all()
-
-    log(log.INFO, "Return events from function: [%s]", events)
-    return events
+    return db.session.scalars(
+        events_query.limit(event_filter.event_per_page + CFG.EVENTS_PER_PAGE)
+    ).all()
 
 
 @events_blueprint.route("/", methods=["GET", "POST"])
