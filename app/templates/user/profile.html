@@ -15,7 +15,7 @@
             <p>Endereço de Email</p>
             <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
                 hx-swap="innerHTML">
-                {{ form_hidden_tag() }}
+                {{ email_form.hidden_tag() }}
                 {% include 'user/email_save.html' %}
             </form>
         </div>
@@ -24,7 +24,7 @@
             <p>Phone</p>
             <form method="post" id="profile_phone" hx-post="{{ url_for('user.save_phone') }}" hx-target="#profile_phone"
                 hx-swap="innerHTML">
-                {{ form_hidden_tag() }}
+                {{ phone_form.hidden_tag() }}
                 {% include 'user/phone_save.html' %}
             </form>
         </div>
@@ -49,7 +49,7 @@
             <p>card:</p>
             <form method="post" id="profile_card" hx-post="{{ url_for('user.save_card') }}" hx-target="#profile_card"
                 hx-swap="innerHTML">
-                {{ form_hidden_tag() }}
+                {{ card_form.hidden_tag() }}
                 {% include 'user/card_save.html' %}
             </form>
         </div>

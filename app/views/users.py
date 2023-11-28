@@ -158,16 +158,16 @@ def edit_email():
 def save_email():
     user: m.User = current_user
 
-    form = f.EmailEditForm()
+    email_form = f.EmailEditForm()
     log(log.INFO, "Email change form submitted. User: [%s]", user)
-    if form.validate_on_submit():
-        user.email = form.email.data
+    if email_form.validate_on_submit():
+        user.email = email_form.email.data
         user.save()
     else:
-        log(log.ERROR, "Email change form errors: [%s]", form.errors)
-        flash(f"{form.errors}", "danger")
+        log(log.ERROR, "Email change form errors: [%s]", email_form.errors)
+        flash(f"{email_form.errors}", "danger")
 
-    return render_template("user/email_save.html", user=user)
+    return render_template("user/email_save.html", user=user, email_form=email_form)
 
 
 @bp.route("/edit_phone")
@@ -181,16 +181,16 @@ def edit_phone():
 def save_phone():
     user: m.User = current_user
 
-    form = f.PhoneEditForm()
-    if form.validate_on_submit():
+    phone_form = f.PhoneEditForm()
+    if phone_form.validate_on_submit():
         log(log.INFO, "Phone change form submitted. User: [%s]", user)
-        user.phone = form.phone.data
+        user.phone = phone_form.phone.data
         user.save()
     else:
-        log(log.ERROR, "Phone change form errors: [%s]", form.errors)
-        flash(f"{form.errors}", "danger")
+        log(log.ERROR, "Phone change form errors: [%s]", phone_form.errors)
+        flash(f"{phone_form.errors}", "danger")
 
-    return render_template("user/phone_save.html", user=user)
+    return render_template("user/phone_save.html", user=user, phone_form=phone_form)
 
 
 @bp.route("/edit_card")
@@ -204,12 +204,16 @@ def edit_card():
 def save_card():
     user: m.User = current_user
 
-    form = f.CardEditForm()
-    if form.validate_on_submit():
-        user.card = form.card.data
+    card_form = f.CardEditForm()
+    if card_form.validate_on_submit():
+        log(log.INFO, "Card change form submitted. User: [%s]", user)
+        user.card = card_form.card.data
         user.save()
+    else:
+        log(log.ERROR, "Card change form errors: [%s]", card_form.errors)
+        flash(f"{card_form.errors}", "danger")
 
-    return render_template("user/card_save.html", user=user)
+    return render_template("user/card_save.html", user=user, card_form=card_form)
 
 
 @bp.route("/set_notifications", methods=["GET", "POST"])
