@@ -1,6 +1,10 @@
 from flask import request, Blueprint, render_template
 from app import models as m, db
 
+from config import config
+
+CFG = config()
+
 
 tickets_blueprint = Blueprint("tickets", __name__, url_prefix="/tickets")
 
@@ -8,7 +12,7 @@ tickets_blueprint = Blueprint("tickets", __name__, url_prefix="/tickets")
 @tickets_blueprint.route("/", methods=["GET", "POST"])
 def get_all():
     search_query = request.args.get("q")
-    tickets_limit = 10
+    tickets_limit = CFG.TICKETS_PER_PAGE
     if request.args.get("tickets_per_page"):
         tickets_limit += int(request.args.get("tickets_per_page"))
     location_name = request.args.get("location")

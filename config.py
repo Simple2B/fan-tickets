@@ -42,6 +42,10 @@ class BaseConfig(BaseSettings):
     DEFAULT_PAGE_SIZE: int
     PAGE_LINKS_NUMBER: int
     EVENTS_PER_PAGE: int
+    TICKETS_PER_PAGE: int = 10
+
+    # UI config
+    DATE_PICKER_FORMAT: str = "%m/%d/%Y"
 
     # API
     IS_API: bool = False
@@ -110,7 +114,6 @@ def config(name=APP_ENV) -> DevelopmentConfig | TestingConfig | ProductionConfig
         testing=TestingConfig,
         production=ProductionConfig,
     )
-    assert name in CONF_MAP.keys(), f"Invalid environment name: {name}"
     configuration = CONF_MAP[name]()
     configuration.ENV = name
     return configuration
