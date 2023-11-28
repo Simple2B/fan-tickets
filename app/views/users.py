@@ -159,9 +159,13 @@ def save_email():
     user: m.User = current_user
 
     form = f.EmailEditForm()
+    log(log.INFO, "Email change form submitted. User: [%s]", user)
     if form.validate_on_submit():
         user.email = form.email.data
         user.save()
+    else:
+        log(log.ERROR, "Email change form errors: [%s]", form.errors)
+        flash(f"{form.errors}", "danger")
 
     return render_template("user/email_save.html", user=user)
 
@@ -179,8 +183,12 @@ def save_phone():
 
     form = f.PhoneEditForm()
     if form.validate_on_submit():
+        log(log.INFO, "Phone change form submitted. User: [%s]", user)
         user.phone = form.phone.data
         user.save()
+    else:
+        log(log.ERROR, "Phone change form errors: [%s]", form.errors)
+        flash(f"{form.errors}", "danger")
 
     return render_template("user/phone_save.html", user=user)
 
