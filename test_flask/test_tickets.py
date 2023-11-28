@@ -48,10 +48,10 @@ def test_get_all_tickets(client_with_data: FlaskClient):
         assert f"TICKET_ID:{ticket.unique_id}" in res.text
 
     #  get tickets next page
-    LIMIT = 23
-    res = client.get(f"/tickets/?ticket_per_page={LIMIT}")
+    LIMIT = 17
+    res = client.get(f"/tickets/?tickets_per_page={LIMIT}")
     assert res.status_code == 200
     stmt = m.Ticket.select().limit(LIMIT + CFG.TICKETS_PER_PAGE)
     for t in m.all(stmt):
-        ticket: m.Ticket = t
-        assert f"TICKET_ID:{ticket.unique_id}" in res.text
+        tt: m.Ticket = t
+        assert f"TICKET_ID:{tt.unique_id}" in res.text
