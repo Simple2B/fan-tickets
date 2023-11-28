@@ -11,7 +11,7 @@
 </div>
 
 <!-- Filters -->
-<div class="mb-8 self-start flex gap-8">
+<div class="mb-8 self-start flex flex-col lg:flex-row gap-8">
   <!-- Location   -->
   <div class="relative">
     <button
@@ -143,7 +143,7 @@
     <!-- Dropdown menu -->
     <div
       id="events-filter-categories-dropdown"
-      class="z-10 absolute hidden inset-x-0 mt-2 w-full bg-filter divide-y divide-gray-100 rounded-lg shadow">
+      class="z-10 absolute hidden inset-x-0 mt-2 w-full bg-filter-gradient-grey divide-y divide-gray-100 rounded-lg shadow">
       <ul
         class="p-3 space-y-3 text-sm text-white"
         aria-labelledby="events-filter-categories-dropdown">
@@ -160,7 +160,7 @@
               hx-target="#events-list"
               hx-include="{{ all_filters }}"
               hx-get="{{ url_for('events.search_events') }}"
-              class="w-4 h-4 text-grey bg-filter border-gray-300 rounded focus:ring-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-1 dark:bg-gray-600 dark:border-gray-500" />
+              class="w-4 h-4 text-grey bg-filter-gradient-grey border-gray-300 rounded focus:ring-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-1 dark:bg-gray-600 dark:border-gray-500" />
             <label
               for="events-filter-categories-input-{{ category.id }}"
               class="ms-2 text-sm font-medium text-white dark:text-gray-300"
@@ -179,7 +179,7 @@
   % include "events/no_events_header.html" %}
 {% else %}
 <div class="self-stretch flex flex-col gap-8">
-  <div class="grid grid-cols-3 gap-8" id="events-list">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8" id="events-list">
     <input
       type="hidden"
       name="event_per_page"

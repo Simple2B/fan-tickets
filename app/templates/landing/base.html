@@ -13,10 +13,13 @@
     <!-- styles -->
     <!-- prettier-ignore -->
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-    <script
-      src="https://unpkg.com/htmx.org@1.9.5"
-      integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO"
-      crossorigin="anonymous"></script>
+    <!-- TODO: move to file -->
+    <!-- prettier-ignore -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- TODO: Move to file -->
+    <!-- prettier-ignore -->
+    <script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>
     <!-- prettier-ignore -->
     <script>
     // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -35,7 +38,7 @@
   {% endblock %}
   </head>
 
-  <body class="text-white">
+  <body class="text-white font-body">
     <!-- prettier-ignore -->
     {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
@@ -91,16 +94,15 @@
 {% endif %}
 {% endwith %}
     <!-- prettier-ignore -->
-    {% set background = "bg-concert" %}
+    {% set background = "concert" %}
     {% if "help" in request.path or "profile" in request.path or "events" in request.path   %}
-        {% set background = "bg-concert-blur" %}
+        {% set background = "concert-blur" %}
     {% endif %}
     {% block body %}
-    <div
-      class="relative pt-8 px-6 pb-24 bg-no-repeat bg-cover {{ background }}">
-      <div class="max-w-7xl my-0 mx-auto">
+    {% include 'landing/header.html' %}
+    <div class="relative pt-8 px-6 pb-24 bg-no-repeat bg-main">
+      <div class="max-w-7xl relative my-0 mx-auto">
         <!-- prettier-ignore -->
-        {% include 'landing/header.html' %}
         <main class="flex flex-col justify-center items-center">
           {% block main_content %} {% endblock %}
         </main>
@@ -110,12 +112,14 @@
     {% block content %}
     {% endblock %}
     {% endblock %}
-    <div class="pt-16 px-6 bg-no-repeat bg-cover bg-footer">
+    <div class="relative bg-footer">
+      <!-- prettier-ignore -->
+      <svg class="hidden lg:block absolute right-0 top-16" xmlns="http://www.w3.org/2000/svg" width="544" height="333" viewBox="0 0 544 333" fill="none"> <path d="M777.831 26.7175L779.538 25.0104H779.473C813.878 -7.56331 868.113 -6.99273 901.713 26.7164L901.714 26.7175C936.005 61.0082 936.003 116.534 901.715 150.711L901.714 150.713C781.199 271.339 622.598 331.654 464.216 331.654C305.834 331.654 147.344 271.339 26.7175 150.713C-7.57314 116.422 -7.57149 60.8959 26.7164 26.7187L26.7175 26.7175C61.0082 -7.57314 116.534 -7.57149 150.711 26.7164L150.713 26.7175C323.611 199.616 604.933 199.616 777.831 26.7175Z" stroke="url(#paint0_linear_2_4793)" stroke-width="2" /> <defs> <linearGradient id="paint0_linear_2_4793" x1="464.216" y1="0" x2="464.216" y2="332.654" gradientUnits="userSpaceOnUse"> <stop stop-color="#F2B705" /> <stop offset="1" stop-color="#F2B705" stop-opacity="0" /> </linearGradient> </defs> </svg>
+      <!-- prettier-ignore -->
       <div class="max-w-7xl my-0 mx-auto">
         {% include 'landing/footer.html' %}
       </div>
     </div>
-    <!-- prettier-ignore -->
 
     <!-- prettier-ignore -->
     <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
