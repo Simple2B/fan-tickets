@@ -41,7 +41,7 @@ def image_upload(user: m.User):
     try:
         img_byte_io = io.BytesIO()
         img.save(img_byte_io, format="PNG")
-        img_bytes= img_byte_io.getvalue()
+        img_bytes = img_byte_io.getvalue()
     except Exception as e:
         log(log.ERROR, "Error saving image: [%s]", e)
         flash("Error saving image", "danger")
