@@ -157,7 +157,12 @@ def logo_upload():
 @bp.route("/edit_email")
 @login_required
 def edit_email():
-    return render_template("user/email_edit.html", user=current_user)
+    email_form = f.EmailEditForm()
+    return render_template(
+        "user/email_edit.html",
+        user=current_user,
+        email_form=email_form,
+    )
 
 
 @bp.route("/save_email", methods=["GET", "POST"])
@@ -180,7 +185,12 @@ def save_email():
 @bp.route("/edit_phone")
 @login_required
 def edit_phone():
-    return render_template("user/phone_edit.html", user=current_user)
+    phone_form = f.PhoneEditForm()
+    return render_template(
+        "user/phone_edit.html",
+        user=current_user,
+        phone_form=phone_form,
+    )
 
 
 @bp.route("/save_phone", methods=["GET", "POST"])
@@ -203,7 +213,12 @@ def save_phone():
 @bp.route("/edit_card")
 @login_required
 def edit_card():
-    return render_template("user/card_edit.html", user=current_user)
+    card_form = f.CardEditForm()
+    return render_template(
+        "user/card_edit.html",
+        user=current_user,
+        card_form=card_form,
+    )
 
 
 @bp.route("/save_card", methods=["GET", "POST"])
