@@ -100,5 +100,6 @@ filterwarnings = [
     "ignore:.*cgi.*:DeprecationWarning",
     'ignore:.*werkzeug\.urls\.url.*:DeprecationWarning',
     'ignore:.*flask\.Markup.*:DeprecationWarning',
+    'ignore:.*pkg_resources.*:DeprecationWarning',
 ]
 testpaths = ["test_flask", "test_api"]

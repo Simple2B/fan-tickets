@@ -5,16 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "test-flask",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "justMyCode": false,
+      "args": ["test_flask"],
+      "env": {
+        "IS_API": "true"
+      }
+    },
+    {
       "name": "API",
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": [
-        "api:app",
-        "--reload",
-        "--port",
-        "5002"
-      ],
+      "args": ["api:app", "--reload", "--port", "5002"],
       "justMyCode": true,
       "env": {
         "IS_API": "true"
@@ -31,11 +37,7 @@
         "FLASK_DEBUG": "1",
         "DEBUG": "true"
       },
-      "args": [
-        "run",
-        "--port",
-        "5000"
-      ],
+      "args": ["run", "--port", "5000"],
       "jinja": true,
       "justMyCode": false
     },
