@@ -8,6 +8,7 @@
   },
   "cSpell.words": [
     "amarelo",
+    "fastapi",
     "flowbite",
     "Grotesk",
     "ilike",
@@ -29,5 +30,6 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "taipyStudio.config.mainPythonFile": "wsgi.py"
+  "taipyStudio.config.mainPythonFile": "wsgi.py",
+  "taipyStudio.gUI.elementsFilePaths": []
 }

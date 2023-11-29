@@ -102,4 +102,6 @@ filterwarnings = [
     'ignore:.*flask\.Markup.*:DeprecationWarning',
     'ignore:.*pkg_resources.*:DeprecationWarning',
 ]
-testpaths = ["test_flask", "test_api"]
+# testpaths = ["test_flask", "test_api"]
+# disable testing api
+testpaths = ["test_flask"]

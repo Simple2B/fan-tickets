@@ -38,7 +38,7 @@ TEST_TICKET_CATEGORIES = [
 fake = Faker()
 
 
-def generate_test_users(num_objects: int = NUM_TEST_USERS, session: orm.Session = None):
+def generate_test_users(session: orm.Session, num_objects: int = NUM_TEST_USERS):
     DOMAINS = ("com", "com.br", "net", "net.br", "org", "org.br", "gov", "gov.br")
 
     for i in range(num_objects):
@@ -61,26 +61,29 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS, session: orm.Session 
 
 
 def generate_test_events(
-    num_objects: int = NUM_TEST_EVENTS,
-    session: orm.Session = None,
+    session: orm.Session,
 ):
+    locations: list[m.Location] = []
     for location_name in TEST_LOCATIONS:
-        location = m.Location(
+        l = m.Location(
             name=location_name,
         )
-        session.add(location)
-        session.commit()
+        session.add(l)
+        locations.append(l)
+        # session.commit()
+    categories: list[m.Category] = []
     for category_name in TEST_CATEGORIES:
-        category = m.Category(
+        c = m.Category(
             name=category_name,
         )
-        session.add(category)
-        session.commit()
+        session.add(c)
+        categories.append(c)
+        # session.commit()
     for i in range(NUM_TEST_EVENTS):
         location_id = randint(1, len(TEST_LOCATIONS))
-        location_name = session.get(m.Location, location_id).name
+        location_name = locations[location_id - 1].name
         category_id = randint(1, len(TEST_CATEGORIES))
-        category_name = session.get(m.Category, category_id).name
+        category_name = categories[category_id - 1].name
         seller_id = randint(1, NUM_TEST_USERS)
         event = m.Event(
             name=f"{location_name} {category_name} {i}",

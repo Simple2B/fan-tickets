@@ -1,3 +1,4 @@
+from typing import Any
 from datetime import datetime
 from flask import request, Blueprint, render_template
 from app import models as m, db
@@ -56,7 +57,7 @@ def get_all_tickets(filter: s.TicketFilter) -> list[m.Ticket]:
 
 @tickets_blueprint.route("/", methods=["GET", "POST"])
 def get_all():
-    data = dict(request.args)
+    data: dict[str, Any] = dict(request.args)
     data["categories"] = request.args.getlist("categories")
     filter = s.TicketFilter.model_validate(data)
 

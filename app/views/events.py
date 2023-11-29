@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from flask import request, Blueprint, render_template
 
@@ -15,7 +16,7 @@ events_blueprint = Blueprint("events", __name__, url_prefix="/events")
 
 
 def get_filter_events():
-    data = dict(request.args)
+    data: dict[str, Any] = dict(request.args)
     data["categories"] = request.args.getlist("categories")
     event_filter = s.EventFilter.model_validate(data)
 
