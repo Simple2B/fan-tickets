@@ -25,7 +25,7 @@
     <input
       type="search"
       id="default-search"
-      class="block w-full px-9 py-4 ps-12 text-sm bg-black border rounded-2xl"
+      class="block w-full px-9 py-4 ps-12 text-sm button-gradient-grey"
       placeholder="Busque por evento, categoria ou palavra-chave"
       required />
     <button class="absolute inset-y-0 right-0 pe-5">
@@ -63,7 +63,7 @@
         class="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- prettier-ignore -->
         {% for event in events %}
-        {% include 'landing/home/top_event.html' %}
+        {% include 'events/event_item.html' %}
         {% endfor %}
       </div>
       <a
@@ -105,7 +105,7 @@
       class="col-start-2 col-span-2 mb-8 grid grid-cols-2 gap-6">
       <!-- prettier-ignore -->
       {% for event in events %}
-    {% include 'landing/home/top_event.html' %}
+      {% include 'events/event_item.html' %}
     {% endfor %}
     </div>
     <a

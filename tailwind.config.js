@@ -45,9 +45,10 @@ module.exports = {
         body: ['Space Grotesk', 'sans-serif'],
       },
       height: ({theme}) => ({
-        600: '600px',
         264: '264px',
+        448: '448px',
         517: '517px',
+        600: '600px',
       }),
       margin: ({theme}) => ({
         '50%': '50%',

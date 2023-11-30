@@ -99,6 +99,7 @@
         {% set background = "concert-blur" %}
     {% endif %}
     {% block body %}
+    {% include 'chat/chat-window.html' %}
     {% include 'landing/header.html' %}
     <div class="relative pt-8 px-6 pb-24 bg-no-repeat bg-main">
       <div class="max-w-7xl relative my-0 mx-auto">
@@ -123,6 +124,8 @@
 
     <!-- prettier-ignore -->
     <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
+    <!-- prettier-ignore -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
     <script src="https://unpkg.com/htmx.org@1.9.5"></script>
 
     {% block scripts %} {% endblock %}
