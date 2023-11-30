@@ -5,7 +5,7 @@ from app import models as m
 from app.logger import log
 
 
-def image_upload(user: m.User = None):
+def image_upload(user: m.User):
     """
     The function for uploading an image to the server.
     It is supposed to be universal for all models that have a picture.
@@ -23,6 +23,7 @@ def image_upload(user: m.User = None):
 
     # Upload image image file
     file = request.files["file"]
+    assert file
     log(log.INFO, "File uploaded: [%s]", file)
 
     IMAGE_MAX_WIDTH = app.config["IMAGE_MAX_WIDTH"]
@@ -38,18 +39,19 @@ def image_upload(user: m.User = None):
         img = resized_img
 
     try:
-        img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format="PNG")
-        img_byte_arr = img_byte_arr.getvalue()
+        img_byte_io = io.BytesIO()
+        img.save(img_byte_io, format="PNG")
+        img_bytes = img_byte_io.getvalue()
     except Exception as e:
         log(log.ERROR, "Error saving image: [%s]", e)
         flash("Error saving image", "danger")
-        return {"error": "Error saving img_byte_arr"}, 400
+        return {"error": "Error saving img_bytes"}, 400
 
     try:
+        assert file.filename
         picture = m.Picture(
             filename=file.filename.split("/")[-1],
-            file=img_byte_arr,
+            file=img_bytes,
         ).save()
         user.picture_id = picture.id
         user.save()

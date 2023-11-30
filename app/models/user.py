@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from flask_login import UserMixin, AnonymousUserMixin
 import sqlalchemy as sa
 from sqlalchemy import orm
-from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
 from .users_events import users_events
 
@@ -124,7 +123,7 @@ class User(db.Model, UserMixin, ModelMixin):
     )
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
-    @hybrid_property
+    @property
     def password(self):
         return self.password_hash
 
@@ -145,6 +144,7 @@ class User(db.Model, UserMixin, ModelMixin):
             (sa.func.lower(cls.username) == sa.func.lower(user_id))
             | (sa.func.lower(cls.email) == sa.func.lower(user_id))
         )
+        assert session
         user = session.scalar(query)
         if not user:
             log(log.WARNING, "user:[%s] not found", user_id)

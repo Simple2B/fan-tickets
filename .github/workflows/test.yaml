@@ -27,17 +27,11 @@ jobs:
         working-directory: .
         run: |
           poetry install
-      - name: Lint with flake8
+      - name: Run mypy
         working-directory: .
         run: |
-          poetry run flake8 . --count --show-source --statistics
-          poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
-      # - name: Run mypy
-      #   working-directory: .
-      #   run: |
-      #     poetry run mypy
+          poetry run mypy
       - name: Run pytest
         working-directory: .
         run: |
-          poetry run pytest test_flask
-          poetry run pytest test_api
+          poetry run pytest

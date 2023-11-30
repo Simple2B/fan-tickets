@@ -15,11 +15,10 @@ def test_picture_upload(client: FlaskClient):
     img = Image.new("RGB", (60, 30), color="red")
     img.save(img_byte_arr, format="PNG")
     img_byte_arr.seek(0)
-    data = {"file": (img_byte_arr, "test.png")}
 
     login(client)
     response = client.post(
-        "/admin/picture-upload", content_type="multipart/form-data", data=data
+        "/admin/picture-upload", content_type="multipart/form-data", data={"file": (img_byte_arr, "test.png")}
     )
 
     assert response.status_code == 200

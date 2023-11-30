@@ -63,12 +63,13 @@ def save():
         if not u:
             log(log.ERROR, "Not found user by id : [%s]", form.user_id.data)
             flash("Cannot save user data", "danger")
-        u.username = form.username.data
-        u.email = form.email.data
-        u.activated = form.activated.data
-        if form.password.data.strip("*\n "):
-            u.password = form.password.data
-        u.save()
+        else:
+            u.username = form.username.data
+            u.email = form.email.data
+            u.activated = form.activated.data
+            if form.password.data.strip("*\n "):
+                u.password = form.password.data
+            u.save()
         if form.next_url.data:
             return redirect(form.next_url.data)
         return redirect(url_for("user.get_all"))

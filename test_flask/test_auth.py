@@ -67,9 +67,9 @@ def test_register(client):
         response = client.get(url)
         assert response.status_code == 302
         response.location == url_for("main.index")
-        user: m.User = db.session.query(m.User).filter_by(email=TEST_EMAIL).first()
-        assert user
-        assert user.activated
+        user1: m.User = db.session.query(m.User).filter_by(email=TEST_EMAIL).first()
+        assert user1
+        assert user1.activated
 
 
 def test_forgot(client):
@@ -82,14 +82,13 @@ def test_forgot(client):
     )
     assert b"No registered user with this e-mail" in response.data
 
-    user = m.User(
+    m.User(
         username="sam",
         email=TEST_EMAIL,
         phone="+480000000000",
         card="9999888877776666",
         password="password",
-    )
-    user.save()
+    ).save()
     with mail.record_messages() as outbox:
         response = client.post(
             "/forgot",
