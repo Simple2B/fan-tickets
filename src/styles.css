@@ -96,6 +96,23 @@
   background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+  background-color: red;
+  background-color: #353232;
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: #7e7e7e; */
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #f2b705;
+  border-radius: 5px;
+}
+
 .scroll-x-container {
   width: 100vw;
 }
@@ -106,7 +123,7 @@
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;
+  scrollbar-width: 5px;
 }
 
 .scroll-x-modules::-webkit-scrollbar {
@@ -175,7 +192,6 @@
 
 .chat-window-open {
   max-height: 1000px;
-  overflow: hidden;
   opacity: 1;
   transition: max-height 0.3s ease-in;
 }

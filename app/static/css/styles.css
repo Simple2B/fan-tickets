@@ -1285,6 +1285,11 @@ input:checked + .toggle-bg{
   margin-bottom: 1rem;
 }
 
+.mx-1{
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
 .-ml-1{
   margin-left: -0.25rem;
 }
@@ -1443,6 +1448,10 @@ input:checked + .toggle-bg{
 
 .mt-8{
   margin-top: 2rem;
+}
+
+.mb-12{
+  margin-bottom: 3rem;
 }
 
 .block{
@@ -1861,6 +1870,10 @@ input:checked + .toggle-bg{
 
 .justify-between{
   justify-content: space-between;
+}
+
+.justify-around{
+  justify-content: space-around;
 }
 
 .gap-1{
@@ -2940,6 +2953,23 @@ input:checked + .toggle-bg{
   background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+  background-color: red;
+  background-color: #353232;
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: #7e7e7e; */
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #f2b705;
+  border-radius: 5px;
+}
+
 .scroll-x-container {
   width: 100vw;
 }
@@ -2951,7 +2981,7 @@ input:checked + .toggle-bg{
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   /* IE and Edge */
-  scrollbar-width: none;
+  scrollbar-width: 5px;
 }
 
 .scroll-x-modules::-webkit-scrollbar {
@@ -3023,7 +3053,6 @@ input:checked + .toggle-bg{
 
 .chat-window-open {
   max-height: 1000px;
-  overflow: hidden;
   opacity: 1;
   transition: max-height 0.3s ease-in;
 }
@@ -3137,6 +3166,11 @@ input:checked + .toggle-bg{
 .hover\:bg-white:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.hover\:text-black:hover{
+  --tw-text-opacity: 1;
+  color: rgb(28 28 28 / var(--tw-text-opacity));
 }
 
 .hover\:text-blue-500:hover{
@@ -3264,6 +3298,11 @@ input:checked + .toggle-bg{
 .focus\:ring-secondary:focus{
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(242 183 5 / var(--tw-ring-opacity));
+}
+
+.active\:bg-gray-400:active{
+  --tw-bg-opacity: 1;
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:text-gray-900{

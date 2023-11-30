@@ -65,19 +65,19 @@ def generate_test_events(
 ):
     locations: list[m.Location] = []
     for location_name in TEST_LOCATIONS:
-        l = m.Location(
+        location = m.Location(
             name=location_name,
         )
-        session.add(l)
-        locations.append(l)
+        session.add(location)
+        locations.append(location)
         # session.commit()
     categories: list[m.Category] = []
     for category_name in TEST_CATEGORIES:
-        c = m.Category(
+        category = m.Category(
             name=category_name,
         )
-        session.add(c)
-        categories.append(c)
+        session.add(category)
+        categories.append(category)
         # session.commit()
     for i in range(NUM_TEST_EVENTS):
         location_id = randint(1, len(TEST_LOCATIONS))

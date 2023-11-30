@@ -14,12 +14,6 @@ if TYPE_CHECKING:
 class Message(db.Model, ModelMixin):
     """
     Model for chat or dispute messages.
-
-    Routes:
-    # - GET /messages/room/{room_unique_id}/ - do not need this
-    - POST /messages/room/{room_unique_id}/ (admin/client)
-    - PUT /messages/update/{message_unique_id} (admin/client)
-    - DELETE /messages/delete/{message_unique_id} (admin/client)
     """
 
     __tablename__ = "messages"
@@ -29,7 +23,7 @@ class Message(db.Model, ModelMixin):
         sa.String(36),
         default=gen_uuid,
     )
-    sender_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    sender_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
     room_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("rooms.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
