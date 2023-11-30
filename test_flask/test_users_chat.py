@@ -21,6 +21,8 @@ def test_users_chat(client: FlaskClient):
     Registration questions:
     - What is the user's name?
     - What is your email?
+    - Password
+    - Confirm password
     - What is your phone number?
     - What is your bank card number?
     - Please upload your photo

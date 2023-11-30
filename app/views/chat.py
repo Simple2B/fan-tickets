@@ -17,7 +17,6 @@ chat_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
 def sell():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
-    # new_message_text = request.form.get("message")
 
     question = "Are you looking for buying or selling tickets or for events information?"
 
@@ -47,8 +46,45 @@ def sell():
 
 @chat_blueprint.route("/username", methods=["GET", "POST"])
 def username():
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    room_unique_id = request.args.get("room_unique_id")
+    user_name = request.args.get("chat_username")
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    m.Message(
+        sender_id=2,
+        room_id=room.id,
+        text="Then let's get started!",
+    ).save(False)
+    m.Message(
+        sender_id=2,
+        room_id=room.id,
+        text="Please input your username",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text=user_name,
+    ).save(False)
+    user = m.User(
+        username=user_name,
+        email="empty@email.com",
+        phone="00000000000",
+        card="0000000000000000",
+        password="",
+    ).save(False)
+    db.session.flush()
+    room.seller_id = user.id
+    db.session.commit()
+
     return render_template(
-        "chat/chat_check.html",
+        "chat/chat_02.html",
+        now=now_str,
+        room=room,
+        user=user,
     )
 
 
