@@ -25,6 +25,10 @@
   background: linear-gradient(341deg, #393939 0.3%, #151515 32.12%);
 }
 
+.bg-chat-window {
+  background: linear-gradient(341deg, #393939 -40.3%, #151515 55.12%);
+}
+
 .bg-main-review {
   background: linear-gradient(0deg, #fff 0%, #fff 100%),
     linear-gradient(270deg, #e9ecf4 81.17%, rgba(233, 236, 244, 0) 116.25%);
@@ -167,4 +171,44 @@
   max-height: 1000px;
   overflow: hidden;
   transition: max-height 0.6s ease-in;
+}
+
+.chat-window-open {
+  max-height: 1000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.3s ease-in;
+}
+
+.chat-window-close {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.button-gradient-grey {
+  background: linear-gradient(#1c1c1c, #1c1c1c) padding-box,
+    linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
+  border-radius: 16px;
+  border: 1px solid transparent;
+}
+
+@keyframes rotateAnimation {
+  from {
+    transform: rotate(-180deg) scale(0.4);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.chat-icon-active {
+  opacity: 1;
+  animation: rotateAnimation 0.3s ease-in-out forwards;
+}
+
+.chat-icon-inactive {
+  transform: rotate(180deg) scale(0.4);
+  opacity: 0;
 }

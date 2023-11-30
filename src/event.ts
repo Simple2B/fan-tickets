@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   buttonLocation.addEventListener('click', () => {
     addHideEventsForElement(dropdownFilterLocation);
+    inputLocation.focus();
   });
 
   buttonCategories.addEventListener('click', () => {

@@ -1,0 +1,9 @@
+{% include 'chat/chat_icon.html' %}
+
+<div
+  id="chat-window"
+  class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-auto bg-chat-window rounded-2xl bg-grey">
+  <p class="p-2 text-center text-grey border border-r-grey rounded-xl">
+    Hi, {{ current_user.username }}
+  </p>
+</div>
