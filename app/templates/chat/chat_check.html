@@ -1,45 +1,28 @@
 {% extends "landing/base.html" %}
 <!-- prettier-ignore -->
 {% block main_content %}
+{% set all_filters = "[name='code']" %}
 
-<div>
-    {% for message in messages %}
-    {% if message.sender_id == 2 %}
-    {% set background_color = 'bg-secondary' %}
-    {% set justify = 'justify-end' %}
-    {% else %}
-    {% set background_color = 'bg-white' %}
-    {% endif %}
-    <div class="flex text-black {{justify}}">
-        <small class="pt-1">{{ message.sender_id }} {{ message.created_at }}</small>
-    </div>
+<div class="my-16 self-start flex flex-col gap-2">
+    <h1 class="text-6xl">Phone Verification</h1>
 
-    <div class="flex text-black {{justify}}">
-        <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
-            {{message.text }}
-        </p>
-    </div>
-    {% endfor %}
+    <button type="button" hx-get="{{ url_for('chat.send_code') }}" hx-trigger="click" hx-include="{{ all_filters }}"
+        class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+        Send code</button>
 
-    <p class="p-2 text-center text-grey border border-r-grey rounded-xl">
-        Then let's get started!
+    <p class="text-grey">
+        Enter verification code
     </p>
-
-    {% if current_user.is_authenticated %}
-    <p></p>
-    {% else %}
-    {% set all_filters = "[name='chat_username']" %}
-    <div class="mt-2 flex justify-around">
-        <div>
-            <input type="text" name="chat_username" class="border border-white bg-transparent rounded-lg">
-            <button type="button" hx-get="{{ url_for('chat.username') }}" hx-target="#chat-window" hx-swap="innerHTML"
-                hx-trigger="click" hx-include="{{ all_filters }}"
-                class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-                Submit
-            </button>
-        </div>
-    </div>
-    {% endif %}
+    <form>
+        <input type="text" name="verification_code" class="border border-white bg-transparent rounded-lg">
+        <button type="button" hx-get="{{ url_for('chat.check') }}" hx-target="#chat-window" hx-swap="innerHTML"
+            hx-trigger="click" hx-include="{{ all_filters }}"
+            class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+            Submit</button>
+    </form>
 </div>
 
+
+{% endblock %}
+{% block scripts %}
 {% endblock %}

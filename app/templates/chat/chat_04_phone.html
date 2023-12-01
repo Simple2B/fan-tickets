@@ -1,0 +1,51 @@
+<div>
+    {% for message in room.messages %}
+    {% if message.sender_id == 2 %}
+    {% set user_name = 'FanTicket' %}
+    {% set background_color = 'bg-secondary' %}
+    {% set justify = 'justify-end' %}
+    {% else %}
+    {% if current_user.is_authenticated %}
+    {% set user_name = current_user.username %}
+    {% else %}
+    {% set user_name = 'Guest' %}
+    {% endif %}
+    {% set background_color = 'bg-white' %}
+    {% endif %}
+    <div class="flex text-white {{justify}}">
+        <small class="pt-1">{{ user_name }} {{ cut_seconds(message.created_at) }}</small>
+    </div>
+
+    <div class="flex text-black {{justify}}">
+        <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
+            {{message.text }}
+        </p>
+    </div>
+    {% endfor %}
+
+    <div class="flex text-white justify-end">
+        <small class="pt-1">FanTicket {{ now }}</small>
+    </div>
+
+    <div class="mb-8 flex text-black justify-end">
+        <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+            Please input your phone
+        </p>
+    </div>
+
+    {% set all_filters = "[name='chat_phone'], [name='room_unique_id'], [name='user_unique_id']" %}
+    {% if current_user.is_authenticated %}
+    <p></p>
+    {% else %}
+    <div class="mt-2 flex justify-around">
+        <input type="hidden" name="user_unique_id" value="{{ user.unique_id }}">
+        <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}">
+        <input type="phone" name="chat_phone" class="border border-white bg-transparent rounded-lg">
+        <button type="button" hx-get="{{ url_for('chat.phone') }}" hx-target="#chat-window" hx-swap="innerHTML"
+            hx-trigger="click" hx-include="{{ all_filters }}"
+            class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+            Submit
+        </button>
+    </div>
+    {% endif %}
+</div>

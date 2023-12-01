@@ -33,6 +33,12 @@
         </p>
     </div>
 
+    <div class="mb-8 flex text-black justify-end">
+        <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+            Please input your username
+        </p>
+    </div>
+
     {% set all_filters = "[name='chat_username'], [name='room_unique_id']" %}
     {% if current_user.is_authenticated %}
     <p></p>
