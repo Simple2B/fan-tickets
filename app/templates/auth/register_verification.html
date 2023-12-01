@@ -1,0 +1,68 @@
+{% extends "landing/base.html" %}
+<!-- prettier-ignore -->
+{% block main_content %}
+
+<!-- component -->
+<div class="w-500 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+  <div class="pb-5 px-6 border-b border-light-grey-b0">
+    <h2 class="text-3xl">Cadastro</h2>
+  </div>
+  <div class="px-6 flex flex-col">
+    <form role="form" action="#" method="post" class="py-9 flex flex-col">
+      <p class="mb-4">Código de verificação</p>
+      <div class="mb-2 flex gap-3">
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder="" />
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder=""
+          disabled />
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder=""
+          disabled />
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder=""
+          disabled />
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder=""
+          disabled />
+        <input
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="number"
+          placeholder=""
+          disabled />
+      </div>
+      <p class="mb-6 text-grey">Insira seu código de 6 dígitos aqui</p>
+      <div class="mb-12 flex items-center gap-4">
+        <input
+          name="email-notification"
+          class="w-4 h-4 text-grey bg-filter-gradient-grey border-grey rounded focus:ring-gray-700 focus:ring-0"
+          type="checkbox" />
+        <p class="text-white">
+          Eu gostaria de receber recomendações e conteúdos sobre o evento
+          através do e-mail.
+        </p>
+      </div>
+      <button
+        disabled
+        type="submit"
+        id="auth-register-verification-button"
+        class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary transition-all duration-300 auth-register-verification-button-disabled">
+        <span class="text-black text-lg">Criar conta</span>
+      </button>
+    </form>
+  </div>
+  {% endblock %}
+  <!-- prettier-ignore -->
+  {% block scripts %}
+  {% endblock %}
+</div>

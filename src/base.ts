@@ -1,4 +1,5 @@
 import 'flowbite';
+import {toggleDropdown} from './utils';
 
 const themeToggleDarkIcons = document.querySelectorAll(
   '#theme-toggle-dark-icon',
@@ -87,4 +88,68 @@ scrollTopButton.addEventListener('click', e => {
     top: 0,
     behavior: 'smooth',
   });
+});
+
+// register verification modal
+const verificationInputs = document.querySelectorAll(
+  '.auth-register-verification-input',
+) as NodeListOf<HTMLInputElement>;
+const verificationButton = document.querySelector(
+  '#auth-register-verification-button',
+);
+
+verificationInputs.forEach((input: HTMLInputElement, index1) => {
+  input.addEventListener('keyup', event => {
+    const currentInput = input;
+    const nextInput = input.nextElementSibling as HTMLInputElement;
+    const previousInput = input.previousElementSibling as HTMLInputElement;
+
+    if (currentInput.value.length > 1) {
+      currentInput.value = '';
+      return;
+    }
+
+    if (nextInput && nextInput.hasAttribute('disabled') && currentInput.value) {
+      nextInput.removeAttribute('disabled');
+      nextInput.focus();
+    }
+
+    if (event.key === 'Backspace') {
+      verificationInputs.forEach((input, index2) => {
+        if (index1 <= index2 && previousInput) {
+          input.setAttribute('disabled', 'disabled');
+          currentInput.value = '';
+          previousInput.focus();
+        }
+      });
+    }
+
+    if (!verificationInputs[5].disabled && verificationInputs[5].value !== '') {
+      verificationButton.removeAttribute('disabled');
+      verificationButton.classList.remove(
+        'auth-register-verification-button-disabled',
+      );
+      return;
+    }
+    verificationButton.setAttribute('disabled', 'disabled');
+    verificationButton.classList.add(
+      'auth-register-verification-button-disabled',
+    );
+  });
+});
+
+// header user dropdown
+const headerUserDropdown = document.querySelector('#header-user-dropdown');
+const headerUserDropdownButton = document.querySelector(
+  '#header-user-dropdown-button',
+);
+const headerUserDropdownArrow = document.querySelector(
+  '#header-user-dropdown-arrow',
+);
+
+headerUserDropdownButton.addEventListener('click', () => {
+  toggleDropdown(headerUserDropdown as HTMLDivElement);
+  headerUserDropdownArrow.classList.toggle('rotate-180');
+  headerUserDropdown.classList.toggle('header-user-dropdown-open');
+  headerUserDropdown.classList.toggle('header-user-dropdown-close');
 });

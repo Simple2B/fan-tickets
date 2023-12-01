@@ -34,12 +34,13 @@ module.exports = {
         secondary: '#f2b705',
         black: '#1c1c1c',
         'ultra-black': '#151515',
-        'light-grey': '#a9a9a9',
-        grey: '#99a1a3',
+        'light-grey-a9': '#a9a9a9',
+        'light-grey-b0': '#b0b0b0',
+        'light-grey-82': '#828282',
         'light-grey': '#cecece',
+        grey: '#99a1a3',
         'middle-grey': '#5a5a5a',
         'dark-grey': '#2c2c2c',
-        'ultra-dark-grey': '#1c1c1c',
       }),
       fontFamily: {
         body: ['Space Grotesk', 'sans-serif'],
@@ -50,6 +51,9 @@ module.exports = {
         517: '517px',
         600: '600px',
       }),
+      lineHeight: {
+        0.1: '0.1rem',
+      },
       margin: ({theme}) => ({
         '50%': '50%',
       }),
@@ -57,6 +61,8 @@ module.exports = {
         '60%': '50%',
       }),
       width: ({theme}) => ({
+        295: '295px',
+        500: '500px',
         728: '728px',
       }),
     },

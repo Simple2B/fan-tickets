@@ -1160,6 +1160,10 @@ input:checked + .toggle-bg{
   top: 4rem;
 }
 
+.top-20{
+  top: 5rem;
+}
+
 .top-32{
   top: 8rem;
 }
@@ -1317,6 +1321,10 @@ input:checked + .toggle-bg{
   margin-bottom: 2.75rem;
 }
 
+.mb-12{
+  margin-bottom: 3rem;
+}
+
 .mb-16{
   margin-bottom: 4rem;
 }
@@ -1343,6 +1351,10 @@ input:checked + .toggle-bg{
 
 .mb-48{
   margin-bottom: 12rem;
+}
+
+.mb-5{
+  margin-bottom: 1.25rem;
 }
 
 .mb-6{
@@ -1413,6 +1425,10 @@ input:checked + .toggle-bg{
   margin-top: 0.25rem;
 }
 
+.mt-1\.5{
+  margin-top: 0.375rem;
+}
+
 .mt-14{
   margin-top: 3.5rem;
 }
@@ -1429,6 +1445,10 @@ input:checked + .toggle-bg{
   margin-top: 5rem;
 }
 
+.mt-28{
+  margin-top: 7rem;
+}
+
 .mt-3{
   margin-top: 0.75rem;
 }
@@ -1439,6 +1459,10 @@ input:checked + .toggle-bg{
 
 .mt-56{
   margin-top: 14rem;
+}
+
+.mt-6{
+  margin-top: 1.5rem;
 }
 
 .mt-8{
@@ -1609,6 +1633,10 @@ input:checked + .toggle-bg{
   width: 5rem;
 }
 
+.w-295{
+  width: 295px;
+}
+
 .w-3{
   width: 0.75rem;
 }
@@ -1635,6 +1663,10 @@ input:checked + .toggle-bg{
 
 .w-5\/6{
   width: 83.333333%;
+}
+
+.w-500{
+  width: 500px;
 }
 
 .w-52{
@@ -2012,6 +2044,10 @@ input:checked + .toggle-bg{
   border-radius: 1rem;
 }
 
+.rounded-3xl{
+  border-radius: 1.5rem;
+}
+
 .rounded-50\%{
   border-radius: 50%;
 }
@@ -2035,6 +2071,11 @@ input:checked + .toggle-bg{
 .rounded-b{
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
+}
+
+.rounded-b-2xl{
+  border-bottom-right-radius: 1rem;
+  border-bottom-left-radius: 1rem;
 }
 
 .rounded-b-lg{
@@ -2137,6 +2178,11 @@ input:checked + .toggle-bg{
 .border-light-grey{
   --tw-border-opacity: 1;
   border-color: rgb(206 206 206 / var(--tw-border-opacity));
+}
+
+.border-light-grey-b0{
+  --tw-border-opacity: 1;
+  border-color: rgb(176 176 176 / var(--tw-border-opacity));
 }
 
 .border-secondary{
@@ -2282,11 +2328,6 @@ input:checked + .toggle-bg{
   background-color: rgb(21 21 21 / var(--tw-bg-opacity));
 }
 
-.bg-ultra-dark-grey{
-  --tw-bg-opacity: 1;
-  background-color: rgb(28 28 28 / var(--tw-bg-opacity));
-}
-
 .bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -2334,6 +2375,10 @@ input:checked + .toggle-bg{
 
 .fill-current{
   fill: currentColor;
+}
+
+.fill-white{
+  fill: #ffffff;
 }
 
 .stroke-current{
@@ -2467,6 +2512,11 @@ input:checked + .toggle-bg{
   padding-bottom: 2rem;
 }
 
+.py-9{
+  padding-top: 2.25rem;
+  padding-bottom: 2.25rem;
+}
+
 .pb-16{
   padding-bottom: 4rem;
 }
@@ -2481,6 +2531,10 @@ input:checked + .toggle-bg{
 
 .pb-4{
   padding-bottom: 1rem;
+}
+
+.pb-5{
+  padding-bottom: 1.25rem;
 }
 
 .pb-6{
@@ -2850,6 +2904,8 @@ input:checked + .toggle-bg{
   color: red;
 }
 
+/* backgrounds */
+
 .bg-main {
   background: #111 url('/static/img/backgrounds/concert_mobile.png') no-repeat
     top;
@@ -2877,102 +2933,15 @@ input:checked + .toggle-bg{
     linear-gradient(270deg, #e9ecf4 81.17%, rgba(233, 236, 244, 0) 116.25%);
 }
 
+.bg-footer {
+  background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
+}
+
 .crop-image-50 {
   width: 100%;
   height: auto;
   -webkit-clip-path: polygon(0 0, 100% 0, 100% 50%, 0% 50%);
           clip-path: polygon(0 0, 100% 0, 100% 50%, 0% 50%);
-}
-
-.header-sticky {
-  background: rgba(10, 10, 10, 0.4);
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
-}
-
-.scroll-top-anchor-open {
-  left: 50%;
-  transform: translateX(-50%);
-  max-height: 300px;
-  overflow: hidden;
-  transition: max-height 1s ease-in;
-}
-
-.link:hover {
-  color: #1c1c1c;
-  background-color: #f2b705;
-  border-color: #f2b705;
-}
-
-.scroll-top-anchor-close {
-  left: 50%;
-  transform: translateX(-50%);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.6s ease-out;
-}
-
-.swiper-button-prev {
-  position: static !important;
-  display: block !important;
-  color: #99a1a3 !important;
-  cursor: pointer;
-}
-
-.swiper-button-next {
-  display: block !important;
-  position: static !important;
-  color: #99a1a3 !important;
-  cursor: pointer;
-}
-
-.swiper {
-  position: relative;
-  width: 90vw;
-  max-width: 1280px;
-}
-
-.swiper-slide {
-  display: flex !important;
-}
-
-.bg-footer {
-  background: linear-gradient(253deg, #393939 -3.03%, #1c1c1c 40.15%);
-}
-
-.scroll-x-container {
-  width: 100vw;
-}
-
-.scroll-x-modules {
-  white-space: nowrap;
-  overflow-y: hidden;
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-}
-
-.scroll-x-modules::-webkit-scrollbar {
-  display: none;
-  /* Hide scrollbar for Chrome, Safari, and Opera */
-}
-
-.scroll-x-modules {
-  scrollbar-width: none;
-  /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none;
-  /* Hide scrollbar for IE and Edge */
-}
-
-.scroll-x-module {
-  display: inline-block;
-  text-align: center;
-}
-
-.scroll-x-module + .scroll-x-module {
-  margin-left: 12px;
 }
 
 .bg-datalist-location {
@@ -3009,6 +2978,149 @@ input:checked + .toggle-bg{
   backdrop-filter: blur(15px);
 }
 
+.bg-modal-auth-gradient {
+  background: radial-gradient(
+        130.96% 130.96% at 93.3% 91.9%,
+        rgba(130, 130, 130, 0.1) 0%,
+        rgba(50, 50, 50, 0.1) 100%
+      )
+      padding-box,
+    radial-gradient(
+        130.96% 130.96% at 93.3% 91.9%,
+        rgba(130, 130, 130, 0.1) 0%,
+        rgba(50, 50, 50, 0.1) 100%
+      )
+      border-box;
+  border-radius: 29px;
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+.bg-test-gradient {
+  background: radial-gradient(
+        130.96% 130.96% at 93.3% 91.9%,
+        rgba(130, 130, 130, 0.1) 0%,
+        rgba(50, 50, 50, 0.1) 100%
+      )
+      padding-box,
+    radial-gradient(
+        130.96% 130.96% at 93.3% 91.9%,
+        rgba(130, 130, 130, 0.1) 0%,
+        rgba(50, 50, 50, 0.1) 100%
+      )
+      border-box;
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+/* button style */
+
+.link:hover {
+  color: #1c1c1c;
+  background-color: #f2b705;
+  border-color: #f2b705;
+}
+
+.button-gradient-grey {
+  background: linear-gradient(#1c1c1c, #1c1c1c) padding-box,
+    linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
+  border-radius: 16px;
+  border: 1px solid transparent;
+}
+
+/* header */
+
+.header-sticky {
+  background: rgba(10, 10, 10, 0.4);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+/* footer */
+
+.scroll-top-anchor-open {
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 1s ease-in;
+}
+
+.scroll-top-anchor-close {
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s ease-out;
+}
+
+/* slider */
+
+.swiper-button-prev {
+  position: static !important;
+  display: block !important;
+  color: #99a1a3 !important;
+  cursor: pointer;
+}
+
+.swiper-button-next {
+  display: block !important;
+  position: static !important;
+  color: #99a1a3 !important;
+  cursor: pointer;
+}
+
+.swiper {
+  position: relative;
+  width: 90vw;
+  max-width: 1280px;
+}
+
+.swiper-slide {
+  display: flex !important;
+}
+
+/* scroll-x-container */
+
+.scroll-x-container {
+  width: 100vw;
+}
+
+.scroll-x-modules {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+}
+
+.scroll-x-modules::-webkit-scrollbar {
+  display: none;
+  /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.scroll-x-modules {
+  scrollbar-width: none;
+  /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;
+  /* Hide scrollbar for IE and Edge */
+}
+
+.scroll-x-module {
+  display: inline-block;
+  text-align: center;
+}
+
+.scroll-x-module + .scroll-x-module {
+  margin-left: 12px;
+}
+
+/* dropdown */
+
 .dropdown-close {
   max-height: 0;
   overflow: hidden;
@@ -3018,8 +3130,24 @@ input:checked + .toggle-bg{
 .dropdown-open {
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.6s ease-in;
+  transition: max-height 0.3s ease-in;
 }
+
+.header-user-dropdown-close {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.header-user-dropdown-open {
+  opacity: 1;
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in;
+}
+
+/* chat */
 
 .chat-window-open {
   max-height: 1000px;
@@ -3033,13 +3161,6 @@ input:checked + .toggle-bg{
   overflow: hidden;
   opacity: 0;
   transition: max-height 0.3s ease-out;
-}
-
-.button-gradient-grey {
-  background: linear-gradient(#1c1c1c, #1c1c1c) padding-box,
-    linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
-  border-radius: 16px;
-  border: 1px solid transparent;
 }
 
 @keyframes rotateAnimation {
@@ -3060,6 +3181,38 @@ input:checked + .toggle-bg{
 .chat-icon-inactive {
   transform: rotate(180deg) scale(0.4);
   opacity: 0;
+}
+
+/* auth */
+
+.modal-auth-divider {
+  display: flex;
+  align-items: center;
+}
+
+.modal-auth-divider::before,
+.modal-auth-divider::after {
+  flex: 1;
+  content: '';
+  padding: 1px;
+  background-color: #b0b0b0;
+  margin: 5px;
+}
+
+.auth-register-verification-input {
+  font-size: 1.5rem;
+  outline: none;
+  text-align: center;
+}
+
+.auth-register-verification-button-disabled {
+  background-color: #a57d04e1;
+}
+
+.auth-register-verification-input::-webkit-inner-spin-button,
+.auth-register-verification-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .hover\:scale-105:hover{
@@ -3097,6 +3250,11 @@ input:checked + .toggle-bg{
 .hover\:bg-blue-500:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(63 131 248 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-blue-700:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(26 86 219 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-blue-800:hover{
@@ -3137,6 +3295,15 @@ input:checked + .toggle-bg{
 .hover\:bg-white:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-yellow-400:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(227 160 8 / var(--tw-bg-opacity));
+}
+
+.hover\:fill-secondary:hover{
+  fill: #f2b705;
 }
 
 .hover\:text-blue-500:hover{
@@ -3249,6 +3416,11 @@ input:checked + .toggle-bg{
 .focus\:ring-gray-300:focus{
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-gray-700:focus{
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(55 65 81 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-neutral-700:focus{

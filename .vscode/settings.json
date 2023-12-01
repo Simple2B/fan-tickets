@@ -8,7 +8,12 @@
   },
   "cSpell.words": [
     "amarelo",
+    "Cadastro",
+    "conta",
+    "Continuar",
+    "Crie",
     "fastapi",
+    "Fazer",
     "flowbite",
     "Grotesk",
     "ilike",
@@ -17,8 +22,10 @@
     "pydantic",
     "pytest",
     "pytz",
+    "Senha",
     "sqlalchemy",
     "tailwindcss",
+    "usuário",
     "werkzeug",
     "wsgi",
     "wtforms"

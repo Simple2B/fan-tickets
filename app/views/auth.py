@@ -46,13 +46,12 @@ def register():
         mail.send(msg)
 
         login_user(user)
-        flash(
-            "Registration successful. Checkout you email for confirmation!.", "success"
-        )
+        flash("Registration successful. Checkout you email for confirmation!.", "success")
     elif form.is_submitted():
         log(log.WARNING, "Form submitted error: [%s]", form.errors)
         flash("The given data was invalid.", "danger")
-    return render_template("auth/register.html", form=form)
+        # TODO: change to render_template("auth/register.html", form=form)
+    return render_template("auth/register_verification.html", form=form)
 
 
 @auth_blueprint.route("/login", methods=["GET", "POST"])
@@ -137,12 +136,10 @@ def forgot_pass():
     elif form.is_submitted():
         log(log.ERROR, "No registered user with this e-mail")
         flash("No registered user with this e-mail", "danger")
-    return render_template("auth/forgot.html", form=form)
+    return render_template("auth-admin/forgot.html", form=form)
 
 
-@auth_blueprint.route(
-    "/password_recovery/<reset_password_uid>", methods=["GET", "POST"]
-)
+@auth_blueprint.route("/password_recovery/<reset_password_uid>", methods=["GET", "POST"])
 def password_recovery(reset_password_uid):
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -166,7 +163,7 @@ def password_recovery(reset_password_uid):
         return redirect(url_for("main.index"))
 
     return render_template(
-        "auth/reset_password.html",
+        "auth-admin/reset_password.html",
         form=form,
         unique_id=reset_password_uid,
     )
