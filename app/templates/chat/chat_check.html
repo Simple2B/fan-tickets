@@ -1,28 +1,63 @@
-{% extends "landing/base.html" %}
-<!-- prettier-ignore -->
-{% block main_content %}
-{% set all_filters = "[name='code']" %}
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="my-16 self-start flex flex-col gap-2">
-    <h1 class="text-6xl">Phone Verification</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Phone Verification</title>
 
-    <button type="button" hx-get="{{ url_for('chat.send_code') }}" hx-trigger="click" hx-include="{{ all_filters }}"
-        class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-        Send code</button>
+    <!-- Include Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
 
-    <p class="text-grey">
-        Enter verification code
-    </p>
-    <form>
-        <input type="text" name="verification_code" class="border border-white bg-transparent rounded-lg">
-        <button type="button" hx-get="{{ url_for('chat.check') }}" hx-target="#chat-window" hx-swap="innerHTML"
-            hx-trigger="click" hx-include="{{ all_filters }}"
-            class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-            Submit</button>
-    </form>
-</div>
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkVvMG0Wit6NjhRNemlz6a-C_XlIkZto8",
+            authDomain: "ticket-auth-8263c.firebaseapp.com",
+            projectId: "ticket-auth-8263c",
+            storageBucket: "ticket-auth-8263c.appspot.com",
+            messagingSenderId: "976594928723",
+            appId: "1:976594928723:web:f9f138060d14665ad1f2a6"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 
+    <script>
+        function sendVerificationCode() {
+            var phoneNumber = document.getElementById('phone_number').value;
+            var appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
 
-{% endblock %}
-{% block scripts %}
-{% endblock %}
+            firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then(function (confirmationResult) {
+                    // SMS sent. Prompt user to type the code from the message
+                    var code = prompt('Enter the verification code:', '');
+                    return confirmationResult.confirm(code);
+                })
+                .then(function (result) {
+                    // Phone number verified successfully
+                    console.log('Phone number verified:', result.user);
+                    alert('Phone number verified successfully!');
+                })
+                .catch(function (error) {
+                    // Handle errors
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                });
+        }
+    </script>
+</head>
+
+<body>
+
+    <h1>Firebase Phone Verification</h1>
+
+    <!-- Phone number input and verification code button -->
+    <label for="phone_number">Phone Number:</label>
+    <input type="tel" id="phone_number" placeholder="Enter your phone number">
+    <div id="recaptcha-container"></div>
+    <button onclick="sendVerificationCode()">Send Verification Code</button>
+
+</body>
+
+</html>
