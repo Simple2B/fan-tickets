@@ -1,5 +1,4 @@
 import 'flowbite';
-import {toggleDropdown} from './utils';
 
 const themeToggleDarkIcons = document.querySelectorAll(
   '#theme-toggle-dark-icon',
@@ -147,9 +146,59 @@ const headerUserDropdownArrow = document.querySelector(
   '#header-user-dropdown-arrow',
 );
 
-headerUserDropdownButton.addEventListener('click', () => {
-  toggleDropdown(headerUserDropdown as HTMLDivElement);
-  headerUserDropdownArrow.classList.toggle('rotate-180');
-  headerUserDropdown.classList.toggle('header-user-dropdown-open');
-  headerUserDropdown.classList.toggle('header-user-dropdown-close');
-});
+if (headerUserDropdownButton) {
+  headerUserDropdownButton.addEventListener('click', () => {
+    headerUserDropdownArrow.classList.toggle('rotate-180');
+    headerUserDropdown.classList.toggle('header-user-dropdown-active');
+  });
+}
+
+// mobile menu
+const menuButtonOpen = document.querySelector('#menu-button-open');
+const menuButtonClose = document.querySelector('#menu-button-close');
+const menu = document.querySelector('#menu');
+
+if (menuButtonOpen) {
+  menuButtonOpen.addEventListener('click', () => {
+    menu.classList.toggle('menu-mobile-active');
+  });
+}
+
+if (menuButtonClose) {
+  menuButtonClose.addEventListener('click', () => {
+    menu.classList.toggle('menu-mobile-active');
+  });
+}
+
+// mobile menu dropdowns
+const menuMobileDropdowns = document.querySelectorAll('.dropdown');
+
+if (menuMobileDropdowns) {
+  menuMobileDropdowns.forEach(dropdown => {
+    const dropdownButton = dropdown.querySelector('.dropdown-button');
+    const dropdownMenu = dropdown.querySelector('.menu-mobile-dropdown');
+    const dropdownArrow = dropdown.querySelector('.dropdown-arrow');
+
+    dropdownButton.addEventListener('click', e => {
+      const currentDropdown = (e.target as Element).closest('.dropdown');
+
+      dropdownMenu.classList.toggle('menu-mobile-dropdown-active');
+      dropdownArrow.classList.toggle('rotate-180');
+
+      menuMobileDropdowns.forEach(dropdown => {
+        if (dropdown !== currentDropdown) {
+          dropdown
+            .querySelector('.menu-mobile-dropdown')
+            .classList.remove('menu-mobile-dropdown-active');
+        }
+      });
+
+      window.addEventListener('mouseup', event => {
+        if (!dropdown.contains(event.target as Node)) {
+          dropdownMenu.classList.remove('menu-mobile-dropdown-active');
+          dropdownArrow.classList.remove('rotate-180');
+        }
+      });
+    });
+  });
+}

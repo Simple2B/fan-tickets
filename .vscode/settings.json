@@ -24,6 +24,7 @@
     "pytz",
     "Senha",
     "sqlalchemy",
+    "swiper",
     "tailwindcss",
     "usuário",
     "werkzeug",

@@ -1060,6 +1060,14 @@ input:checked + .toggle-bg{
   bottom: 5rem;
 }
 
+.-right-3{
+  right: -0.75rem;
+}
+
+.-top-1{
+  top: -0.25rem;
+}
+
 .-top-2{
   top: -0.5rem;
 }
@@ -1194,6 +1202,10 @@ input:checked + .toggle-bg{
 
 .z-50{
   z-index: 50;
+}
+
+.z-60{
+  z-index: 60;
 }
 
 .col-span-12{
@@ -2199,6 +2211,11 @@ input:checked + .toggle-bg{
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
+.border-b-grey{
+  --tw-border-opacity: 1;
+  border-bottom-color: rgb(153 161 163 / var(--tw-border-opacity));
+}
+
 .border-r-grey{
   --tw-border-opacity: 1;
   border-right-color: rgb(153 161 163 / var(--tw-border-opacity));
@@ -2420,6 +2437,10 @@ input:checked + .toggle-bg{
 
 .p-6{
   padding: 1.5rem;
+}
+
+.p-8{
+  padding: 2rem;
 }
 
 .px-2{
@@ -3119,7 +3140,7 @@ input:checked + .toggle-bg{
   margin-left: 12px;
 }
 
-/* dropdown */
+/* dropdowns */
 
 .dropdown-close {
   max-height: 0;
@@ -3133,18 +3154,41 @@ input:checked + .toggle-bg{
   transition: max-height 0.3s ease-in;
 }
 
-.header-user-dropdown-close {
+.menu-mobile {
+  transform: translate(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.menu-mobile-active {
+  transform: translate(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.menu-mobile-dropdown {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out,
+    padding 0.2s ease-in-out;
+}
+
+.menu-mobile-dropdown-active {
+  max-height: 1000px;
+  padding: 16px 0;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.header-user-dropdown {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out;
 }
 
-.header-user-dropdown-open {
+.header-user-dropdown-active {
   opacity: 1;
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease-in;
 }
 
 /* chat */
@@ -3250,11 +3294,6 @@ input:checked + .toggle-bg{
 .hover\:bg-blue-500:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(63 131 248 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-blue-700:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(26 86 219 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-blue-800:hover{
@@ -3758,6 +3797,10 @@ input:checked + .toggle-bg{
 
   .lg\:w-4\/12{
     width: 33.333333%;
+  }
+
+  .lg\:w-500{
+    width: 500px;
   }
 
   .lg\:max-w-7xl{

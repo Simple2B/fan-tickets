@@ -194,11 +194,8 @@
     .forEach(function (swiperContainer) {
       let swiper = swiperContainer.querySelector('.swiper');
       const isReview = swiperContainer.classList.contains('slider-review');
-      console.log('isReview', isReview);
       let next = swiperContainer.querySelector('.swiper-button-next');
-      console.log(next);
       let prev = swiperContainer.querySelector('.swiper-button-prev');
-      console.log(prev);
 
       new Swiper(swiper, {
         navigation: {

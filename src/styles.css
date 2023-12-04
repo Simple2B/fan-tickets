@@ -211,7 +211,7 @@
   margin-left: 12px;
 }
 
-/* dropdown */
+/* dropdowns */
 .dropdown-close {
   max-height: 0;
   overflow: hidden;
@@ -224,18 +224,41 @@
   transition: max-height 0.3s ease-in;
 }
 
-.header-user-dropdown-close {
+.menu-mobile {
+  transform: translate(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.menu-mobile-active {
+  transform: translate(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.menu-mobile-dropdown {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out,
+    padding 0.2s ease-in-out;
+}
+
+.menu-mobile-dropdown-active {
+  max-height: 1000px;
+  padding: 16px 0;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.header-user-dropdown {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out;
 }
 
-.header-user-dropdown-open {
+.header-user-dropdown-active {
   opacity: 1;
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease-in;
 }
 
 /* chat */

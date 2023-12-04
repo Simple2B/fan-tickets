@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
 
   chatIcon.addEventListener('click', () => {
-    console.log('chat-icon clicked');
     // openIcon.classList.toggle('chat-icon-inactive');
     // closeIcon.classList.toggle('chat-icon-active');
     chatWindow.classList.toggle('chat-window-close');

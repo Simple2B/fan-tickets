@@ -39,6 +39,7 @@ module.exports = {
         'light-grey-82': '#828282',
         'light-grey': '#cecece',
         grey: '#99a1a3',
+        'grey-41': '#414141',
         'middle-grey': '#5a5a5a',
         'dark-grey': '#2c2c2c',
       }),
@@ -65,6 +66,10 @@ module.exports = {
         500: '500px',
         728: '728px',
       }),
+      zIndex: {
+        auto: 'auto',
+        60: '60',
+      },
     },
   },
   plugins: [require('flowbite/plugin')],
