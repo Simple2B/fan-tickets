@@ -1,5 +1,6 @@
 from datetime import datetime
-from flask import request, Blueprint, render_template, flash
+from twilio.rest import Client
+from flask import request, Blueprint, render_template, flash, current_app as app
 from flask_login import current_user
 from app import models as m, db
 from app.logger import log
@@ -218,4 +219,22 @@ def check():
 
     return render_template(
         "chat/chat_check.html",
+    )
+
+
+@chat_blueprint.route("/sms", methods=["GET", "POST"])
+def sms():
+    # Twilio
+    account_sid = app.config["TWILIO_ACCOUNT_SID"]
+    auth_token = app.config["TWILIO_AUTH_TOKEN"]
+    sender = app.config["TWILIO_PHONE_NUMBER"]
+    receiver = request.args.get("chat_phone")
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(from_=sender, body="Twilio testing", to="+380954122379")
+
+    log(log.INFO, "Message sent: [%s]", message)
+
+    return render_template(
+        "chat/chat_sms.html",
     )

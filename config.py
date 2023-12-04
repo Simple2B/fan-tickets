@@ -62,6 +62,11 @@ class BaseConfig(BaseSettings):
     USER_PASSWORD_MIN_LENGTH: int = 6
     USER_PASSWORD_MAX_LENGTH: int = 30
 
+    # Twilio
+    TWILIO_ACCOUNT_SID: str
+    TWILIO_AUTH_TOKEN: str
+    TWILIO_PHONE_NUMBER: str
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
@@ -88,9 +93,7 @@ class TestingConfig(BaseConfig):
 
     TESTING: bool = True
     PRESERVE_CONTEXT_ON_EXCEPTION: bool = False
-    ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
-        BASE_DIR, "database-test.sqlite3"
-    )
+    ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3")
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
