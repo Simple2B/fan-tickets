@@ -231,7 +231,7 @@ def sms():
     receiver = request.args.get("chat_phone")
     client = Client(account_sid, auth_token)
 
-    message = client.messages.create(from_=sender, body="Twilio testing", to="+380954122379")
+    message = client.messages.create(from_=sender, body="Twilio testing", to="+380934323377")
 
     log(log.INFO, "Message sent: [%s]", message)
 
