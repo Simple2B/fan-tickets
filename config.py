@@ -34,9 +34,9 @@ class BaseConfig(BaseSettings):
     MAIL_DEFAULT_SENDER: str
 
     # Twilio
-    TWILIO_ACCOUNT_SID: str
-    TWILIO_AUTH_TOKEN: str
-    TWILIO_PHONE_NUMBER: str
+    TWILIO_ACCOUNT_SID: str = "some_twilio_account_sid"
+    TWILIO_AUTH_TOKEN: str = "some_twilio_auth_token"
+    TWILIO_PHONE_NUMBER: str = "some_twilio_phone_number"
 
     # Super admin
     ADMIN_USERNAME: str
