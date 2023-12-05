@@ -74,6 +74,9 @@ def init(app: Flask):
     @app.cli.command("set-subscriptions")
     @click.option("--username", type=str)
     def set_subscriptions(username: str):
+        """
+        Command for setting testing subscriptions to display in profile
+        """
         user_query = m.User.select().where(m.User.username == username)
         user = db.session.scalar(user_query)
         events_query = m.Event.select().limit(3)
@@ -86,14 +89,16 @@ def init(app: Flask):
 
         print(user.subscribed_events)
 
-    @app.cli.command("activated-users")
-    def activated_users():
-        query = m.User.select().where(m.User.activated.is_(True))
-        print(db.session.scalars(query).all())
-
-    @app.cli.command("get-tickets")
-    def get_tickets():
-        query = m.Ticket.select()
-        tickets = db.session.scalars(query).all()
-        for ticket in tickets:
-            print(ticket, ticket.quantity)
+    @app.cli.command("delete-user")
+    @click.option("--username", type=str)
+    def delete_user(username: str):
+        """
+        Command for deleting user
+        """
+        user_query = m.User.select().where(m.User.username == username)
+        user = db.session.scalar(user_query)
+        if not user:
+            print(f"User {username} not found")
+            return
+        user.delete()
+        print(f"User {username} deleted")
