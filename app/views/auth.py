@@ -176,7 +176,7 @@ def forgot_pass():
     elif form.is_submitted():
         log(log.ERROR, "No registered user with this e-mail")
         flash("No registered user with this e-mail", "danger")
-    return render_template("auth-admin/forgot.html", form=form)
+    return render_template("auth/forgot.html", form=form)
 
 
 @auth_blueprint.route("/password_recovery/<reset_password_uid>", methods=["GET", "POST"])

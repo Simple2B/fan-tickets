@@ -3,7 +3,7 @@
 {% block main_content %}
 
 <!-- component -->
-<div class="w-500 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+<div class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
   <div class="pb-5 px-6 border-b border-light-grey-b0">
     <h2 class="text-3xl">Cadastro</h2>
   </div>
@@ -11,7 +11,7 @@
       role="form"
       action="{{ url_for('auth.register') }}"
       method="post"
-      class="py-9 flex flex-col gap-4">
+      class="py-9 px-6 flex flex-col gap-4">
       <input
         name="username"
         class="py-4 px-4 rounded-2xl button-gradient-grey"
@@ -38,7 +38,7 @@
         <span class="text-black text-lg">Continuar com e-mail</span>
       </button>
     </form>
-    <div class="self-center flex justify-center items-center">
+    <div class="px-6 self-center flex justify-center items-center">
       <p class="text-grey text-center">
         Ao clicar em continuar, você confirma que tem mais de 16 anos e concorda
         com nosso
