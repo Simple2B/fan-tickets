@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWindow.classList.toggle('chat-window-close');
     chatWindow.classList.toggle('chat-window-open');
 
+    chatWindow.scrollTo({
+      top: chatWindow.scrollHeight,
+      behavior: 'smooth',
+    });
+
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         chatWindow.scrollTo({
