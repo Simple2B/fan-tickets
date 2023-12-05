@@ -8,6 +8,34 @@
 
 <div id="chat-window"
   class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll bg-chat-window rounded-2xl bg-grey">
+  {% if get_chat_room() %}
+  {% for message in get_chat_room() %}
+  {% if message.sender_id == 2 %}
+  {% set user_name = 'FanTicket' %}
+  {% set background_color = 'bg-secondary' %}
+  {% set justify = 'justify-end' %}
+  {% else %}
+  {% if current_user.is_authenticated %}
+  {% set user_name = current_user.username %}
+  {% else %}
+  {% set user_name = 'Guest' %}
+  {% endif %}
+  {% set background_color = 'bg-white' %}
+  {% endif %}
+
+
+  <div class="flex text-white {{justify}}">
+    <small class="pt-1">{{ user_name }} {{ cut_seconds(message.created_at) }}</small>
+  </div>
+
+  <div class="flex text-black {{justify}}">
+    <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
+      {{message.text }}
+    </p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
   <div class="flex text-white justify-end">
     <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
   </div>

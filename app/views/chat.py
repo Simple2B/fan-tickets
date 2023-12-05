@@ -53,8 +53,24 @@ def username():
     room_unique_id = request.args.get("room_unique_id")
     user_name = request.args.get("chat_username")
 
+    if not user_name or not room_unique_id:
+        log(log.ERROR, "Form submitting error")
+        flash("Form submitting error", "danger")
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+        )
+
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        flash("Room not found", "danger")
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Room not found",
+        )
 
     m.Message(
         sender_id=2,
@@ -80,6 +96,8 @@ def username():
     db.session.flush()
     room.seller_id = user.id
     db.session.commit()
+    log(log.INFO, f"User {user_name} created")
+    flash(f"User {user_name} created", "success")
 
     return render_template(
         "chat/chat_02_email.html",
@@ -103,6 +121,14 @@ def email():
 
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
+
+    if not email or not room_unique_id or not user_unique_id:
+        log(log.ERROR, "Form submitting error")
+        flash("Form submitting error", "danger")
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+        )
 
     m.Message(
         sender_id=2,
@@ -184,7 +210,15 @@ def phone():
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
 
-    pattern = r"^\+\d{10,13}$"
+    if not room_unique_id or not user_unique_id:
+        log(log.ERROR, "Form submitting error")
+        flash("Form submitting error", "danger")
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+        )
+
+    pattern = r"^\+?\d{10,13}$"
     match_pattern = re.search(pattern, str(phone))
 
     if not phone or not match_pattern:
@@ -199,7 +233,7 @@ def phone():
     parsed_url = urlparse(request.base_url)
     profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
 
-    success_message = f"Você foi registrado com sucesso. Por favor, verifique seu perfil."
+    success_message = "Você foi registrado com sucesso. Por favor, verifique seu perfil."
 
     login_user(user, remember=True)
 
@@ -226,37 +260,4 @@ def phone():
         room=room,
         user=user,
         profile_url=profile_url,
-    )
-
-
-@chat_blueprint.route("/send-code", methods=["GET", "POST"])
-def send_code():
-    try:
-        log(log.INFO, "Verification code sent successfully")
-        flash("Verification code sent successfully")
-        return {"status": "success"}, 200
-    except Exception as e:
-        log(log.ERROR, "Error sending verification code: [%s]", e)
-        flash("Error sending verification code")
-        return {"status": "error"}, 500
-
-
-@chat_blueprint.route("/sms", methods=["GET", "POST"])
-def sms():
-    # Twilio
-    account_sid = app.config["TWILIO_ACCOUNT_SID"]
-    auth_token = app.config["TWILIO_AUTH_TOKEN"]
-    sender = app.config["TWILIO_PHONE_NUMBER"]
-    receiver = request.args.get("chat_phone")
-    client = Client(account_sid, auth_token)
-
-    try:
-        message = client.messages.create(from_=sender, body="Twilio testing", to=receiver)
-        log(log.INFO, "Message sent: [%s]", message)
-    except Exception as e:
-        log(log.ERROR, "Error sending message: [%s]", e)
-        flash("Error sending message")
-
-    return render_template(
-        "chat/chat_sms.html",
     )
