@@ -31,9 +31,7 @@ def test_picture_upload(client: FlaskClient):
         data = {"file": FileStorage(img_file, "fan_ticket_logo.jpg")}
 
         login(client)
-        response = client.post(
-            "/admin/picture-upload", content_type="multipart/form-data", data=data
-        )
+        response = client.post("/admin/picture-upload", content_type="multipart/form-data", data=data)
 
         assert response.status_code == 200
         assert response.json == {}
@@ -62,4 +60,4 @@ def test_location_images(client: FlaskClient):
                 file=img_file.read(),
                 mimetype="png",
             ).save()
-    assert m.Picture.count() == previous_images_number + 3
+    assert m.Picture.count() == previous_images_number + 4

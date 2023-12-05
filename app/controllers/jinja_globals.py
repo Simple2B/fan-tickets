@@ -2,6 +2,7 @@ import os
 import pytz
 from datetime import datetime
 from flask_wtf import FlaskForm
+from app import models as m
 
 
 def form_hidden_tag():
@@ -24,5 +25,9 @@ def cut_seconds(created_at: datetime):
     return created_at.strftime("%Y-%m-%d %H:%M")
 
 
-def card_mask(card_number: str):
+def card_mask(card_number: str = "000000000000000000"):
     return f"{card_number[:4]} **** **** {card_number[-4:]}"
+
+
+def get_categories():
+    return m.Category.all()

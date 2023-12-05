@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, ValidationError, IntegerField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 from app.models import User
@@ -15,8 +15,8 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(2, 30)])
     email = StringField("Email Address", validators=[DataRequired(), Email()])
-    phone = StringField("Phone", validators=[DataRequired(), Length(7, 16)])
-    card = StringField("Card", validators=[DataRequired(), Length(16, 16)])
+    # phone = StringField("Phone", validators=[DataRequired(), Length(7, 16)])
+    # card = StringField("Card", validators=[DataRequired(), Length(16, 16)])
     password = PasswordField("Password", validators=[DataRequired(), Length(6, 30)])
     password_confirmation = PasswordField(
         "Confirm Password",
@@ -38,6 +38,25 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("This email is already registered.")
 
 
+class PhoneRegistrationForm(FlaskForm):
+    phone = StringField("Phone", validators=[DataRequired(), Length(7, 16)])
+    submit = SubmitField("Register")
+
+    def validate_phone(form, field):
+        query = User.select().where(User.phone == field.data)
+        if db.session.scalar(query) is not None:
+            raise ValidationError("This phone number is taken.")
+
+
+class VerificationCodeForm(FlaskForm):
+    digit_1 = IntegerField("Digit", validators=[DataRequired()])
+    digit_2 = IntegerField("Digit", validators=[DataRequired()])
+    digit_3 = IntegerField("Digit", validators=[DataRequired()])
+    digit_4 = IntegerField("Digit", validators=[DataRequired()])
+    digit_5 = IntegerField("Digit", validators=[DataRequired()])
+    digit_6 = IntegerField("Digit", validators=[DataRequired()])
+
+
 class ForgotForm(FlaskForm):
     email = StringField("Email Address", validators=[DataRequired(), Email()])
 
@@ -57,7 +76,5 @@ class ChangePasswordForm(FlaskForm):
         ],
         render_kw={"placeholder": "Password"},
     )
-    password_confirmation = PasswordField(
-        "Repeat Password", render_kw={"placeholder": "Repeat Password"}
-    )
+    password_confirmation = PasswordField("Repeat Password", render_kw={"placeholder": "Repeat Password"})
     submit = SubmitField("Change password")

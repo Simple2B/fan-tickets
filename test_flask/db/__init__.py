@@ -19,12 +19,11 @@ TEST_LOCATIONS = [
     "Curitiba",
 ]
 TEST_CATEGORIES = [
-    "Concert",
-    "Festival",
-    "Theater",
+    "Shows",
+    "Festivais",
+    "Teatro",
     "Cinema",
-    "Party",
-    "Conference",
+    "Esportes",
 ]
 NUM_TEST_EVENTS = 12
 TEST_TICKET_TYPES = [

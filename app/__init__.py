@@ -73,6 +73,7 @@ def create_app(environment="development") -> Flask:
         time_delta,
         cut_seconds,
         card_mask,
+        get_categories,
     )
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
@@ -80,5 +81,6 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["time_delta"] = time_delta
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
+    app.jinja_env.globals["get_categories"] = get_categories
 
     return app

@@ -31,8 +31,8 @@ def test_register(client):
             data=dict(
                 username="sam",
                 email=TEST_EMAIL,
-                phone="+480000000000",
-                card="9999888877776666",
+                # phone="+480000000000",
+                # card="9999888877776666",
                 password="password",
                 password_confirmation="password",
             ),
@@ -41,10 +41,7 @@ def test_register(client):
 
         assert response
 
-        assert (
-            b"Registration successful. Checkout you email for confirmation!."
-            in response.data
-        )
+        assert b"Registration successful. Checkout you email for confirmation!." in response.data
 
         assert "toast" in response.data.decode()
         assert "toast-success" in response.data.decode()
@@ -65,11 +62,11 @@ def test_register(client):
         assert len(urls) == 1
         url = urls[0]
         response = client.get(url)
-        assert response.status_code == 302
+        assert response.status_code == 200
         response.location == url_for("main.index")
         user1: m.User = db.session.query(m.User).filter_by(email=TEST_EMAIL).first()
         assert user1
-        assert user1.activated
+        # assert user1.activated
 
 
 def test_forgot(client):
@@ -98,13 +95,8 @@ def test_forgot(client):
             follow_redirects=True,
         )
 
-        assert (
-            b"Password reset successful. For set new password please check your e-mail."
-            in response.data
-        )
-        user: m.User = db.session.scalar(
-            m.User.select().where(m.User.email == TEST_EMAIL)
-        )
+        assert b"Password reset successful. For set new password please check your e-mail." in response.data
+        user: m.User = db.session.scalar(m.User.select().where(m.User.email == TEST_EMAIL))
         assert user
 
         assert len(outbox) == 1

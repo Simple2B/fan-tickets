@@ -33,6 +33,11 @@ class BaseConfig(BaseSettings):
     MAIL_PASSWORD: str
     MAIL_DEFAULT_SENDER: str
 
+    # Twilio
+    TWILIO_ACCOUNT_SID: str
+    TWILIO_AUTH_TOKEN: str
+    TWILIO_PHONE_NUMBER: str
+
     # Super admin
     ADMIN_USERNAME: str
     ADMIN_EMAIL: str
@@ -88,9 +93,7 @@ class TestingConfig(BaseConfig):
 
     TESTING: bool = True
     PRESERVE_CONTEXT_ON_EXCEPTION: bool = False
-    ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(
-        BASE_DIR, "database-test.sqlite3"
-    )
+    ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3")
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 

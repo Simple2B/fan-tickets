@@ -61,8 +61,9 @@ class User(db.Model, UserMixin, ModelMixin):
         nullable=False,
     )
     email: orm.Mapped[str] = orm.mapped_column(sa.String(256))
-    phone: orm.Mapped[str] = orm.mapped_column(sa.String(32))
-    card: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    card: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    verification_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(6))
     password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
@@ -77,9 +78,7 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.String(64),
         default=gen_password_reset_id,
     )
-    role: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=UserRole.client.value
-    )
+    role: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=UserRole.client.value)
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
     picture: orm.Mapped["Picture"] = orm.relationship()
@@ -95,9 +94,7 @@ class User(db.Model, UserMixin, ModelMixin):
         back_populates="user",
     )
 
-    notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(
-        back_populates="user"
-    )
+    notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(back_populates="user")
 
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.reviewer_id",
