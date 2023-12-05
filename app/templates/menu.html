@@ -49,7 +49,7 @@
         class="menu-mobile-dropdown relative flex flex-col gap-4">
         {% for category in get_categories() %}
         <a
-          href="{{ url_for('events.search_events', categories='Show') }}"
+          href="{{ url_for('events.search_events', categories=category) }}"
           class="flex gap-4">
           <!--prettier-ignore-->
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <path d="M9 18L15 12L9 6" stroke="#99A1A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
