@@ -1,7 +1,10 @@
 from datetime import datetime
+import re
+from urllib.parse import urlparse
+from random import randint
 from twilio.rest import Client
 from flask import request, Blueprint, render_template, flash, current_app as app
-from flask_login import current_user
+from flask_login import current_user, login_user
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -181,6 +184,25 @@ def phone():
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
 
+    pattern = r"^\+\d{10,13}$"
+    match_pattern = re.search(pattern, str(phone))
+
+    if not phone or not match_pattern:
+        return render_template(
+            "chat/chat_04_phone.html",
+            now=now_str,
+            room=room,
+            user=user,
+        )
+
+    # parse url and get the domain name
+    parsed_url = urlparse(request.base_url)
+    profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
+
+    success_message = f"Você foi registrado com sucesso. Por favor, verifique seu perfil."
+
+    login_user(user, remember=True)
+
     m.Message(
         sender_id=2,
         room_id=room.id,
@@ -190,14 +212,20 @@ def phone():
         room_id=room.id,
         text=phone,
     ).save(False)
+    m.Message(
+        sender_id=2,
+        room_id=room.id,
+        text=success_message,
+    ).save(False)
     user.phone = str(phone)  # mypy made me do it!
     db.session.commit()
 
     return render_template(
-        "chat/chat_03_pass.html",
+        "chat/chat_05_verified.html",
         now=now_str,
         room=room,
         user=user,
+        profile_url=profile_url,
     )
 
 

@@ -15,3 +15,4 @@ from .user import (
     CardEditForm,
     NotificationsConfigForm,
 )
+from .chat import ChatPhoneForm
