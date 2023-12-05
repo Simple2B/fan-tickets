@@ -49,12 +49,12 @@ class PhoneRegistrationForm(FlaskForm):
 
 
 class VerificationCodeForm(FlaskForm):
-    digit_1 = IntegerField("Digit", validators=[DataRequired()])
-    digit_2 = IntegerField("Digit", validators=[DataRequired()])
-    digit_3 = IntegerField("Digit", validators=[DataRequired()])
-    digit_4 = IntegerField("Digit", validators=[DataRequired()])
-    digit_5 = IntegerField("Digit", validators=[DataRequired()])
-    digit_6 = IntegerField("Digit", validators=[DataRequired()])
+    digit_1 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
+    digit_2 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
+    digit_3 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
+    digit_4 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
+    digit_5 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
+    digit_6 = StringField("Digit", validators=[DataRequired(), Length(1, 1)])
 
 
 class ForgotForm(FlaskForm):
