@@ -213,15 +213,6 @@ def send_code():
         return {"status": "error"}, 500
 
 
-@chat_blueprint.route("/check", methods=["GET", "POST"])
-def check():
-    verification_code = request.args.get("verification_code")
-
-    return render_template(
-        "chat/chat_check.html",
-    )
-
-
 @chat_blueprint.route("/sms", methods=["GET", "POST"])
 def sms():
     # Twilio
@@ -231,9 +222,12 @@ def sms():
     receiver = request.args.get("chat_phone")
     client = Client(account_sid, auth_token)
 
-    message = client.messages.create(from_=sender, body="Twilio testing", to="+380934323377")
-
-    log(log.INFO, "Message sent: [%s]", message)
+    try:
+        message = client.messages.create(from_=sender, body="Twilio testing", to=receiver)
+        log(log.INFO, "Message sent: [%s]", message)
+    except Exception as e:
+        log(log.ERROR, "Error sending message: [%s]", e)
+        flash("Error sending message")
 
     return render_template(
         "chat/chat_sms.html",
