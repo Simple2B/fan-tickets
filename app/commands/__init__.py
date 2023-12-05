@@ -47,6 +47,9 @@ def init(app: Flask):
 
     @app.cli.command("set-users-images")
     def set_users_images():
+        """
+        This command sets images for users if we need to see them in the profile
+        """
         from test_flask.db import set_users_images
 
         set_users_images()
@@ -55,12 +58,10 @@ def init(app: Flask):
 
     @app.cli.command("get-buyers")
     def get_buyers():
-        # sold_tickets_query = (
-        #     sa.select(m.Ticket.buyer_id)
-        #     .where(m.Ticket.is_sold.is_(True))
-        #     .group_by(m.Ticket.buyer_id)
-        #     .order_by(m.Ticket.buyer_id)
-        # )
+        """
+        This command has to show all users who bought tickets
+        To make us available add testing subscriptions if it's needed
+        """
         sold_tickets_query = (
             sa.select(m.User.username)
             .select_from(sa.join(m.Ticket, m.User, m.Ticket.buyer_id == m.User.id))
