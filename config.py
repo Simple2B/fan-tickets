@@ -67,6 +67,11 @@ class BaseConfig(BaseSettings):
     USER_PASSWORD_MIN_LENGTH: int = 6
     USER_PASSWORD_MAX_LENGTH: int = 30
 
+    # Twilio
+    TWILIO_ACCOUNT_SID: str
+    TWILIO_AUTH_TOKEN: str
+    TWILIO_PHONE_NUMBER: str
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

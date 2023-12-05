@@ -1,9 +1,42 @@
 {% include 'chat/chat_icon.html' %}
 
-<div
-  id="chat-window"
-  class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-auto bg-chat-window rounded-2xl bg-grey">
-  <p class="p-2 text-center text-grey border border-r-grey rounded-xl">
-    Hi, {{ current_user.username }}
-  </p>
+{% if current_user.is_authenticated %}
+{% set user_name = current_user.username %}
+{% else %}
+{% set user_name = 'Guest' %}
+{% endif %}
+
+<div id="chat-window"
+  class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll bg-chat-window rounded-2xl bg-grey">
+  <div class="flex text-white justify-end">
+    <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
+  </div>
+
+  <div class="flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+      Hi, {{ user_name }}!
+    </p>
+  </div>
+
+  <div class="flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+      Are you looking for buying or selling tickets or for events information?
+    </p>
+  </div>
+
+  <div class="mt-2 flex justify-end">
+    <button id="chat-window-sell"
+      class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Buying
+    </button>
+    <button id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-window" hx-swap="innerHTML"
+      hx-trigger="click"
+      class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Selling
+    </button>
+    <button id="chat-window-events"
+      class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Events
+    </button>
+  </div>
 </div>

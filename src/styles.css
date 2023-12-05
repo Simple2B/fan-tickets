@@ -45,6 +45,54 @@
   clip-path: polygon(0 0, 100% 0, 100% 50%, 0% 50%);
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+  background-color: red;
+  background-color: #353232;
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: #7e7e7e; */
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #f2b705;
+  border-radius: 5px;
+}
+
+.scroll-x-container {
+  width: 100vw;
+}
+
+.scroll-x-modules {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: 5px;
+}
+
+.scroll-x-modules::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.scroll-x-modules {
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+}
+
+.scroll-x-module {
+  display: inline-block;
+  text-align: center;
+}
+
+.scroll-x-module + .scroll-x-module {
+  margin-left: 12px;
+}
+
 .bg-datalist-location {
   background: radial-gradient(
     130.96% 130.96% at 93.3% 91.9%,
@@ -264,7 +312,6 @@
 /* chat */
 .chat-window-open {
   max-height: 1000px;
-  overflow: hidden;
   opacity: 1;
   transition: max-height 0.3s ease-in;
 }

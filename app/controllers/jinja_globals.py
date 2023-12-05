@@ -21,7 +21,7 @@ def time_delta(created_at: datetime):
     return (now - created_at).days * -1
 
 
-def cut_seconds(created_at: datetime):
+def cut_seconds(created_at: datetime = datetime.now()):
     return created_at.strftime("%Y-%m-%d %H:%M")
 
 
