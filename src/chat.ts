@@ -9,24 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // closeIcon.classList.toggle('chat-icon-active');
     chatWindow.classList.toggle('chat-window-close');
     chatWindow.classList.toggle('chat-window-open');
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        chatWindow.scrollTo({
+          top: chatWindow.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    observer.observe(chatWindow, {childList: true});
   });
-  console.log('chat.ts loaded');
 });
-
-const observer = new MutationObserver(mutations => {
-  mutations.forEach(mutation => {
-    if (mutation.type === 'childList') {
-      const chatWindow = document.querySelector('#chat-window');
-      const chatMessages = chatWindow.querySelector('.chat-messages');
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-  });
-});
-
-observer.observe(document.querySelector('.chat-messages'), {
-  childList: true,
-});
-
-const chatForm = document.querySelector('#chat-form');
-const chatInput = document.querySelector('#chat-input');
-const chatMessages = document.querySelector('.chat-messages');
