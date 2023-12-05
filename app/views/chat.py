@@ -1,9 +1,7 @@
 from datetime import datetime
 import re
 from urllib.parse import urlparse
-from random import randint
-from twilio.rest import Client
-from flask import request, Blueprint, render_template, flash, current_app as app
+from flask import request, Blueprint, render_template, flash
 from flask_login import current_user, login_user
 from app import models as m, db
 from app.logger import log
