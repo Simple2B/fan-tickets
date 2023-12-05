@@ -7,7 +7,7 @@
 [name='search_args'], [name='tickets_per_page']" %}
 
 <div class="self-stretch flex flex-col gap-8" id="tickets-list">
-  <div class="grid grid-cols-2 gap-8">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
     <!-- prettier-ignore -->
     <input type="hidden" name="tickets_per_page" id="tickets_per_page" value="{{ tickets|length }}" />
     {% for ticket in tickets %}
