@@ -220,12 +220,13 @@ def edit_card():
 @login_required
 def save_card():
     user: m.User = current_user
+    CARD_NUMBER_LENGTH = 16
 
     card_form = f.CardEditForm()
     if card_form.validate_on_submit():
         log(log.INFO, "Card change form submitted. User: [%s]", user)
         user.card = card_form.card.data
-        if user.card:
+        if user.card and len(user.card) == CARD_NUMBER_LENGTH:
             log(log.INFO, "Card activated. User: [%s]", user)
             user.activated = True
         else:
