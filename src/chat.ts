@@ -9,5 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // closeIcon.classList.toggle('chat-icon-active');
     chatWindow.classList.toggle('chat-window-close');
     chatWindow.classList.toggle('chat-window-open');
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        chatWindow.scrollTo({
+          top: chatWindow.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    observer.observe(chatWindow, {childList: true});
   });
 });

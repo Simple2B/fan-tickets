@@ -150,6 +150,13 @@ if (headerUserDropdownButton) {
   headerUserDropdownButton.addEventListener('click', () => {
     headerUserDropdownArrow.classList.toggle('rotate-180');
     headerUserDropdown.classList.toggle('header-user-dropdown-active');
+
+    window.addEventListener('mouseup', event => {
+      if (!headerUserDropdown.contains(event.target as Node)) {
+        headerUserDropdown.classList.remove('header-user-dropdown-active');
+        headerUserDropdownArrow.classList.remove('rotate-180');
+      }
+    });
   });
 }
 

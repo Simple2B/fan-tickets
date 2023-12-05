@@ -1,0 +1,30 @@
+{% extends "landing/base.html" %}
+<!-- prettier-ignore -->
+{% block main_content %}
+
+<!-- component -->
+<div class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+  <div class="pb-5 px-6 border-b border-light-grey-b0">
+    <h2 class="text-3xl">Digite seu e-mail e enviaremos sua senha</h2>
+  </div>
+  <form class="py-9 px-6 flex flex-col gap-4" role="form" action="{{ url_for('auth.forgot_pass') }}" method="post">
+    {{ form.hidden_tag() }}
+
+    <!-- prettier-ignore -->
+    <div>
+         {{form.email(class='w-full py-4 px-4 rounded-2xl button-gradient-grey', placeholder='Entre com seu e-mail aqui')}}
+        {% for error in form.errors.email %}
+          <small class="text-danger">{{error}}</small>
+        {% endfor %}
+      </div>
+    <!-- prettier-ignore -->
+    <button type="submit" class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary hover:bg-yellow-400 hover:text-white transition-all duration-300">
+      Enviei minha senha
+      </button>
+  </form>
+  </div>
+</div>
+{% endblock %}
+<!-- prettier-ignore -->
+{% block scripts %}
+{% endblock %}

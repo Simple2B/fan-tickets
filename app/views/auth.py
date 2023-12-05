@@ -63,7 +63,7 @@ def login():
     if form.validate_on_submit():
         user = m.User.authenticate(form.user_id.data, form.password.data)
         log(log.INFO, "Form submitted. User: [%s]", user)
-        if user and user.activated:
+        if user:
             login_user(user)
             log(log.INFO, "Login successful.")
             flash("Login successful.", "success")
@@ -176,7 +176,7 @@ def forgot_pass():
     elif form.is_submitted():
         log(log.ERROR, "No registered user with this e-mail")
         flash("No registered user with this e-mail", "danger")
-    return render_template("auth-admin/forgot.html", form=form)
+    return render_template("auth/forgot.html", form=form)
 
 
 @auth_blueprint.route("/password_recovery/<reset_password_uid>", methods=["GET", "POST"])
