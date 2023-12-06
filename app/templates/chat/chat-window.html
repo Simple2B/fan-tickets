@@ -1,5 +1,7 @@
 {% include 'chat/chat_icon.html' %}
 
+
+
 {% if current_user.is_authenticated %}
 {% set user_name = current_user.username %}
 {% else %}
@@ -8,8 +10,8 @@
 
 <div id="chat-window"
   class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll bg-chat-window rounded-2xl bg-grey">
-  {% if get_chat_room() %}
-  {% for message in get_chat_room() %}
+  {% if get_chat_room_messages() %}
+  {% for message in get_chat_room_messages() %}
   {% if message.sender_id == 2 %}
   {% set user_name = 'FanTicket' %}
   {% set background_color = 'bg-secondary' %}
@@ -48,7 +50,7 @@
 
   <div class="flex text-black justify-end">
     <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
-      Are you looking for buying or selling tickets or for events information?
+      Are you looking for buying or selling tickets or for events information? Ha?
     </p>
   </div>
 

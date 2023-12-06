@@ -12,10 +12,12 @@ def test_chat_window(client: FlaskClient):
 
 
 def test_chat_sell(client: FlaskClient):
+    TESTING_ROOMS_NUMBER = 1
+    TESTING_MESSAGES_NUMBER = 2
     response = client.get("/chat/sell")
     assert response.status_code == 200
-    assert len(m.Room.all()) == 1
-    assert len(m.Message.all()) == 2
+    assert len(m.Room.all()) == TESTING_ROOMS_NUMBER
+    assert len(m.Message.all()) == TESTING_MESSAGES_NUMBER
 
 
 def test_chat_username(client: FlaskClient):

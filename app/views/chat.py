@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 from urllib.parse import urlparse
-from flask import request, Blueprint, render_template, flash
+from flask import request, Blueprint, render_template, flash, current_app as app
 from flask_login import current_user, login_user
 from app import models as m, db
 from app.logger import log
@@ -22,10 +22,10 @@ def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
         seller_id=seller_id,
-        buyer_id=2,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text=question,
     ).save(False)
@@ -84,12 +84,12 @@ def username():
         )
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Then let's get started!",
     ).save(False)
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your username",
     ).save(False)
@@ -98,10 +98,13 @@ def username():
         text=user_name,
     ).save(False)
     user = m.User(
+        # Since in chat registration we get user's info step by step,
+        # asking user to input credentials one by one,
+        # we need to fill the rest of the fields with default values
         username=user_name,
-        email="empty@email.com",
-        phone="00000000000",
-        card="0000000000000000",
+        email=app.config["CHAT_DEFAULT_EMAIL"],
+        phone=app.config["CHAT_DEFAULT_PHONE"],
+        card=app.config["CHAT_DEFAULT_CARD"],
         password="",
     ).save(False)
     db.session.flush()
@@ -123,10 +126,6 @@ def email():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    email = "denysburimov@gmail.com"
-    pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    match_pattern = re.search(pattern, email)
-
     room_unique_id = request.args.get("room_unique_id")
     email_input = request.args.get("chat_email")
     user_unique_id = request.args.get("user_unique_id")
@@ -143,6 +142,22 @@ def email():
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=user,
+            email_input=email_input,
+        )
+
+    pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    match_pattern = re.search(pattern, email_input)
+    if not match_pattern:
+        return render_template(
+            "chat/chat_02_email.html",
+            error_message="Invalid email format",
+            room=room,
+            now=now_str,
+            user=user,
+            email_input=email_input,
         )
 
     email_query = m.User.select().where(m.User.email == email_input)
@@ -161,7 +176,7 @@ def email():
         )
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your email",
     ).save(False)
@@ -206,7 +221,7 @@ def password():
         )
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your password",
     ).save(False)
@@ -234,12 +249,6 @@ def phone():
     phone_input = request.args.get("chat_phone")
     user_unique_id = request.args.get("user_unique_id")
 
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
     if not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
         flash("Form submitting error", "danger")
@@ -247,6 +256,12 @@ def phone():
             "chat/chat_error.html",
             error_message="Form submitting error",
         )
+
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user: m.User = db.session.scalar(user_query)
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
 
     pattern = r"^\+?\d{10,13}$"
     match_pattern = re.search(pattern, str(phone_input))
@@ -283,7 +298,7 @@ def phone():
     login_user(user, remember=True)
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your phone",
     ).save(False)
@@ -292,7 +307,7 @@ def phone():
         text=phone_input,
     ).save(False)
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text=success_message,
     ).save(False)

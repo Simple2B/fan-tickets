@@ -67,6 +67,12 @@ class BaseConfig(BaseSettings):
     USER_PASSWORD_MIN_LENGTH: int = 6
     USER_PASSWORD_MAX_LENGTH: int = 30
 
+    # Chat registration default values
+    CHAT_DEFAULT_BOT_ID: int = 2
+    CHAT_DEFAULT_EMAIL: str = "empty@email.com"
+    CHAT_DEFAULT_PHONE: str = "+3800000000000"
+    CHAT_DEFAULT_CARD: str = "0000000000000000"
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

@@ -1,21 +1,5 @@
 <div>
-  {% for message in room.messages %} {% if message.sender_id == 2 %} {% set
-  user_name = 'FanTicket' %} {% set background_color = 'bg-secondary' %} {% set
-  justify = 'justify-end' %} {% else %} {% if current_user.is_authenticated %}
-  {% set user_name = current_user.username %} {% else %} {% set user_name =
-  'Guest' %} {% endif %} {% set background_color = 'bg-white' %} {% endif %}
-  <div class="flex text-white {{justify}}">
-    <small class="pt-1"
-      >{{ user_name }} {{ cut_seconds(message.created_at) }}</small
-    >
-  </div>
-
-  <div class="flex text-black {{justify}}">
-    <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
-      {{message.text }}
-    </p>
-  </div>
-  {% endfor %}
+  {% include 'chat/chat_messages.html' %}
 
   <div class="flex text-white justify-end">
     <small class="pt-1">FanTicket {{ now }}</small>
@@ -34,11 +18,9 @@
       {{ error_message }}: {{ email_input }}
     </p>
   </div>
-  {% endif %}
-
-  <!-- prettier-ignore -->
-  {% set all_filters = "[name='chat_email'], [name='room_unique_id'], [name='user_unique_id']" %}
-    {% if current_user.is_authenticated %}
+  {% endif %} {% set all_filters = "[name='chat_email'],
+  [name='room_unique_id'], [name='user_unique_id']" %} {% if
+  current_user.is_authenticated %}
   <p></p>
   {% else %}
   <div class="mt-2 flex justify-around">

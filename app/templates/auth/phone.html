@@ -14,6 +14,7 @@
       action="{{ url_for('auth.activate', reset_password_uid=reset_password_uid) }}"
       method="post"
       class="py-9 flex flex-col gap-4">
+      {{ form_hidden_tag() }}
       <div class="absolute top-1 left-1/2 -translate-x-1/2">
         {% for error in form.errors.email %}
         <span class="text-center text-danger text-sm">{{error}}</span>
