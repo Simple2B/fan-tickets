@@ -26,3 +26,4 @@
 
 # Frontend
 - user/profile background change (mobile)
+- scrollbar styles for different browsers

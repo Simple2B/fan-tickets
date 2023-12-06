@@ -1,6 +1,7 @@
 import os
 import pytz
 from datetime import datetime
+from flask import current_app as app
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from app import models as m, db
@@ -41,3 +42,7 @@ def get_chat_room_messages():
         if not room:
             return None
         return room.messages
+
+
+def get_chatbot_id():
+    return app.config.get("CHAT_DEFAULT_BOT_ID")

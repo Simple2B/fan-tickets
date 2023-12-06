@@ -22,7 +22,7 @@ def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
         seller_id=seller_id,
-        buyer_id=2,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
@@ -85,6 +85,9 @@ def username():
         text=user_name,
     ).save(False)
     user = m.User(
+        # Since in chat registration we get user's info step by step,
+        # asking user to input credentials one by one,
+        # we need to fill the rest of the fields with default values
         username=user_name,
         email=app.config["CHAT_DEFAULT_EMAIL"],
         phone=app.config["CHAT_DEFAULT_PHONE"],
@@ -202,12 +205,6 @@ def phone():
     phone = request.args.get("chat_phone")
     user_unique_id = request.args.get("user_unique_id")
 
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
     if not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
         flash("Form submitting error", "danger")
@@ -215,6 +212,12 @@ def phone():
             "chat/chat_error.html",
             error_message="Form submitting error",
         )
+
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user: m.User = db.session.scalar(user_query)
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
 
     pattern = r"^\+?\d{10,13}$"
     match_pattern = re.search(pattern, str(phone))
