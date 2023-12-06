@@ -11,7 +11,12 @@
       role="form"
       action="{{ url_for('auth.register') }}"
       method="post"
-      class="py-9 px-6 flex flex-col gap-4">
+      class="relative py-9 px-6 flex flex-col gap-4">
+      <div class="absolute top-1 left-1/2 -translate-x-1/2">
+        {% for error in form.errors.email %}
+        <span class="text-center text-danger text-sm">{{error}}</span>
+        {% endfor %}
+      </div>
       <input
         name="username"
         class="py-4 px-4 rounded-2xl button-gradient-grey"

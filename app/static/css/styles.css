@@ -1180,6 +1180,14 @@ input:checked + .toggle-bg{
   top: 2rem;
 }
 
+.left-1\/2{
+  left: 50%;
+}
+
+.top-1{
+  top: 0.25rem;
+}
+
 .z-0{
   z-index: 0;
 }
@@ -1802,6 +1810,11 @@ input:checked + .toggle-bg{
 
 .translate-y-full{
   --tw-translate-y: 100%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.-translate-x-1\/2{
+  --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
