@@ -30,7 +30,7 @@ def card_mask(card_number: str = "000000000000000000"):
     return f"{card_number[:4]} **** **** {card_number[-4:]}"
 
 
-def get_categories():
+def get_categories() -> list[m.Category]:
     return m.Category.all()
 
 
