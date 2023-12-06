@@ -25,8 +25,6 @@ def register():
             username=form.username.data,
             email=form.email.data,
             picture_id=picture_id,
-            # phone=form.phone.data,
-            # card=form.card.data,
             password=form.password.data,
         )
         log(log.INFO, "Form submitted. User: [%s]", user)
