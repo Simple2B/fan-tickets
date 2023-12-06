@@ -3,44 +3,25 @@
 {% block main_content %}
 
 <!-- component -->
-<div
-  class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+<div class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
   <div class="pb-5 px-6 border-b border-light-grey-b0">
     <h2 class="text-3xl">Login</h2>
   </div>
   <div class="px-6 flex flex-col">
-    <form
-      role="form"
-      action="{{ url_for('auth.login') }}"
-      method="post"
-      class="py-9 flex flex-col gap-4">
-      <input
-        name="user_id"
-        class="py-4 px-4 rounded-2xl button-gradient-grey"
-        type="email"
+    <form role="form" action="{{ url_for('auth.login') }}" method="post" class="py-9 flex flex-col gap-4">
+      {{ form_hidden_tag() }}
+      <input name="user_id" class="py-4 px-4 rounded-2xl button-gradient-grey" type="email"
         placeholder="Entre com seu e-mail aqui" />
-      <input
-        name="password"
-        class="py-4 px-4 rounded-2xl button-gradient-grey"
-        type="password"
-        placeholder="Senha" />
-      <a
-        href="{{ url_for('auth.forgot_pass') }}"
-        class="mb-5 self-end text-secondary underline"
-        >Esqueceu a senha?</a
-      >
-      <button
-        type="submit"
+      <input name="password" class="py-4 px-4 rounded-2xl button-gradient-grey" type="password" placeholder="Senha" />
+      <a href="{{ url_for('auth.forgot_pass') }}" class="mb-5 self-end text-secondary underline">Esqueceu a senha?</a>
+      <button type="submit"
         class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary hover:bg-yellow-400 hover:text-white transition-all duration-300">
         <span class="text-black text-lg">Fazer login</span>
       </button>
     </form>
-    <div
-      class="self-center flex flex-col lg:flex-row gap-2 items-center justify-center">
+    <div class="self-center flex flex-col lg:flex-row gap-2 items-center justify-center">
       <span class="text-grey">Ainda não tem uma conta?</span>
-      <a href="{{ url_for('auth.register') }}" class="text-secondary underline"
-        >Crie uma conta</a
-      >
+      <a href="{{ url_for('auth.register') }}" class="text-secondary underline">Crie uma conta</a>
     </div>
   </div>
 </div>
