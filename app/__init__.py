@@ -76,7 +76,7 @@ def create_app(environment="development") -> Flask:
         cut_seconds,
         card_mask,
         get_categories,
-        get_chat_room,
+        get_chat_room_messages,
     )
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
@@ -85,6 +85,6 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
     app.jinja_env.globals["get_categories"] = get_categories
-    app.jinja_env.globals["get_chat_room"] = get_chat_room
+    app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
 
     return app

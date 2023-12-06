@@ -8,8 +8,8 @@
 
 <div id="chat-window"
   class="chat-window-close fixed bottom-28 right-10 z-50 w-96 h-448 py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll bg-chat-window rounded-2xl bg-grey">
-  {% if get_chat_room() %}
-  {% for message in get_chat_room() %}
+  {% if get_chat_room_messages() %}
+  {% for message in get_chat_room_messages() %}
   {% if message.sender_id == 2 %}
   {% set user_name = 'FanTicket' %}
   {% set background_color = 'bg-secondary' %}
