@@ -18,7 +18,7 @@ auth_blueprint = Blueprint("auth", __name__)
 def register():
     form = f.RegistrationForm()
     if form.validate_on_submit():
-        picture_query = m.Picture.select().where(m.Picture.filename == "default_avatar.png")
+        picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
         picture: m.Picture = db.session.scalar(picture_query)
         picture_id = picture.id if picture else None
         user = m.User(
@@ -49,7 +49,6 @@ def register():
         )
         mail.send(msg)
 
-        login_user(user)
         flash("Registration successful. Checkout you email for confirmation!.", "success")
         return redirect(url_for("main.index"))
     elif form.is_submitted():
@@ -87,7 +86,6 @@ def logout():
 
 
 @auth_blueprint.route("/activated/<reset_password_uid>", methods=["GET", "POST"])
-@login_required
 def activate(reset_password_uid):
     phone_form = f.PhoneRegistrationForm()
     query = m.User.select().where(m.User.unique_id == reset_password_uid)
@@ -109,7 +107,9 @@ def activate(reset_password_uid):
         message = client.messages.create(from_=sender, body=verification_code, to=receiver)
 
         user.verification_code = str(verification_code)
+        user.phone = phone_form.phone.data
         user.save()
+        login_user(user)
 
         log(log.INFO, "Form submitted. Message: [%s]", message)
         flash("Um código de confirmação foi enviado para o seu telefone.", "success")
@@ -121,16 +121,14 @@ def activate(reset_password_uid):
 @auth_blueprint.route("/phone_verification", methods=["GET", "POST"])
 @login_required
 def phone_verification():
-    cf = f.VerificationCodeForm()
+    form = f.VerificationCodeForm()
 
     if request.method == "GET":
         log(log.INFO, "Render phone verification page without blank form")
-        return render_template("auth/phone_verification.html")
+        return render_template("auth/phone_verification.html", form=form)
 
-    if cf.validate_on_submit():
-        full_code = (
-            f"{cf.digit_1.data}{cf.digit_2.data}{cf.digit_3.data}{cf.digit_4.data}{cf.digit_5.data}{cf.digit_6.data}"
-        )
+    if form.validate_on_submit():
+        full_code = f"{form.digit_1.data}{form.digit_2.data}{form.digit_3.data}{form.digit_4.data}{form.digit_5.data}{form.digit_6.data}"
         user = db.session.get(m.User, current_user.id)
         log(log.INFO, "Verification code: [%s], User: [%s]", full_code, user)
         if user.verification_code == full_code:
@@ -141,10 +139,10 @@ def phone_verification():
             log(log.INFO, "Verification code is incorrect: [%s]", full_code)
             flash("Código de verificação inválido!", "danger")
     else:
-        log(log.INFO, "Verification code is incorrect: [%s]", cf.errors)
+        log(log.INFO, "Verification code is incorrect: [%s]", form.errors)
         flash("Código de verificação inválido!", "danger")
 
-    return render_template("auth/phone_verification.html")
+    return render_template("auth/phone_verification.html", form=form)
 
 
 @auth_blueprint.route("/forgot", methods=["GET", "POST"])

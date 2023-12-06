@@ -90,16 +90,35 @@ def init(app: Flask):
 
         print(user.subscribed_events)
 
-    @app.cli.command("delete-user")
-    @click.option("--username", type=str)
-    def delete_user(username: str):
+    @app.cli.command("delete-users")
+    @click.option("--email", type=str)
+    def delete_user(email: str):
         """
         Command for deleting user
         """
-        user_query = m.User.select().where(m.User.username == username)
-        user = db.session.scalar(user_query)
-        if not user:
-            print(f"User {username} not found")
+        user_query = m.User.select().where(m.User.email == email)
+        users = db.session.scalars(user_query).all()
+        if not users:
+            print(f"User with e-mail: [{email}] not found")
             return
-        user.delete()
-        print(f"User {username} deleted")
+        for user in users:
+            messages_query = m.Message.select().where(m.Message.sender_id == user.id)
+            messages = db.session.scalars(messages_query).all()
+            for message in messages:
+                db.session.delete(message)
+            rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
+            rooms = db.session.scalars(rooms_query).all()
+            for room in rooms:
+                db.session.delete(room)
+            db.session.delete(user)
+            db.session.commit()
+            print(f"User {user.username} deleted")
+
+    @app.cli.command("all-users")
+    def all_users():
+        """
+        Command for getting all users
+        """
+        users_query = m.User.select()
+        users = db.session.scalars(users_query).all()
+        print(users)
