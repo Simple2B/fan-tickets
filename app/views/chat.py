@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 from urllib.parse import urlparse
-from flask import request, Blueprint, render_template, flash
+from flask import request, Blueprint, render_template, flash, current_app as app
 from flask_login import current_user, login_user
 from app import models as m, db
 from app.logger import log
@@ -25,7 +25,7 @@ def sell():
         buyer_id=2,
     ).save()
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text=question,
     ).save(False)
@@ -71,12 +71,12 @@ def username():
         )
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Then let's get started!",
     ).save(False)
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your username",
     ).save(False)
@@ -86,9 +86,9 @@ def username():
     ).save(False)
     user = m.User(
         username=user_name,
-        email="empty@email.com",
-        phone="00000000000",
-        card="0000000000000000",
+        email=app.config["CHAT_DEFAULT_EMAIL"],
+        phone=app.config["CHAT_DEFAULT_PHONE"],
+        card=app.config["CHAT_DEFAULT_CARD"],
         password="",
     ).save(False)
     db.session.flush()
@@ -114,12 +114,6 @@ def email():
     email = request.args.get("chat_email")
     user_unique_id = request.args.get("user_unique_id")
 
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
     if not email or not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
         flash("Form submitting error", "danger")
@@ -128,8 +122,14 @@ def email():
             error_message="Form submitting error",
         )
 
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user: m.User = db.session.scalar(user_query)
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your email",
     ).save(False)
@@ -174,7 +174,7 @@ def password():
         )
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your password",
     ).save(False)
@@ -236,7 +236,7 @@ def phone():
     login_user(user, remember=True)
 
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="Please input your phone",
     ).save(False)
@@ -245,7 +245,7 @@ def phone():
         text=phone,
     ).save(False)
     m.Message(
-        sender_id=2,
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text=success_message,
     ).save(False)
