@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 8636665466e1
+Revision ID: e4c9a229a541
 Revises: 
-Create Date: 2023-11-22 13:12:51.129599
+Create Date: 2023-12-05 12:01:55.042669
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8636665466e1'
+revision = 'e4c9a229a541'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,15 +48,16 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
     sa.Column('email', sa.String(length=256), nullable=False),
-    sa.Column('phone', sa.String(length=32), nullable=False),
-    sa.Column('card', sa.String(length=16), nullable=False),
+    sa.Column('phone', sa.String(length=32), nullable=True),
+    sa.Column('card', sa.String(length=16), nullable=True),
+    sa.Column('verification_code', sa.String(length=6), nullable=True),
     sa.Column('password_hash', sa.String(length=256), nullable=False),
     sa.Column('activated', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
     sa.Column('reset_password_uid', sa.String(length=64), nullable=False),
     sa.Column('role', sa.String(length=32), nullable=False),
-    sa.Column('picture_id', sa.Integer(), nullable=False),
+    sa.Column('picture_id', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['picture_id'], ['pictures.id'], name=op.f('fk_users_picture_id_pictures')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
@@ -90,6 +91,20 @@ def upgrade():
     sa.Column('is_viewed', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_notification_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_notification'))
+    )
+    op.create_table('notifications_configs',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('new_event', sa.Boolean(), nullable=False),
+    sa.Column('new_ticket', sa.Boolean(), nullable=False),
+    sa.Column('new_message', sa.Boolean(), nullable=False),
+    sa.Column('new_buyers_payment', sa.Boolean(), nullable=False),
+    sa.Column('ticket_transfer_confirmed', sa.Boolean(), nullable=False),
+    sa.Column('your_payment_received', sa.Boolean(), nullable=False),
+    sa.Column('dispute_started', sa.Boolean(), nullable=False),
+    sa.Column('dispute_resolved', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_notifications_configs_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_notifications_configs'))
     )
     op.create_table('reviews',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -164,9 +179,9 @@ def upgrade():
     sa.Column('type_of', sa.String(length=32), nullable=False),
     sa.Column('is_open', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('ticket_id', sa.Integer(), nullable=False),
-    sa.Column('seller_id', sa.Integer(), nullable=False),
-    sa.Column('buyer_id', sa.Integer(), nullable=False),
+    sa.Column('ticket_id', sa.Integer(), nullable=True),
+    sa.Column('seller_id', sa.Integer(), nullable=True),
+    sa.Column('buyer_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_rooms_buyer_id_users')),
     sa.ForeignKeyConstraint(['seller_id'], ['users.id'], name=op.f('fk_rooms_seller_id_users')),
     sa.ForeignKeyConstraint(['ticket_id'], ['tickets.id'], name=op.f('fk_rooms_ticket_id_tickets')),
@@ -175,7 +190,7 @@ def upgrade():
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
-    sa.Column('sender_id', sa.Integer(), nullable=False),
+    sa.Column('sender_id', sa.Integer(), nullable=True),
     sa.Column('room_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('viewed', sa.Boolean(), nullable=False),
@@ -196,6 +211,7 @@ def downgrade():
     op.drop_table('users_events')
     op.drop_table('tickets')
     op.drop_table('reviews')
+    op.drop_table('notifications_configs')
     op.drop_table('notification')
     op.drop_table('events')
     op.drop_table('users')

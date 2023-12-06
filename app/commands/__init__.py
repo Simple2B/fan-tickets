@@ -47,6 +47,9 @@ def init(app: Flask):
 
     @app.cli.command("set-users-images")
     def set_users_images():
+        """
+        This command sets images for users if we need to see them in the profile
+        """
         from test_flask.db import set_users_images
 
         set_users_images()
@@ -55,12 +58,10 @@ def init(app: Flask):
 
     @app.cli.command("get-buyers")
     def get_buyers():
-        # sold_tickets_query = (
-        #     sa.select(m.Ticket.buyer_id)
-        #     .where(m.Ticket.is_sold.is_(True))
-        #     .group_by(m.Ticket.buyer_id)
-        #     .order_by(m.Ticket.buyer_id)
-        # )
+        """
+        This command has to show all users who bought tickets
+        To make us available add testing subscriptions if it's needed
+        """
         sold_tickets_query = (
             sa.select(m.User.username)
             .select_from(sa.join(m.Ticket, m.User, m.Ticket.buyer_id == m.User.id))
@@ -74,6 +75,9 @@ def init(app: Flask):
     @app.cli.command("set-subscriptions")
     @click.option("--username", type=str)
     def set_subscriptions(username: str):
+        """
+        Command for setting testing subscriptions to display in profile
+        """
         user_query = m.User.select().where(m.User.username == username)
         user = db.session.scalar(user_query)
         events_query = m.Event.select().limit(3)
@@ -86,14 +90,16 @@ def init(app: Flask):
 
         print(user.subscribed_events)
 
-    @app.cli.command("activated-users")
-    def activated_users():
-        query = m.User.select().where(m.User.activated.is_(True))
-        print(db.session.scalars(query).all())
-
-    @app.cli.command("get-tickets")
-    def get_tickets():
-        query = m.Ticket.select()
-        tickets = db.session.scalars(query).all()
-        for ticket in tickets:
-            print(ticket, ticket.quantity)
+    @app.cli.command("delete-user")
+    @click.option("--username", type=str)
+    def delete_user(username: str):
+        """
+        Command for deleting user
+        """
+        user_query = m.User.select().where(m.User.username == username)
+        user = db.session.scalar(user_query)
+        if not user:
+            print(f"User {username} not found")
+            return
+        user.delete()
+        print(f"User {username} deleted")

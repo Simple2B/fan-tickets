@@ -5,10 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
 
   chatIcon.addEventListener('click', () => {
-    console.log('chat-icon clicked');
     // openIcon.classList.toggle('chat-icon-inactive');
     // closeIcon.classList.toggle('chat-icon-active');
     chatWindow.classList.toggle('chat-window-close');
     chatWindow.classList.toggle('chat-window-open');
+
+    chatWindow.scrollTo({
+      top: chatWindow.scrollHeight,
+      behavior: 'smooth',
+    });
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        chatWindow.scrollTo({
+          top: chatWindow.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    observer.observe(chatWindow, {childList: true});
   });
 });

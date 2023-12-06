@@ -1,10 +1,3 @@
-# Check routes list
-- At the moment supposed routes are listed in each of models' doc strings
-
-# Client model
-- add a client model
-- create contact us form
-
 # Payment system actions:
 - reserve
 - buy
@@ -23,9 +16,14 @@
 # Change payment credentials
 - ?
 
+# User's model changes
+- remove activated field
+- add email_verified field
+- add phone_verified field
+- add activated property (if both verifications)
 
-# Questions:
-- tickets types: options and their meaning (in the doc mentioned track, backstage ...)
-- tickets categories: options and their meaning
-- what exactly is the type of a ticket
-- what is queue in a ticket
+# Disable twilio after the demo
+
+# Frontend
+- user/profile background change (mobile)
+- scrollbar styles for different browsers

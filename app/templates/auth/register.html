@@ -1,78 +1,35 @@
-{% extends "base.html" %}
+{% extends "landing/base.html" %}
 <!-- prettier-ignore -->
-{% block body %}
+{% block main_content %}
 
-<div class="bg-gray-50 dark:bg-gray-900 pt-20">
-  <section>
-    <div class="w-full lg:w-4/12 px-4 mx-auto pt-6">
-      <div>
-        <!-- prettier-ignore -->
-        <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow-xl dark:bg-gray-800">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-            Sign in to Simple2B
-          </h2>
-          <form class="mt-8 space-y-6 from" role="form" action="{{ url_for('auth.register') }}" method="post">
-            {{ form.hidden_tag() }}
-            <div>
-              {{form.username.label(class='block mb-2 text-sm font-medium
-              text-gray-900 dark:text-white')}}
-              {{form.username(class='bg-gray-50 border border-gray-300
-              text-gray-900 text-sm rounded-lg focus:ring-blue-500
-              focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700
-              dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-              dark:focus:ring-blue-500 dark:focus:border-blue-500')}}{% for
-              error in form.errors.username %}
-              <small class="text-danger">{{error}}</small>
-              {% endfor %}
-            </div>
-            <div>
-              {{form.email.label(class='block mb-2 text-sm font-medium
-              text-gray-900 dark:text-white')}} {{form.email(class='bg-gray-50
-              border border-gray-300 text-gray-900 text-sm rounded-lg
-              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-              dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-              dark:text-white dark:focus:ring-blue-500
-              dark:focus:border-blue-500')}}{% for error in form.errors.email %}
-              <small class="text-danger">{{error}}</small>
-              {% endfor %}
-            </div>
-            <div>
-              {{form.password.label(class='block mb-2 text-sm font-medium
-              text-gray-900 dark:text-white')}}
-              {{form.password(class='bg-gray-50 border border-gray-300
-              text-gray-900 text-sm rounded-lg focus:ring-blue-500
-              focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700
-              dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-              dark:focus:ring-blue-500 dark:focus:border-blue-500')}}{% for
-              error in form.errors.password %}
-              <small class="text-danger">{{error}}</small>
-              {% endfor %}
-            </div>
-            <div>
-              {{form.password_confirmation.label(class='block mb-2 text-sm
-              font-medium text-gray-900 dark:text-white')}}
-              {{form.password_confirmation(class='bg-gray-50 border
-              border-gray-300 text-gray-900 text-sm rounded-lg
-              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-              dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-              dark:text-white dark:focus:ring-blue-500
-              dark:focus:border-blue-500')}}{% for error in
-              form.errors.password_confirmation %}
-              <small class="text-danger">{{error}}</small>
-              {% endfor %}
-            </div>
-            <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              Register account
-            </button>
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              Have an account?
-              <a class="text-blue-600 hover:underline dark:text-blue-500" href="{{ url_for('auth.login') }}">Go to Login page</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- component -->
+<div class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+  <div class="pb-5 px-6 border-b border-light-grey-b0">
+    <h2 class="text-3xl">Cadastro</h2>
+  </div>
+  <form role="form" action="{{ url_for('auth.register') }}" method="post" class="py-9 px-6 flex flex-col gap-4">
+    {{ form_hidden_tag() }}
+    <input name="username" class="py-4 px-4 rounded-2xl button-gradient-grey" type="text"
+      placeholder="Nome de usuário" />
+    <input name="email" class="py-4 px-4 rounded-2xl button-gradient-grey" type="email"
+      placeholder="Entre com seu e-mail aqui" />
+    <input name="password" class="py-4 px-4 rounded-2xl button-gradient-grey" type="password" placeholder="Senha" />
+    <input name="password_confirmation" class="mb-5 py-4 px-4 rounded-2xl button-gradient-grey" type="password"
+      placeholder="Confirme sua senha" />
+    <button type="submit"
+      class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary hover:bg-yellow-400 hover:text-white transition-all duration-300">
+      <span class="text-black text-lg">Continuar com e-mail</span>
+    </button>
+  </form>
+  <div class="px-6 self-center flex justify-center items-center">
+    <p class="text-grey text-center">
+      Ao clicar em continuar, você confirma que tem mais de 16 anos e concorda
+      com nosso
+      <a href="#" class="text-secondary underline">Termos e condições</a>
+    </p>
+    </p>
+  </div>
+</div>
 </div>
 {% endblock %}
 <!-- prettier-ignore -->

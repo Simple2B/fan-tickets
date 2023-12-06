@@ -1,3 +1,5 @@
+from random import randint
+from twilio.rest import Client
 from flask_mail import Message
 from flask import Blueprint, render_template, url_for, redirect, flash, request, session
 from flask import current_app as app
@@ -19,8 +21,8 @@ def register():
         user = m.User(
             username=form.username.data,
             email=form.email.data,
-            phone=form.phone.data,
-            card=form.card.data,
+            # phone=form.phone.data,
+            # card=form.card.data,
             password=form.password.data,
         )
         log(log.INFO, "Form submitted. User: [%s]", user)
@@ -46,12 +48,12 @@ def register():
         mail.send(msg)
 
         login_user(user)
-        flash(
-            "Registration successful. Checkout you email for confirmation!.", "success"
-        )
+        flash("Registration successful. Checkout you email for confirmation!.", "success")
+        return redirect(url_for("main.index"))
     elif form.is_submitted():
         log(log.WARNING, "Form submitted error: [%s]", form.errors)
         flash("The given data was invalid.", "danger")
+        # TODO: change to render_template("auth/register.html", form=form)
     return render_template("auth/register.html", form=form)
 
 
@@ -61,7 +63,7 @@ def login():
     if form.validate_on_submit():
         user = m.User.authenticate(form.user_id.data, form.password.data)
         log(log.INFO, "Form submitted. User: [%s]", user)
-        if user and user.activated:
+        if user:
             login_user(user)
             log(log.INFO, "Login successful.")
             flash("Login successful.", "success")
@@ -82,14 +84,10 @@ def logout():
     return redirect(url_for("auth.login"))
 
 
-@auth_blueprint.route("/activated/<reset_password_uid>")
+@auth_blueprint.route("/activated/<reset_password_uid>", methods=["GET", "POST"])
 @login_required
 def activate(reset_password_uid):
-    if not current_user.is_authenticated:
-        log(log.WARNING, "Authentication error")
-
-        return redirect(url_for("main.index"))
-
+    phone_form = f.PhoneRegistrationForm()
     query = m.User.select().where(m.User.unique_id == reset_password_uid)
     user: m.User | None = db.session.scalar(query)
 
@@ -98,12 +96,53 @@ def activate(reset_password_uid):
         flash("Incorrect reset password link", "danger")
         return redirect(url_for("main.index"))
 
-    user.activated = True
-    user.unique_id = m.user.gen_password_reset_id()
-    user.save()
+    if phone_form.validate_on_submit():
+        account_sid = app.config["TWILIO_ACCOUNT_SID"]
+        auth_token = app.config["TWILIO_AUTH_TOKEN"]
+        sender = app.config["TWILIO_PHONE_NUMBER"]
+        receiver = phone_form.phone.data
+        client = Client(account_sid, auth_token)
 
-    flash("Welcome!", "success")
-    return redirect(url_for("main.index"))
+        verification_code = randint(100000, 999999)
+        message = client.messages.create(from_=sender, body=verification_code, to=receiver)
+
+        user.verification_code = str(verification_code)
+        user.save()
+
+        log(log.INFO, "Form submitted. Message: [%s]", message)
+        flash("Um código de confirmação foi enviado para o seu telefone.", "success")
+        return redirect(url_for("auth.phone_verification"))
+
+    return render_template("auth/phone.html", reset_password_uid=reset_password_uid, form=phone_form)
+
+
+@auth_blueprint.route("/phone_verification", methods=["GET", "POST"])
+@login_required
+def phone_verification():
+    cf = f.VerificationCodeForm()
+
+    if request.method == "GET":
+        log(log.INFO, "Render phone verification page without blank form")
+        return render_template("auth/phone_verification.html")
+
+    if cf.validate_on_submit():
+        full_code = (
+            f"{cf.digit_1.data}{cf.digit_2.data}{cf.digit_3.data}{cf.digit_4.data}{cf.digit_5.data}{cf.digit_6.data}"
+        )
+        user = db.session.get(m.User, current_user.id)
+        log(log.INFO, "Verification code: [%s], User: [%s]", full_code, user)
+        if user.verification_code == full_code:
+            log(log.INFO, "Verification code is correct: [%s]", full_code)
+            flash("Código de verificação correto.", "success")
+            return redirect(url_for("user.profile"))
+        else:
+            log(log.INFO, "Verification code is incorrect: [%s]", full_code)
+            flash("Código de verificação inválido!", "danger")
+    else:
+        log(log.INFO, "Verification code is incorrect: [%s]", cf.errors)
+        flash("Código de verificação inválido!", "danger")
+
+    return render_template("auth/phone_verification.html")
 
 
 @auth_blueprint.route("/forgot", methods=["GET", "POST"])
@@ -140,9 +179,7 @@ def forgot_pass():
     return render_template("auth/forgot.html", form=form)
 
 
-@auth_blueprint.route(
-    "/password_recovery/<reset_password_uid>", methods=["GET", "POST"]
-)
+@auth_blueprint.route("/password_recovery/<reset_password_uid>", methods=["GET", "POST"])
 def password_recovery(reset_password_uid):
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -166,7 +203,7 @@ def password_recovery(reset_password_uid):
         return redirect(url_for("main.index"))
 
     return render_template(
-        "auth/reset_password.html",
+        "auth-admin/reset_password.html",
         form=form,
         unique_id=reset_password_uid,
     )

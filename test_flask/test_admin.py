@@ -31,9 +31,7 @@ def test_picture_upload(client: FlaskClient):
         data = {"file": FileStorage(img_file, "fan_ticket_logo.jpg")}
 
         login(client)
-        response = client.post(
-            "/admin/picture-upload", content_type="multipart/form-data", data=data
-        )
+        response = client.post("/admin/picture-upload", content_type="multipart/form-data", data=data)
 
         assert response.status_code == 200
         assert response.json == {}
@@ -54,6 +52,7 @@ def test_location_images(client: FlaskClient):
     previous_images_number = m.Picture.count()
     folder_path = "test_flask/locations_pictures"  # replace with your folder path
 
+    pictures = 0
     for filename in os.listdir(folder_path):
         with open(f"{folder_path}/{filename}", "rb") as img_file:
             filename = filename.split(".")[0]
@@ -62,4 +61,5 @@ def test_location_images(client: FlaskClient):
                 file=img_file.read(),
                 mimetype="png",
             ).save()
-    assert m.Picture.count() == previous_images_number + 3
+            pictures += 1
+    assert m.Picture.count() == previous_images_number + pictures

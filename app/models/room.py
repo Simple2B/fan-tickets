@@ -21,19 +21,6 @@ class RoomType(Enum):
 class Room(db.Model, ModelMixin):
     """
     Model for chat or dispute messages.
-
-    Remark:
-    - rooms'/conversations' list should be displayed on the room page
-
-    Routes:
-    - GET /rooms (admin/client)
-    - GET /rooms/{room_unique_id} (admin/client)
-    - GET /rooms/by_ticket/{ticket_unique_id} (admin, ajax sort)
-    - GET /rooms/by_user/{user_unique_id} (admin, ajax sort)
-    - POST /rooms/create (admin/client)
-    - DELETE /rooms/delete/{room_unique_id}  (admin/client)
-    - DELETE /rooms/delete_by_ticket/{ticket_unique_id} - do not need this
-
     """
 
     __tablename__ = "rooms"
@@ -43,9 +30,7 @@ class Room(db.Model, ModelMixin):
         sa.String(36),
         default=gen_uuid,
     )
-    type_of: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=RoomType.CHAT.value
-    )
+    type_of: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=RoomType.CHAT.value)
 
     is_open: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
@@ -53,11 +38,11 @@ class Room(db.Model, ModelMixin):
         default=datetime.utcnow,
     )
 
-    ticket_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("tickets.id"))
+    ticket_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("tickets.id"))
 
-    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    seller_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     ticket: orm.Mapped["Ticket"] = orm.relationship(
         "Ticket",

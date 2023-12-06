@@ -101,6 +101,15 @@ def test_user_card_edit(client: FlaskClient):
     )
     assert response.status_code == 200
     assert user.card == "0000111122223333"
+    assert user.activated
+
+    response = client.post(
+        "/user/save_card",
+        data={"card": "1"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert user.activated is False
 
 
 def test_user_notifications_edit(client: FlaskClient):

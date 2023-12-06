@@ -1,5 +1,12 @@
 # ruff: noqa: F401
-from .auth import LoginForm, RegistrationForm, ForgotForm, ChangePasswordForm
+from .auth import (
+    LoginForm,
+    RegistrationForm,
+    ForgotForm,
+    ChangePasswordForm,
+    PhoneRegistrationForm,
+    VerificationCodeForm,
+)
 from .user import (
     UserForm,
     NewUserForm,
@@ -8,3 +15,4 @@ from .user import (
     CardEditForm,
     NotificationsConfigForm,
 )
+from .chat import ChatPhoneForm

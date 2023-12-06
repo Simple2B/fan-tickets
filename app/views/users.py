@@ -28,11 +28,7 @@ def get_all():
     query = m.User.select().order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
     if q:
-        query = (
-            m.User.select()
-            .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
-            .order_by(m.User.id)
-        )
+        query = m.User.select().where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%")).order_by(m.User.id)
         count_query = (
             sa.select(sa.func.count())
             .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
@@ -44,9 +40,7 @@ def get_all():
     return render_template(
         "user/users.html",
         users=db.session.execute(
-            query.offset((pagination.page - 1) * pagination.per_page).limit(
-                pagination.per_page
-            )
+            query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
         ).scalars(),
         page=pagination,
         search_query=q,
@@ -130,7 +124,7 @@ def deactivate():
 
 @bp.route("/profile", methods=["GET"])
 @login_required
-def user_profile():
+def profile():
     user: m.User = current_user
     payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
     payments = db.session.scalars(payments_query).all()
@@ -226,11 +220,18 @@ def edit_card():
 @login_required
 def save_card():
     user: m.User = current_user
+    CARD_NUMBER_LENGTH = 16
 
     card_form = f.CardEditForm()
     if card_form.validate_on_submit():
         log(log.INFO, "Card change form submitted. User: [%s]", user)
         user.card = card_form.card.data
+        if user.card and len(user.card) == CARD_NUMBER_LENGTH:
+            log(log.INFO, "Card activated. User: [%s]", user)
+            user.activated = True
+        else:
+            log(log.INFO, "Card deactivated. User: [%s]", user)
+            user.activated = False
         user.save()
     else:
         log(log.ERROR, "Card change form errors: [%s]", card_form.errors)
@@ -249,12 +250,8 @@ def set_notifications():
         user.notifications_config.new_ticket = form.new_ticket.data
         user.notifications_config.new_message = form.new_message.data
         user.notifications_config.new_buyers_payment = form.new_buyers_payment.data
-        user.notifications_config.your_payment_received = (
-            form.your_payment_received.data
-        )
-        user.notifications_config.ticket_transfer_confirmed = (
-            form.ticket_transfer_confirmed.data
-        )
+        user.notifications_config.your_payment_received = form.your_payment_received.data
+        user.notifications_config.ticket_transfer_confirmed = form.ticket_transfer_confirmed.data
         user.notifications_config.dispute_started = form.dispute_started.data
         user.notifications_config.dispute_resolved = form.dispute_resolved.data
         user.save()

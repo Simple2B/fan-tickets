@@ -1,5 +1,6 @@
 <p id="user-profile-card-number" class="mb-4 text-grey">
-  {{ card_mask(user.card) }}
+  {% if user.card %} {{ card_mask(user.card) }} {% else %} Nenhum cartão
+  cadastrado {% endif %}
 </p>
 <button
   class="text-secondary underline"

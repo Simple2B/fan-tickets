@@ -24,6 +24,7 @@ def create_app(environment="development") -> Flask:
         events_blueprint,
         tickets_blueprint,
         admin_blueprint,
+        chat_blueprint,
     )
     from app import models as m
 
@@ -50,6 +51,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(events_blueprint)
     app.register_blueprint(tickets_blueprint)
     app.register_blueprint(admin_blueprint)
+    app.register_blueprint(chat_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader
@@ -73,6 +75,9 @@ def create_app(environment="development") -> Flask:
         time_delta,
         cut_seconds,
         card_mask,
+        get_categories,
+        get_chat_room_messages,
+        get_chatbot_id,
     )
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
@@ -80,5 +85,8 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["time_delta"] = time_delta
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
+    app.jinja_env.globals["get_categories"] = get_categories
+    app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
+    app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
 
     return app
