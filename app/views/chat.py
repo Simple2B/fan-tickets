@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 from urllib.parse import urlparse
-from flask import request, Blueprint, render_template, flash, current_app as app
+from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
 from app import models as m, db
 from app.logger import log
@@ -53,7 +53,6 @@ def username():
 
     if not user_name or not room_unique_id:
         log(log.ERROR, "Form submitting error")
-        flash("Form submitting error", "danger")
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
@@ -64,7 +63,6 @@ def username():
 
     if not room:
         log(log.ERROR, "Room not found")
-        flash("Room not found", "danger")
         return render_template(
             "chat/chat_error.html",
             error_message="Room not found",
@@ -75,7 +73,6 @@ def username():
 
     if user:
         log(log.ERROR, "User already exists")
-        flash("User already exists", "danger")
         return render_template(
             "chat/chat_01_username.html",
             error_message="User already exists",
@@ -97,11 +94,16 @@ def username():
         room_id=room.id,
         text=user_name,
     ).save(False)
+
+    picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
+    picture: m.Picture = db.session.scalar(picture_query)
+    picture_id = picture.id if picture else None
     user = m.User(
         # Since in chat registration we get user's info step by step,
         # asking user to input credentials one by one,
         # we need to fill the rest of the fields with default values
         username=user_name,
+        picture_id=picture_id,
         email=app.config["CHAT_DEFAULT_EMAIL"],
         phone=app.config["CHAT_DEFAULT_PHONE"],
         card=app.config["CHAT_DEFAULT_CARD"],
@@ -111,7 +113,6 @@ def username():
     room.seller_id = user.id
     db.session.commit()
     log(log.INFO, f"User {user_name} created")
-    flash(f"User {user_name} created", "success")
 
     return render_template(
         "chat/chat_02_email.html",
@@ -138,7 +139,6 @@ def email():
 
     if not email_input or not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
-        flash("Form submitting error", "danger")
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
@@ -165,7 +165,6 @@ def email():
 
     if email:
         log(log.ERROR, "Email already taken")
-        flash("Email already taken", "danger")
         return render_template(
             "chat/chat_02_email.html",
             error_message="Email already taken",
@@ -251,7 +250,6 @@ def phone():
 
     if not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
-        flash("Form submitting error", "danger")
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
@@ -279,7 +277,6 @@ def phone():
 
     if phone:
         log(log.ERROR, "Phone already taken")
-        flash("Phone already taken", "danger")
         return render_template(
             "chat/chat_04_phone.html",
             error_message="Phone already taken",
@@ -295,7 +292,7 @@ def phone():
 
     success_message = "Você foi registrado com sucesso. Por favor, verifique seu perfil."
 
-    login_user(user, remember=True)
+    login_user(user)
 
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
