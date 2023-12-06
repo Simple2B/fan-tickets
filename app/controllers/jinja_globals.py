@@ -15,18 +15,18 @@ def date_from_datetime(created_at: datetime):
     return created_at.date()
 
 
-def time_delta(created_at: datetime):
+def time_delta(created_at: datetime) -> int:
     now = datetime.now(pytz.utc)
     if os.environ.get("APP_ENV") == "testing":
         now = datetime.now()
     return (now - created_at).days * -1
 
 
-def cut_seconds(created_at: datetime = datetime.now()):
+def cut_seconds(created_at: datetime = datetime.now()) -> str:
     return created_at.strftime("%Y-%m-%d %H:%M")
 
 
-def card_mask(card_number: str = "000000000000000000"):
+def card_mask(card_number: str = "000000000000000000") -> str:
     return f"{card_number[:4]} **** **** {card_number[-4:]}"
 
 
