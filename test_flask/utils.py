@@ -26,9 +26,7 @@ def register(
 
 
 def login(client, username=TEST_ADMIN_NAME, password=TEST_ADMIN_PASSWORD):
-    return client.post(
-        "/login", data=dict(user_id=username, password=password), follow_redirects=True
-    )
+    return client.post("/login", data=dict(user_id=username, password=password), follow_redirects=True)
 
 
 def logout(client):
