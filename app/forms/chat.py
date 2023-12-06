@@ -1,3 +1,4 @@
+import re
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -16,6 +17,11 @@ class ChatPhoneForm(FlaskForm):
     submit = SubmitField("Save")
 
     def validate_phone(self, field):
+        pattern = r"^\+?\d{10,13}$"
+        match_pattern = re.search(pattern, field.data)
+        if not match_pattern:
+            raise ValidationError("Invalid phone number.")
+
         query = m.User.select().where(m.User.phone == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This phone is already registered.")
