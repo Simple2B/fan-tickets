@@ -70,6 +70,19 @@ def username():
             error_message="Room not found",
         )
 
+    user_query = m.User.select().where(m.User.username == user_name)
+    user: m.User = db.session.scalar(user_query)
+
+    if user:
+        log(log.ERROR, "User already exists")
+        flash("User already exists", "danger")
+        return render_template(
+            "chat/chat_01_username.html",
+            error_message="User already exists",
+            room=room,
+            now=now_str,
+        )
+
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
@@ -114,22 +127,53 @@ def email():
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
     room_unique_id = request.args.get("room_unique_id")
-    email = request.args.get("chat_email")
+    email_input = request.args.get("chat_email")
     user_unique_id = request.args.get("user_unique_id")
-
-    if not email or not room_unique_id or not user_unique_id:
-        log(log.ERROR, "Form submitting error")
-        flash("Form submitting error", "danger")
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-        )
 
     user_query = m.User.select().where(m.User.unique_id == user_unique_id)
     user: m.User = db.session.scalar(user_query)
 
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
+
+    if not email_input or not room_unique_id or not user_unique_id:
+        log(log.ERROR, "Form submitting error")
+        flash("Form submitting error", "danger")
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=user,
+            email_input=email_input,
+        )
+
+    pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    match_pattern = re.search(pattern, email_input)
+    if not match_pattern:
+        return render_template(
+            "chat/chat_02_email.html",
+            error_message="Invalid email format",
+            room=room,
+            now=now_str,
+            user=user,
+            email_input=email_input,
+        )
+
+    email_query = m.User.select().where(m.User.email == email_input)
+    email: m.User = db.session.scalar(email_query)
+
+    if email:
+        log(log.ERROR, "Email already taken")
+        flash("Email already taken", "danger")
+        return render_template(
+            "chat/chat_02_email.html",
+            error_message="Email already taken",
+            room=room,
+            now=now_str,
+            user=user,
+            email_input=email_input,
+        )
 
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
@@ -138,9 +182,9 @@ def email():
     ).save(False)
     m.Message(
         room_id=room.id,
-        text=email,
+        text=email_input,
     ).save(False)
-    user.email = str(email)  # mypy made me do it!
+    user.email = str(email_input)  # mypy made me do it!
     db.session.commit()
 
     return render_template(
@@ -202,7 +246,7 @@ def phone():
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
     room_unique_id = request.args.get("room_unique_id")
-    phone = request.args.get("chat_phone")
+    phone_input = request.args.get("chat_phone")
     user_unique_id = request.args.get("user_unique_id")
 
     if not room_unique_id or not user_unique_id:
@@ -220,14 +264,29 @@ def phone():
     room: m.Room = db.session.scalar(room_query)
 
     pattern = r"^\+?\d{10,13}$"
-    match_pattern = re.search(pattern, str(phone))
+    match_pattern = re.search(pattern, str(phone_input))
 
-    if not phone or not match_pattern:
+    if not phone_input or not match_pattern:
         return render_template(
             "chat/chat_04_phone.html",
             now=now_str,
             room=room,
             user=user,
+        )
+
+    phone_query = m.User.select().where(m.User.phone == phone_input)
+    phone: m.User = db.session.scalar(phone_query)
+
+    if phone:
+        log(log.ERROR, "Phone already taken")
+        flash("Phone already taken", "danger")
+        return render_template(
+            "chat/chat_04_phone.html",
+            error_message="Phone already taken",
+            room=room,
+            now=now_str,
+            user=user,
+            phone_input=phone_input,
         )
 
     # parse url and get the domain name
@@ -245,14 +304,14 @@ def phone():
     ).save(False)
     m.Message(
         room_id=room.id,
-        text=phone,
+        text=phone_input,
     ).save(False)
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text=success_message,
     ).save(False)
-    user.phone = str(phone)  # mypy made me do it!
+    user.phone = str(phone_input)  # mypy made me do it!
     db.session.commit()
 
     return render_template(

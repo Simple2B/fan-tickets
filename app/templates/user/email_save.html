@@ -1,4 +1,14 @@
-<p class="mb-4 text-grey">{{ user.email }}</p>
+<div class="mb-4 flex gap-2 items-center">
+  <p class="text-grey">{{ user.email }}</p>
+  {% if current_user.activated %}
+  <!-- prettier-ignore -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"> <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0ZM11.9028 6.48809C12.1723 6.1736 12.1359 5.70012 11.8214 5.43056C11.5069 5.16099 11.0335 5.19741 10.7639 5.51191L7.29097 9.56365L5.197 7.46967C4.9041 7.17678 4.42923 7.17678 4.13634 7.46967C3.84344 7.76256 3.84344 8.23744 4.13634 8.53033L6.803 11.197C6.95072 11.3447 7.15336 11.4241 7.36212 11.4161C7.57087 11.4081 7.76682 11.3134 7.90278 11.1548L11.9028 6.48809Z" fill="#3EC200" /> </svg>
+  {% else %}
+  <div class="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center">
+    &times;
+  </div>
+  {% endif %}
+</div>
 <button
   class="text-secondary underline"
   hx-get="{{ url_for('user.edit_email') }}"

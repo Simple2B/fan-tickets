@@ -18,11 +18,13 @@ auth_blueprint = Blueprint("auth", __name__)
 def register():
     form = f.RegistrationForm()
     if form.validate_on_submit():
+        picture_query = m.Picture.select().where(m.Picture.filename == "default_avatar.png")
+        picture: m.Picture = db.session.scalar(picture_query)
+        picture_id = picture.id if picture else None
         user = m.User(
             username=form.username.data,
             email=form.email.data,
-            # phone=form.phone.data,
-            # card=form.card.data,
+            picture_id=picture_id,
             password=form.password.data,
         )
         log(log.INFO, "Form submitted. User: [%s]", user)

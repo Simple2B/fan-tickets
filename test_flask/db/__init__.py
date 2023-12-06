@@ -214,9 +214,9 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
 
 
 def set_users_images():
-    with open("test_flask/users_pictures/users_picture_01.jpg", "rb") as img_file:
+    with open("test_flask/users_pictures/users_picture_01.png", "rb") as img_file:
         picture = m.Picture(
-            filename="users_picture_01",
+            filename="default_avatar",
             file=img_file.read(),
             mimetype="image/png",
         ).save(False)

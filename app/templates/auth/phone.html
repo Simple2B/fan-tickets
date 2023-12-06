@@ -3,17 +3,30 @@
 {% block main_content %}
 
 <!-- component -->
-<div class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+<div
+  class="w-full lg:w-500 mt-28 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
   <div class="pb-5 px-6 border-b border-light-grey-b0">
     <h2 class="text-3xl">Login</h2>
   </div>
   <div class="px-6 flex flex-col">
-    <form role="form" action="{{ url_for('auth.activate', reset_password_uid=reset_password_uid) }}" method="post"
+    <form
+      role="form"
+      action="{{ url_for('auth.activate', reset_password_uid=reset_password_uid) }}"
+      method="post"
       class="py-9 flex flex-col gap-4">
       {{ form_hidden_tag() }}
-      <input name="phone" class="py-4 px-4 rounded-2xl button-gradient-grey" type="text"
+      <div class="absolute top-1 left-1/2 -translate-x-1/2">
+        {% for error in form.errors.email %}
+        <span class="text-center text-danger text-sm">{{error}}</span>
+        {% endfor %}
+      </div>
+      <input
+        name="phone"
+        class="py-4 px-4 rounded-2xl button-gradient-grey"
+        type="text"
         placeholder="Digite seu número de telefonei" />
-      <button type="submit"
+      <button
+        type="submit"
         class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary hover:bg-yellow-400 hover:text-white transition-all duration-300">
         <span class="text-black text-lg">Verificar</span>
       </button>
