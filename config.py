@@ -75,7 +75,7 @@ class BaseConfig(BaseSettings):
 
     # dev base url
     DEV_BASE_URL: str = "127.0.0.1:5000/"
-    STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org:8007/"
+    STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
 
     @staticmethod
     def configure(app: Flask):
