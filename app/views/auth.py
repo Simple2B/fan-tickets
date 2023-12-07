@@ -1,7 +1,6 @@
 import os
 from random import randint
 from twilio.rest import Client
-from urllib.parse import urlparse
 from flask_mail import Message
 from flask import Blueprint, render_template, url_for, redirect, flash, request, session
 from flask import current_app as app
