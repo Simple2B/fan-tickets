@@ -27,3 +27,6 @@
 # Frontend
 - user/profile background change (mobile)
 - scrollbar styles for different browsers
+- user dropdown blur on scroll
+- hide error message after delay
+- align header desktop
