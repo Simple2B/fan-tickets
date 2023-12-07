@@ -32,3 +32,4 @@
 - align header desktop
 - web chat: send data on button "Enter"
 - user dropdown blur on scroll
+- create mask for email/phone on edit routes
