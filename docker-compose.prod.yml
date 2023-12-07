@@ -22,8 +22,8 @@ services:
       APP_ENV: production
     depends_on:
       - db
-    env_file:
-      - .env
+    volumes:
+      - ./.env:/home/app/.env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
