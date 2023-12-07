@@ -1,5 +1,6 @@
 from random import randint
 from twilio.rest import Client
+from urllib.parse import urlparse
 from flask_mail import Message
 from flask import Blueprint, render_template, url_for, redirect, flash, request, session
 from flask import current_app as app
@@ -41,6 +42,12 @@ def register():
             reset_password_uid=user.unique_id,
             _external=True,
         )
+
+        url_parsed = urlparse(request.base_url)
+        url_manual_parsed = f"{url_parsed.scheme}://{url_parsed.netloc}/auth/activated/{user.unique_id}"
+        log(log.INFO, "url_for: [%s]", url)
+        log(log.INFO, "URL_parsed: [%s]", url)
+        log(log.INFO, "URL_manual_parsed: [%s]", url_manual_parsed)
 
         msg.html = render_template(
             "email/confirm.htm",
