@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+import os
 from urllib.parse import urlparse
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
@@ -287,8 +288,14 @@ def phone():
         )
 
     # parse url and get the domain name
-    parsed_url = urlparse(request.base_url)
-    profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
+
+    # TODO: add production url
+    if os.environ.get("APP_ENV") == "development":
+        parsed_url = urlparse(request.base_url)
+        profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
+    else:
+        base_url = app.config["STAGING_BASE_URL"]
+        profile_url = f"{base_url}user/profile"
 
     success_message = "Você foi registrado com sucesso. Por favor, verifique seu perfil."
 
