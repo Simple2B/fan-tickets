@@ -73,6 +73,10 @@ class BaseConfig(BaseSettings):
     CHAT_DEFAULT_PHONE: str = "+3800000000000"
     CHAT_DEFAULT_CARD: str = "0000000000000000"
 
+    # dev base url
+    DEV_BASE_URL: str = "127.0.0.1:5000/"
+    STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org:8007/"
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

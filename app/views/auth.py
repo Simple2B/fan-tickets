@@ -1,3 +1,4 @@
+import os
 from random import randint
 from twilio.rest import Client
 from urllib.parse import urlparse
@@ -28,8 +29,8 @@ def register():
             picture_id=picture_id,
             password=form.password.data,
         )
-        log(log.INFO, "Form submitted. User: [%s]", user)
         user.save()
+        log(log.INFO, "Form submitted. User: [%s]", user)
 
         # create e-mail message
         msg = Message(
@@ -37,17 +38,16 @@ def register():
             sender=app.config["MAIL_DEFAULT_SENDER"],
             recipients=[user.email],
         )
-        url = url_for(
-            "auth.activate",
-            reset_password_uid=user.unique_id,
-            _external=True,
-        )
-
-        url_parsed = urlparse(request.base_url)
-        url_manual_parsed = f"{url_parsed.scheme}://{url_parsed.netloc}/auth/activated/{user.unique_id}"
-        log(log.INFO, "url_for: [%s]", url)
-        log(log.INFO, "URL_parsed: [%s]", url)
-        log(log.INFO, "URL_manual_parsed: [%s]", url_manual_parsed)
+        # TODO: add production url
+        if os.environ.get("APP_ENV") == "development":
+            url = url_for(
+                "auth.activate",
+                reset_password_uid=user.unique_id,
+                _external=True,
+            )
+        else:
+            base_url = app.config["STAGING_BASE_URL"]
+            url = f"{base_url}activated/{user.unique_id}"
 
         msg.html = render_template(
             "email/confirm.htm",
