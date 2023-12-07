@@ -17,46 +17,30 @@
           <span class="text-center text-danger text-sm">{{error}}</span>
           {% endfor %}
         </div>
-        <input
-          name="digit_1"
+        <!-- TODO: hardcoded verification code while twilio is not working -->
+        <!-- TODO: disabled inputs when twilio will be work -->
+        <input name="digit_1"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder="" />
-        <input
-          name="digit_2"
+          type="text" placeholder="" value="1" />
+        <input name="digit_2"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder=""
-          disabled />
-        <input
-          name="digit_3"
+          type="text" placeholder="" value="2" />
+        <input name="digit_3"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder=""
-          disabled />
-        <input
-          name="digit_4"
+          type="text" placeholder="" value="3" />
+        <input name="digit_4"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder=""
-          disabled />
-        <input
-          name="digit_5"
+          type="text" placeholder="" value="4" />
+        <input name="digit_5"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder=""
-          disabled />
-        <input
-          name="digit_6"
+          type="text" placeholder="" value="5" />
+        <input name="digit_6"
           class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
-          type="text"
-          placeholder=""
-          disabled />
+          type="text" placeholder="" value="6" />
       </div>
       <p class="mb-6 text-grey">Insira seu código de 6 dígitos aqui</p>
       <div class="mb-12 flex items-center gap-4">
-        <input
-          name="email-notification"
+        <input name="email-notification"
           class="w-4 h-4 text-grey bg-filter-gradient-grey border-grey rounded focus:ring-gray-700 focus:ring-0"
           type="checkbox" />
         <p class="text-white">
@@ -64,11 +48,10 @@
           através do e-mail.
         </p>
       </div>
-      <button
-        disabled
-        type="submit"
-        id="auth-register-verification-button"
-        class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary transition-all duration-300 auth-register-verification-button-disabled">
+      <!-- TODO: enabled button while twilio is not working -->
+      <!-- TODO:auth-register-verification-button-disabled - add this class to the button to disable it -->
+      <button type="submit" id="auth-register-verification-button"
+        class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary transition-all duration-300 ">
         <span class="text-black text-lg">Criar conta</span>
       </button>
     </form>

@@ -103,21 +103,26 @@ def activate(reset_password_uid):
         return redirect(url_for("main.index"))
 
     if phone_form.validate_on_submit():
-        account_sid = app.config["TWILIO_ACCOUNT_SID"]
-        auth_token = app.config["TWILIO_AUTH_TOKEN"]
-        sender = app.config["TWILIO_PHONE_NUMBER"]
-        receiver = phone_form.phone.data
-        client = Client(account_sid, auth_token)
+        # twilio credentials
+        # account_sid = app.config["TWILIO_ACCOUNT_SID"]
+        # auth_token = app.config["TWILIO_AUTH_TOKEN"]
+        # sender = app.config["TWILIO_PHONE_NUMBER"]
+        # receiver = phone_form.phone.data
+        # client = Client(account_sid, auth_token)
 
-        verification_code = randint(100000, 999999)
-        message = client.messages.create(from_=sender, body=verification_code, to=receiver)
+        # verification via twilio
+        # verification_code = randint(100000, 999999)
+        # message = client.messages.create(from_=sender, body=verification_code, to=receive
+
+        # TODO: hardcoded verification code while twilio is not working
+        verification_code = "123456"
 
         user.verification_code = str(verification_code)
         user.phone = phone_form.phone.data
         user.save()
         login_user(user)
 
-        log(log.INFO, "Form submitted. Message: [%s]", message)
+        log(log.INFO, "Form submitted. Message: [%s]", verification_code)
         flash("Um código de confirmação foi enviado para o seu telefone.", "success")
         return redirect(url_for("auth.phone_verification"))
 
