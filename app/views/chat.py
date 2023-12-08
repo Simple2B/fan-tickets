@@ -37,8 +37,13 @@ def sell():
     ).save(False)
     db.session.commit()
 
+    if current_user.is_authenticated:
+        template = "chat/sell/01_event_name.html"
+    else:
+        template = "chat/sell/chat_01_username.html"
+
     return render_template(
-        "chat/sell/chat_01_username.html",
+        "chat/registration/01_username.html",
         now=now_str,
         room=room,
     )
@@ -75,7 +80,7 @@ def username():
     if user:
         log(log.ERROR, "User already exists")
         return render_template(
-            "chat/sell/chat_01_username.html",
+            "chat/registration/01_username.html",
             error_message="User already exists",
             room=room,
             now=now_str,
@@ -116,7 +121,7 @@ def username():
     log(log.INFO, f"User {user_name} created")
 
     return render_template(
-        "chat/sell/chat_02_email.html",
+        "chat/registration/02_email.html",
         now=now_str,
         room=room,
         user=user,
@@ -153,7 +158,7 @@ def email():
     match_pattern = re.search(pattern, email_input)
     if not match_pattern:
         return render_template(
-            "chat/sell/chat_02_email.html",
+            "chat/registration/02_email.html",
             error_message="Invalid email format",
             room=room,
             now=now_str,
@@ -167,7 +172,7 @@ def email():
     if email:
         log(log.ERROR, "Email already taken")
         return render_template(
-            "chat/sell/chat_02_email.html",
+            "chat/registration/02_email.html",
             error_message="Email already taken",
             room=room,
             now=now_str,
@@ -188,7 +193,7 @@ def email():
     db.session.commit()
 
     return render_template(
-        "chat/sell/chat_03_pass.html",
+        "chat/registration/03_pass.html",
         now=now_str,
         room=room,
         user=user,
@@ -213,7 +218,7 @@ def password():
 
     if password != confirm_password:
         return render_template(
-            "chat/sell/chat_03_pass.html",
+            "chat/registration/03_pass.html",
             now=now_str,
             room=room,
             user=user,
@@ -233,7 +238,7 @@ def password():
     db.session.commit()
 
     return render_template(
-        "chat/sell/chat_04_phone.html",
+        "chat/registration/04_phone.html",
         now=now_str,
         room=room,
         user=user,
@@ -267,7 +272,7 @@ def phone():
 
     if not phone_input or not match_pattern:
         return render_template(
-            "chat/sell/chat_04_phone.html",
+            "chat/registration/04_phone.html",
             now=now_str,
             room=room,
             user=user,
@@ -279,7 +284,7 @@ def phone():
     if phone:
         log(log.ERROR, "Phone already taken")
         return render_template(
-            "chat/sell/chat_04_phone.html",
+            "chat/registration/04_phone.html",
             error_message="Phone already taken",
             room=room,
             now=now_str,
@@ -319,7 +324,7 @@ def phone():
     db.session.commit()
 
     return render_template(
-        "chat/sell/chat_05_verified.html",
+        "chat/registration/05_verified.html",
         now=now_str,
         room=room,
         user=user,
