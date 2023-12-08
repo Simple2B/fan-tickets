@@ -10,10 +10,10 @@ from config import config
 
 CFG = config()
 
-chat_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
+chat_registration_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
 
 
-@chat_blueprint.route("/sell", methods=["GET", "POST"])
+@chat_registration_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -40,16 +40,16 @@ def sell():
     if current_user.is_authenticated:
         template = "chat/sell/01_event_name.html"
     else:
-        template = "chat/sell/chat_01_username.html"
+        template = "chat/registration/01_username.html"
 
     return render_template(
-        "chat/registration/01_username.html",
+        template,
         now=now_str,
         room=room,
     )
 
 
-@chat_blueprint.route("/username", methods=["GET", "POST"])
+@chat_registration_blueprint.route("/username", methods=["GET", "POST"])
 def username():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -128,7 +128,7 @@ def username():
     )
 
 
-@chat_blueprint.route("/email", methods=["GET", "POST"])
+@chat_registration_blueprint.route("/email", methods=["GET", "POST"])
 def email():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -200,7 +200,7 @@ def email():
     )
 
 
-@chat_blueprint.route("/password", methods=["GET", "POST"])
+@chat_registration_blueprint.route("/password", methods=["GET", "POST"])
 def password():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -245,7 +245,7 @@ def password():
     )
 
 
-@chat_blueprint.route("/phone", methods=["GET", "POST"])
+@chat_registration_blueprint.route("/phone", methods=["GET", "POST"])
 def phone():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
