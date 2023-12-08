@@ -27,3 +27,7 @@
 # Frontend
 - user/profile background change (mobile)
 - scrollbar styles for different browsers
+
+# Chat
+-  email verification
+- fix default user image
