@@ -77,6 +77,9 @@ class BaseConfig(BaseSettings):
     DEV_BASE_URL: str = "127.0.0.1:5000/"
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
 
+    # platform commission rate
+    PLATFORM_COMMISSION_RATE: float = 1.08
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

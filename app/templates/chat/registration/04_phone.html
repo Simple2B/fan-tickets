@@ -20,9 +20,6 @@
   {% endif %}
 
   {% set all_filters = "[name='chat_phone'], [name='room_unique_id'], [name='user_unique_id']" %}
-  {% if current_user.is_authenticated %}
-  <p></p>
-  {% else %}
   <div class="mt-2 flex justify-around">
     <input type="hidden" name="user_unique_id" value="{{ user.unique_id }}" />
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
@@ -33,5 +30,4 @@
       Submit
     </button>
   </div>
-  {% endif %}
 </div>

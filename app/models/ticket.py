@@ -95,15 +95,11 @@ class Ticket(db.Model, ModelMixin):
         default=gen_uuid,
     )
 
-    description: orm.Mapped[str] = orm.mapped_column(sa.String(512))
+    description: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
-    ticket_type: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=TicketType.TRACK.value
-    )
+    ticket_type: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketType.TRACK.value)
 
-    ticket_category: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=TicketCategory.LOT.value
-    )
+    ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.LOT.value)
 
     # The ticket file could be a PDF or a stringed QR code
     # TODO: add relation to many tickets (one to many relationship)
@@ -132,7 +128,7 @@ class Ticket(db.Model, ModelMixin):
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
     seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
     event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
 
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")
