@@ -75,11 +75,7 @@ def get_room(room_unique_id: str):
 @main_blueprint.route("/chat")
 def chat():
     room = db.session.scalar(m.Room.select().where(m.Room.id == 576))
-    messages_query = (
-        m.Message.select()
-        .where(m.Message.room_id == 576)
-        .order_by(m.Message.created_at.asc())
-    )
+    messages_query = m.Message.select().where(m.Message.room_id == 576).order_by(m.Message.created_at.asc())
     messages = db.session.scalars(messages_query).all()
     return render_template(
         "demo/chat.html",
@@ -133,11 +129,7 @@ def chat_messages():
             text=bard_answer,
         ).save()
 
-    messages_query = (
-        m.Message.select()
-        .where(m.Message.room_id == 576)
-        .order_by(m.Message.created_at.asc())
-    )
+    messages_query = m.Message.select().where(m.Message.room_id == 576).order_by(m.Message.created_at.asc())
     messages = db.session.scalars(messages_query).all()
 
     return render_template(

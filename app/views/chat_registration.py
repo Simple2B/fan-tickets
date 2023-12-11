@@ -38,12 +38,13 @@ def sell():
     db.session.commit()
 
     if current_user.is_authenticated:
-        template = "chat/sell/01_event_name.html"
+        template = "chat/sell/00_event_init.html"
     else:
         template = "chat/registration/01_username.html"
 
     return render_template(
         template,
+        locations=m.Location.all(),
         now=now_str,
         room=room,
     )

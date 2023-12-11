@@ -1,0 +1,83 @@
+{% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='event_location'],
+[name='event_category'], [name='event_date'], [name='event_url']" %}
+<div>
+  {% include 'chat/chat_messages.html' %}
+  <div class="flex text-white justify-end">
+    <small class="pt-1">FanTicket {{ now }}</small>
+  </div>
+  <div class="mb-1 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+      What event are you selling tickets for?
+    </p>
+  </div>
+
+  <div class="mb-1 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+      Please, input location and date.
+    </p>
+  </div>
+
+  <div class="relative">
+    <button id="chat-sell-location-button"
+      class="text-white bg-ultra-black hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 font-medium rounded-2xl text-sm px-6 py-3.5 text-center inline-flex items-center gap-4"
+      type="button">
+      <!-- prettier-ignore -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <rect x="1" y="1" width="50" height="50" rx="13" stroke="#F2B705" stroke-width="2" />
+        <path
+          d="M26.3333 26.6667C25.4493 26.6667 24.6014 26.3155 23.9763 25.6904C23.3512 25.0652 23 24.2174 23 23.3333C23 22.4493 23.3512 21.6014 23.9763 20.9763C24.6014 20.3512 25.4493 20 26.3333 20C27.2174 20 28.0652 20.3512 28.6904 20.9763C29.3155 21.6014 29.6667 22.4493 29.6667 23.3333C29.6667 23.7711 29.5804 24.2045 29.4129 24.6089C29.2454 25.0134 28.9999 25.3808 28.6904 25.6904C28.3808 25.9999 28.0134 26.2454 27.6089 26.4129C27.2045 26.5804 26.7711 26.6667 26.3333 26.6667ZM26.3333 14C23.858 14 21.484 14.9833 19.7337 16.7337C17.9833 18.484 17 20.858 17 23.3333C17 30.3333 26.3333 38 26.3333 38C26.3333 38 35.6667 30.3333 35.6667 23.3333C35.6667 20.858 34.6833 18.484 32.933 16.7337C31.1827 14.9833 28.8087 14 26.3333 14Z"
+          fill="#F2B705" />
+      </svg>
+      <div>
+        <p class="text-2xl">Localização</p>
+        <span id="events-filter-location-status" class="text-sm text-grey">Selecione</span>
+      </div>
+      <!-- prettier-ignore -->
+      <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+      </svg>
+    </button>
+    <!-- Dropdown menu -->
+    <div id="events-filter-location-dropdown"
+      class="z-10 w-full hidden absolute inset-x-0 mx-auto mt-2 p-2 text-white bg-middle-grey rounded-lg shadow">
+      <input autocomplete="off" list="browsers"
+        class="w-full h-9 p-1 text-white text-lg bg-middle-grey placeholder-gray-300 border-transparent outline-none focus:border-transparent focus:ring-0"
+        list="events-filter-location-list" id="events-filter-location-input" name="location"
+        placeholder="choose location" />
+      <datalist class="absolute inset-x-0 p-1 max-h-40 overflow-y-auto bg-datalist-location"
+        id="events-filter-location-list">
+        {% for location in locations %}
+        <option class="p-1 text-lg cursor-pointer bg-option-location hover:bg-light-grey"
+          hx-param="location={{ location.name }}" hx-trigger="click" hx-swap="innerHTML" hx-target="#events-list"
+          hx-include="{{ all_filters }}" hx-get="{{ url_for('events.search_events', location=location.name) }}"
+          value="{{ location.name }}">
+          {{ location.name }}
+        </option>
+        {% endfor %}
+      </datalist>
+    </div>
+  </div>
+
+  <input type="text" name="event_location" class="border border-white bg-transparent rounded-lg"
+    placeholder="Input event location" />
+  <input type="text" name="event_date" class="border border-white bg-transparent rounded-lg"
+    placeholder="Input event date" />
+
+  {% if error_message %}
+  <div class="mb-8 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-lg text-white bg-red-600">
+      {{ error_message }}
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="mt-2 flex justify-around">
+    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    <button type="button" hx-get="{{ url_for('sell.get_events') }}" hx-target="#chat-window" hx-swap="innerHTML"
+      hx-trigger="click" hx-include="{{ all_filters }}"
+      class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Submit
+    </button>
+  </div>
+</div>

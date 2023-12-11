@@ -3,11 +3,13 @@
   <div class="flex text-white justify-end">
     <small class="pt-1">FanTicket {{ now }}</small>
   </div>
+  {% if error_message %}
   <div class="mb-8 flex text-black justify-end">
     <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
-      There is no such events in our database. Let's create a new one!
+      {{ error_message }}
     </p>
   </div>
+  {% endif %}
 
   <div class="mb-8 flex text-black justify-end">
     <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
@@ -15,13 +17,13 @@
     </p>
   </div>
 
-  <input type="text" name="event_name" value="{{ event_name }}" class="border border-white bg-transparent rounded-lg"
+  <input type="text" name="event_name" class="border border-white bg-transparent rounded-lg"
     placeholder="Input event name" />
-  <input type="text" name="event_location" class="border border-white bg-transparent rounded-lg"
-    placeholder="Input event location" />
+  <input type="text" name="event_location" value="{{ event_location }}"
+    class="border border-white bg-transparent rounded-lg" placeholder="Input event location" />
   <input type="text" name="event_category" class="border border-white bg-transparent rounded-lg"
     placeholder="Input event category" />
-  <input type="text" name="event_date" class="border border-white bg-transparent rounded-lg"
+  <input type="text" name="event_date" value="{{ event_date }}" class="border border-white bg-transparent rounded-lg"
     placeholder="Input event date" />
   <input type="text" name="event_url" class="border border-white bg-transparent rounded-lg"
     placeholder="Input event url" />

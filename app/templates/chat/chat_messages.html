@@ -16,8 +16,12 @@
 </div>
 
 <div class="flex text-black {{justify}}">
+    {% if "\n" in message.text %}
+    <pre class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">{{message.text }}</pre>
+    {% else %}
     <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
         {{message.text }}
     </p>
+    {% endif %}
 </div>
 {% endfor %}

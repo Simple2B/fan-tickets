@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatWindow = document.querySelector('#chat-window');
   const openIcon = chatIcon.querySelector('.chat-icon-open');
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
+  const locationButton = document.querySelector('#chat-sell-location-button');
 
   chatIcon.addEventListener('click', () => {
     // openIcon.classList.toggle('chat-icon-inactive');
@@ -16,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const observer = new MutationObserver(mutations => {
+      const locationButton = document.querySelector(
+        '#chat-sell-location-button',
+      );
+      if (locationButton) {
+        locationButton.addEventListener('click', () => {});
+      }
+
       mutations.forEach(mutation => {
         chatWindow.scrollTo({
           top: chatWindow.scrollHeight,
