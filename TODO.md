@@ -36,5 +36,8 @@
 - create mask for email/phone on edit routes
 
 # Chat
--  email verification
+- email verification
 - fix default user image
+
+# Testing database
+- add a cli command to set events pictures

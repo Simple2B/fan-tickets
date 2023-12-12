@@ -7,3 +7,4 @@ from .tickets import tickets_blueprint
 from .admin import admin_blueprint
 from .chat_registration import chat_registration_blueprint
 from .chat_sell import chat_sell_blueprint
+from .chat_buy import chat_buy_blueprint

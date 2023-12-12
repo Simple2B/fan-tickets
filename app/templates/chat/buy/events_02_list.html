@@ -9,21 +9,14 @@
     </p>
   </div>
 
-  {% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='event_location'],
-  [name='event_category'], [name='event_date'], [name='event_url']" %}
+  {% set all_filters = "[name='room_unique_id'], [name='event_unique_id']" %}
 
-  <!-- TODO: needs it for datalist -->
-  <!-- <input type="text" name="event_name" class="border border-white bg-transparent rounded-lg"
-    placeholder="Input event name" /> -->
-  <input type="text" hidden value="{{ event_location }}" name="event_location"
-    class="border border-white bg-transparent rounded-lg" placeholder="Input event location" />
-  <input type="text" name="event_date" hidden value="{{ event_date }}"
-    class="border border-white bg-transparent rounded-lg" placeholder="Input event date" />
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 
   {% for event in events %}
   <div class="mb-8 flex text-black justify-end">
-    <button type="button" hx-get="{{ url_for('sell.ticket_form', event_id=event.unique_id) }}" hx-target="#chat-window"
-      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+    <button type="button" hx-get="{{ url_for('buy.event_details', event_unique_id=event.unique_id) }}"
+      hx-target="#chat-window" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
       {{ event.name }}
     </button>
@@ -36,14 +29,11 @@
       {{ error_message }}
     </p>
   </div>
-  {% endif %}
 
-  <div class="mt-2 flex justify-around">
-    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-    <button type="button" hx-get="{{ url_for('sell.create_event') }}" hx-target="#chat-window" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
-      class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-      Submit
-    </button>
-  </div>
+  <button id="chat-window-events" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-window" hx-swap="innerHTML"
+    hx-trigger="click"
+    class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+    Try again
+  </button>
+  {% endif %}
 </div>

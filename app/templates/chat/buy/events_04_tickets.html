@@ -1,0 +1,49 @@
+{% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='event_location'],
+[name='event_category'], [name='event_date'], [name='event_url']" %}
+<div>
+    {% include 'chat/chat_messages.html' %}
+    <div class="flex text-white justify-end">
+        <small class="pt-1">FanTicket {{ now }}</small>
+    </div>
+
+    {% for ticket in event.tickets %}
+    <div class="mb-1 flex text-black justify-end">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+            Section: {{ ticket.section }}
+            <br>
+            Queue: {{ ticket.queue }}
+            <br>
+            Seat: {{ ticket.seat }}
+            <br>
+            Price net: {{ ticket.price_net }}
+            <br>
+            Price gross: {{ ticket.price_gross }}
+        </p>
+    </div>
+    {% endfor %}
+
+
+    {% if error_message %}
+    <div class="mb-8 flex text-black justify-end">
+        <p class="w-5/6 p-2 mb-2 rounded-lg text-white bg-red-600">
+            {{ error_message }}
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="mt-2 flex justify-around">
+        <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+
+        <button type="button" hx-get="{{ url_for('buy.get_event_tickets') }}" hx-target="#chat-window"
+            hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+            class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+            Subscribe for this event
+        </button>
+
+        <button type="button" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-window" hx-swap="innerHTML"
+            hx-trigger="click" hx-include="{{ all_filters }}"
+            class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+            Another events
+        </button>
+    </div>
+</div>

@@ -46,7 +46,7 @@ def get_events():
 
     if error_message:
         return render_template(
-            "chat/sell/00_event_init.html",
+            "chat/buy/events_01_filters.html",
             locations=m.Location.all(),
             error_message=error_message,
             room=room,
@@ -74,8 +74,8 @@ def get_events():
     if not events:
         log(log.INFO, "No events found: [%s]", events)
         return render_template(
-            "chat/sell/02_event_create.html",
-            error_message="There is no such events in our database. Let's create a new one!",
+            "chat/buy/events_02_list.html",
+            error_message="No events found",
             event_location=location_input,
             event_date=date_input,
             room=room,
@@ -92,4 +92,89 @@ def get_events():
         events=events,
         event_location=location_input,
         event_date=date_input,
+    )
+
+
+@chat_buy_blueprint.route("/event", methods=["GET", "POST"])
+def event_details():
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    event_unique_id = request.args.get("event_unique_id")
+    room_unique_id = request.args.get("room_unique_id")
+
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+        return render_template(
+            "chat/buy/events_02_list.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
+    event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.ERROR, "Event not found: [%s]", event_unique_id)
+        return render_template(
+            "chat/buy/events_02_list.html",
+            error_message="Event not found",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    return render_template(
+        "chat/buy/events_03_details.html",
+        now=now_str,
+        room=room,
+        event=event,
+    )
+
+
+@chat_buy_blueprint.route("/event_tickets", methods=["GET", "POST"])
+def get_event_tickets():
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    event_unique_id = request.args.get("event_unique_id")
+    room_unique_id = request.args.get("room_unique_id")
+
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+        return render_template(
+            "chat/buy/events_03_details.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
+    event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.ERROR, "Event not found: [%s]", event_unique_id)
+        return render_template(
+            "chat/buy/events_03_details.html",
+            error_message="Event not found",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    m.Message(
+        room_id=room.id,
+        text=f"Give me please tickets for this event: {event.name}",
+    ).save(False)
+
+    return render_template(
+        "chat/buy/events_04_tickets.html",
+        now=now_str,
+        room=room,
+        event=event,
     )
