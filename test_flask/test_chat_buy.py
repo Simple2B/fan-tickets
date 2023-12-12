@@ -1,3 +1,4 @@
+from typing import Any
 from flask import current_app as app
 from flask.testing import FlaskClient
 from app import models as m, db
@@ -17,7 +18,7 @@ def test_chat_buy_get_events(client: FlaskClient):
     assert b"Choose an event from the list." in response.data
     assert event.name in response.data.decode()
 
-    room: m.Room = m.Room.first()
+    room: m.Room | Any = m.Room.first()
     response = client.get(f"/buy/event?event_unique_id={event.unique_id}&room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert event.name in response.data.decode()
