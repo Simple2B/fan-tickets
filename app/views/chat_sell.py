@@ -38,8 +38,8 @@ def get_events():
     error_message = ""
 
     if not location_input:
-        log(log.ERROR, "No event name provided: [%s]", location_input)
-        error_message += "No event name provided \n"
+        log(log.ERROR, "No event location provided: [%s]", location_input)
+        error_message += "No event location provided \n"
 
     if not date_input:
         log(log.ERROR, "No event date provided: [%s]", date_input)
@@ -113,6 +113,23 @@ def event_form():
         return render_template(
             "chat/sell/02_event_create.html",
             error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    error_message = ""
+    if not event_location:
+        log(log.ERROR, "No event location provided: [%s]", event_location)
+        error_message += "No event location provided\n"
+    if not event_date:
+        log(log.ERROR, "No event date provided: [%s]", event_date)
+        error_message += "No event date provided\n"
+
+    if error_message:
+        return render_template(
+            "chat/sell/02_event_create.html",
+            error_message=error_message,
             room=room,
             now=now_str,
             user=current_user,
