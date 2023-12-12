@@ -7,7 +7,29 @@
 
     <div class="mb-1 flex text-black justify-end">
         <p class=" w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
-            Cart
+            Your cart
+        </p>
+    </div>
+
+    {% for ticket in cart_tickets %}
+    <div class="mb-1 flex text-black justify-end">
+        <p class=" w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+            Section: {{ ticket.section }}
+            <br>
+            Queue: {{ ticket.queue }}
+            <br>
+            Seat: {{ ticket.seat }}
+            <br>
+            Price net: {{ ticket.price_net }}
+            <br>
+            Price gross: {{ ticket.price_gross }}
+        </p>
+    </div>
+    {% endfor %}
+
+    <div class="mb-1 flex text-black justify-end">
+        <p class=" w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+            Total price: {{ total_price }}
         </p>
     </div>
 

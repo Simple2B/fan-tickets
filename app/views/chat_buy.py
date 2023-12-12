@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -213,12 +213,11 @@ def ticket_details():
 
 
 @chat_buy_blueprint.route("/cart", methods=["GET", "POST"])
+@login_required
 def cart():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    event_unique_id = request.args.get("event_unique_id")
-    ticket_unique_id = request.args.get("ticket_unique_id")
     room_unique_id = request.args.get("room_unique_id")
     room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
     if not room:
@@ -230,15 +229,15 @@ def cart():
             now=now_str,
             user=current_user,
         )
-    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
-    ticket = db.session.scalar(ticket_query)
-    event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
-    event = db.session.scalar(event_query)
+
+    cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
+    cart_tickets = db.session.scalars(cart_tickets_query).all()
+    total_price = sum([ticket.price for ticket in cart_tickets])
     return render_template(
         "chat/buy/tickets_06_cart.html",
         room=room,
-        event=event,
-        ticket=ticket,
+        cart_tickets=cart_tickets,
+        total_price=total_price,
     )
 
 
