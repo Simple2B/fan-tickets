@@ -31,9 +31,17 @@ def test_chat_buy_get_events(client: FlaskClient):
     assert response.status_code == 200
     assert b"Form submitting error" in response.data
 
-    # response = client.get(f"/buy/event_tickets?event_unique_id={event.unique_id}&room_unique_id={room.unique_id}")
-    # assert response.status_code == 200
-    # assert "Subscribe" in response.data.decode()
-    # assert "Another events" in response.data.decode()
-    # tickets_number = len(event.tickets)
-    # assert f"loop.index: {tickets_number}" in response.data.decode()
+
+def test_chat_buy_get_event_tickets(client_with_data: FlaskClient):
+    event: m.Event = db.session.scalar(m.Event.select())
+    room = m.Room(
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    response = client_with_data.get(
+        f"/buy/event_tickets?event_unique_id={event.unique_id}&room_unique_id={room.unique_id}"
+    )
+    assert response.status_code == 200
+    assert "Subscribe" in response.data.decode()
+    assert "Another events" in response.data.decode()
+    tickets_number = len(event.tickets)
+    assert f"loop.index: {tickets_number}" in response.data.decode()

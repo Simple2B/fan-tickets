@@ -50,3 +50,4 @@ def runner(app, client):
 def client_with_data(client: FlaskClient):
     populate()
     yield client
+    db.session.rollback()
