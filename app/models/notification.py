@@ -23,19 +23,7 @@ class NotificationType(Enum):
 
 
 class Notification(db.Model, ModelMixin):
-    """
-    Model for chat or dispute messages
-
-    Remark:
-    - notifications' list should be displayed on the user's/admin's profile page
-
-    Routes:
-    - POST /notifications/create
-    - GET /notifications
-    - GET /notifications/{notification_unique_id} - do not need this
-    - GET /notifications/by_user/{user_unique_id} - do not need this
-
-    """
+    __tablename__ = "notifications"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     unique_id: orm.Mapped[str] = orm.mapped_column(
@@ -46,9 +34,7 @@ class Notification(db.Model, ModelMixin):
         sa.DateTime(timezone=True),
         default=datetime.utcnow,
     )
-    type_of: orm.Mapped[str] = orm.mapped_column(
-        sa.String(32), default=NotificationType.TICKET_PUBLISHED.value
-    )
+    type_of: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=NotificationType.TICKET_PUBLISHED.value)
     user_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
     text: orm.Mapped[str] = orm.mapped_column(
         sa.String(512),

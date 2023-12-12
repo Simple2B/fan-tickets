@@ -17,25 +17,6 @@ if TYPE_CHECKING:
 
 
 class Event(db.Model, ModelMixin):
-    """
-    Model for events
-
-    Questions:
-    - observations/conditions
-    - insert warning
-
-    Routes:
-    - POST /events/create (admin/user)
-    - GET /events
-    - GET /events/{event_unique_id}
-    - GET /events/by_location/{location_unique_id} (client, ajax sort)
-    - PUT /events/update/{event_unique_id} (admin)
-    - DELETE /events/delete/{event_unique_id} (admin)
-
-    Notice that on the event page there should be a swithcer to show/hide tickets
-
-    """
-
     __tablename__ = "events"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)

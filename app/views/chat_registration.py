@@ -50,6 +50,33 @@ def sell():
     )
 
 
+@chat_registration_blueprint.route("/events", methods=["GET", "POST"])
+def events():
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    room = m.Room(
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Are you looking for buying or selling tickets or for events information?",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text="I'm looking for events information",
+    ).save(False)
+    db.session.commit()
+
+    return render_template(
+        "chat/buy/events_01_filters.html",
+        locations=m.Location.all(),
+        now=now_str,
+        room=room,
+    )
+
+
 @chat_registration_blueprint.route("/username", methods=["GET", "POST"])
 def username():
     now = datetime.now()

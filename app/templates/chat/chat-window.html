@@ -50,7 +50,7 @@
 
   <div class="flex text-black justify-end">
     <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
-      Are you looking for buying or selling tickets or for events information? Ha?
+      Are you looking for buying or selling tickets or for events information?
     </p>
   </div>
 
@@ -64,7 +64,8 @@
       class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Selling
     </button>
-    <button id="chat-window-events"
+    <button id="chat-window-events" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-window" hx-swap="innerHTML"
+      hx-trigger="click"
       class="mx-1 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Events
     </button>

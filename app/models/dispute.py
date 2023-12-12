@@ -12,20 +12,6 @@ if TYPE_CHECKING:
 
 
 class Dispute(db.Model, ModelMixin):
-    """
-    Model for disputes between buyers and sellers.
-
-    Routes:
-    - POST /disputes/create (user)
-    - GET /admin/disputes (admin)
-    - GET /admin/disputes/{dispute_unique_id} (admin)
-    - GET /disputes/by_user/{user_unique_id} (admin, ajax sort)
-    - GET /disputes/by_event/{event_unique_id} (admin, ajax sort)
-    - GET /disputes/by_ticket/{ticket_unique_id} (admin, ajax sort)
-    - PUT /admin/disputes/update/{dispute_unique_id} (admin)
-
-    """
-
     ___tablename__ = "disputes"
 
     id: orm.Mapped[int] = orm.mapped_column(
