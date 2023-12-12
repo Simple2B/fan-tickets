@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
-from flask_login import current_user, login_required
+from flask_login import current_user
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -11,7 +11,6 @@ chat_buy_blueprint = Blueprint("buy", __name__, url_prefix="/buy")
 
 
 @chat_buy_blueprint.route("/", methods=["GET", "POST"])
-@login_required
 def get_events():
     # TODO: add timezone
     now = datetime.now()
@@ -37,8 +36,8 @@ def get_events():
     error_message = ""
 
     if not location_input:
-        log(log.ERROR, "No event name provided: [%s]", location_input)
-        error_message += "No event name provided \n"
+        log(log.ERROR, "No event location provided: [%s]", location_input)
+        error_message += "No event location provided \n"
 
     if not date_input:
         log(log.ERROR, "No event date provided: [%s]", date_input)
@@ -55,7 +54,6 @@ def get_events():
         )
 
     m.Message(
-        sender_id=current_user.id,
         room_id=room.id,
         text=f"{location_input}\n{date_input}",
     ).save(False)
