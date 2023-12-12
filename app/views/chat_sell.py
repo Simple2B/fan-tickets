@@ -355,20 +355,22 @@ def create_ticket():
         log(log.ERROR, "No price provided: [%s]", price)
         error_message += "No price provided \n"
 
-    if error_message:
-        return render_template(
-            "chat/sell/03_ticket_create.html",
-            error_message=error_message,
-            room=room,
-            now=now_str,
-            user=current_user,
-        )
     event = db.session.scalar(m.Event.select().where(m.Event.unique_id == event_id))
     if not event:
         log(log.ERROR, "Event not found: [%s]", event_id)
         return render_template(
             "chat/sell/03_ticket_create.html",
             error_message="Event not found",
+            event=event,
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    if error_message:
+        return render_template(
+            "chat/sell/03_ticket_create.html",
+            error_message=error_message,
             event=event,
             room=room,
             now=now_str,
