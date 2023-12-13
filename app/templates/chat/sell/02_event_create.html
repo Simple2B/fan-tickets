@@ -4,45 +4,81 @@
     <small class="pt-1">FanTicket {{ now }}</small>
   </div>
   {% if error_message %}
-  <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+  <div class="mb-2 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
       {{ error_message }}
     </p>
   </div>
   {% endif %}
 
   <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+    <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
       Please, input event details.
     </p>
   </div>
 
-  <input type="text" name="event_name" class="border border-white bg-transparent rounded-lg"
+  <input type="text" name="event_name" class="mb-2 w-60 p-2 border border-grey bg-transparent rounded-lg"
     placeholder="Input event name" />
   <input type="text" name="event_location" value="{{ event_location }}"
-    class="border border-white bg-transparent rounded-lg" placeholder="Input event location" />
-  <input type="text" name="event_category" class="border border-white bg-transparent rounded-lg"
-    placeholder="Input event category" />
-  <input type="text" name="event_date" value="{{ event_date }}" class="border border-white bg-transparent rounded-lg"
-    placeholder="Input event date" />
-  <input type="text" name="event_url" class="border border-white bg-transparent rounded-lg"
+    class="mb-2 w-60 p-2 border border-grey bg-transparent rounded-lg" placeholder="Input event location" />
+  <div class="dropdown relative mb-2 w-60">
+    <input id="event-category-input" type="text" hidden name="event_category"
+      class="mb-2 w-60 p-2 border border-grey bg-transparent rounded-lg" placeholder="Input event category" />
+    <button type="button"
+      class="dropdown-button p-2 w-full flex justify-between border border-grey bg-transparent rounded-lg">
+      <div class="flex justify-between">
+        <!--prettier-ignore-->
+        <span class="chat-category-title">Select Categorias</span>
+      </div>
+      <!--prettier-ignore-->
+      <svg class="dropdown-arrow transform transition-all duration-300" xmlns="http://www.w3.org/2000/svg" width="25"
+        height="24" viewBox="0 0 25 24" fill="none">
+        <path d="M6.5 9L12.5 15L18.5 9" stroke="white" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </button>
+    <div class="dropdown-list relative flex flex-col gap-2">
+      {% for category in get_categories() %}
+      <button
+        class="chat-category-button flex gap-4 rounded-lg p-2 text-grey hover:bg-grey hover:text-black active:bg-gray-400 transition-colors duration-200"
+        type="button" data-category="{{ category.name }}">
+        <!--prettier-ignore-->
+        <svg class="stroke-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          fill="none">
+          <path d="M9 18L15 12L9 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="font-medium">{{ category.name }}</span>
+      </button>
+      {% endfor %}
+
+      <!-- TODO: it will be implemented later
+      <button type="button" class="chat-category-button flex gap-4"> -->
+      <!--prettier-ignore-->
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="#99A1A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="font-medium text-grey">Outras Categorias</span>
+      </button> -->
+    </div>
+  </div>
+  <input type="text" name="event_date" value="{{ event_date }}"
+    class="mb-2 w-60 p-2 border border-grey bg-transparent rounded-lg" placeholder="Input event date" />
+  <input type="text" name="event_url" class="mb-2 w-60 p-2 border border-grey bg-transparent rounded-lg"
     placeholder="Input event url" />
 
-  {% if error_message %}
-  <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg text-white bg-red-600">
-      {{ error_message }}
-    </p>
-  </div>
-  {% endif %}
   {% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='event_location'],
   [name='event_category'], [name='event_date'], [name='event_url']" %}
-  <div class="mt-2 flex justify-around">
+  <div class="mt-2 flex justify-items-start">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
     <button type="button" hx-get="{{ url_for('sell.create_event') }}" hx-target="#chat-window" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
-      class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      class="p-2 w-60 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Submit
     </button>
   </div>
 </div>
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

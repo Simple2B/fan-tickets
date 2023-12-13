@@ -38,8 +38,8 @@ def get_events():
     error_message = ""
 
     if not location_input:
-        log(log.ERROR, "No event name provided: [%s]", location_input)
-        error_message += "No event name provided \n"
+        log(log.ERROR, "No event location provided: [%s]", location_input)
+        error_message += "No event location provided \n"
 
     if not date_input:
         log(log.ERROR, "No event date provided: [%s]", date_input)
@@ -58,7 +58,7 @@ def get_events():
     m.Message(
         sender_id=current_user.id,
         room_id=room.id,
-        text=f"{location_input}\n {date_input}",
+        text=f"location: {location_input}\ndate: {date_input}",
     ).save(False)
 
     location = db.session.scalar(m.Location.select().where(m.Location.name == location_input))
@@ -113,6 +113,23 @@ def event_form():
         return render_template(
             "chat/sell/02_event_create.html",
             error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    error_message = ""
+    if not event_location:
+        log(log.ERROR, "No event location provided: [%s]", event_location)
+        error_message += "No event location provided\n"
+    if not event_date:
+        log(log.ERROR, "No event date provided: [%s]", event_date)
+        error_message += "No event date provided\n"
+
+    if error_message:
+        return render_template(
+            "chat/sell/02_event_create.html",
+            error_message=error_message,
             room=room,
             now=now_str,
             user=current_user,
@@ -225,11 +242,6 @@ def create_event():
         text="There is no such events in our database. Let's create a new one!",
     ).save(False)
     m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Please, input event details.",
-    ).save(False)
-    m.Message(
         sender_id=current_user.id,
         room_id=room.id,
         text=f"{event_name}\n {event_location}\n {event_category}\n {event_date}\n {event_url}",
@@ -338,20 +350,22 @@ def create_ticket():
         log(log.ERROR, "No price provided: [%s]", price)
         error_message += "No price provided \n"
 
-    if error_message:
-        return render_template(
-            "chat/sell/03_ticket_create.html",
-            error_message=error_message,
-            room=room,
-            now=now_str,
-            user=current_user,
-        )
     event = db.session.scalar(m.Event.select().where(m.Event.unique_id == event_id))
     if not event:
         log(log.ERROR, "Event not found: [%s]", event_id)
         return render_template(
             "chat/sell/03_ticket_create.html",
             error_message="Event not found",
+            event=event,
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    if error_message:
+        return render_template(
+            "chat/sell/03_ticket_create.html",
+            error_message=error_message,
             event=event,
             room=room,
             now=now_str,
