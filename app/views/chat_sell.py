@@ -58,7 +58,7 @@ def get_events():
     m.Message(
         sender_id=current_user.id,
         room_id=room.id,
-        text=f"{location_input}\n {date_input}",
+        text=f"location: {location_input}\ndate: {date_input}",
     ).save(False)
 
     location = db.session.scalar(m.Location.select().where(m.Location.name == location_input))
@@ -240,11 +240,6 @@ def create_event():
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
         text="There is no such events in our database. Let's create a new one!",
-    ).save(False)
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Please, input event details.",
     ).save(False)
     m.Message(
         sender_id=current_user.id,

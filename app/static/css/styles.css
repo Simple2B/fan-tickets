@@ -1470,6 +1470,10 @@ input:checked + .toggle-bg{
   margin-top: 0.75rem;
 }
 
+.mt-4{
+  margin-top: 1rem;
+}
+
 .mt-5{
   margin-top: 1.25rem;
 }
@@ -1688,6 +1692,10 @@ input:checked + .toggle-bg{
 
 .w-6{
   width: 1.5rem;
+}
+
+.w-60{
+  width: 15rem;
 }
 
 .w-64{
@@ -1917,6 +1925,10 @@ input:checked + .toggle-bg{
   justify-content: space-around;
 }
 
+.justify-items-start{
+  justify-items: start;
+}
+
 .gap-1{
   gap: 0.25rem;
 }
@@ -1931,6 +1943,10 @@ input:checked + .toggle-bg{
 
 .gap-2{
   gap: 0.5rem;
+}
+
+.gap-2\.5{
+  gap: 0.625rem;
 }
 
 .gap-3{
@@ -2583,6 +2599,10 @@ input:checked + .toggle-bg{
   padding-left: 2.5rem;
 }
 
+.pl-16{
+  padding-left: 4rem;
+}
+
 .pl-3{
   padding-left: 0.75rem;
 }
@@ -2822,6 +2842,16 @@ input:checked + .toggle-bg{
   color: rgb(209 213 219 / var(--tw-placeholder-opacity));
 }
 
+.placeholder-white::-moz-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-white::placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-placeholder-opacity));
+}
+
 .opacity-0{
   opacity: 0;
 }
@@ -2912,6 +2942,10 @@ input:checked + .toggle-bg{
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+.duration-200{
+  transition-duration: 200ms;
 }
 
 .duration-300{
@@ -3225,14 +3259,14 @@ input:checked + .toggle-bg{
   transition: transform 0.3s ease-in-out;
 }
 
-.menu-mobile-dropdown {
+.dropdown-list {
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out,
     padding 0.2s ease-in-out;
 }
 
-.menu-mobile-dropdown-active {
+.dropdown-list-active {
   max-height: 1000px;
   padding: 16px 0;
   opacity: 1;
@@ -3247,6 +3281,19 @@ input:checked + .toggle-bg{
 }
 
 .header-user-dropdown-active {
+  opacity: 1;
+  max-height: 1000px;
+  overflow: hidden;
+}
+
+.chat-location-dropdown {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
+}
+
+.chat-location-dropdown-active {
   opacity: 1;
   max-height: 1000px;
   overflow: hidden;
@@ -3319,6 +3366,21 @@ input:checked + .toggle-bg{
   margin: 0;
 }
 
+.calendar {
+  background-color: #1c1c1c;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select::-ms-expand {
+  display: none;
+  /* Remove default arrow in Internet Explorer/Edge */
+}
+
 .hover\:scale-105:hover{
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -3374,6 +3436,11 @@ input:checked + .toggle-bg{
 .hover\:bg-gray-50:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-grey:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(153 161 163 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-light-grey:hover{

@@ -184,26 +184,26 @@ const menuMobileDropdowns = document.querySelectorAll('.dropdown');
 if (menuMobileDropdowns) {
   menuMobileDropdowns.forEach(dropdown => {
     const dropdownButton = dropdown.querySelector('.dropdown-button');
-    const dropdownMenu = dropdown.querySelector('.menu-mobile-dropdown');
+    const dropdownMenu = dropdown.querySelector('.dropdown-list');
     const dropdownArrow = dropdown.querySelector('.dropdown-arrow');
 
     dropdownButton.addEventListener('click', e => {
       const currentDropdown = (e.target as Element).closest('.dropdown');
 
-      dropdownMenu.classList.toggle('menu-mobile-dropdown-active');
+      dropdownMenu.classList.toggle('dropdown-list-active');
       dropdownArrow.classList.toggle('rotate-180');
 
       menuMobileDropdowns.forEach(dropdown => {
         if (dropdown !== currentDropdown) {
           dropdown
-            .querySelector('.menu-mobile-dropdown')
-            .classList.remove('menu-mobile-dropdown-active');
+            .querySelector('.dropdown-list')
+            .classList.remove('dropdown-list-active');
         }
       });
 
       window.addEventListener('mouseup', event => {
         if (!dropdown.contains(event.target as Node)) {
-          dropdownMenu.classList.remove('menu-mobile-dropdown-active');
+          dropdownMenu.classList.remove('dropdown-list-active');
           dropdownArrow.classList.remove('rotate-180');
         }
       });
