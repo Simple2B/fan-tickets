@@ -232,7 +232,7 @@ def cart():
 
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
     cart_tickets = db.session.scalars(cart_tickets_query).all()
-    total_price = sum([ticket.price for ticket in cart_tickets])
+    total_price = sum([ticket.price_gross for ticket in cart_tickets])
     return render_template(
         "chat/buy/tickets_06_cart.html",
         room=room,

@@ -122,3 +122,11 @@ def init(app: Flask):
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
         print(users)
+
+    @app.cli.command("rollback")
+    def rollback():
+        """
+        Command for rollbacking all changes
+        """
+        db.session.rollback()
+        print("rollbacked")

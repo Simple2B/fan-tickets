@@ -44,8 +44,6 @@
 
     <div class="mt-2 flex justify-around">
         <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-        <input type="hidden" name="event_unique_id" value="{{ event.unique_id }}" />
-        <input type="hidden" name="ticket_unique_id" value="{{ ticket.unique_id }}" />
 
         <button type="button" hx-get="{{ url_for('buy.pagar') }}" hx-target="#chat-window" hx-swap="innerHTML"
             hx-trigger="click" hx-include="{{ all_filters }}"

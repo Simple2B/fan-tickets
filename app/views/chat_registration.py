@@ -4,6 +4,7 @@ import os
 from urllib.parse import urlparse
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
+from werkzeug.security import check_password_hash
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -11,6 +12,77 @@ from config import config
 CFG = config()
 
 chat_registration_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
+
+
+@chat_registration_blueprint.route("/login_form", methods=["GET", "POST"])
+def login_form():
+    room_unique_id = request.args.get("room_unique_id")
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Room not found",
+        )
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    return render_template(
+        "chat/registration/00_login_form.html",
+        room=room,
+        ticket=ticket,
+    )
+
+
+@chat_registration_blueprint.route("/login", methods=["GET", "POST"])
+def login():
+    chat_email = request.args.get("chat_email")
+    chat_password = request.args.get("chat_password")
+    room_unique_id = request.args.get("room_unique_id")
+    ticket_unique_id = request.args.get("ticket_unique_id")
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Room not found",
+        )
+
+    user: m.User = m.User.authenticate(chat_email, chat_password)
+    if not user:
+        log(log.ERROR, "Wrong email or password")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Wrong email or password",
+            room=room,
+        )
+
+    login_user(user)
+    log(log.INFO, "Login successful.")
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+    ticket.is_in_cart = True
+    ticket.buyer_id = user.id
+    ticket.save()
+
+    cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
+    cart_tickets = db.session.scalars(cart_tickets_query).all()
+    total_price = sum([ticket.price_gross for ticket in cart_tickets])
+
+    return render_template(
+        "chat/buy/tickets_06_cart.html",
+        room=room,
+        cart_tickets=cart_tickets,
+        total_price=total_price,
+    )
 
 
 @chat_registration_blueprint.route("/sell", methods=["GET", "POST"])
