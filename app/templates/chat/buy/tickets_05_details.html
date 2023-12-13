@@ -43,13 +43,13 @@
         <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-window" hx-swap="innerHTML" hx-trigger="click"
             hx-include="{{ all_filters }}"
             class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-            Buy (login required)
+            Buy
         </button>
 
         <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-window" hx-swap="innerHTML" hx-trigger="click"
             hx-include="{{ all_filters }}"
             class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-            Reserve (login required)
+            Reserve
         </button>
 
         <button type="button" hx-get="{{ url_for('buy.get_event_tickets') }}" hx-target="#chat-window"

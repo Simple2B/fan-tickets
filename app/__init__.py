@@ -24,7 +24,7 @@ def create_app(environment="development") -> Flask:
         events_blueprint,
         tickets_blueprint,
         admin_blueprint,
-        chat_registration_blueprint,
+        chat_auth_blueprint,
         chat_sell_blueprint,
         chat_buy_blueprint,
     )
@@ -53,7 +53,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(events_blueprint)
     app.register_blueprint(tickets_blueprint)
     app.register_blueprint(admin_blueprint)
-    app.register_blueprint(chat_registration_blueprint)
+    app.register_blueprint(chat_auth_blueprint)
     app.register_blueprint(chat_sell_blueprint)
     app.register_blueprint(chat_buy_blueprint)
 

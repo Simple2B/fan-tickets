@@ -4,17 +4,16 @@ import os
 from urllib.parse import urlparse
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
-from werkzeug.security import check_password_hash
 from app import models as m, db
 from app.logger import log
 from config import config
 
 CFG = config()
 
-chat_registration_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
+chat_auth_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
 
 
-@chat_registration_blueprint.route("/login_form", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/login_form", methods=["GET", "POST"])
 def login_form():
     room_unique_id = request.args.get("room_unique_id")
     ticket_unique_id = request.args.get("ticket_unique_id")
@@ -38,7 +37,7 @@ def login_form():
     )
 
 
-@chat_registration_blueprint.route("/login", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/login", methods=["GET", "POST"])
 def login():
     chat_email = request.args.get("chat_email")
     chat_password = request.args.get("chat_password")
@@ -85,7 +84,7 @@ def login():
     )
 
 
-@chat_registration_blueprint.route("/sell", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -122,7 +121,7 @@ def sell():
     )
 
 
-@chat_registration_blueprint.route("/events", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/events", methods=["GET", "POST"])
 def events():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -149,7 +148,7 @@ def events():
     )
 
 
-@chat_registration_blueprint.route("/username", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/username", methods=["GET", "POST"])
 def username():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -228,7 +227,7 @@ def username():
     )
 
 
-@chat_registration_blueprint.route("/email", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/email", methods=["GET", "POST"])
 def email():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -300,7 +299,7 @@ def email():
     )
 
 
-@chat_registration_blueprint.route("/password", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/password", methods=["GET", "POST"])
 def password():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -345,7 +344,7 @@ def password():
     )
 
 
-@chat_registration_blueprint.route("/phone", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/phone", methods=["GET", "POST"])
 def phone():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")

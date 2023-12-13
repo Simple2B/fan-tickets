@@ -220,6 +220,7 @@ def cart():
 
     room_unique_id = request.args.get("room_unique_id")
     room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+    ticket_unique_id = request.args.get("ticket_unique_id")
     if not room:
         log(log.ERROR, "Room not found: [%s]", room_unique_id)
         return render_template(
@@ -229,6 +230,21 @@ def cart():
             now=now_str,
             user=current_user,
         )
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", ticket_unique_id)
+        return render_template(
+            "chat/buy/events_04_tickets.html",
+            error_message="Ticket not found",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+    ticket.is_in_cart = True
+    ticket.buyer_id = current_user.id
+    ticket.save()
 
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
     cart_tickets = db.session.scalars(cart_tickets_query).all()
