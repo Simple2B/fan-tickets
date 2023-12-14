@@ -1,6 +1,7 @@
 from typing import Any
 from flask import current_app as app
 from flask.testing import FlaskClient
+from test_flask.utils import login
 from app import models as m, db
 from .db import populate
 
@@ -46,3 +47,16 @@ def test_chat_buy_get_event_tickets(client_with_data: FlaskClient):
     assert "Another events" in response.data.decode()
     tickets_number = len(event.tickets)
     assert f"loop.index: {tickets_number}" in response.data.decode()
+
+
+def test_chat_cart(client_with_data: FlaskClient):
+    response = client_with_data.get("/buy/cart")
+    assert response.status_code == 302
+
+    room = m.Room(
+        seller_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    event: m.Event = db.session.scalar(m.Event.select())
+    login(client_with_data)
+    response = client_with_data.get(f"/buy/cart?room_unique_id={room.unique_id}&event_unique_id={event.unique_id}")
+    assert response.status_code == 200

@@ -21,7 +21,7 @@ def get_events():
     event_name_input = request.args.get("event_name")
 
     room = m.Room(
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        seller_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
@@ -264,6 +264,16 @@ def cart():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
+    room_unique_id = request.args.get("room_unique_id")
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+
+    messages_query = m.Message.select().where(m.Message.room_id == room.id)
+    messages = db.session.scalars(messages_query).all()
+    for message in messages:
+        db.session.delete(message)
+    db.session.delete(room)
+    db.session.commit()
+
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_to_exclude = request.args.get("ticket_to_exclude")
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
@@ -281,11 +291,15 @@ def cart():
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
     if not ticket:
+        event_unique_id = request.args.get("event_unique_id")
+        event = db.session.scalar(m.Event.select().where(m.Event.unique_id == event_unique_id))
         log(log.ERROR, "Ticket not found: [%s]", ticket_unique_id)
         return render_template(
             "chat/buy/events_04_tickets.html",
             error_message="Ticket not found",
             now=now_str,
+            room=room,
+            event=event,
             user=current_user,
         )
     ticket.is_in_cart = True
