@@ -42,6 +42,7 @@
 - email verification
 - fix default user image
 - round price on the python side
+- footer with home, subscriptions, cart
 
 # Testing database
 - add a cli command to set events pictures

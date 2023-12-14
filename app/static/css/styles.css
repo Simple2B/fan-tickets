@@ -1306,6 +1306,11 @@ input:checked + .toggle-bg{
   margin-bottom: 1rem;
 }
 
+.my-6{
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .-ml-1{
   margin-left: -0.25rem;
 }
@@ -2878,6 +2883,16 @@ input:checked + .toggle-bg{
 .placeholder-white::placeholder{
   --tw-placeholder-opacity: 1;
   color: rgb(255 255 255 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-grey::-moz-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(153 161 163 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-grey::placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(153 161 163 / var(--tw-placeholder-opacity));
 }
 
 .opacity-0{

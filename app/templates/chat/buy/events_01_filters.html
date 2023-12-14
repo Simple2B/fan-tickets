@@ -62,7 +62,7 @@
     </div>
 
     <!-- Filter Date -->
-    <div class="relative mb-4">
+    <div class="relative z-50">
         <!-- prettier-ignore -->
         <svg class="absolute top-1/2 -translate-y-1/2 ml-4 w-8 h-8" xmlns="http://www.w3.org/2000/svg" width="52"
             height="52" viewBox="0 0 52 52" fill="none">
@@ -72,7 +72,7 @@
                 fill="#F2B705" />
         </svg>
         <input id="datepicker-filter" name="event_date" type="text"
-            class="w-full h-14 pl-16 shadow-sm bg-ultra-black border border-grey text-white placeholder-white rounded-2xl hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 block"
+            class="w-full h-14 pl-16 shadow-sm bg-ultra-black border border-grey text-white placeholder-grey rounded-2xl hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 block"
             placeholder="Data" />
         <!-- prettier-ignore -->
         <svg class="absolute top-1/2 -translate-y-1/2 right-0 mr-4 w-2.5 h-2.5 " aria-hidden="true"
@@ -80,6 +80,24 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="m1 1 4 4 4-4" />
         </svg>
+    </div>
+
+    <p class="my-4 text-center text-grey">
+        Or search by event name
+    </p>
+
+    <div class="relative">
+        <div class="absolute inset-y-0 start-1 flex items-center ps-3 pointer-events-none">
+            <!-- prettier-ignore -->
+            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M15.9 15.4L19.5 19M18.3 9.4C18.3 14.0392 14.5392 17.8 9.9 17.8C5.26081 17.8 1.5 14.0392 1.5 9.4C1.5 4.76081 5.26081 1 9.9 1C14.5392 1 18.3 4.76081 18.3 9.4Z"
+                    stroke="#828282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <input type="search" id="default-search" name="event_name"
+            class="w-full h-14 pl-16 shadow-sm bg-ultra-black border border-grey text-white placeholder-grey rounded-2xl hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 block"
+            placeholder="Busque por evento" required />
     </div>
 
     {% if error_message %}
@@ -90,7 +108,7 @@
     </div>
     {% endif %}
 
-    <div class="mt-2 flex justify-around">
+    <div class="mt-4 flex justify-around">
         <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
         <button type="button" hx-get="{{ url_for('buy.get_events') }}" hx-target="#chat-window" hx-swap="innerHTML"
             hx-trigger="click" hx-include="{{ all_filters }}"

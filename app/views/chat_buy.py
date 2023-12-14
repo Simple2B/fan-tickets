@@ -18,6 +18,7 @@ def get_events():
 
     location_input = request.args.get("event_location")
     date_input = request.args.get("event_date")
+    event_name_input = request.args.get("event_name")
 
     room = m.Room(
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
@@ -35,13 +36,17 @@ def get_events():
 
     error_message = ""
 
-    if not location_input:
+    if not location_input and not event_name_input:
         log(log.ERROR, "No event location provided: [%s]", location_input)
         error_message += "No event location provided \n"
 
-    if not date_input:
+    if not date_input and not event_name_input:
         log(log.ERROR, "No event date provided: [%s]", date_input)
         error_message += "No event date provided \n"
+
+    if not event_name_input and not location_input and not date_input:
+        log(log.ERROR, "Please, enter location and date or event name: [%s]", event_name_input)
+        error_message += "Please, enter location and date or event name \n"
 
     if error_message:
         return render_template(
@@ -53,20 +58,29 @@ def get_events():
             user=current_user,
         )
 
+    text = ""
+    if location_input and date_input:
+        location = db.session.scalar(m.Location.select().where(m.Location.name == location_input))
+
+        event_start_date = datetime.strptime(str(date_input), app.config["DATE_PICKER_FORMAT"])
+        event_end_date = event_start_date + timedelta(days=1)
+
+        events_query = m.Event.select().where(
+            m.Event.location == location,
+            m.Event.date_time >= event_start_date,
+            m.Event.date_time <= event_end_date,
+        )
+        text = f"{location_input}\n{date_input}"
+
+    if event_name_input:
+        events_query = m.Event.select().where(m.Event.name.ilike(f"%{event_name_input}%"))
+        text = f"{event_name_input}"
+
     m.Message(
         room_id=room.id,
-        text=f"{location_input}\n{date_input}",
+        text=text,
     ).save(False)
 
-    location = db.session.scalar(m.Location.select().where(m.Location.name == location_input))
-
-    event_start_date = datetime.strptime(str(date_input), app.config["DATE_PICKER_FORMAT"])
-    event_end_date = event_start_date + timedelta(days=1)
-    events_query = m.Event.select().where(
-        m.Event.location == location,
-        m.Event.date_time >= event_start_date,
-        m.Event.date_time <= event_end_date,
-    )
     events = db.session.scalars(events_query).all()
 
     if not events:
@@ -243,20 +257,25 @@ def ticket_details():
 @chat_buy_blueprint.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
+    # TODO: 1. Remove messages, room.
+    # TODO: 2. Add notification from the bot that history is cleared
+    # TODO: 2. Send email with history
+
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    room_unique_id = request.args.get("room_unique_id")
-    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
     ticket_unique_id = request.args.get("ticket_unique_id")
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+    ticket_to_exclude = request.args.get("ticket_to_exclude")
+    cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
+
+    if ticket_to_exclude:
+        all_tickets = db.session.scalars(cart_tickets_query).all()
+        cart_tickets = [ticket for ticket in all_tickets if ticket.unique_id != ticket_to_exclude]
+        total_price = sum([ticket.price_gross for ticket in cart_tickets])
         return render_template(
-            "chat/buy/events_04_tickets.html",
-            error_message="Form submitting error",
-            room=room,
-            now=now_str,
-            user=current_user,
+            "chat/buy/tickets_06_cart.html",
+            cart_tickets=cart_tickets,
+            total_price=total_price,
         )
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
@@ -266,7 +285,6 @@ def cart():
         return render_template(
             "chat/buy/events_04_tickets.html",
             error_message="Ticket not found",
-            room=room,
             now=now_str,
             user=current_user,
         )
@@ -274,12 +292,10 @@ def cart():
     ticket.buyer_id = current_user.id
     ticket.save()
 
-    cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
     cart_tickets = db.session.scalars(cart_tickets_query).all()
     total_price = sum([ticket.price_gross for ticket in cart_tickets])
     return render_template(
         "chat/buy/tickets_06_cart.html",
-        room=room,
         cart_tickets=cart_tickets,
         total_price=total_price,
     )
