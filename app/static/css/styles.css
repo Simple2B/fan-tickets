@@ -2596,6 +2596,11 @@ input:checked + .toggle-bg{
   padding-right: 3.5rem;
 }
 
+.py-10{
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
 .pb-16{
   padding-bottom: 4rem;
 }
@@ -3511,6 +3516,11 @@ select::-ms-expand {
   background-color: rgb(227 160 8 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-secondary:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 183 5 / var(--tw-bg-opacity));
+}
+
 .hover\:fill-secondary:hover{
   fill: #f2b705;
 }
@@ -3563,6 +3573,11 @@ select::-ms-expand {
 .hover\:text-white:hover{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:text-red-700:hover{
+  --tw-text-opacity: 1;
+  color: rgb(200 30 30 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover{
@@ -3660,6 +3675,11 @@ select::-ms-expand {
 .active\:bg-gray-400:active{
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
+}
+
+.active\:bg-secondary:active{
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 183 5 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:text-gray-900{
