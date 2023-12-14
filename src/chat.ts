@@ -17,7 +17,7 @@ function toggleChatWindow() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const chatIcon = document.querySelector('#chat-icon');
-  const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
+  const chatBody: HTMLDivElement = document.querySelector('#chat-body');
   const openIcon = chatIcon.querySelector('.chat-icon-open');
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // openIcon.classList.toggle('chat-icon-inactive');
     // closeIcon.classList.toggle('chat-icon-active');
     toggleChatWindow();
-    scrollDown(chatWindow);
+    scrollDown(chatBody);
 
     const observer = new MutationObserver(mutations => {
       const locationButton = document.querySelector(
@@ -37,12 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
-          scrollDown(chatWindow);
+          scrollDown(chatBody);
         }
       });
     });
 
-    observer.observe(chatWindow, {childList: true});
+    observer.observe(chatBody, {childList: true});
   });
 });
 
@@ -62,23 +62,23 @@ const statusFilterLocation = document.querySelector(
 
 const datepickerFilter = document.getElementById('datepicker-filter');
 if (datepickerFilter) {
-  const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
+  const chatBody: HTMLDivElement = document.querySelector('#chat-body');
   const picker = new easepick.create({
     element: document.getElementById('datepicker-filter'),
     css: ['https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css'],
     format: 'MM/DD/YYYY',
   });
   datepickerFilter.addEventListener('click', () => {
-    scrollDown(chatWindow);
+    scrollDown(chatBody);
   });
 }
 
 if (locationButton) {
   locationButton.addEventListener('click', () => {
-    const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
+    const chatBody: HTMLDivElement = document.querySelector('#chat-body');
     dropdownFilterDate.classList.toggle('chat-location-dropdown-active');
     inputLocation.focus();
-    scrollDown(chatWindow);
+    scrollDown(chatBody);
   });
 }
 
@@ -158,7 +158,7 @@ if (chatCloseButtons) {
 const categoryDropdowns = document.querySelectorAll('.dropdown');
 
 if (categoryDropdowns) {
-  const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
+  const chatBody: HTMLDivElement = document.querySelector('#chat-body');
   categoryDropdowns.forEach(dropdown => {
     const dropdownButton = dropdown.querySelector('.dropdown-button');
     const dropdownMenu = dropdown.querySelector('.dropdown-list');
@@ -170,7 +170,7 @@ if (categoryDropdowns) {
     const dropdownTitle = dropdown.querySelector('.chat-category-title');
 
     dropdownButton.addEventListener('click', e => {
-      scrollDown(chatWindow);
+      scrollDown(chatBody);
       const currentDropdown = (e.target as Element).closest('.dropdown');
 
       dropdownMenu.classList.toggle('dropdown-list-active');

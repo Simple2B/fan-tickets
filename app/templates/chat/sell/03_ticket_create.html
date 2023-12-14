@@ -42,7 +42,7 @@
   <div class="mt-2 flex justify-items-start">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
     <input type="hidden" name="event_id" value="{{ event.unique_id }}" />
-    <button type="button" hx-get="{{ url_for('sell.create_ticket') }}" hx-target="#chat-window" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('sell.create_ticket') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="w-60 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Submit

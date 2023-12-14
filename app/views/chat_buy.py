@@ -266,12 +266,41 @@ def cart():
 
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_to_exclude = request.args.get("ticket_to_exclude")
+    cart_from_navbar = request.args.get("cart_from_navbar")
+
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
+
+    def compute_total_price(cart_tickets: list[m.Ticket]) -> float:
+        return sum([ticket.price_gross for ticket in cart_tickets])
 
     if ticket_to_exclude:
         all_tickets = db.session.scalars(cart_tickets_query).all()
         cart_tickets = [ticket for ticket in all_tickets if ticket.unique_id != ticket_to_exclude]
-        total_price = sum([ticket.price_gross for ticket in cart_tickets])
+        total_price = compute_total_price(cart_tickets)
+        ticket_excluded: m.Ticket = db.session.scalar(m.Ticket.select().where(m.Ticket.unique_id == ticket_to_exclude))
+
+        if not ticket_excluded:
+            log(log.ERROR, "Ticket not found: [%s]", ticket_to_exclude)
+            return render_template(
+                "chat/buy/tickets_06_cart.html",
+                cart_tickets=cart_tickets,
+                total_price=total_price,
+            )
+        ticket_excluded.is_in_cart = False
+        ticket_excluded.buyer_id = None
+        db.session.commit()
+
+        log(log.INFO, "Ticket removed from cart: [%s]", ticket_to_exclude)
+        return render_template(
+            "chat/buy/tickets_06_cart.html",
+            cart_tickets=cart_tickets,
+            total_price=total_price,
+        )
+
+    if cart_from_navbar:
+        cart_tickets = db.session.scalars(cart_tickets_query).all()
+        total_price = compute_total_price(cart_tickets)
+        log(log.INFO, "Cart opened from navbar")
         return render_template(
             "chat/buy/tickets_06_cart.html",
             cart_tickets=cart_tickets,
@@ -293,7 +322,7 @@ def cart():
     ticket.save()
 
     cart_tickets = db.session.scalars(cart_tickets_query).all()
-    total_price = sum([ticket.price_gross for ticket in cart_tickets])
+    total_price = compute_total_price(cart_tickets)
     return render_template(
         "chat/buy/tickets_06_cart.html",
         cart_tickets=cart_tickets,

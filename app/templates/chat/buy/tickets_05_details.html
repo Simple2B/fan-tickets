@@ -26,19 +26,19 @@
       <input type="hidden" name="event_unique_id" value="{{ event.unique_id }}" />
       <input type="hidden" name="ticket_unique_id" value="{{ ticket.unique_id }}" />
 
-      <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-window" hx-swap="innerHTML" hx-trigger="click"
+      <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
         hx-include="{{ all_filters }}"
         class="p-2 w-full text-center text-secondary border border-secondary rounded-xl hover:bg-secondary hover:text-black active:bg-secondary">
         Buy
       </button>
 
-      <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-window" hx-swap="innerHTML" hx-trigger="click"
+      <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
         hx-include="{{ all_filters }}"
         class="p-2 w-full text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
         Reserve
       </button>
 
-      <button type="button" hx-get="{{ url_for('buy.get_event_tickets') }}" hx-target="#chat-window" hx-swap="innerHTML"
+      <button type="button" hx-get="{{ url_for('buy.get_event_tickets') }}" hx-target="#chat-body" hx-swap="innerHTML"
         hx-trigger="click" hx-include="{{ all_filters }}"
         class="p-2 w-full text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
         Back
