@@ -51,6 +51,7 @@ class BaseConfig(BaseSettings):
 
     # UI config
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
+    DATE_PLATFORM_FORMAT: str = "%d %b %Y"
 
     # API
     IS_API: bool = False

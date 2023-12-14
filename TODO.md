@@ -24,6 +24,9 @@
 
 # Disable twilio after the demo
 
+# Ticket page
+- wrong template returning on empty search
+
 # Frontend
 - user/profile background change (mobile)
 - scrollbar styles for different browsers
@@ -38,6 +41,7 @@
 # Chat
 - email verification
 - fix default user image
+- round price on the python side
 
 # Testing database
 - add a cli command to set events pictures

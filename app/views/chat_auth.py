@@ -136,7 +136,7 @@ def events():
     ).save(False)
     m.Message(
         room_id=room.id,
-        text="I'm looking for events information",
+        text="Buying",
     ).save(False)
     db.session.commit()
 

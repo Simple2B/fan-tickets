@@ -125,6 +125,18 @@ def event_details():
             user=current_user,
         )
 
+    buyer_id = current_user.id if current_user.is_authenticated else None
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Choose an event from the list.",
+    ).save(False)
+    m.Message(
+        sender_id=buyer_id,
+        room_id=room.id,
+        text=f"{event.name}",
+    ).save()
+
     return render_template(
         "chat/buy/events_03_details.html",
         now=now_str,
@@ -153,7 +165,7 @@ def get_event_tickets():
         )
 
     event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
-    event = db.session.scalar(event_query)
+    event: m.Event = db.session.scalar(event_query)
 
     if not event:
         log(log.ERROR, "Event not found: [%s]", event_unique_id)
@@ -165,10 +177,19 @@ def get_event_tickets():
             user=current_user,
         )
 
+    buyer_id = current_user.id if current_user.is_authenticated else None
     m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text=f"Event details:\n{event.name}\n{event.date_time.strftime(app.config['DATE_PLATFORM_FORMAT'])}\n{event.location.name}",
+    ).save(False)
+
+    m.Message(
+        sender_id=buyer_id,
         room_id=room.id,
         text=f"Give me please tickets for this event: {event.name}",
     ).save(False)
+    db.session.commit()
 
     return render_template(
         "chat/buy/events_04_tickets.html",
@@ -202,6 +223,13 @@ def ticket_details():
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
     ticket = db.session.scalar(ticket_query)
+
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text=f"Ticket details:\n{event.name}\n{event.date_time.strftime(app.config['DATE_PLATFORM_FORMAT'])}\n{event.location.name}",
+    ).save(False)
+    db.session.commit()
 
     return render_template(
         "chat/buy/tickets_05_details.html",

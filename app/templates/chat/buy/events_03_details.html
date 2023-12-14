@@ -21,13 +21,13 @@
     <div class="mb-1 flex text-black justify-end">
         <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
             Event details: <br>
-            {{ event.name }}
+            event: {{ event.name }}
             <br>
-            {{ event.location.name }}
+            location: {{ event.location.name }}
             <br>
-            {{ event.category.name }}
+            category: {{ event.category.name }}
             <br>
-            {{ event.date_time }}
+            date: {{ event.date_time.strftime('%d %b %Y') }}
         </p>
     </div>
 
