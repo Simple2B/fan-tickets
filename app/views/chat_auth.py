@@ -10,15 +10,92 @@ from config import config
 
 CFG = config()
 
-chat_registration_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
+chat_auth_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
 
 
-@chat_registration_blueprint.route("/sell", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/login_form", methods=["GET", "POST"])
+def login_form():
+    room_unique_id = request.args.get("room_unique_id")
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    login_from_navbar = request.args.get("login_from_navbar")
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if login_from_navbar:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Room not found",
+        )
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    return render_template(
+        "chat/registration/00_login_form.html",
+        room=room,
+        ticket=ticket,
+    )
+
+
+@chat_auth_blueprint.route("/login", methods=["GET", "POST"])
+def login():
+    chat_email = request.args.get("chat_email")
+    chat_password = request.args.get("chat_password")
+    room_unique_id = request.args.get("room_unique_id")
+    ticket_unique_id = request.args.get("ticket_unique_id")
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Room not found",
+        )
+
+    user: m.User = m.User.authenticate(chat_email, chat_password)
+    if not user:
+        log(log.ERROR, "Wrong email or password")
+        return render_template(
+            "chat/registration/00_login_form.html",
+            error_message="Wrong email or password",
+            room=room,
+        )
+
+    login_user(user)
+    log(log.INFO, "Login successful.")
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+    ticket.is_in_cart = True
+    ticket.buyer_id = user.id
+    ticket.save()
+
+    cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
+    cart_tickets = db.session.scalars(cart_tickets_query).all()
+    total_price = sum([ticket.price_gross for ticket in cart_tickets])
+
+    return render_template(
+        "chat/buy/tickets_06_cart.html",
+        room=room,
+        cart_tickets=cart_tickets,
+        total_price=total_price,
+    )
+
+
+@chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    question = "Are you looking for buying or selling tickets or for events information?"
+    question = "Are you looking for buying or selling tickets?"
 
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
@@ -38,18 +115,46 @@ def sell():
     db.session.commit()
 
     if current_user.is_authenticated:
-        template = "chat/sell/01_event_name.html"
+        template = "chat/sell/00_event_init.html"
     else:
         template = "chat/registration/01_username.html"
 
     return render_template(
         template,
+        locations=m.Location.all(),
         now=now_str,
         room=room,
     )
 
 
-@chat_registration_blueprint.route("/username", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/buy", methods=["GET", "POST"])
+def buy():
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    room = m.Room(
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Are you looking for buying or selling tickets?",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text="Buying",
+    ).save(False)
+    db.session.commit()
+
+    return render_template(
+        "chat/buy/events_01_filters.html",
+        locations=m.Location.all(),
+        now=now_str,
+        room=room,
+    )
+
+
+@chat_auth_blueprint.route("/username", methods=["GET", "POST"])
 def username():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -57,21 +162,25 @@ def username():
     room_unique_id = request.args.get("room_unique_id")
     user_name = request.args.get("chat_username")
 
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
     if not user_name or not room_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/01_username.html",
             error_message="Form submitting error",
+            room=room,
+            now=now_str,
         )
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
 
     if not room:
         log(log.ERROR, "Room not found")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/01_username.html",
             error_message="Room not found",
+            room=room,
+            now=now_str,
         )
 
     user_query = m.User.select().where(m.User.username == user_name)
@@ -128,7 +237,7 @@ def username():
     )
 
 
-@chat_registration_blueprint.route("/email", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/email", methods=["GET", "POST"])
 def email():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -146,7 +255,7 @@ def email():
     if not email_input or not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/02_email.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -155,7 +264,8 @@ def email():
         )
 
     pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    match_pattern = re.search(pattern, email_input)
+
+    match_pattern = re.search(pattern, (email_input).lower())
     if not match_pattern:
         return render_template(
             "chat/registration/02_email.html",
@@ -200,7 +310,7 @@ def email():
     )
 
 
-@chat_registration_blueprint.route("/password", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/password", methods=["GET", "POST"])
 def password():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -215,6 +325,26 @@ def password():
 
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+        return render_template(
+            "chat/sell/02_event_create.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    if not password or not confirm_password:
+        log(log.ERROR, "Form submitting error")
+        return render_template(
+            "chat/registration/03_pass.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=user,
+        )
 
     if password != confirm_password:
         return render_template(
@@ -245,7 +375,7 @@ def password():
     )
 
 
-@chat_registration_blueprint.route("/phone", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/phone", methods=["GET", "POST"])
 def phone():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
@@ -273,6 +403,7 @@ def phone():
     if not phone_input or not match_pattern:
         return render_template(
             "chat/registration/04_phone.html",
+            error_message="Invalid phone format",
             now=now_str,
             room=room,
             user=user,
@@ -330,3 +461,8 @@ def phone():
         user=user,
         profile_url=profile_url,
     )
+
+
+@chat_auth_blueprint.route("/home")
+def home():
+    return render_template("chat/chat_home.html")

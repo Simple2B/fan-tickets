@@ -1,0 +1,79 @@
+{% set all_filters = "[name='event_unique_id'], [name='ticket_unique_id']" %}
+<div>
+  <div class="flex text-white justify-end">
+    <small class="pt-1">FanTicket {{ now }}</small>
+  </div>
+
+  {% if room %}
+  <div class="mb-1 flex text-black justify-end">
+    <p class=" w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+      Messaging history is cleared and will be sent to your email
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="mb-2 flex text-black justify-end">
+    <div class="p-2 flex w-5/6 justify-between items-center rounded-lg bg-secondary">
+      <p>
+        Your cart
+      </p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
+        <path
+          d="M2.66675 2.95581H4.4083C4.73632 2.95581 4.90034 2.95581 5.03233 3.01613C5.14864 3.06929 5.24721 3.15478 5.31628 3.2624C5.39466 3.38454 5.41786 3.5469 5.46425 3.87163L6.09532 8.28914M6.09532 8.28914L7.49784 18.5977C7.67582 19.9058 7.76481 20.5599 8.07755 21.0523C8.35312 21.4861 8.74819 21.8311 9.21522 22.0456C9.74523 22.2891 10.4053 22.2891 11.7256 22.2891H23.1361C24.3928 22.2891 25.0212 22.2891 25.5347 22.063C25.9875 21.8637 26.3759 21.5423 26.6565 21.1348C26.9747 20.6726 27.0922 20.0554 27.3274 18.8208L29.0922 9.5554C29.175 9.12089 29.2164 8.90363 29.1564 8.73381C29.1038 8.58484 29 8.45939 28.8635 8.37983C28.7079 8.28914 28.4867 8.28914 28.0444 8.28914H6.09532ZM13.3334 28.2891C13.3334 29.0255 12.7365 29.6225 12.0001 29.6225C11.2637 29.6225 10.6667 29.0255 10.6667 28.2891C10.6667 27.5528 11.2637 26.9558 12.0001 26.9558C12.7365 26.9558 13.3334 27.5528 13.3334 28.2891ZM24.0001 28.2891C24.0001 29.0255 23.4031 29.6225 22.6667 29.6225C21.9304 29.6225 21.3334 29.0255 21.3334 28.2891C21.3334 27.5528 21.9304 26.9558 22.6667 26.9558C23.4031 26.9558 24.0001 27.5528 24.0001 28.2891Z"
+          stroke="#1c1c1c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  {% for ticket in cart_tickets %}
+  <div class="mb-2 flex text-black items-center justify-between">
+    <button class="w-5 h-5 ml-2 text-grey hover:text-red-700 transition-colors duration-200" type="button"
+      hx-get="{{ url_for('buy.cart', ticket_to_exclude=ticket.unique_id) }}" hx-target="#chat-body" hx-swap="innerHTML"
+      hx-trigger="click">&#x2715</button>
+    {% include 'chat/buy/ticket_item.html' %}
+  </div>
+  {% endfor %}
+
+  {% if not cart_tickets %}
+  <div class="mb-1 flex text-black justify-end">
+    <p class=" w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+      Your cart is empty
+    </p>
+  </div>
+  {% endif %}
+
+  {% if cart_tickets %}
+  <div class="mb-1 flex text-black justify-end">
+    <p class=" w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+      Total price: {{ total_price|round(2) }} R$
+    </p>
+  </div>
+  {% endif %}
+
+
+  {% if error_message %}
+  <div class="mb-8 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-lg text-white bg-red-600">
+      {{ error_message }}
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="flex justify-end">
+    <div class="mt-2 w-5/6 flex flex-col gap-2">
+      {% if cart_tickets %}
+      <button type="button" hx-get="{{ url_for('buy.pagar') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        hx-trigger="click" hx-include="{{ all_filters }}"
+        class="p-2 text-center text-secondary border border-secondary rounded-xl hover:bg-secondary hover:text-black active:bg-secondary">
+        Pay now
+      </button>
+      {% else %}
+      <button type="button" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        hx-trigger="click" hx-include="{{ all_filters }}"
+        class="p-2 text-center text-secondary border border-secondary rounded-xl hover:bg-secondary hover:text-black active:bg-secondary">
+        Search tickets
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</div>

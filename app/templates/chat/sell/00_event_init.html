@@ -1,0 +1,110 @@
+{% block links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js" defer></script>
+<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+{% endblock %}
+{% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='event_location'],
+[name='event_category'], [name='event_date'], [name='event_url']" %}
+<div>
+  {% include 'chat/chat_messages.html' %}
+  <div class="flex text-white justify-end">
+    <small class="pt-1">FanTicket {{ now }}</small>
+  </div>
+  <div class="mb-2 flex text-black justify-end">
+    <p class="w-5/6 p-2 rounded-t-lg rounded-bl-lg bg-secondary">
+      What event are you selling tickets for?
+    </p>
+  </div>
+
+  <div class="mb-8 flex text-black justify-end">
+    <p class="w-5/6 p-2 rounded-t-lg rounded-bl-lg bg-secondary">
+      Please, input location and date.
+    </p>
+  </div>
+
+  <!--Filter Location -->
+  <div class="relative">
+    <button
+      class="chat-filter-location-button w-full px-4 py-2 inline-flex justify-between items-center text-white bg-ultra-black border border-grey hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 font-medium rounded-2xl text-sm text-center"
+      type="button">
+      <div class="flex gap-3 items-center">
+        <!-- prettier-ignore -->
+        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52" fill="none">
+          <rect x="1" y="1" width="50" height="50" rx="13" stroke="#F2B705" stroke-width="2" />
+          <path
+            d="M26.3333 26.6667C25.4493 26.6667 24.6014 26.3155 23.9763 25.6904C23.3512 25.0652 23 24.2174 23 23.3333C23 22.4493 23.3512 21.6014 23.9763 20.9763C24.6014 20.3512 25.4493 20 26.3333 20C27.2174 20 28.0652 20.3512 28.6904 20.9763C29.3155 21.6014 29.6667 22.4493 29.6667 23.3333C29.6667 23.7711 29.5804 24.2045 29.4129 24.6089C29.2454 25.0134 28.9999 25.3808 28.6904 25.6904C28.3808 25.9999 28.0134 26.2454 27.6089 26.4129C27.2045 26.5804 26.7711 26.6667 26.3333 26.6667ZM26.3333 14C23.858 14 21.484 14.9833 19.7337 16.7337C17.9833 18.484 17 20.858 17 23.3333C17 30.3333 26.3333 38 26.3333 38C26.3333 38 35.6667 30.3333 35.6667 23.3333C35.6667 20.858 34.6833 18.484 32.933 16.7337C31.1827 14.9833 28.8087 14 26.3333 14Z"
+            fill="#F2B705" />
+        </svg>
+        <div>
+          <p class="text-lg">Localização</p>
+          <span id="chat-filter-location-status" class="text-grey">Selecione</span>
+        </div>
+      </div>
+      <!-- prettier-ignore -->
+      <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+      </svg>
+    </button>
+    <!-- Dropdown menu -->
+    <div id="chat-filter-location-dropdown"
+      class="chat-location-dropdown inset-x-0 mx-auto mt-2 p-1 text-white rounded-lg shadow">
+      <input autocomplete="off" list="browsers" name="event_location"
+        class="w-full h-9 p-2 text-white text-lg bg-middle-grey placeholder-gray-300 border-transparent outline-none focus:border-transparent focus:ring-0"
+        list="events-filter-location-list" id="chat-filter-location-input" placeholder="choose location" />
+      <datalist class=" inset-x-0 p-1 max-h-40 overflow-y-auto bg-datalist-location" id="chat-filter-location-list">
+        {% for location in locations %}
+        <option class="p-1 text-lg cursor-pointer bg-option-location hover:bg-light-grey" value="{{ location.name }}">
+          {{ location.name }}
+        </option>
+        {% endfor %}
+      </datalist>
+    </div>
+  </div>
+
+  <!-- Filter Date -->
+  <div class="relative">
+    <!-- prettier-ignore -->
+    <svg class="absolute top-1/2 -translate-y-1/2 ml-4 w-8 h-8" xmlns="http://www.w3.org/2000/svg" width="52"
+      height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="1" y="1" width="50" height="50" rx="13" stroke="#F2B705" stroke-width="2" />
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M18.5581 14C19.0205 14 19.3953 14.3748 19.3953 14.8372V16.4806H22.6822V14.8372C22.6822 14.3748 23.057 14 23.5194 14C23.9818 14 24.3566 14.3748 24.3566 14.8372V16.4806H27.6434V14.8372C27.6434 14.3748 28.0182 14 28.4806 14C28.943 14 29.3178 14.3748 29.3178 14.8372V16.4806H32.6047V14.8372C32.6047 14.3748 32.9795 14 33.4419 14C33.9042 14 34.2791 14.3748 34.2791 14.8372V16.4806H34.6822C36.5146 16.4806 38 17.9661 38 19.7984V34.6822C38 36.5146 36.5146 38 34.6822 38H17.3178C15.4854 38 14 36.5146 14 34.6822V19.7984C14 17.9661 15.4854 16.4806 17.3178 16.4806H17.7209V14.8372C17.7209 14.3748 18.0958 14 18.5581 14ZM17.7209 18.155H17.3178C16.4102 18.155 15.6744 18.8908 15.6744 19.7984V22.6822H36.3256V19.7984C36.3256 18.8908 35.5898 18.155 34.6822 18.155H34.2791V18.5581C34.2791 19.0205 33.9042 19.3953 33.4419 19.3953C32.9795 19.3953 32.6047 19.0205 32.6047 18.5581V18.155H29.3178V18.5581C29.3178 19.0205 28.943 19.3953 28.4806 19.3953C28.0182 19.3953 27.6434 19.0205 27.6434 18.5581V18.155H24.3566V18.5581C24.3566 19.0205 23.9818 19.3953 23.5194 19.3953C23.057 19.3953 22.6822 19.0205 22.6822 18.5581V18.155H19.3953V18.5581C19.3953 19.0205 19.0205 19.3953 18.5581 19.3953C18.0958 19.3953 17.7209 19.0205 17.7209 18.5581V18.155ZM36.3256 24.3566H15.6744V34.6822C15.6744 35.5898 16.4102 36.3256 17.3178 36.3256H34.6822C35.5898 36.3256 36.3256 35.5898 36.3256 34.6822V24.3566Z"
+        fill="#F2B705" />
+    </svg>
+    <input id="datepicker-filter" name="event_date" type="text"
+      class="w-full h-14 pl-16 shadow-sm bg-ultra-black border border-grey text-white placeholder-white rounded-2xl hover:bg-stone-900 focus:ring-4 focus:outline-none focus:ring-neutral-700 block"
+      placeholder="Data" />
+    <!-- prettier-ignore -->
+    <svg class="absolute top-1/2 -translate-y-1/2 right-0 mr-4 w-2.5 h-2.5 " aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+    </svg>
+  </div>
+
+
+  {% if error_message %}
+  <div class="mb-8 mt-2 flex text-black justify-end">
+    <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg text-white bg-red-600">
+      {{ error_message }}
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="mt-4 flex justify-around">
+    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    <button type="button" hx-get="{{ url_for('sell.get_events') }}" hx-target="#chat-body" hx-swap="innerHTML"
+      hx-trigger="click" hx-include="{{ all_filters }}"
+      class="p-2 w-full text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Submit
+    </button>
+  </div>
+</div>
+
+<script>
+  console.log('chat.js loaded');
+</script>
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

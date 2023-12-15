@@ -1,7 +1,7 @@
 import click
 from flask import Flask
 import sqlalchemy as sa
-from sqlalchemy import orm
+from sqlalchemy import or_, orm
 from app import models as m
 from app import db, forms
 from app import schema as s
@@ -26,6 +26,11 @@ def init(app: Flask):
     @app.cli.command("create-admin")
     def create_admin():
         """Create super admin account"""
+        with open("app/static/img/default_avatar.png", "rb") as f:
+            picture: m.Picture = m.Picture(
+                filename="default_avatar",
+                file=f.read(),
+            ).save()
         query = m.User.select().where(m.User.email == app.config["ADMIN_EMAIL"])
         if db.session.execute(query).first():
             print(f"User with e-mail: [{app.config['ADMIN_EMAIL']}] already exists")
@@ -38,6 +43,7 @@ def init(app: Flask):
             password=app.config["ADMIN_PASSWORD"],
             activated=True,
             role=m.UserRole.admin.value,
+            picture_id=picture.id,
         ).save()
         print("admin created")
 
@@ -93,26 +99,41 @@ def init(app: Flask):
     @app.cli.command("delete-users")
     @click.option("--email", type=str)
     def delete_user(email: str):
-        """
-        Command for deleting user
-        """
         user_query = m.User.select().where(m.User.email == email)
-        users = db.session.scalars(user_query).all()
-        if not users:
+        user: m.User = db.session.scalar(user_query)
+        if not user:
             print(f"User with e-mail: [{email}] not found")
             return
-        for user in users:
-            messages_query = m.Message.select().where(m.Message.sender_id == user.id)
-            messages = db.session.scalars(messages_query).all()
-            for message in messages:
-                db.session.delete(message)
-            rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
-            rooms = db.session.scalars(rooms_query).all()
-            for room in rooms:
-                db.session.delete(room)
-            db.session.delete(user)
-            db.session.commit()
-            print(f"User {user.username} deleted")
+        rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
+        rooms: m.Room = db.session.scalars(rooms_query).all()
+        messages_query = (
+            m.Message.select()
+            .join(m.Room, m.Message.room_id == m.Room.id)
+            .where(or_(m.Message.sender_id == user.id, m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
+        )
+        messages = db.session.scalars(messages_query).all()
+        for message in messages:
+            db.session.delete(message)
+        for room in rooms:
+            db.session.delete(room)
+        notifications_query = m.Notification.select().where(m.Notification.user_id == user.id)
+        notifications = db.session.scalars(notifications_query).all()
+        print("notifications", notifications)
+        if notifications:
+            for notification in notifications:
+                db.session.delete(notification)
+        notification_configs_query = m.NotificationsConfig.select().where(m.NotificationsConfig.user_id == user.id)
+        notification_configs = db.session.scalars(notification_configs_query).all()
+        for notification_config in notification_configs:
+            db.session.delete(notification_config)
+        payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
+        payments = db.session.scalars(payments_query).all()
+        if payments:
+            for payment in payments:
+                db.session.delete(payment)
+        db.session.delete(user)
+        db.session.commit()
+        print(f"User {user.username} deleted")
 
     @app.cli.command("all-users")
     def all_users():
@@ -122,3 +143,11 @@ def init(app: Flask):
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
         print(users)
+
+    @app.cli.command("rollback")
+    def rollback():
+        """
+        Command for rollbacking all changes
+        """
+        db.session.rollback()
+        print("rollbacked")

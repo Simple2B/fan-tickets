@@ -51,6 +51,8 @@ class BaseConfig(BaseSettings):
 
     # UI config
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
+    DATE_PLATFORM_FORMAT: str = "%d %b %Y"
+    DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
 
     # API
     IS_API: bool = False
@@ -76,6 +78,9 @@ class BaseConfig(BaseSettings):
     # dev base url
     DEV_BASE_URL: str = "127.0.0.1:5000/"
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
+
+    # platform commission rate
+    PLATFORM_COMMISSION_RATE: float = 1.08
 
     @staticmethod
     def configure(app: Flask):

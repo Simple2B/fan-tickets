@@ -11,26 +11,6 @@ if TYPE_CHECKING:
 
 
 class Category(db.Model, ModelMixin):
-
-    """
-    Model for categories of events
-
-    Actions in admin section:
-    - create
-    - read
-    - update
-    - delete
-    - set a foreign key from events to categories
-
-    Routes:
-    - POST /admin/categories/create (admin)
-    - GET /admin/categories (admin/user)
-    - GET /admin/categories/{category_unique_id} (admin, ajax)
-    - PUT /admin/categories/update/{category_unique_id} (admin, ajax)
-    - DELETE /admin/categories/delete/{category_unique_id} (admin, ajax)
-
-    """
-
     __tablename__ = "categories"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -41,9 +21,7 @@ class Category(db.Model, ModelMixin):
 
     name: orm.Mapped[str] = orm.mapped_column(sa.String(64), unique=True)
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
-    created_at: orm.Mapped[datetime] = orm.mapped_column(
-        sa.DateTime(timezone=True), default=datetime.utcnow
-    )
+    created_at: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True), default=datetime.utcnow)
 
     picture: orm.Mapped["Picture"] = orm.relationship()
 

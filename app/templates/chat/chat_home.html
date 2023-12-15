@@ -1,0 +1,33 @@
+{% if current_user.is_authenticated %}
+{% set user_name = current_user.username %}
+{% else %}
+{% set user_name = 'Guest' %}
+{% endif %}
+
+<div class="flex text-white justify-end">
+  <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
+</div>
+<div class="flex text-black justify-end">
+  <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+    Hi, {{ user_name }}!
+  </p>
+</div>
+<div class="flex text-black justify-end">
+  <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
+    Are you looking for buying or selling tickets?
+  </p>
+</div>
+<div class="flex justify-end">
+  <div class="mt-2 w-5/6 flex gap-2">
+    <button id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
+      hx-trigger="click"
+      class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Selling
+    </button>
+    <button id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
+      hx-trigger="click"
+      class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+      Buying
+    </button>
+  </div>
+</div>

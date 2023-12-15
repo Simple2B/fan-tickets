@@ -11,20 +11,6 @@ if TYPE_CHECKING:
 
 
 class Location(db.Model, ModelMixin):
-    """
-    Model for events' locations.
-
-    Routes:
-    - POST /admin/locations/create (admin)
-    - GET /admin/locations (admin)
-    - GET /admin/locations/{location_unique_id} (admin)
-    - GET /admin/locations/nearby/{coordinates} (admin, ajax sort)
-    - GET /admin/locations/by_event/{event_unique_id} (admin, ajax sort)
-    - PUT /admin/locations/update/{location_unique_id} (admin)
-    - DELETE /admin/locations/delete/{location_unique_id} (admin)
-
-    """
-
     __tablename__ = "locations"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
