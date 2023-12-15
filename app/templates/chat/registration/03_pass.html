@@ -15,6 +15,15 @@
     {% endif %}
   </div>
 
+  {% if error_message %}
+
+  <div class="mb-6 flex text-black justify-end">
+    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
+      {{ error_message }}
+    </p>
+  </div>
+  {% endif %}
+
   {% set all_filters = "[name='chat_password'], [name='chat_confirm_password'],
   [name='room_unique_id'], [name='user_unique_id']" %}
   <div class="flex justify-end">

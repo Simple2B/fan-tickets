@@ -4,11 +4,13 @@
     <small class="pt-1">FanTicket {{ now }}</small>
   </div>
 
+  {% if history %}
   <div class="mb-1 flex text-black justify-end">
     <p class=" w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg bg-secondary">
       Messaging history is cleared and will be sent to your email
     </p>
   </div>
+  {% endif %}
 
   <div class="mb-2 flex text-black justify-end">
     <div class="p-2 flex w-5/6 justify-between items-center rounded-lg bg-secondary">

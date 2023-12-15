@@ -10,14 +10,14 @@
   </div>
 
   <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
+    <p class="w-5/6 p-2 rounded-lg bg-secondary">
       Please input your username
     </p>
   </div>
 
   {% if error_message %}
   <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg text-white bg-red-600">
+    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
       {{ error_message }}
     </p>
   </div>
@@ -25,7 +25,7 @@
   <!-- prettier-ignore -->
   {% set all_filters = "[name='chat_username'],
   [name='room_unique_id']" %}
-  <div class="mt-2 flex justify-around">
+  <div class="mt-2 flex gap-3 justify-around">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
     <input type="text" name="chat_username" class="w-full border border-white bg-transparent rounded-lg"
       placeholder="Create your username" />

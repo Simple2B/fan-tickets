@@ -95,7 +95,7 @@ def sell():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    question = "Are you looking for buying or selling tickets or for events information?"
+    question = "Are you looking for buying or selling tickets?"
 
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
@@ -138,7 +138,7 @@ def buy():
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
-        text="Are you looking for buying or selling tickets or for events information?",
+        text="Are you looking for buying or selling tickets?",
     ).save(False)
     m.Message(
         room_id=room.id,
@@ -162,21 +162,25 @@ def username():
     room_unique_id = request.args.get("room_unique_id")
     user_name = request.args.get("chat_username")
 
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
     if not user_name or not room_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
             "chat/registration/01_username.html",
             error_message="Form submitting error",
+            room=room,
+            now=now_str,
         )
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
 
     if not room:
         log(log.ERROR, "Room not found")
         return render_template(
             "chat/registration/01_username.html",
             error_message="Room not found",
+            room=room,
+            now=now_str,
         )
 
     user_query = m.User.select().where(m.User.username == user_name)
@@ -251,7 +255,7 @@ def email():
     if not email_input or not room_unique_id or not user_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/02_email.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -260,7 +264,8 @@ def email():
         )
 
     pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    match_pattern = re.search(pattern, email_input)
+
+    match_pattern = re.search(pattern, (email_input).lower())
     if not match_pattern:
         return render_template(
             "chat/registration/02_email.html",
@@ -321,6 +326,26 @@ def password():
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
 
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+        return render_template(
+            "chat/sell/02_event_create.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    if not password or not confirm_password:
+        log(log.ERROR, "Form submitting error")
+        return render_template(
+            "chat/registration/03_pass.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=user,
+        )
+
     if password != confirm_password:
         return render_template(
             "chat/registration/03_pass.html",
@@ -378,6 +403,7 @@ def phone():
     if not phone_input or not match_pattern:
         return render_template(
             "chat/registration/04_phone.html",
+            error_message="Invalid phone format",
             now=now_str,
             room=room,
             user=user,

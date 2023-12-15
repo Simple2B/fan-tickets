@@ -8,7 +8,7 @@ def test_chat_window(client: FlaskClient):
     login(client)
     response = client.get("/")
     assert f"Hi, {current_user.username}" in response.data.decode()
-    assert "Are you looking for buying or selling tickets or for events information" in response.data.decode()
+    assert "Are you looking for buying or selling tickets?" in response.data.decode()
 
 
 def test_chat_sell(client: FlaskClient):

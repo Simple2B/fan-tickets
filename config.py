@@ -52,6 +52,7 @@ class BaseConfig(BaseSettings):
     # UI config
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
+    DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
 
     # API
     IS_API: bool = False

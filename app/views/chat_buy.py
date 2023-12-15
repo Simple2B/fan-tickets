@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
-from app import models as m, db
+from flask_mail import Message
+from app import models as m, db, mail
 from app.logger import log
 from config import config
 
@@ -254,34 +255,68 @@ def ticket_details():
     )
 
 
+def compute_total_price(cart_tickets: list[m.Ticket]) -> float:
+    return sum([ticket.price_gross for ticket in cart_tickets])
+
+
+def clear_message_history(room: m.Room) -> None:
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room)
+        return
+
+    messages_query = m.Message.select().where(m.Message.room_id == room.id)
+    messages = db.session.scalars(messages_query).all()
+
+    msg = Message(
+        subject=f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+        sender=app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[current_user.email],
+    )
+    msg.html = render_template(
+        "email/chat_history.htm",
+        user=current_user,
+        messages=messages,
+    )
+    mail.send(msg)
+
+    for message in messages:
+        db.session.delete(message)
+    db.session.commit()
+    return
+
+
 @chat_buy_blueprint.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
-    # TODO: 1. Remove messages, room.
-    # TODO: 2. Add notification from the bot that history is cleared
     # TODO: 2. Send email with history
 
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
-    room_unique_id = request.args.get("room_unique_id")
-    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
-
-    messages_query = m.Message.select().where(m.Message.room_id == room.id)
-    messages = db.session.scalars(messages_query).all()
-    for message in messages:
-        db.session.delete(message)
-    db.session.delete(room)
-    db.session.commit()
-
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_to_exclude = request.args.get("ticket_to_exclude")
     cart_from_navbar = request.args.get("cart_from_navbar")
+    room_unique_id = request.args.get("room_unique_id")
 
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
 
-    def compute_total_price(cart_tickets: list[m.Ticket]) -> float:
-        return sum([ticket.price_gross for ticket in cart_tickets])
+    history = False
+    if cart_from_navbar:
+        if room:
+            history = True
+            clear_message_history(room)
+        cart_tickets = db.session.scalars(cart_tickets_query).all()
+        total_price = compute_total_price(cart_tickets)
+        log(log.INFO, "Cart opened from navbar")
+        return render_template(
+            "chat/buy/tickets_06_cart.html",
+            history=history,
+            cart_tickets=cart_tickets,
+            total_price=total_price,
+        )
+
+    clear_message_history(room)
 
     if ticket_to_exclude:
         all_tickets = db.session.scalars(cart_tickets_query).all()
@@ -301,16 +336,6 @@ def cart():
         db.session.commit()
 
         log(log.INFO, "Ticket removed from cart: [%s]", ticket_to_exclude)
-        return render_template(
-            "chat/buy/tickets_06_cart.html",
-            cart_tickets=cart_tickets,
-            total_price=total_price,
-        )
-
-    if cart_from_navbar:
-        cart_tickets = db.session.scalars(cart_tickets_query).all()
-        total_price = compute_total_price(cart_tickets)
-        log(log.INFO, "Cart opened from navbar")
         return render_template(
             "chat/buy/tickets_06_cart.html",
             cart_tickets=cart_tickets,
