@@ -28,7 +28,7 @@
   <div class="mt-2 flex justify-around">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
     <input type="text" name="chat_username" class="border border-white bg-transparent rounded-lg" />
-    <button type="button" hx-get="{{ url_for('chat.username') }}" hx-target="#chat-window" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('chat.username') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Submit

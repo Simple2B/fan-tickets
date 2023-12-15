@@ -22,7 +22,7 @@
     <input type="hidden" name="user_unique_id" value="{{ current_user.unique_id }}" />
     <input type="text" name="event_name" class="border border-white bg-transparent rounded-lg"
       placeholder="Input event name" />
-    <button type="button" hx-get="{{ url_for('sell.get_event') }}" hx-target="#chat-window" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('sell.get_event') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Submit
