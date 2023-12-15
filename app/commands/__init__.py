@@ -93,26 +93,30 @@ def init(app: Flask):
     @app.cli.command("delete-users")
     @click.option("--email", type=str)
     def delete_user(email: str):
-        """
-        Command for deleting user
-        """
         user_query = m.User.select().where(m.User.email == email)
-        users = db.session.scalars(user_query).all()
-        if not users:
+        user = db.session.scalar(user_query)
+        if not user:
             print(f"User with e-mail: [{email}] not found")
             return
-        for user in users:
-            messages_query = m.Message.select().where(m.Message.sender_id == user.id)
-            messages = db.session.scalars(messages_query).all()
-            for message in messages:
-                db.session.delete(message)
-            rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
-            rooms = db.session.scalars(rooms_query).all()
-            for room in rooms:
-                db.session.delete(room)
-            db.session.delete(user)
-            db.session.commit()
-            print(f"User {user.username} deleted")
+        messages_query = m.Message.select().where(m.Message.sender_id == user.id)
+        messages = db.session.scalars(messages_query).all()
+        for message in messages:
+            db.session.delete(message)
+        rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
+        rooms = db.session.scalars(rooms_query).all()
+        for room in rooms:
+            db.session.delete(room)
+        notifications_query = m.Notification.select().where(m.Notification.user_id == user.id)
+        notifications = db.session.scalars(notifications_query).all()
+        for notification in notifications:
+            db.session.delete(notification)
+        notification_configs_query = m.NotificationsConfig.select().where(m.NotificationsConfig.user_id == user.id)
+        notification_configs = db.session.scalars(notification_configs_query).all()
+        for notification_config in notification_configs:
+            db.session.delete(notification_config)
+        db.session.delete(user)
+        db.session.commit()
+        print(f"User {user.username} deleted")
 
     @app.cli.command("all-users")
     def all_users():
