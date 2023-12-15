@@ -17,8 +17,14 @@ chat_auth_blueprint = Blueprint("chat", __name__, url_prefix="/chat")
 def login_form():
     room_unique_id = request.args.get("room_unique_id")
     ticket_unique_id = request.args.get("ticket_unique_id")
+    login_from_navbar = request.args.get("login_from_navbar")
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
+
+    if login_from_navbar:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
 
     if not room:
         log(log.ERROR, "Room not found")
@@ -121,8 +127,8 @@ def sell():
     )
 
 
-@chat_auth_blueprint.route("/events", methods=["GET", "POST"])
-def events():
+@chat_auth_blueprint.route("/buy", methods=["GET", "POST"])
+def buy():
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 

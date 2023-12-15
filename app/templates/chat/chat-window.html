@@ -55,7 +55,7 @@
           class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
           Selling
         </button>
-        <button id="chat-window-events" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        <button id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
           hx-trigger="click"
           class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
           Buying
@@ -89,8 +89,13 @@
       </svg>
       <span>Subscriptions</span>
     </button>
-    <button type="button" hx-get="{{ url_for('buy.cart', cart_from_navbar=True) }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click" class="p-2 flex flex-col items-center justify-center hover:text-white">
+    {% if current_user.is_authenticated %}
+    {% set cart_url = url_for('buy.cart', cart_from_navbar=True) %}
+    {% else %}
+    {% set cart_url = url_for('chat.login_form', login_from_navbar=True) %}
+    {% endif %}
+    <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
+      class="p-2 flex flex-col items-center justify-center hover:text-white">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
         <path
           d="M2.66666 2.95581H4.40821C4.73623 2.95581 4.90025 2.95581 5.03223 3.01613C5.14855 3.06929 5.24712 3.15478 5.31619 3.2624C5.39457 3.38454 5.41777 3.5469 5.46415 3.87163L6.09523 8.28914M6.09523 8.28914L7.49775 18.5977C7.67573 19.9058 7.76472 20.5599 8.07746 21.0523C8.35303 21.4861 8.7481 21.8311 9.21513 22.0456C9.74514 22.2891 10.4052 22.2891 11.7255 22.2891H23.136C24.3927 22.2891 25.0211 22.2891 25.5346 22.063C25.9874 21.8637 26.3758 21.5423 26.6564 21.1348C26.9746 20.6726 27.0921 20.0554 27.3273 18.8208L29.0921 9.5554C29.1749 9.12089 29.2163 8.90363 29.1563 8.73381C29.1037 8.58484 28.9999 8.45939 28.8634 8.37983C28.7078 8.28914 28.4866 8.28914 28.0443 8.28914H6.09523ZM13.3333 28.2891C13.3333 29.0255 12.7364 29.6225 12 29.6225C11.2636 29.6225 10.6667 29.0255 10.6667 28.2891C10.6667 27.5528 11.2636 26.9558 12 26.9558C12.7364 26.9558 13.3333 27.5528 13.3333 28.2891ZM24 28.2891C24 29.0255 23.403 29.6225 22.6667 29.6225C21.9303 29.6225 21.3333 29.0255 21.3333 28.2891C21.3333 27.5528 21.9303 26.9558 22.6667 26.9558C23.403 26.9558 24 27.5528 24 28.2891Z"

@@ -1,17 +1,14 @@
 <div>
   {% include 'chat/chat_messages.html' %}
 
-  <div class="flex text-white justify-end">
-    <small class="pt-1">FanTicket {{ now }}</small>
-  </div>
+  <div class="flex justify-end">
+    <div class="mt-2 w-5/6 flex flex-col gap-2">
+      <a href="{{ profile_url }}"
+        class="p-2 text-center text-secondary border border-secondary rounded-xl hover:bg-secondary hover:text-black active:bg-secondary">Perfil</a>
 
-  <div class="mb-8 flex text-black justify-end">
-    <a href="{{ profile_url }}"
-      class="w-5/6 p-2 mb-2 rounded-lg text-center text-secondary underline border border-secondary">Perfil</a>
-  </div>
-
-  <div class="mb-8 flex text-black justify-end">
-    <a href="{{ url_for('chat.sell') }}"
-      class="w-5/6 p-2 mb-2 rounded-lg text-center text-secondary underline border border-secondary">Add ticket</a>
+      <a href="{{ url_for('chat.sell') }}"
+        class="p-2 text-center text-secondary border border-secondary rounded-xl hover:bg-secondary hover:text-black active:bg-secondary">Add
+        ticket</a>
+    </div>
   </div>
 </div>

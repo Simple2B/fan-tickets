@@ -11,7 +11,7 @@
       {{ error_message }}
     </p>
 
-    <button type="button" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-body" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Please, try again
@@ -41,7 +41,7 @@
         See tickets
       </button>
 
-      <button type="button" hx-get="{{ url_for('chat.events') }}" hx-target="#chat-body" hx-swap="innerHTML"
+      <button type="button" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
         hx-trigger="click" hx-include="{{ all_filters }}"
         class="p-2 w-1/2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
         Another events
