@@ -1,4 +1,5 @@
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, current_app as app
+from flask_login import current_user
 from app import models as m, db
 
 
@@ -13,6 +14,51 @@ def index():
         "landing/home/index.html",
         events=events,
         locations=locations,
+    )
+
+
+@main_blueprint.route("/chat_history")
+def chat_history():
+    room = m.Room(
+        seller_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    m.Message(
+        sender_id=current_user.id,
+        room_id=room.id,
+        text="What event are you selling tickets for?",
+    ).save(False)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Please, input location and date awdfas;as asdf ]ssdf s sdflsdfkjs   sdf lkjsdf sd lkjsdf.",
+    ).save(False)
+    m.Message(
+        sender_id=current_user.id,
+        room_id=room.id,
+        text="What event are you selling tickets for?",
+    ).save(False)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Please, input location and date.",
+    ).save(False)
+    m.Message(
+        sender_id=current_user.id,
+        room_id=room.id,
+        text="What event are you selling tickets for?",
+    ).save(False)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Please, input location and date.",
+    ).save(False)
+    db.session.commit()
+    messages_query = m.Message.select().where(m.Message.room_id == room.id)
+    messages = db.session.scalars(messages_query).all()
+    return render_template(
+        "email/chat_history.htm",
+        messages=messages,
+        user=current_user,
     )
 
 

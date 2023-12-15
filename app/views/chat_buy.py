@@ -32,7 +32,7 @@ def get_events():
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
-        text="Please, input location and date.",
+        text="Please, input location and date or search by event name.",
     ).save(False)
 
     error_message = ""
@@ -71,11 +71,11 @@ def get_events():
             m.Event.date_time >= event_start_date,
             m.Event.date_time <= event_end_date,
         )
-        text = f"{location_input}\n{date_input}"
+        text = f"location: {location_input}\ndate: {date_input}"
 
     if event_name_input:
         events_query = m.Event.select().where(m.Event.name.ilike(f"%{event_name_input}%"))
-        text = f"{event_name_input}"
+        text = f"search query: {event_name_input}"
 
     m.Message(
         room_id=room.id,
@@ -288,8 +288,6 @@ def clear_message_history(room: m.Room) -> None:
 @chat_buy_blueprint.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
-    # TODO: 2. Send email with history
-
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
@@ -301,19 +299,17 @@ def cart():
     room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
     cart_tickets_query = m.Ticket.select().where(m.Ticket.buyer == current_user)
 
-    history = False
     if cart_from_navbar:
         if room:
-            history = True
             clear_message_history(room)
         cart_tickets = db.session.scalars(cart_tickets_query).all()
         total_price = compute_total_price(cart_tickets)
         log(log.INFO, "Cart opened from navbar")
         return render_template(
             "chat/buy/tickets_06_cart.html",
-            history=history,
             cart_tickets=cart_tickets,
             total_price=total_price,
+            now=now_str,
         )
 
     clear_message_history(room)
@@ -330,6 +326,7 @@ def cart():
                 "chat/buy/tickets_06_cart.html",
                 cart_tickets=cart_tickets,
                 total_price=total_price,
+                now=now_str,
             )
         ticket_excluded.is_in_cart = False
         ticket_excluded.buyer_id = None
@@ -340,6 +337,7 @@ def cart():
             "chat/buy/tickets_06_cart.html",
             cart_tickets=cart_tickets,
             total_price=total_price,
+            now=now_str,
         )
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
@@ -366,6 +364,8 @@ def cart():
         "chat/buy/tickets_06_cart.html",
         cart_tickets=cart_tickets,
         total_price=total_price,
+        room=room,
+        now=now_str,
     )
 
 

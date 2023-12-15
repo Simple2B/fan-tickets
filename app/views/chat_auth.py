@@ -461,3 +461,8 @@ def phone():
         user=user,
         profile_url=profile_url,
     )
+
+
+@chat_auth_blueprint.route("/home")
+def home():
+    return render_template("chat/chat_home.html")
