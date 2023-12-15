@@ -165,7 +165,7 @@ def username():
     if not user_name or not room_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/01_username.html",
             error_message="Form submitting error",
         )
 
@@ -175,7 +175,7 @@ def username():
     if not room:
         log(log.ERROR, "Room not found")
         return render_template(
-            "chat/chat_error.html",
+            "chat/registration/01_username.html",
             error_message="Room not found",
         )
 
