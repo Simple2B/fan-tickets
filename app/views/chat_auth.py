@@ -4,6 +4,7 @@ import os
 from urllib.parse import urlparse
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
+from app.controllers import image_upload, type_image
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -117,7 +118,7 @@ def sell():
     if current_user.is_authenticated:
         template = "chat/sell/00_event_init.html"
     else:
-        template = "chat/registration/01_username.html"
+        template = "chat/registration/01_identification.html"
 
     return render_template(
         template,
@@ -154,6 +155,96 @@ def buy():
     )
 
 
+@chat_auth_blueprint.route("/identification", methods=["GET", "POST"])
+def identification():
+    now = datetime.now()
+    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
+
+    room_unique_id = request.form.get("room_unique_id")
+    identity_document = request.files["file"]
+
+    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room_unique_id:
+        log(log.ERROR, "Form submitting error, room_unique_id does not exist: [%s]", room_unique_id)
+        return render_template(
+            "chat/registration/01_identification.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+        )
+
+    if not room:
+        log(log.ERROR, "Room not found")
+        return render_template(
+            "chat/registration/01_identification.html",
+            error_message="Room not found",
+            room=room,
+            now=now_str,
+        )
+
+    if not identity_document:
+        log(log.ERROR, "No identification document provided, document: [%s]", identity_document)
+        return render_template(
+            "chat/registration/01_identification.html",
+            error_message="No identification document provided",
+            room=room,
+            now=now_str,
+        )
+
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Then let's get started!",
+    ).save(False)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Please upload your identification document (CPF)",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text="You identification document has been uploaded",
+    ).save(False)
+
+    picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
+    picture: m.Picture = db.session.scalar(picture_query)
+    picture_id = picture.id if picture else None
+
+    user = m.User(
+        # Since in chat registration we get user's info step by step,
+        # asking user to input credentials one by one,
+        # we need to fill the rest of the fields with default values
+        username=app.config["CHAT_DEFAULT_USERNAME"],
+        picture_id=picture_id,
+        email=app.config["CHAT_DEFAULT_EMAIL"],
+        phone=app.config["CHAT_DEFAULT_PHONE"],
+        card=app.config["CHAT_DEFAULT_CARD"],
+        password="",
+    ).save(False)
+    is_valid = image_upload(user, type_image.IDENTIFICATION)
+    if is_valid == 200:
+        log(log.ERROR, "Error saving image: [%s]", is_valid)
+        return render_template(
+            "chat/registration/01_identification.html",
+            error_message="It is not a valid image",
+            room=room,
+            now=now_str,
+        )
+    db.session.flush()
+    room.seller_id = user.id
+    db.session.commit()
+    log(log.INFO, "User created")
+
+    return render_template(
+        "chat/registration/02_username.html",
+        now=now_str,
+        room=room,
+        user=user,
+    )
+
+
 @chat_auth_blueprint.route("/username", methods=["GET", "POST"])
 def username():
     now = datetime.now()
@@ -179,18 +270,6 @@ def username():
         return render_template(
             "chat/registration/01_username.html",
             error_message="Room not found",
-            room=room,
-            now=now_str,
-        )
-
-    user_query = m.User.select().where(m.User.username == user_name)
-    user: m.User = db.session.scalar(user_query)
-
-    if user:
-        log(log.ERROR, "User already exists")
-        return render_template(
-            "chat/registration/01_username.html",
-            error_message="User already exists",
             room=room,
             now=now_str,
         )

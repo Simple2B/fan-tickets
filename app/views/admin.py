@@ -4,7 +4,7 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from app import models as m
-from app.controllers.image_upload import image_upload
+from app.controllers.image_upload import image_upload, type_image
 
 
 admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
@@ -42,5 +42,5 @@ def admin():
 @login_required
 def picture_upload():
     user: m.User = current_user
-    image_upload(user)
+    image_upload(user, type_image.LOGO)
     return {}, 200

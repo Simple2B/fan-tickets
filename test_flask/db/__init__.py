@@ -229,7 +229,24 @@ def set_users_images():
     print("users images script worked successfully")
 
 
+def set_users_identity_documents():
+    with open("test_flask/users_pictures/default_passport.png", "rb") as img_file:
+        picture = m.Picture(
+            filename="default_passport",
+            file=img_file.read(),
+            mimetype="image/png",
+        ).save(False)
+
+        users = m.User.all()
+        for u in users:
+            user: m.User = u
+            user.identity_document = picture
+            user.save(False)
+        db.session.commit()
+
+
 def populate(count: int = NUM_TEST_USERS):
     generate_test_users()
     generate_test_events()
     set_users_images()
+    set_users_identity_documents()

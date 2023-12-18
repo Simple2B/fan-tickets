@@ -168,37 +168,75 @@ if (categoryDropdowns) {
       '#event-category-input',
     );
     const dropdownTitle = dropdown.querySelector('.chat-category-title');
+    if (dropdownButton) {
+      dropdownButton.addEventListener('click', e => {
+        scrollDown(chatBody);
+        const currentDropdown = (e.target as Element).closest('.dropdown');
 
-    dropdownButton.addEventListener('click', e => {
-      scrollDown(chatBody);
-      const currentDropdown = (e.target as Element).closest('.dropdown');
+        dropdownMenu.classList.toggle('dropdown-list-active');
+        dropdownArrow.classList.toggle('rotate-180');
+        categoryButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const currentCategory = button.getAttribute('data-category');
+            eventCategoryInput.value = currentCategory;
+            dropdownTitle.innerHTML = currentCategory;
+            dropdownMenu.classList.remove('dropdown-list-active');
+            dropdownArrow.classList.remove('rotate-180');
+          });
+        });
 
-      dropdownMenu.classList.toggle('dropdown-list-active');
-      dropdownArrow.classList.toggle('rotate-180');
-      categoryButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const currentCategory = button.getAttribute('data-category');
-          eventCategoryInput.value = currentCategory;
-          dropdownTitle.innerHTML = currentCategory;
-          dropdownMenu.classList.remove('dropdown-list-active');
-          dropdownArrow.classList.remove('rotate-180');
+        categoryDropdowns.forEach(dropdown => {
+          if (dropdown !== currentDropdown) {
+            dropdown
+              .querySelector('.dropdown-list')
+              .classList.remove('dropdown-list-active');
+          }
+        });
+
+        window.addEventListener('mouseup', event => {
+          if (!dropdown.contains(event.target as Node)) {
+            dropdownMenu.classList.remove('dropdown-list-active');
+            dropdownArrow.classList.remove('rotate-180');
+          }
         });
       });
-
-      categoryDropdowns.forEach(dropdown => {
-        if (dropdown !== currentDropdown) {
-          dropdown
-            .querySelector('.dropdown-list')
-            .classList.remove('dropdown-list-active');
-        }
-      });
-
-      window.addEventListener('mouseup', event => {
-        if (!dropdown.contains(event.target as Node)) {
-          dropdownMenu.classList.remove('dropdown-list-active');
-          dropdownArrow.classList.remove('rotate-180');
-        }
-      });
-    });
+    }
   });
+}
+
+const identityDocumentUploadInput = document.querySelector(
+  '#chat-auth-identity-input',
+) as HTMLInputElement;
+
+if (identityDocumentUploadInput) {
+  identityDocumentUploadInput.addEventListener('change', function (e: Event) {
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      handleImageUpload(file);
+    }
+  });
+}
+
+function handleImageUpload(file: File) {
+  const roomUniqueIdInput: HTMLInputElement = document.querySelector(
+    '#chat-room-unique-id',
+  );
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('room_unique_id', roomUniqueIdInput.value);
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    fetch('/chat/identification', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => console.log('response', response))
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+  reader.readAsDataURL(file);
 }
