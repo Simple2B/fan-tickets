@@ -97,6 +97,50 @@ def get_events():
     )
 
 
+@chat_sell_blueprint.route("/event_form_name")
+@login_required
+def event_form_name():
+    event_name = request.args.get("event_name")
+    room_unique_id = request.args.get("room_unique_id")
+
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    if not event_name:
+        log(log.ERROR, "No event date provided: [%s]", event_name)
+        return render_template(
+            "chat/sell/02_event_create.html",
+            error_message="No event date provided",
+            room=room,
+            now=now_str,
+            user=current_user,
+        )
+
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="No events found. Let's create a new one!",
+    ).save(False)
+
+    return render_template(
+        "chat/sell/02_event_location_date.html",
+        event_name=event_name,
+        room=room,
+        now=now_str,
+    )
+
+
 @chat_sell_blueprint.route("/event_form", methods=["GET", "POST"])
 @login_required
 def event_form():
