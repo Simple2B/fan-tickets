@@ -7,18 +7,12 @@ from app.logger import log
 
 def check_user_room_id(template: str):
     """
-    The function for uploading an image to the server.
-    It is supposed to be universal for all models that have a picture.
-    In case if we have to save an image as a user's profile picture,
-    we pass the user as an argument.
+    The function to check and validate params.
 
-    In future, we can add different instance (location, event) as an argument and save the image.
-
-    At the moment it returns an empty dict and 200 status code if picture is uploaded and saved.
-
-    Currently the default format of the image is PNG.
+    At the moment it returns response with template for chat if params are not valid or
+    return params, room, user, datetime as string if params are valid.
     """
-    params = s.ChatAuthParams.model_validate(request.args)
+    params = s.ChatAuthParams.model_validate(dict(request.args))
 
     now = datetime.now()
     now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])

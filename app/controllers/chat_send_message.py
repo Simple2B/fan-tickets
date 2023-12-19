@@ -1,19 +1,14 @@
 from flask import current_app as app
 from app import models as m
+from app.logger import log
 
 
 def send_message(bot_message: str, user_message: str, room: m.Room):
     """
-    The function for uploading an image to the server.
-    It is supposed to be universal for all models that have a picture.
-    In case if we have to save an image as a user's profile picture,
-    we pass the user as an argument.
+    The function to save message for history in chat.
+    It is save message from chat-bot and user.
 
-    In future, we can add different instance (location, event) as an argument and save the image.
-
-    At the moment it returns an empty dict and 200 status code if picture is uploaded and saved.
-
-    Currently the default format of the image is PNG.
+    This
     """
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
@@ -24,3 +19,6 @@ def send_message(bot_message: str, user_message: str, room: m.Room):
         room_id=room.id,
         text=user_message,
     ).save()
+
+    log(log.INFO, "Messages for history saved. Bot: [%s], user: [%s]", bot_message, user_message)
+    return

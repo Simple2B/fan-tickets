@@ -7,6 +7,7 @@ from flask import request, Blueprint, render_template, current_app as app
 from flask_mail import Message
 from flask_login import current_user, login_user
 from app.controllers import image_upload, type_image, check_user_room_id, send_message
+from app import schema as s
 from app import models as m, db, mail
 from app.logger import log
 from config import config
@@ -161,37 +162,36 @@ def buy():
 @chat_auth_blueprint.route("/email", methods=["GET", "POST"])
 def email():
     now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
+    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
 
-    room_unique_id = request.args.get("room_unique_id")
-    email_input = request.args.get("email")
+    params = s.ChatAuthParams.model_validate(dict(request.args))
 
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
+    room_query = m.Room.select().where(m.Room.unique_id == params.room_unique_id)
     room: m.Room = db.session.scalar(room_query)
 
-    if not email_input or not room_unique_id:
+    if not params.email or not params.room_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
             "chat/registration/01_email.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
-            email_input=email_input,
+            email_input=params.email,
         )
 
     pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
-    match_pattern = re.search(pattern, (email_input).lower())
+    match_pattern = re.search(pattern, (params.email).lower())
     if not match_pattern:
         return render_template(
             "chat/registration/01_email.html",
             error_message="Invalid email format",
             room=room,
             now=now_str,
-            email_input=email_input,
+            email_input=params.email,
         )
 
-    email_query = m.User.select().where(m.User.email == email_input)
+    email_query = m.User.select().where(m.User.email == params.email)
     email: m.User = db.session.scalar(email_query)
 
     if email:
@@ -201,7 +201,7 @@ def email():
             error_message="Email already taken",
             room=room,
             now=now_str,
-            email_input=email_input,
+            email_input=params.email,
         )
 
     picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
@@ -217,7 +217,7 @@ def email():
         # we need to fill the rest of the fields with default values
         picture_id=picture_id,
         identity_document_id=identity_document_id,
-        email=email_input,
+        email=params.email,
         phone=app.config["CHAT_DEFAULT_PHONE"],
         card=app.config["CHAT_DEFAULT_CARD"],
         password="",
@@ -227,7 +227,7 @@ def email():
     msg = Message(
         subject=f"Verify email for {CFG.APP_NAME}",
         sender=app.config["MAIL_DEFAULT_SENDER"],
-        recipients=[email_input],
+        recipients=[params.email],
     )
     msg.html = render_template(
         "email/email_confirm.htm",
@@ -238,18 +238,11 @@ def email():
     db.session.flush()
     room.seller_id = user.id
     db.session.commit()
-    log(log.INFO, f"User {email_input} created")
+    log(log.INFO, f"User {params.email} created")
 
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Please input your email",
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text=email_input,
-    ).save(False)
-    user.email = str(email_input)  # mypy made me do it!
+    send_message("Please input your email", f"Email: {params.email}", room)
+
+    user.email = str(params.email)  # mypy made me do it!
     db.session.commit()
 
     return render_template(
