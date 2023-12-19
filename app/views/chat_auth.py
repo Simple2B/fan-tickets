@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from flask import request, Blueprint, render_template, current_app as app
 from flask_mail import Message
 from flask_login import current_user, login_user
-from app.controllers import image_upload, type_image
+from app.controllers import image_upload, type_image, check_user_room_id, send_message
 from app import models as m, db, mail
 from app.logger import log
 from config import config
@@ -247,7 +247,7 @@ def email():
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
     room_unique_id = request.args.get("room_unique_id")
-    email_input = request.args.get("chat_email")
+    email_input = request.args.get("email")
 
     room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
     room: m.Room = db.session.scalar(room_query)
@@ -345,78 +345,41 @@ def email():
 
 @chat_auth_blueprint.route("/email_verification")
 def email_verification():
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
+    params, user, room, now_str = check_user_room_id("chat/registration/02_confirm_email.html")
 
-    room_unique_id = request.args.get("room_unique_id")
-    user_unique_id = request.args.get("user_unique_id")
-    verification_code = request.args.get("verification_code")
-
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
-    if not room_unique_id or not user_unique_id:
-        log(log.ERROR, "Form submitting error, user: [%s], room: [%s]", user_unique_id, room_unique_id)
+    if not params or not user or not room or not now_str:
+        log(
+            log.ERROR, "check_user_room_id not return correct data: [%s], [%s], [%s], [%s]", params, user, room, now_str
+        )
         return render_template(
             "chat/registration/02_confirm_email.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
-            user_unique_id=user_unique_id,
+            user_unique_id=params.user_unique_id,
         )
 
-    if not verification_code:
-        log(log.ERROR, "No verification code: [%s]", verification_code)
+    if not params.verification_code:
+        log(log.ERROR, "No verification code: [%s]", params.verification_code)
         return render_template(
             "chat/registration/02_confirm_email.html",
             error_message="No verification code, please confirm your email",
             room=room,
             now=now_str,
-            user_unique_id=user_unique_id,
+            user_unique_id=params.user_unique_id,
         )
 
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", room_unique_id)
-        return render_template(
-            "chat/sell/02_email_confirm.html",
-            error_message="Form submitting error",
-            room=room,
-            now=now_str,
-            user_unique_id=user_unique_id,
-        )
-
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-
-    if not user:
-        log(log.ERROR, "User not found: [%s]", user_unique_id)
-        return render_template(
-            "chat/sell/02_email_confirm.html",
-            error_message="Form submitting error",
-            room=room,
-            now=now_str,
-            user_unique_id=user_unique_id,
-        )
-
-    if user.verification_code != verification_code:
-        log(log.ERROR, "Wrong verification code: [%s]", verification_code)
+    if user.verification_code != params.verification_code:
+        log(log.ERROR, "Wrong verification code: [%s]", params.verification_code)
         return render_template(
             "chat/registration/02_confirm_email.html",
             error_message="Wrong verification code, please confirm your email",
             room=room,
             now=now_str,
-            user_unique_id=user_unique_id,
+            user_unique_id=params.user_unique_id,
         )
 
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Please confirm your email",
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text="Email confirmed",
-    ).save(False)
+    send_message("Please confirm your email", "Email confirmed", room)
     db.session.commit()
 
     return render_template(
