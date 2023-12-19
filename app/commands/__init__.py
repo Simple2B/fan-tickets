@@ -42,6 +42,8 @@ def init(app: Flask):
             return
         m.User(
             username=app.config["ADMIN_USERNAME"],
+            name=app.config["ADMIN_NAME"],
+            last_name=app.config["ADMIN_LAST_NAME"],
             email=app.config["ADMIN_EMAIL"],
             phone="+380000000000",
             card="0000000000000000",
@@ -139,7 +141,7 @@ def init(app: Flask):
                 db.session.delete(payment)
         db.session.delete(user)
         db.session.commit()
-        print(f"User {user.username} deleted")
+        print(f"User {user.email} deleted")
 
     @app.cli.command("all-users")
     def all_users():

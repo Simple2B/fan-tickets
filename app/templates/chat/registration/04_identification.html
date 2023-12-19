@@ -3,11 +3,6 @@
   <div class="flex text-white justify-end">
     <small class="pt-1">FanTicket {{ now }}</small>
   </div>
-  <div class="mb-2 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
-      Then let's get started!
-    </p>
-  </div>
 
   <div class="mb-8 flex text-black justify-end">
     <p class="w-5/6 p-2 rounded-lg bg-secondary">
@@ -22,23 +17,17 @@
     </p>
   </div>
   {% endif %}
-  <!-- prettier-ignore -->
-  {% set all_filters = "[name='chat_username'],
-  [name='room_unique_id']" %}
-  <div class="mt-2 flex gap-3 justify-around">
-    <input id="chat-room-unique-id" type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-    <input name="identification_document" placeholder="Upload cpf"
+
+  <form class="mt-2 flex gap-3 justify-around" hx-encoding='multipart/form-data' hx-post='/chat/identification'
+    hx-target="#chat-body" hx-swap="innerHTML">
+    <input name="file" placeholder="Upload cpf" type="file"
       class="block w-60 text-sm text-white border border-grey rounded-lg cursor-pointer bg-transparent dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
       id="chat-auth-identity-input" type="file">
-    <button type="button" hx-get="{{ url_for('chat.identification') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
+    <input id="chat-room-unique-id" type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    <input id="user-unique-id" type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+    <button type="submit"
       class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-      Submit
+      Upload
     </button>
-  </div>
+  </form>
 </div>
-
-{% block scripts %}
-<!-- prettier-ignore -->
-<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-{% endblock %}

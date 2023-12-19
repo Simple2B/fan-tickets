@@ -279,7 +279,7 @@ def export():
         ]
         writer.writerow(row)
         row = [
-            current_user.username,
+            current_user.name,
             current_user.email,
             current_user.phone,
             current_user.card,
@@ -295,7 +295,7 @@ def export():
     return send_file(
         file_bytes,
         as_attachment=True,
-        download_name=f"report_{current_user.username}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+        download_name=f"report_{current_user.name}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
         mimetype="text/csv",
         max_age=0,
         last_modified=now,

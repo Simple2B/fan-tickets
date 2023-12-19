@@ -3,7 +3,7 @@
 
 
 {% if current_user.is_authenticated %}
-{% set user_name = current_user.username %}
+{% set user_name = current_user.name %}
 {% else %}
 {% set user_name = 'Guest' %}
 {% endif %}
@@ -19,7 +19,7 @@
     {% set justify = 'justify-end' %}
     {% else %}
     {% if current_user.is_authenticated %}
-    {% set user_name = current_user.username %}
+    {% set user_name = current_user.name %}
     {% else %}
     {% set user_name = 'Guest' %}
     {% endif %}

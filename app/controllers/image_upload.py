@@ -68,8 +68,7 @@ def image_upload(user: m.User, image_type: type_image):
         if image_type == type_image.IDENTIFICATION:
             user.identity_document_id = picture.id
             user.save()
-            log(log.INFO, "Uploaded identity document for user: [%s]", user)
-            flash("Identity document uploaded", "success")
+            log(log.INFO, "Uploaded identity document for user: [%s]", user.email)
             return {}, 200
     except Exception as e:
         log(log.ERROR, "Error saving image: [%s]", e)

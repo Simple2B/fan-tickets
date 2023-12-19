@@ -55,6 +55,8 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
         # activated = True if i - num_objects == 3 else False
         user = m.User(
             username=f"{first_name}{last_name}{randint(10, 99)}",
+            name=first_name,
+            last_name=last_name,
             email=email,
             phone=fake.phone_number(),
             card=faker.random_number(digits=16, fix_len=True),

@@ -44,16 +44,21 @@ class User(db.Model, UserMixin, ModelMixin):
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
     # Columns
-    username: orm.Mapped[str] = orm.mapped_column(
+    username: orm.Mapped[str | None] = orm.mapped_column(
         sa.String(64),
-        nullable=False,
     )
     email: orm.Mapped[str] = orm.mapped_column(
         sa.String(256),
         unique=True,
         nullable=False,
     )
+    name: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
+    last_name: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    twitter: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     card: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
     verification_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(6))
     password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
@@ -74,8 +79,8 @@ class User(db.Model, UserMixin, ModelMixin):
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     # Relationships
-    identity_document: orm.Mapped["Picture"] = orm.relationship()
-    picture: orm.Mapped["Picture"] = orm.relationship()
+    identity_document: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[identity_document_id])
+    picture: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[picture_id])
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
         foreign_keys="Ticket.seller_id",
         back_populates="seller",

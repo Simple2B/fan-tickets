@@ -16,5 +16,5 @@ def get_current_user_profile(
 ):
     """Returns the current user profile"""
 
-    log(log.INFO, f"User {current_user.username} requested his profile")
+    log(log.INFO, f"User {current_user.email} requested his profile")
     return current_user
