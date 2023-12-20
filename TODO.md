@@ -46,3 +46,9 @@
 
 # Testing database
 - add a cli command to set events pictures
+
+
+# Pagar.me
+- how to get checkout url to redirect a user to pagar.me payment form
+- what is the format for payload = {"birthdate": "mm/dd/aaa"}
+- in the order creation example not mentioned how to add payload, but mentioned that required fields are: customer, customer_id, items, payments

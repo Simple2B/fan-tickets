@@ -82,6 +82,9 @@ class BaseConfig(BaseSettings):
     # platform commission rate
     PLATFORM_COMMISSION_RATE: float = 1.08
 
+    # pagar.me
+    PAGARME_SECRET_KEY: str
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
