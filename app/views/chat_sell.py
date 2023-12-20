@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
+from app import schema as s
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -97,11 +98,10 @@ def get_events():
     )
 
 
-@chat_sell_blueprint.route("/event_form_name")
+@chat_sell_blueprint.route("/get_event_name")
 @login_required
-def event_form_name():
-    event_name = request.args.get("event_name")
-    room_unique_id = request.args.get("room_unique_id")
+def get_event_name():
+    params = s.ChatSellParams.model_validate(dict(request.args))
 
     now = datetime.now()
     now_str = now.strftime("%Y-%m-%d %H:%M")
