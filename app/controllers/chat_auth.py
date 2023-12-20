@@ -168,3 +168,61 @@ def create_user_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
     user.save()
 
     send_message("Please input your name", f"Name: {params.name}", room)
+
+
+def create_user_last_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
+    user.last_name = params.last_name
+    user.save()
+
+    send_message("Please input your last name", f"Last name: {params.last_name}", room)
+
+
+def create_phone(phone: str, user: m.User, room: m.Room) -> str:
+    pattern = r"^\+?\d{10,13}$"
+    match_pattern = re.search(pattern, str(phone))
+
+    if not match_pattern:
+        return "Invalid phone format"
+
+    user_phone_query = m.User.select().where(m.User.phone == phone)
+    user_phone: m.User = db.session.scalar(user_phone_query)
+
+    if user_phone:
+        return "Phone already taken"
+
+    user.phone = phone
+    user.save()
+
+    send_message("Please input your phone", f"Phone: {phone}", room)
+
+    return ""
+
+
+def create_address(address: str, user: m.User, room: m.Room):
+    user.address = address
+    user.activated = True
+    user.save()
+
+    send_message("Please input your address", f"Address: {address}", room)
+
+
+def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room):
+    message = ""
+
+    if params.facebook:
+        user.facebook = params.facebook
+        message += f"facebook: {params.facebook}\n"
+    if params.instagram:
+        user.instagram = params.instagram
+        message += f"instagram: {params.instagram}\n"
+    if params.twitter:
+        user.twitter = params.twitter
+        message += f"twitter: {params.twitter}\n"
+
+    send_message("Please add your social profiles", message, room)
+
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="Você foi registrado com sucesso. Por favor, verifique seu perfil.",
+    ).save()

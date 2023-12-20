@@ -31,12 +31,12 @@
       <input type="text" name="twitter" class="w-full border border-white bg-transparent rounded-lg"
         placeholder="Add url with X(Twitter) profile" />
       <div class="flex gap-2">
-        <button type="button" hx-get="{{ url_for('chat.social_profile') }}" hx-target="#chat-body" hx-swap="innerHTML"
-          hx-trigger="click" hx-include="{{ all_filters }}"
+        <button type="button" hx-get="{{ url_for('chat.create_user_social_profile') }}" hx-target="#chat-body"
+          hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
           class="p-2 w-1/2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
           Submit
         </button>
-        <button type="button" hx-get="{{ url_for('chat.social_profile', without_social_profile=True) }}"
+        <button type="button" hx-get="{{ url_for('chat.create_user_social_profile', without_social_profile=True) }}"
           hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
           class="p-2 w-1/2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
           Skip

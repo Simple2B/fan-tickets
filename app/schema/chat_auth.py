@@ -36,3 +36,11 @@ class ChatAuthEmailValidate(BaseModel):
     is_error: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class ChatAuthPhoneValidate(BaseModel):
+    phone: str
+    message: str | None = None
+    is_error: bool = False
+
+    model_config = SettingsConfigDict(from_attributes=True)
