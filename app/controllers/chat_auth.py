@@ -57,8 +57,6 @@ def send_message(bot_message: str, user_message: str, room: m.Room):
     """
     The function to save message for history in chat.
     It is save message from chat-bot and user.
-
-    This
     """
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
