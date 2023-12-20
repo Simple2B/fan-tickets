@@ -2,26 +2,37 @@ from pydantic import (
     BaseModel,
 )
 
-from app.schema.user import User
-from app.schema.room import Room
 from pydantic_settings import SettingsConfigDict
 
 
 class ChatAuthParams(BaseModel):
-    room_unique_id: str | None = None
+    room_unique_id: str
     user_unique_id: str | None = None
     email: str | None = None
-    password: str | None = None
-    confirm_password: str | None = None
     verification_code: str | None = None
+    name: str | None = None
+    last_name: str | None = None
+    phone: str | None = None
+    address: str | None = None
+    without_social_profile: bool = False
+    facebook: str | None = None
+    instagram: str | None = None
+    twitter: str | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)
 
 
 class ChatAuthResultParams(BaseModel):
-    user: User
-    room: Room
     now_str: str
     params: ChatAuthParams
+    is_error: bool = False
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class ChatAuthEmailValidate(BaseModel):
+    email: str
+    message: str | None = None
+    is_error: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)

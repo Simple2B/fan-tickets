@@ -18,11 +18,11 @@
   </div>
   {% endif %}
   <!-- prettier-ignore -->
-  {% set all_filters = "[name='chat_last_name'], [name='room_unique_id'], [name='user_unique_id']" %}
+  {% set all_filters = "[name='last_name'], [name='room_unique_id'], [name='user_unique_id']" %}
   <div class="mt-2 flex gap-3 justify-around">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
     <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-    <input type="text" name="chat_last_name" class="w-full border border-white bg-transparent rounded-lg"
+    <input type="text" name="last_name" class="w-full border border-white bg-transparent rounded-lg"
       placeholder="Input your last name" />
     <button type="button" hx-get="{{ url_for('chat.create_last_name') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
