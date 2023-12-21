@@ -3,6 +3,7 @@ from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from app import controllers as c
 from app import schema as s
+from app import forms as f
 from app import models as m, db
 from app.logger import log
 from config import config
@@ -321,9 +322,9 @@ def get_event_time():
     )
 
 
-@chat_sell_blueprint.route("/get_event_type")
+@chat_sell_blueprint.route("/get_event_category")
 @login_required
-def get_event_type():
+def get_event_category():
     params = s.ChatSellParams.model_validate(dict(request.args))
 
     response, room = c.check_room_id(params)
@@ -369,24 +370,472 @@ def get_event_type():
         log(log.ERROR, "No event time provided: [%s]", params.event_time)
         return render_template(
             "chat/sell/04_event_time.html",
-            error_message="No event time provided, please, add event time",
+            error_message="Something went wrong, please, add event time",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_category:
+        log(log.ERROR, "No event type provided: [%s]", params.event_category)
+        return render_template(
+            "chat/sell/05_event_category.html",
+            error_message="No event type provided, please, add event type",
             room=room,
             now=response.now_str,
         )
 
     assert room
-    c.send_message(
-        "Please, input event time",
-        f"Event time: {params.event_time}",
-        room,
-    )
+    event = c.create_event(params, room)
 
     return render_template(
-        "chat/sell/04_event_time.html",
-        event_date=params.event_date,
-        get_event_time=params.event_time,
-        event_location=params.event_location,
-        event_name=params.event_name,
+        "chat/sell/06_ticket_type.html",
+        event_unique_id=event.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_type")
+@login_required
+def get_ticket_type():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_unique_id:
+        log(log.ERROR, "Not found event_unique_id: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_type:
+        log(log.ERROR, "No ticket type provided: [%s]", params.ticket_type)
+        return render_template(
+            "chat/sell/06_ticket_type.html",
+            error_message="No ticket type provided, please, add ticket type",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+    ticket = c.create_ticket(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Event not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/07_ticket_category.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_category")
+@login_required
+def get_ticket_category():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_category:
+        log(log.ERROR, "No ticket category provided: [%s]", params.ticket_category)
+        return render_template(
+            "chat/sell/07_ticket_category.html",
+            error_message="No ticket category provided, please, add ticket category",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    assert room
+    ticket = c.add_ticket_category(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/08_ticket_section.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_section")
+@login_required
+def get_ticket_section():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+
+    if not params.ticket_has_section:
+        c.send_message("Does this ticket have a section?", "Ticket has no a section", room)
+        log(log.ERROR, "Ticket has no section: [%s]", params.ticket_has_section)
+        return render_template(
+            "chat/sell/09_ticket_queue.html",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    if not params.ticket_section:
+        log(log.ERROR, "No ticket section provided: [%s]", params.ticket_section)
+        return render_template(
+            "chat/sell/08_ticket_section.html",
+            error_message="No ticket section provided, please, add ticket section or choose 'No section'",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_section(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/09_ticket_queue.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_queue")
+@login_required
+def get_ticket_queue():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+
+    if not params.ticket_has_queue:
+        c.send_message("Does this ticket have a queue?", "Ticket has no a queue", room)
+        log(log.ERROR, "Ticket has no queue: [%s]", params.ticket_has_queue)
+        return render_template(
+            "chat/sell/10_ticket_seat.html",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    if not params.ticket_queue:
+        log(log.ERROR, "No ticket queue provided: [%s]", params.ticket_queue)
+        return render_template(
+            "chat/sell/09_ticket_queue.html",
+            error_message="No ticket queue provided, please, add ticket queue or choose 'No queue'",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_queue(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/10_ticket_seat.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_seat")
+@login_required
+def get_ticket_seat():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+
+    if not params.ticket_has_seat:
+        c.send_message("Does this ticket have a seat?", "Ticket has no seat", room)
+        log(log.ERROR, "Ticket has no seat: [%s]", params.ticket_has_seat)
+        return render_template(
+            "chat/sell/11_ticket_notes.html",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    if not params.ticket_seat:
+        log(log.ERROR, "No ticket seat provided: [%s]", params.ticket_seat)
+        return render_template(
+            "chat/sell/10_ticket_seat.html",
+            error_message="No ticket seat provided, please, add ticket seat or choose 'No seat'",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_seat(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/11_ticket_notes.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_notes")
+@login_required
+def get_ticket_notes():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+
+    if not params.ticket_has_notes:
+        c.send_message("Do you want to add notes?", "Without notes", room)
+        log(log.ERROR, "Ticket without notes: [%s]", params.ticket_has_notes)
+        return render_template(
+            "chat/sell/12_ticket_document.html",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    if not params.ticket_notes:
+        log(log.ERROR, "No ticket notes provided: [%s]", params.ticket_notes)
+        return render_template(
+            "chat/sell/11_ticket_notes.html",
+            error_message="No ticket notes provided, please, add ticket notes or choose 'Without notes'",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_notes(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/12_ticket_document.html",
+        ticket_unique_id=ticket.unique_id,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_document")
+@login_required
+def get_ticket_document():
+    form: f.ChatTicketDocumentForm = f.ChatTicketDocumentForm()
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+
+    if not params.ticket_has_notes:
+        c.send_message("Do you want to add notes?", "Without notes", room)
+        log(log.ERROR, "Ticket without notes: [%s]", params.ticket_has_notes)
+        return render_template(
+            "chat/sell/12_ticket_document.html",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    if not params.ticket_notes:
+        log(log.ERROR, "No ticket notes provided: [%s]", params.ticket_notes)
+        return render_template(
+            "chat/sell/11_ticket_notes.html",
+            error_message="No ticket notes provided, please, add ticket notes or choose 'Without notes'",
+            room=room,
+            now=response.now_str,
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_notes(params, room)
+
+    if not ticket:
+        log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    return render_template(
+        "chat/sell/12_ticket_document.html",
+        ticket_unique_id=ticket.unique_id,
         room=room,
         now=response.now_str,
     )

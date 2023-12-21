@@ -1,10 +1,6 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    SubmitField,
-    ValidationError,
-)
+from wtforms import StringField, SubmitField, ValidationError, FileField
 from wtforms.validators import DataRequired
 from flask_login import current_user
 
@@ -25,3 +21,10 @@ class ChatPhoneForm(FlaskForm):
         query = m.User.select().where(m.User.phone == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This phone is already registered.")
+
+
+class ChatTicketDocumentForm(FlaskForm):
+    room_unique_id = StringField("room_unique_id", [DataRequired()])
+    ticket_unique_id = StringField("ticket_unique_id", [DataRequired()])
+    file = FileField("file", [DataRequired()])
+    submit = SubmitField("Send verification code")

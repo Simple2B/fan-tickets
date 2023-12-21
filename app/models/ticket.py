@@ -51,15 +51,19 @@ class Ticket(db.Model, ModelMixin):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
 
+    # Foreign keys
+    event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
+    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
+
+    # Columns
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
 
     description: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
-
     ticket_type: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketType.TRACK.value)
-
     ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.LOT.value)
 
     # The ticket file could be a PDF or a stringed QR code
@@ -74,24 +78,21 @@ class Ticket(db.Model, ModelMixin):
         default=datetime.utcnow,
     )
 
-    section: orm.Mapped[str] = orm.mapped_column(sa.String(16))
-    queue: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    section: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    queue: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
 
-    seat: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    seat: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
 
-    price_net: orm.Mapped[float] = orm.mapped_column(sa.Float)
-    price_gross: orm.Mapped[float] = orm.mapped_column(sa.Float)
+    price_net: orm.Mapped[float | None] = orm.mapped_column(sa.Float)
+    price_gross: orm.Mapped[float | None] = orm.mapped_column(sa.Float)
 
     quantity: orm.Mapped[int] = orm.mapped_column(default=1)
 
     is_in_cart: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_reserved: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
-    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
-    event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
-
+    # Relationships
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")
 
     seller: orm.Mapped["User"] = orm.relationship(
