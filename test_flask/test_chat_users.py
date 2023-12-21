@@ -1,3 +1,5 @@
+from datetime import datetime
+from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
@@ -140,6 +142,27 @@ def test_create_user_phone(client: FlaskClient):
     assert f"Phone: {TESTING_PHONE}" in response.data.decode()
     assert len(room.messages) == 2
     assert user.phone == TESTING_PHONE
+
+
+def test_create_user_birth_date(client: FlaskClient):
+    room = m.Room(
+        seller_id=None,
+        buyer_id=2,
+    ).save(False)
+    user: m.User = m.User(email="new@gmail.com").save()
+
+    response = client.get("/chat/create_user_birth_date?room_unique_id={room.unique_id}")
+    assert response.status_code == 200
+    assert "Form submitting error" in response.data.decode()
+
+    TESTING_BIRTH_DATE = "10/22/1990"
+    response = client.get(
+        f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&birth_date={TESTING_BIRTH_DATE}"
+    )
+    assert response.status_code == 200
+    assert len(room.messages) == 2
+    assert user.birth_date == datetime.strptime(TESTING_BIRTH_DATE, app.config["DATE_PICKER_FORMAT"])
+    assert f"Birth date: {TESTING_BIRTH_DATE}" in response.data.decode()
 
 
 def test_create_user_address(client: FlaskClient):

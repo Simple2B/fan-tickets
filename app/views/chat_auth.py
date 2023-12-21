@@ -571,7 +571,51 @@ def create_user_address():
     c.create_address(params.address, user, room)
 
     return render_template(
-        "chat/registration/09_ask_social_profile.html",
+        "chat/registration/09_birth_date.html",
+        room=room,
+        now=response.now_str,
+        user_unique_id=user.unique_id,
+    )
+
+
+@chat_auth_blueprint.route("/create_user_birth_date")
+def create_user_birth_date():
+    params = s.ChatAuthParams.model_validate(dict(request.args))
+    response, user, room = c.check_user_room_id(params)
+
+    if response.is_error:
+        log(
+            log.ERROR,
+            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
+            response.params,
+            user,
+            room,
+            response.now_str,
+        )
+        return render_template(
+            "chat/registration/06_last_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+            user_unique_id=response.params.user_unique_id,
+        )
+
+    if not params.birth_date:
+        log(log.ERROR, "No name_input: [%s]", params.birth_date)
+        return render_template(
+            "chat/registration/09_birth_date.html",
+            error_message="Please, add your birth date",
+            room=room,
+            now=response.now_str,
+            user_unique_id=params.user_unique_id,
+        )
+
+    assert user
+    assert room
+    c.create_birth_date(params.birth_date, user, room)
+
+    return render_template(
+        "chat/registration/10_ask_social_profile.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -593,7 +637,7 @@ def create_user_social_profile():
             response.now_str,
         )
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/10_ask_social_profile.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -608,7 +652,7 @@ def create_user_social_profile():
 
         log(log.INFO, f"User: {params.user_unique_id} logged in")
         return render_template(
-            "chat/registration/11_verified.html",
+            "chat/registration/12_verified.html",
             room=room,
             now=response.now_str,
         )
@@ -616,7 +660,7 @@ def create_user_social_profile():
     if not params.facebook and not params.instagram and not params.twitter:
         log(log.ERROR, "No social profile: [%s]", params.facebook)
         return render_template(
-            "chat/registration/10_social_profiles.html",
+            "chat/registration/11_social_profiles.html",
             room=room,
             now=response.now_str,
             user_unique_id=user.unique_id,
@@ -628,7 +672,7 @@ def create_user_social_profile():
     log(log.INFO, f"User: {user.email} logged in")
 
     return render_template(
-        "chat/registration/11_verified.html",
+        "chat/registration/12_verified.html",
         room=room,
         now=response.now_str,
     )

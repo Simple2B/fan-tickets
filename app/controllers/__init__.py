@@ -11,5 +11,6 @@ from .chat_auth import (
     add_identity_document,
     create_phone,
     create_address,
+    create_birth_date,
     create_social_profiles,
 )

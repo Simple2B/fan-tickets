@@ -56,6 +56,7 @@ class User(db.Model, UserMixin, ModelMixin):
     last_name: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    birth_date: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
     facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     twitter: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))

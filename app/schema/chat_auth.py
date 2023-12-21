@@ -14,6 +14,7 @@ class ChatAuthParams(BaseModel):
     last_name: str | None = None
     phone: str | None = None
     address: str | None = None
+    birth_date: str | None = None
     without_social_profile: bool = False
     facebook: str | None = None
     instagram: str | None = None

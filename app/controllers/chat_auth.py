@@ -198,10 +198,17 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
 
 def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
-    user.activated = True
     user.save()
 
     send_message("Please input your address", f"Address: {address}", room)
+
+
+def create_birth_date(birth_date: str, user: m.User, room: m.Room):
+    user.birth_date = datetime.strptime(birth_date, app.config["DATE_PICKER_FORMAT"])
+    user.activated = True
+    user.save()
+
+    send_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
 def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room):
