@@ -52,8 +52,8 @@ class PagarmeCardOutput(BaseModel):
     exp_year: int
     status: str
     type: str
-    created_at: str
-    updated_at: str
+    created_at: str | None
+    updated_at: str | None
     customer: PagarmeUserOutput
 
     model_config = SettingsConfigDict(from_attributes=True)
@@ -85,7 +85,7 @@ class PagarmeCheckout(BaseModel):
     """
 
     expires_in: int
-    default_payment_method: str
+    payment_method: str
     billing_address_editable: bool
     customer_editable: bool
     accepted_payment_methods: list[str]
@@ -118,7 +118,7 @@ class PagarmeCreateOrderInput(BaseModel):
     """
 
     items: list[PagarmeItem]
-    customer: PagarmeUserOutput
+    customer: PagarmeUserInput
     payments: list[PagarmeCheckout]
 
     model_config = SettingsConfigDict(from_attributes=True)

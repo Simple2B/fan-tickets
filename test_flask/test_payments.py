@@ -78,6 +78,10 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "exp_month": "01",
         "exp_year": "2025",
         "cvv": "123",
+        "item_amount": "1000",
+        "item_description": "Testing Concert Ticket",
+        "item_quantity": "2",
+        "item_category": "Testing Concert Event",
     }
     response = client.post("/pay/ticket_order", data=data)
 

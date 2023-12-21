@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, request, current_app as app
 from flask_login import login_required
 from app import schema as s
@@ -50,7 +51,7 @@ def ticket_order():
     checkout = [
         s.PagarmeCheckout(
             expires_in=app.config["PAGARME_CHECKOUT_EXPIRES_IN"],
-            default_payment_method=app.config["PAGARME_DEFAULT_PAYMENT_METHOD"],
+            payment_method=app.config["PAGARME_DEFAULT_PAYMENT_METHOD"],
             billing_address_editable=False,
             customer_editable=False,
             accepted_payment_methods=[app.config["PAGARME_DEFAULT_PAYMENT_METHOD"]],
@@ -59,6 +60,9 @@ def ticket_order():
         ).model_dump()
     ]
 
+    birthdate_dt = datetime.fromisoformat(created_pagarme_customer.birthdate)
+    birthdate_str = birthdate_dt.strftime("%d/%m/%Y")
+
     order_create_response = create_pagarme_order(
         item_amount=item_amount,
         item_description=item_description,
@@ -66,7 +70,7 @@ def ticket_order():
         item_category=item_category,
         customer_id=created_pagarme_customer.id,
         name=created_pagarme_customer.name,
-        birthdate=created_pagarme_customer.birthdate,
+        birthdate=birthdate_str,
         payments=checkout,
     )
 
