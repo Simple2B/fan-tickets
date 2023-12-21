@@ -35,11 +35,6 @@ def ticket_order():
     item_description = request.form.get("item_description")
     item_quantity = request.form.get("item_quantity")
     item_category = request.form.get("item_category")
-    customer_id = request.form.get("customer_id")
-    name = request.form.get("name")
-    created_at = request.form.get("created_at")
-    updated_at = request.form.get("updated_at")
-    payments = request.form.get("payments")
 
     created_pagarme_customer = create_pagarme_customer(username, birthdate)
 
@@ -61,17 +56,27 @@ def ticket_order():
             accepted_payment_methods=[app.config["PAGARME_DEFAULT_PAYMENT_METHOD"]],
             success_url=f"{app.config['STAGING_BASE_URL']}/pay/webhook",
             credit_card=card_create_response,
-        )
+        ).model_dump()
     ]
 
     order_create_response = create_pagarme_order(
-        ...,
+        item_amount=item_amount,
+        item_description=item_description,
+        item_quantity=item_quantity,
+        item_category=item_category,
+        customer_id=created_pagarme_customer.id,
+        name=created_pagarme_customer.name,
+        birthdate=created_pagarme_customer.birthdate,
+        payments=checkout,
     )
+
+    checkout_url = order_create_response.checkout_url
 
     return {
         "status": "success",
         "username": created_pagarme_customer.name,
         "birthdate": created_pagarme_customer.birthdate,
+        "checkout_url": checkout_url,
     }, 200
 
 

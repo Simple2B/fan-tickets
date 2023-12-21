@@ -159,4 +159,4 @@ def create_pagarme_order(
     response = requests.post(url, headers=get_headers(), json=payload)
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
-    return response.text
+    return s.PagarmeCreateOrderOutput.model_validate_json(response.text)

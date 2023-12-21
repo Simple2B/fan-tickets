@@ -121,6 +121,8 @@ class PagarmeCreateOrderInput(BaseModel):
     customer: PagarmeUserOutput
     payments: list[PagarmeCheckout]
 
+    model_config = SettingsConfigDict(from_attributes=True)
+
 
 class PagarmeCreateOrderOutput(BaseModel):
     """
