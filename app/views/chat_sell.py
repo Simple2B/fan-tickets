@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
+from app import controllers as c
 from app import schema as s
 from app import models as m, db
 from app.logger import log
@@ -103,41 +104,220 @@ def get_events():
 def get_event_name():
     params = s.ChatSellParams.model_validate(dict(request.args))
 
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
+    response, room = c.check_room_id(params)
 
-    room = db.session.scalar(m.Room.select().where(m.Room.unique_id == room_unique_id))
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", room_unique_id)
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
         return render_template(
             "chat/sell/01_event_name.html",
             error_message="Form submitting error",
             room=room,
-            now=now_str,
-            user=current_user,
+            now=response.now_str,
         )
 
-    if not event_name:
-        log(log.ERROR, "No event date provided: [%s]", event_name)
+    if not params.event_name:
+        log(log.ERROR, "No event date provided: [%s]", params.event_name)
         return render_template(
-            "chat/sell/02_event_create.html",
+            "chat/sell/01_event_name.html",
             error_message="No event date provided",
             room=room,
-            now=now_str,
-            user=current_user,
+            now=response.now_str,
         )
 
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="No events found. Let's create a new one!",
-    ).save(False)
+    assert room
+    c.send_message(
+        "Please, input official event name (matching the official website)",
+        f"Event name: {params.event_name}",
+        room,
+    )
 
     return render_template(
-        "chat/sell/02_event_location_date.html",
-        event_name=event_name,
+        "chat/sell/02_event_location.html",
+        event_name=params.event_name,
         room=room,
-        now=now_str,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_event_location")
+@login_required
+def get_event_location():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_name:
+        log(log.ERROR, "No event date provided: [%s]", params.event_name)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_location:
+        log(log.ERROR, "No event location provided: [%s]", params.event_location)
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="No event location provided, please, add event location",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+    c.send_message(
+        "Please, input event location",
+        f"Event location: {params.event_location}",
+        room,
+    )
+
+    return render_template(
+        "chat/sell/03_event_date.html",
+        event_location=params.event_location,
+        event_name=params.event_name,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_event_date")
+@login_required
+def get_event_date():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_name:
+        log(log.ERROR, "No event date provided: [%s]", params.event_name)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_location:
+        log(log.ERROR, "No event location provided: [%s]", params.event_location)
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Something went wrong, please, add event location",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_date:
+        log(log.ERROR, "No event date provided: [%s]", params.event_date)
+        return render_template(
+            "chat/sell/03_event_date.html",
+            error_message="No event date provided, please, add event date",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+    c.send_message(
+        "Please, input event date",
+        f"Event date: {params.event_date}",
+        room,
+    )
+
+    return render_template(
+        "chat/sell/04_event_time.html",
+        event_date=params.event_date,
+        event_location=params.event_location,
+        event_name=params.event_name,
+        room=room,
+        now=response.now_str,
+    )
+
+
+@chat_sell_blueprint.route("/get_event_time")
+@login_required
+def get_event_time():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_name:
+        log(log.ERROR, "No event date provided: [%s]", params.event_name)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_location:
+        log(log.ERROR, "No event location provided: [%s]", params.event_location)
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Something went wrong, please, add event location",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_date:
+        log(log.ERROR, "No event date provided: [%s]", params.event_date)
+        return render_template(
+            "chat/sell/03_event_date.html",
+            error_message="Something went wrong, please, add event date",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_time:
+        log(log.ERROR, "No event time provided: [%s]", params.event_time)
+        return render_template(
+            "chat/sell/04_event_time.html",
+            error_message="No event time provided, please, add event time",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+    c.send_message(
+        "Please, input event time",
+        f"Event time: {params.event_time}",
+        room,
+    )
+
+    return render_template(
+        "chat/sell/04_event_time.html",
+        event_date=params.event_date,
+        get_event_time=params.event_time,
+        event_location=params.event_location,
+        event_name=params.event_name,
+        room=room,
+        now=response.now_str,
     )
 
 
