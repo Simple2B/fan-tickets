@@ -321,6 +321,77 @@ def get_event_time():
     )
 
 
+@chat_sell_blueprint.route("/get_event_type")
+@login_required
+def get_event_type():
+    params = s.ChatSellParams.model_validate(dict(request.args))
+
+    response, room = c.check_room_id(params)
+
+    if response.is_error:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        # TODO: what if we return user to start of the chat?
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Form submitting error",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_name:
+        log(log.ERROR, "No event date provided: [%s]", params.event_name)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_location:
+        log(log.ERROR, "No event location provided: [%s]", params.event_location)
+        return render_template(
+            "chat/sell/02_event_location.html",
+            error_message="Something went wrong, please, add event location",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_date:
+        log(log.ERROR, "No event date provided: [%s]", params.event_date)
+        return render_template(
+            "chat/sell/03_event_date.html",
+            error_message="Something went wrong, please, add event date",
+            room=room,
+            now=response.now_str,
+        )
+
+    if not params.event_time:
+        log(log.ERROR, "No event time provided: [%s]", params.event_time)
+        return render_template(
+            "chat/sell/04_event_time.html",
+            error_message="No event time provided, please, add event time",
+            room=room,
+            now=response.now_str,
+        )
+
+    assert room
+    c.send_message(
+        "Please, input event time",
+        f"Event time: {params.event_time}",
+        room,
+    )
+
+    return render_template(
+        "chat/sell/04_event_time.html",
+        event_date=params.event_date,
+        get_event_time=params.event_time,
+        event_location=params.event_location,
+        event_name=params.event_name,
+        room=room,
+        now=response.now_str,
+    )
+
+
 @chat_sell_blueprint.route("/event_form", methods=["GET", "POST"])
 @login_required
 def event_form():
