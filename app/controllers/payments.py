@@ -14,12 +14,15 @@ from app.logger import log
 8. Flask app receives the response on the webhook and saves payment info to a database
 """
 
-PAGARME_SECRET_KEY = app.config["PAGARME_SECRET_KEY"]
-headers = {
-    "accept": "application/json",
-    "content-type": "application/json",
-    "authorization": f"Basic {PAGARME_SECRET_KEY}",
-}
+
+def get_headers():
+    PAGARME_SECRET_KEY = app.config["PAGARME_SECRET_KEY"]
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": f"Basic {PAGARME_SECRET_KEY}",
+    }
+    return headers
 
 
 def get_all_pagarme_customers():
@@ -42,7 +45,7 @@ def get_all_pagarme_customers():
     CODE = 10
     url = f"https://api.pagar.me/core/v5/customers?page={PAGE}&size={SIZE}&code={CODE}"
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=get_headers())
 
     log(log.INFO, "get_all_pagarme_customers response: [%s]", response.text)
     return response.text
@@ -51,19 +54,22 @@ def get_all_pagarme_customers():
 def get_pagarme_customer(customer_id: str):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=get_headers())
 
     log(log.INFO, "get_pagarme_customer response: [%s]", response.text)
     return response.text
 
 
-def create_pagarme_customer(birthdate: str):
+def create_pagarme_customer(customer_name: str, birthdate: str):
     url = "https://api.pagar.me/core/v5/customers"
 
     # payload = {"birthdate": "mm/dd/aaa"}
-    payload = {"birthdate": birthdate}
+    payload = {
+        "birthdate": birthdate,
+        "name": customer_name,
+    }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=get_headers())
 
     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
     return response.text
@@ -72,7 +78,7 @@ def create_pagarme_customer(birthdate: str):
 def update_pagarme_customer(customer_id: str):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
-    response = requests.put(url, headers=headers)
+    response = requests.put(url, headers=get_headers())
 
     print(response.text)
     return response.text
@@ -81,7 +87,7 @@ def update_pagarme_customer(customer_id: str):
 def create_pagarme_card(customer_id: str):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards"
 
-    response = requests.post(url, headers=headers)
+    response = requests.post(url, headers=get_headers())
 
     log(log.INFO, "create_pagarme_card response: [%s]", response.text)
     return response.text
@@ -90,7 +96,7 @@ def create_pagarme_card(customer_id: str):
 def update_pagarme_card(customer_id: str, card_id: str):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
 
-    response = requests.put(url, headers=headers)
+    response = requests.put(url, headers=get_headers())
 
     log(log.INFO, "update_pagarme_card response: [%s]", response.text)
     return response.text
@@ -99,7 +105,7 @@ def update_pagarme_card(customer_id: str, card_id: str):
 def delete_pagarme_card(customer_id: str, card_id: str):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
 
-    response = requests.delete(url, headers=headers)
+    response = requests.delete(url, headers=get_headers())
 
     log(log.INFO, "delete_pagarme_card response: [%s]", response.text)
     return response.text
@@ -108,7 +114,7 @@ def delete_pagarme_card(customer_id: str, card_id: str):
 def create_pagarme_order():
     url = "https://api.pagar.me/core/v5/orders"
 
-    response = requests.post(url, headers=headers)
+    response = requests.post(url, headers=get_headers())
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
     return response.text
@@ -117,7 +123,7 @@ def create_pagarme_order():
 def create_pagarme_charge():
     url = "https://api.pagar.me/core/v5/orders"
 
-    response = requests.post(url, headers=headers)
+    response = requests.post(url, headers=get_headers())
 
     log(log.INFO, "create_pagarme_charge response: [%s]", response.text)
     return response.text
@@ -126,7 +132,7 @@ def create_pagarme_charge():
 def create_pagarme_item():
     url = "https://api.pagar.me/core/v5/orders"
 
-    response = requests.post(url, headers=headers)
+    response = requests.post(url, headers=get_headers())
 
     log(log.INFO, "create_pagarme_item response: [%s]", response.text)
     return response.text

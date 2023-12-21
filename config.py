@@ -83,6 +83,7 @@ class BaseConfig(BaseSettings):
     PLATFORM_COMMISSION_RATE: float = 1.08
 
     # pagar.me
+    PAGARME_CONNECTION: bool = False
     PAGARME_SECRET_KEY: str
 
     @staticmethod
