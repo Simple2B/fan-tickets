@@ -1,5 +1,6 @@
 import requests
 from flask import current_app as app
+from app import schema as s
 from app.logger import log
 
 
@@ -72,25 +73,40 @@ def create_pagarme_customer(customer_name: str, birthdate: str):
     response = requests.post(url, json=payload, headers=get_headers())
 
     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
-    return response.text
+    return s.PagarmeUserOutput.model_validate_json(response.text)
 
 
-def update_pagarme_customer(customer_id: str):
+def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_name: str = None):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
-    response = requests.put(url, headers=get_headers())
+    payload = {}
+    if birthdate:
+        payload["birthdate"] = birthdate
+    if customer_name:
+        payload["name"] = customer_name
+
+    response = requests.put(url, headers=get_headers(), json=payload)
 
     print(response.text)
-    return response.text
+    return s.PagarmeUserOutput.model_validate_json(response.text)
 
 
-def create_pagarme_card(customer_id: str):
+def create_pagarme_card(customer_id: str, holder_name: str, number: int, exp_month: int, exp_year: int, cvv: int):
     url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards"
 
-    response = requests.post(url, headers=get_headers())
+    payload = {
+        "customer_id": customer_id,
+        "holder_name": holder_name,
+        "number": number,
+        "exp_month": exp_month,
+        "exp_year": exp_year,
+        "cvv": cvv,
+    }
+
+    response = requests.post(url, headers=get_headers(), json=payload)
 
     log(log.INFO, "create_pagarme_card response: [%s]", response.text)
-    return response.text
+    return s.PagarmeCardOutput.model_validate_json(response.text)
 
 
 def update_pagarme_card(customer_id: str, card_id: str):
@@ -111,28 +127,36 @@ def delete_pagarme_card(customer_id: str, card_id: str):
     return response.text
 
 
-def create_pagarme_order():
+def create_pagarme_order(
+    item_amount: int,
+    item_description: str,
+    item_quantity: int,
+    item_category: str,
+    customer_id: str,
+    name: str,
+    birthdate: str,
+    payments: list[s.PagarmeCheckout],
+):
     url = "https://api.pagar.me/core/v5/orders"
 
-    response = requests.post(url, headers=get_headers())
+    payload = s.PagarmeCreateOrderInput(
+        items=[
+            s.PagarmeItem(
+                amount=item_amount,
+                description=item_description,
+                quantity=item_quantity,
+                category=item_category,
+            ).model_dump()
+        ],
+        customer=s.PagarmeUserInput(
+            id=customer_id,
+            name=name,
+            birthdate=birthdate,
+        ).model_dump(),
+        payments=payments,
+    )
+
+    response = requests.post(url, headers=get_headers(), json=payload)
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
-    return response.text
-
-
-def create_pagarme_charge():
-    url = "https://api.pagar.me/core/v5/orders"
-
-    response = requests.post(url, headers=get_headers())
-
-    log(log.INFO, "create_pagarme_charge response: [%s]", response.text)
-    return response.text
-
-
-def create_pagarme_item():
-    url = "https://api.pagar.me/core/v5/orders"
-
-    response = requests.post(url, headers=get_headers())
-
-    log(log.INFO, "create_pagarme_item response: [%s]", response.text)
     return response.text
