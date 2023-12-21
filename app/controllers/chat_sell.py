@@ -187,3 +187,14 @@ def add_ticket_notes(params: s.ChatSellParams, room: m.Room) -> m.Ticket | None:
     send_message("Please, input ticket notes", f"Ticket notes: {params.ticket_section}", room)
 
     return ticket
+
+
+def add_ticket_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
+    response = c.image_upload(user, c.type_image.IDENTIFICATION)
+
+    if 200 not in response:
+        return "Not valid type of verification document, please upload your identification document with right format"
+
+    send_message("Please upload your identification document", "Identification document has been uploaded", room)
+
+    return ""

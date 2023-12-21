@@ -779,6 +779,63 @@ def get_ticket_notes():
 def get_ticket_document():
     form: f.ChatTicketDocumentForm = f.ChatTicketDocumentForm()
 
+    now = datetime.now()
+    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
+
+    room_query = m.Room.select().where(m.Room.unique_id == form.room_unique_id.data)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+        )
+
+    if not form.validate_on_submit():
+        log(
+            log.ERROR,
+            "Form submitting error, room_unique_id: [%s]",
+            form.room_unique_id.data,
+        )
+        return render_template(
+            "chat/sell/01_event_name.html",
+            error_message="Form submitting error",
+            room=room,
+            now=now_str,
+        )
+
+    if not form.file.data:
+        log(log.ERROR, "No ticket document: [%s]", form.file.data)
+        return render_template(
+            "chat/sell/12_ticket_document.html",
+            error_message="No ticket document, please upload your ticket document",
+            room=room,
+            now=now_str,
+            user_unique_id=form.user_unique_id.data,
+        )
+
+    error_message = c.add_ticket_document(form, room)
+
+    if error_message:
+        log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
+        return render_template(
+            "chat/registration/04_identification.html",
+            error_message=error_message,
+            room=room,
+            now=now_str,
+            user_unique_id=form.user_unique_id.data,
+        )
+
+    return render_template(
+        "chat/registration/05_name.html",
+        room=room,
+        now=now_str,
+        user_unique_id=form.user_unique_id.data,
+    )
+
     response, room = c.check_room_id(params)
 
     if response.is_error:
