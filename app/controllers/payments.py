@@ -154,7 +154,11 @@ def create_pagarme_order(
             birthdate=birthdate,
         ).model_dump(),
         payments=payments,
-    )
+    ).model_dump()
+
+    """
+    "errors": {\r\n    "order.payments[0].credit_card": [\r\n      "At least one of the following fields is required: network_token, card_id, card_token or card_payment_payload."\r\n    ]\r\n  }
+    """
 
     response = requests.post(url, headers=get_headers(), json=payload)
 
