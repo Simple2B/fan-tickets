@@ -40,8 +40,8 @@ class BaseConfig(BaseSettings):
 
     # Super admin
     ADMIN_USERNAME: str
-    ADMIN_NAME: str
-    ADMIN_LAST_NAME: str
+    ADMIN_NAME: str = "Admin_name"
+    ADMIN_LAST_NAME: str = "Admin_last_name"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
