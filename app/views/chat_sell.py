@@ -797,44 +797,41 @@ def get_ticket_document():
     if not form.validate_on_submit():
         log(
             log.ERROR,
-            "Form submitting error, room_unique_id: [%s]",
-            form.room_unique_id.data,
+            "Form submitting error: [%s]",
+            form.errors,
         )
         return render_template(
-            "chat/sell/01_event_name.html",
+            "chat/sell/12_ticket_document.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
-    if not form.file.data:
-        log(log.ERROR, "No ticket document: [%s]", form.file.data)
-        return render_template(
-            "chat/sell/12_ticket_document.html",
-            error_message="No ticket document, please upload your ticket document",
-            room=room,
-            now=now_str,
-            user_unique_id=form.user_unique_id.data,
-        )
-
-    error_message = c.add_ticket_document(form, room)
+    error_message = c.add_ticket_document(form, room, current_user)
 
     if error_message:
-        log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
+        log(log.ERROR, "Not valid ticket document: [%s]", form.file.data)
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/12_ticket_document.html",
             error_message=error_message,
             room=room,
             now=now_str,
-            user_unique_id=form.user_unique_id.data,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     return render_template(
-        "chat/registration/05_name.html",
+        "chat/registration/13_name.html",
         room=room,
         now=now_str,
-        user_unique_id=form.user_unique_id.data,
+        ticket_unique_id=form.ticket_unique_id.data,
     )
+
+
+@chat_sell_blueprint.route("/get_ticket_price")
+@login_required
+def get_ticket_price():
+    params = s.ChatSellParams.model_validate(dict(request.args))
 
     response, room = c.check_room_id(params)
 
@@ -857,29 +854,18 @@ def get_ticket_document():
             now=response.now_str,
         )
 
-    assert room
-
-    if not params.ticket_has_notes:
-        c.send_message("Do you want to add notes?", "Without notes", room)
-        log(log.ERROR, "Ticket without notes: [%s]", params.ticket_has_notes)
-        return render_template(
-            "chat/sell/12_ticket_document.html",
-            room=room,
-            now=response.now_str,
-            ticket_unique_id=params.ticket_unique_id,
-        )
-
-    if not params.ticket_notes:
-        log(log.ERROR, "No ticket notes provided: [%s]", params.ticket_notes)
+    if not params.ticket_price:
+        log(log.ERROR, "No ticket price provided: [%s]", params.ticket_notes)
         return render_template(
             "chat/sell/11_ticket_notes.html",
-            error_message="No ticket notes provided, please, add ticket notes or choose 'Without notes'",
+            error_message="No ticket ticket provided, please, add ticket price",
             room=room,
             now=response.now_str,
             ticket_unique_id=params.ticket_unique_id,
         )
 
-    ticket = c.add_ticket_notes(params, room)
+    assert room
+    ticket = c.add_ticket_price(params, room)
 
     if not ticket:
         log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)

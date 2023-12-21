@@ -1,14 +1,11 @@
 from datetime import datetime
-from random import randint
-import re
 
-from flask import render_template, current_app as app
-from flask_mail import Message
+from flask import current_app as app
 
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db, mail
+from app import models as m, db
 
 from app.logger import log
 from config import config
@@ -189,12 +186,27 @@ def add_ticket_notes(params: s.ChatSellParams, room: m.Room) -> m.Ticket | None:
     return ticket
 
 
-def add_ticket_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
+def add_ticket_document(form: f.ChatTicketDocumentForm, room: m.Room, user: m.User) -> str:
     response = c.image_upload(user, c.type_image.IDENTIFICATION)
 
     if 200 not in response:
-        return "Not valid type of verification document, please upload your identification document with right format"
+        return "Not valid type of ticket document, please upload your ticket document with right format"
 
-    send_message("Please upload your identification document", "Identification document has been uploaded", room)
+    send_message("Please upload your ticket document", "Ticket document has been uploaded", room)
 
     return ""
+
+
+def add_ticket_price(params: s.ChatSellParams, room: m.Room) -> m.Ticket | None:
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id))
+    if not ticket:
+        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
+        return None
+
+    ticket.description = params.ticket_notes
+    ticket.save()
+    log(log.INFO, "Ticket notes added: [%s]", params.ticket_notes)
+
+    send_message("Please, input ticket notes", f"Ticket notes: {params.ticket_section}", room)
+
+    return ticket

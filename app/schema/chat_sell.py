@@ -26,6 +26,7 @@ class ChatSellParams(BaseModel):
     ticket_seat: str | None = None
     ticket_has_notes: bool = True
     ticket_notes: str | None = None
+    ticket_price: float | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)
 

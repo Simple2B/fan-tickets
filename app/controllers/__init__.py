@@ -1,6 +1,6 @@
 # ruff: noqa: F401
 from .pagination import create_pagination
-from .image_upload import image_upload
+from .image_upload import image_upload, type_image
 from .chat_sell import (
     check_room_id,
     send_message,
@@ -12,4 +12,5 @@ from .chat_sell import (
     add_ticket_seat,
     add_ticket_notes,
     add_ticket_document,
+    add_ticket_price,
 )
