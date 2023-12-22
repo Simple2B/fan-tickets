@@ -203,10 +203,13 @@ def add_ticket_price(params: s.ChatSellParams, room: m.Room) -> m.Ticket | None:
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.description = params.ticket_notes
+    assert params.ticket_price
+    price_gross = float(params.ticket_price) * app.config["PLATFORM_COMMISSION_RATE"]
+    ticket.price_net = params.ticket_price
+    ticket.price_gross = price_gross
     ticket.save()
-    log(log.INFO, "Ticket notes added: [%s]", params.ticket_notes)
+    log(log.INFO, "Ticket price added: [%s], price_gross: [%s]", params.ticket_notes, price_gross)
 
-    send_message("Please, input ticket notes", f"Ticket notes: {params.ticket_section}", room)
+    send_message("Please, input ticket price", f"Ticket price: {params.ticket_section}", room)
 
     return ticket
