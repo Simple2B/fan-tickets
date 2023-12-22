@@ -276,9 +276,8 @@ def create_user_password():
     if not form.validate_on_submit():
         log(
             log.ERROR,
-            "Form submitting error, user_unique_id: [%s], room_unique_id: [%s]",
-            form.user_unique_id.data,
-            form.room_unique_id.data,
+            "Form submitting error: [%s]",
+            form.errors,
         )
         return render_template(
             "chat/registration/03_pass.html",
