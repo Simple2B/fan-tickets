@@ -85,6 +85,12 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "exp_month": "01",
         "exp_year": "2025",
         "cvv": "123",
+        "billing_line_1": "Rua Teste",
+        "billing_line_2": "Teste",
+        "billing_zip_code": "00000000",
+        "billing_city": "City Teste",
+        "billing_state": "RJ",
+        "billing_country": "BR",
         "item_amount": "1000",
         "item_code": current_user.unique_id,  # replace by ticket's unique_id
         "item_description": "Testing Concert Ticket",

@@ -21,6 +21,15 @@ class PagarmeUserOutput(PagarmeUserInput):
     model_config = SettingsConfigDict(from_attributes=True)
 
 
+class PagarmeBillingAddress(BaseModel):
+    line_1: str
+    line_2: str | None = None
+    zip_code: str
+    city: str
+    state: str
+    country: str
+
+
 class PagarmeCard(BaseModel):
     """
     '{"id": "card_lD6BoyphvHaLVv0y",
@@ -54,6 +63,7 @@ class PagarmeCard(BaseModel):
     status: str
     type: str
     customer: PagarmeUserOutput
+    billing_address: PagarmeBillingAddress
 
     model_config = SettingsConfigDict(from_attributes=True)
 

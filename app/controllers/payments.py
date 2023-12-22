@@ -5,14 +5,6 @@ from app.logger import log
 from config import config
 
 
-CFG = config()
-HEADERS = {
-    "accept": "application/json",
-    "content-type": "application/json",
-    "authorization": f"Basic {CFG.PAGARME_SECRET_KEY}",
-}
-
-
 """
 1.  User requests my Flask app pressing for example "Pay" button
 2. Flask app accepts this request at first at the route that creates a pagar.me customer going to "https://api.pagar.me/core/v5/customers" endpoint.
@@ -25,21 +17,15 @@ HEADERS = {
 """
 
 
+CFG = config()
+HEADERS = {
+    "accept": "application/json",
+    "content-type": "application/json",
+    "authorization": f"Basic {CFG.PAGARME_SECRET_KEY}",
+}
+
+
 def get_all_pagarme_customers():
-    """
-    Possible query parameters:
-    name
-    document
-    email
-    gender
-    page
-    size
-    code
-
-    Example:
-    URL = "https://api.pagar.me/core/v5/customers?page=1&size=10&code=10"
-    """
-
     PAGE = 1
     SIZE = 10
     CODE = 10
@@ -109,7 +95,13 @@ def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_na
 
 
 def create_pagarme_card(
-    customer_id: str, holder_name: str, number: int, exp_month: int, exp_year: int, cvv: int
+    customer_id: str,
+    holder_name: str,
+    number: int,
+    exp_month: int,
+    exp_year: int,
+    cvv: int,
+    billing_address: dict,
 ) -> s.PagarmeCardOutput:
     URL = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards"
 
@@ -120,6 +112,7 @@ def create_pagarme_card(
         "exp_month": exp_month,
         "exp_year": exp_year,
         "cvv": cvv,
+        "billing_address": billing_address,
     }
 
     response = requests.post(URL, headers=HEADERS, json=payload)

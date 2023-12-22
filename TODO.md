@@ -49,5 +49,5 @@
 
 
 # Pagar.me
-- how much time do I have before the support chat goes offline
 - how to get checkout url to redirect a user to pagar.me payment form
+- where and when we pass metadata

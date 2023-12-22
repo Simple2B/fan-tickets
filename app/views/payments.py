@@ -36,6 +36,12 @@ def ticket_order():
     exp_month = request.form.get("exp_month")
     exp_year = request.form.get("exp_year")
     cvv = request.form.get("cvv")
+    billing_line_1 = request.form.get("billing_line_1")
+    billing_line_2 = request.form.get("billing_line_2")
+    billing_zip_code = request.form.get("billing_zip_code")
+    billing_city = request.form.get("billing_city")
+    billing_state = request.form.get("billing_state")
+    billing_country = request.form.get("billing_country")
     item_amount = request.form.get("item_amount")
     item_code = request.form.get("item_code")
     item_description = request.form.get("item_description")
@@ -51,6 +57,15 @@ def ticket_order():
         phone=phone,
     )
 
+    billing_address = s.PagarmeBillingAddress(
+        line_1=billing_line_1,
+        line_2=billing_line_2,
+        zip_code=billing_zip_code,
+        city=billing_city,
+        state=billing_state,
+        country=billing_country,
+    ).model_dump()
+
     card_create_response = create_pagarme_card(
         customer_id=created_pagarme_customer.id,
         holder_name=created_pagarme_customer.name,
@@ -58,6 +73,7 @@ def ticket_order():
         exp_month=exp_month,
         exp_year=exp_year,
         cvv=cvv,
+        billing_address=billing_address,
     )
 
     card_input = s.PagarmeCardInput(
@@ -68,6 +84,7 @@ def ticket_order():
         holder_name=card_create_response.holder_name,
         exp_month=card_create_response.exp_month,
         exp_year=card_create_response.exp_year,
+        billing_address=billing_address,
         status=card_create_response.status,
         type=card_create_response.type,
         customer=created_pagarme_customer,
