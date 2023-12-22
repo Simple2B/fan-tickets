@@ -1,7 +1,16 @@
 import requests
-from flask import current_app as app
+import json
 from app import schema as s
 from app.logger import log
+from config import config
+
+
+CFG = config()
+HEADERS = {
+    "accept": "application/json",
+    "content-type": "application/json",
+    "authorization": f"Basic {CFG.PAGARME_SECRET_KEY}",
+}
 
 
 """
@@ -16,16 +25,6 @@ from app.logger import log
 """
 
 
-def get_headers():
-    PAGARME_SECRET_KEY = app.config["PAGARME_SECRET_KEY"]
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "authorization": f"Basic {PAGARME_SECRET_KEY}",
-    }
-    return headers
-
-
 def get_all_pagarme_customers():
     """
     Possible query parameters:
@@ -38,31 +37,31 @@ def get_all_pagarme_customers():
     code
 
     Example:
-    url = "https://api.pagar.me/core/v5/customers?page=1&size=10&code=10"
+    URL = "https://api.pagar.me/core/v5/customers?page=1&size=10&code=10"
     """
 
     PAGE = 1
     SIZE = 10
     CODE = 10
-    url = f"https://api.pagar.me/core/v5/customers?page={PAGE}&size={SIZE}&code={CODE}"
+    URL = f"https://api.pagar.me/core/v5/customers?page={PAGE}&size={SIZE}&code={CODE}"
 
-    response = requests.get(url, headers=get_headers())
+    response = requests.get(URL, headers=HEADERS)
 
     log(log.INFO, "get_all_pagarme_customers response: [%s]", response.text)
     return response.text
 
 
 def get_pagarme_customer(customer_id: str):
-    url = f"https://api.pagar.me/core/v5/customers/{customer_id}"
+    URL = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
-    response = requests.get(url, headers=get_headers())
+    response = requests.get(URL, headers=HEADERS)
 
     log(log.INFO, "get_pagarme_customer response: [%s]", response.text)
     return response.text
 
 
 def create_pagarme_customer(customer_name: str, birthdate: str):
-    url = "https://api.pagar.me/core/v5/customers"
+    URL = "https://api.pagar.me/core/v5/customers"
 
     # payload = {"birthdate": "mm/dd/aaa"}
     payload = {
@@ -70,14 +69,14 @@ def create_pagarme_customer(customer_name: str, birthdate: str):
         "name": customer_name,
     }
 
-    response = requests.post(url, json=payload, headers=get_headers())
+    response = requests.post(URL, json=payload, headers=HEADERS)
 
     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
     return s.PagarmeUserOutput.model_validate_json(response.text)
 
 
 def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_name: str = None):
-    url = f"https://api.pagar.me/core/v5/customers/{customer_id}"
+    URL = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
     payload = {}
     if birthdate:
@@ -85,14 +84,16 @@ def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_na
     if customer_name:
         payload["name"] = customer_name
 
-    response = requests.put(url, headers=get_headers(), json=payload)
+    response = requests.put(URL, headers=HEADERS, json=payload)
 
     print(response.text)
     return s.PagarmeUserOutput.model_validate_json(response.text)
 
 
-def create_pagarme_card(customer_id: str, holder_name: str, number: int, exp_month: int, exp_year: int, cvv: int):
-    url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards"
+def create_pagarme_card(
+    customer_id: str, holder_name: str, number: int, exp_month: int, exp_year: int, cvv: int
+) -> s.PagarmeCardOutput:
+    URL = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards"
 
     payload = {
         "customer_id": customer_id,
@@ -103,25 +104,25 @@ def create_pagarme_card(customer_id: str, holder_name: str, number: int, exp_mon
         "cvv": cvv,
     }
 
-    response = requests.post(url, headers=get_headers(), json=payload)
+    response = requests.post(URL, headers=HEADERS, json=payload)
 
     log(log.INFO, "create_pagarme_card response: [%s]", response.text)
     return s.PagarmeCardOutput.model_validate_json(response.text)
 
 
 def update_pagarme_card(customer_id: str, card_id: str):
-    url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
+    URL = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
 
-    response = requests.put(url, headers=get_headers())
+    response = requests.put(URL, headers=HEADERS)
 
     log(log.INFO, "update_pagarme_card response: [%s]", response.text)
     return response.text
 
 
 def delete_pagarme_card(customer_id: str, card_id: str):
-    url = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
+    URL = f"https://api.pagar.me/core/v5/customers/{customer_id}/cards/{card_id}"
 
-    response = requests.delete(url, headers=get_headers())
+    response = requests.delete(URL, headers=HEADERS)
 
     log(log.INFO, "delete_pagarme_card response: [%s]", response.text)
     return response.text
@@ -137,7 +138,7 @@ def create_pagarme_order(
     birthdate: str,
     payments: list[s.PagarmeCheckout],
 ):
-    url = "https://api.pagar.me/core/v5/orders"
+    URL = "https://api.pagar.me/core/v5/orders"
 
     payload = s.PagarmeCreateOrderInput(
         items=[
@@ -156,11 +157,13 @@ def create_pagarme_order(
         payments=payments,
     ).model_dump()
 
-    """
-    "errors": {\r\n    "order.payments[0].credit_card": [\r\n      "At least one of the following fields is required: network_token, card_id, card_token or card_payment_payload."\r\n    ]\r\n  }
-    """
+    with open("order-request.json", "w") as f:
+        f.write(json.dumps(payload))
 
-    response = requests.post(url, headers=get_headers(), json=payload)
+    response = requests.post(URL, headers=HEADERS, json=payload)
+
+    with open("order-response.json", "w") as f:
+        f.write(response.text)
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
-    return s.PagarmeCreateOrderOutput.model_validate_json(response.text)
+    return s.PagarmeCreateOrderOutput.model_validate(response.json())

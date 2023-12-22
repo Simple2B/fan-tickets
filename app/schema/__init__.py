@@ -7,6 +7,7 @@ from .ticket import TicketFilter
 from .pagarme import (
     PagarmeUserInput,
     PagarmeUserOutput,
+    PagarmeCardInput,
     PagarmeCardOutput,
     PagarmeCheckout,
     PagarmeCreateOrderInput,

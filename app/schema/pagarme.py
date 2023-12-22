@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
 
@@ -19,7 +19,7 @@ class PagarmeUserOutput(PagarmeUserInput):
     model_config = SettingsConfigDict(from_attributes=True)
 
 
-class PagarmeCardOutput(BaseModel):
+class PagarmeCard(BaseModel):
     """
     '{"id": "card_lD6BoyphvHaLVv0y",
     "first_six_digits": "424242",
@@ -43,7 +43,6 @@ class PagarmeCardOutput(BaseModel):
         }'
     """
 
-    id: str
     first_six_digits: str
     last_four_digits: str
     brand: str
@@ -52,9 +51,21 @@ class PagarmeCardOutput(BaseModel):
     exp_year: int
     status: str
     type: str
+    customer: PagarmeUserOutput
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeCardInput(PagarmeCard):
+    card_id: str
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeCardOutput(PagarmeCard):
+    id: str
     created_at: str | None
     updated_at: str | None
-    customer: PagarmeUserOutput
 
     model_config = SettingsConfigDict(from_attributes=True)
 
@@ -90,7 +101,7 @@ class PagarmeCheckout(BaseModel):
     customer_editable: bool
     accepted_payment_methods: list[str]
     success_url: str
-    credit_card: PagarmeCardOutput
+    credit_card: PagarmeCardInput
 
     model_config = SettingsConfigDict(from_attributes=True)
 

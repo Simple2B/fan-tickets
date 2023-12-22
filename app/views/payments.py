@@ -48,6 +48,19 @@ def ticket_order():
         cvv=cvv,
     )
 
+    card_input = s.PagarmeCardInput(
+        card_id=card_create_response.id,
+        first_six_digits=card_create_response.first_six_digits,
+        last_four_digits=card_create_response.last_four_digits,
+        brand=card_create_response.brand,
+        holder_name=card_create_response.holder_name,
+        exp_month=card_create_response.exp_month,
+        exp_year=card_create_response.exp_year,
+        status=card_create_response.status,
+        type=card_create_response.type,
+        customer=created_pagarme_customer,
+    )
+
     checkout = [
         s.PagarmeCheckout(
             expires_in=app.config["PAGARME_CHECKOUT_EXPIRES_IN"],
@@ -56,7 +69,7 @@ def ticket_order():
             customer_editable=False,
             accepted_payment_methods=[app.config["PAGARME_DEFAULT_PAYMENT_METHOD"]],
             success_url=f"{app.config['STAGING_BASE_URL']}/pay/webhook",
-            credit_card=card_create_response,
+            credit_card=card_input,
         ).model_dump()
     ]
 

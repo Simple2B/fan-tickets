@@ -1,6 +1,8 @@
 import os
 import pytest
 from datetime import datetime
+import random
+import string
 from flask_login import current_user
 from flask.testing import FlaskClient
 from .utils import login
@@ -68,8 +70,10 @@ def test_pagarme_update_customer(client: FlaskClient):
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
 def test_pagarme_ticket_order(client: FlaskClient):
     login(client)
+    letters = string.ascii_lowercase
+    # TESTING_USERNAME_ID = "".join(random.choice(letters) for _ in range(5))
+    # TESTING_USERNAME = f"{current_user.username}-{TESTING_USERNAME_ID}"
     TESTING_USERNAME = current_user.username
-    # response = client.get(f"/pay/ticket_order?username={TESTING_USERNAME}&birthdate=01/01/2000")
 
     data = {
         "username": TESTING_USERNAME,
