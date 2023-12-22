@@ -271,6 +271,7 @@ def create_user_password():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     if not form.validate_on_submit():
@@ -285,6 +286,7 @@ def create_user_password():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     if form.password.data != form.confirm_password.data:
@@ -294,6 +296,7 @@ def create_user_password():
             room=room,
             user_unique_id=form.user_unique_id.data,
             error="Passwords do not match",
+            form=form,
         )
 
     success = c.create_password(form, room)
@@ -306,6 +309,7 @@ def create_user_password():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     return render_template(
@@ -313,6 +317,7 @@ def create_user_password():
         now=now_str,
         room=room,
         user_unique_id=form.user_unique_id.data,
+        form=form,
     )
 
 
@@ -334,6 +339,7 @@ def create_user_identification():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     if not form.validate_on_submit():
@@ -349,6 +355,7 @@ def create_user_identification():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     if not form.file.data:
@@ -359,6 +366,7 @@ def create_user_identification():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     error_message = c.add_identity_document(form, room)
@@ -371,6 +379,7 @@ def create_user_identification():
             room=room,
             now=now_str,
             user_unique_id=form.user_unique_id.data,
+            form=form,
         )
 
     return render_template(
@@ -378,6 +387,7 @@ def create_user_identification():
         room=room,
         now=now_str,
         user_unique_id=form.user_unique_id.data,
+        form=form,
     )
 
 
