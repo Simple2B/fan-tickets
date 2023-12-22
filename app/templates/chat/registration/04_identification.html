@@ -22,6 +22,7 @@
     <div class=" w-5/6 flex flex-col gap-2">
       <form class="flex flex-col gap-3 justify-around" hx-encoding='multipart/form-data'
         hx-post='/chat/create_user_identification' hx-target="#chat-body" hx-swap="innerHTML">
+        {{ form.hidden_tag() }}
         <input name="file" placeholder="Upload cpf" type="file"
           class="block text-sm text-white border border-grey rounded-lg cursor-pointer bg-transparent dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
           id="chat-auth-identity-input" type="file">
