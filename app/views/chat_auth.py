@@ -31,7 +31,7 @@ def login_form():
     if not room:
         log(log.ERROR, "Room not found")
         return render_template(
-            "chat/registration/00_login_form.html",
+            "chat/registration/login_form.html",
             error_message="Room not found",
         )
 
@@ -39,7 +39,7 @@ def login_form():
     ticket: m.Ticket = db.session.scalar(ticket_query)
 
     return render_template(
-        "chat/registration/00_login_form.html",
+        "chat/registration/login_form.html",
         room=room,
         ticket=ticket,
     )
@@ -58,7 +58,7 @@ def login():
     if not room:
         log(log.ERROR, "Room not found")
         return render_template(
-            "chat/registration/00_login_form.html",
+            "chat/registration/login_form.html",
             error_message="Room not found",
         )
 
@@ -66,7 +66,7 @@ def login():
     if not user:
         log(log.ERROR, "Wrong email or password")
         return render_template(
-            "chat/registration/00_login_form.html",
+            "chat/registration/login_form.html",
             error_message="Wrong email or password",
             room=room,
         )
@@ -119,7 +119,7 @@ def sell():
     if current_user.is_authenticated:
         template = "chat/sell/01_event_name.html"
     else:
-        template = "chat/registration/01_email.html"
+        template = "chat/registration/email.html"
 
     return render_template(
         template,
@@ -170,7 +170,7 @@ def create_user_email():
     if not params.email or not params.room_unique_id:
         log(log.ERROR, "Form submitting error")
         return render_template(
-            "chat/registration/01_email.html",
+            "chat/registration/email.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -181,7 +181,7 @@ def create_user_email():
 
     if response.is_error:
         return render_template(
-            "chat/registration/01_email.html",
+            "chat/registration/email.html",
             error_message=response.message,
             room=room,
             now=now_str,
@@ -191,7 +191,7 @@ def create_user_email():
     assert user
 
     return render_template(
-        "chat/registration/02_confirm_email.html",
+        "chat/registration/confirm_email.html",
         now=now_str,
         room=room,
         user_unique_id=user.unique_id,
@@ -213,7 +213,7 @@ def email_verification():
             response.now_str,
         )
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/registration/name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -223,7 +223,7 @@ def email_verification():
     if not params.verification_code:
         log(log.ERROR, "No verification code: [%s]", params.verification_code)
         return render_template(
-            "chat/registration/02_confirm_email.html",
+            "chat/registration/confirm_email.html",
             error_message="No verification code, please confirm your email",
             room=room,
             now=response.now_str,
@@ -231,22 +231,21 @@ def email_verification():
         )
 
     assert user
-    assert room
 
     if user.verification_code != params.verification_code:
         log(log.ERROR, "Wrong verification code: [%s]", params.verification_code)
         return render_template(
-            "chat/registration/02_confirm_email.html",
+            "chat/registration/confirm_email.html",
             error_message="Wrong verification code, please confirm your email",
             room=room,
             now=response.now_str,
             user_unique_id=params.user_unique_id,
         )
 
-    c.send_message("Please confirm your email", "Email confirmed", room)
+    c.save_messages("Please confirm your email", "Email confirmed", room)
 
     return render_template(
-        "chat/registration/03_pass.html",
+        "chat/registration/password.html",
         now=response.now_str,
         room=room,
         user_unique_id=user.unique_id,
@@ -266,7 +265,7 @@ def create_user_password():
     if not room:
         log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
         return render_template(
-            "chat/sell/03_pass.html",
+            "chat/sell/password.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -281,7 +280,7 @@ def create_user_password():
             form.room_unique_id.data,
         )
         return render_template(
-            "chat/registration/03_pass.html",
+            "chat/registration/password.html",
             error_message="Form submitting error. Please, add your password",
             room=room,
             now=now_str,
@@ -290,7 +289,7 @@ def create_user_password():
 
     if form.password.data != form.confirm_password.data:
         return render_template(
-            "chat/registration/03_pass.html",
+            "chat/registration/password.html",
             now=now_str,
             room=room,
             user_unique_id=form.user_unique_id.data,
@@ -302,7 +301,7 @@ def create_user_password():
     if not success:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
         return render_template(
-            "chat/registration/03_pass.html",
+            "chat/registration/password.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -310,7 +309,7 @@ def create_user_password():
         )
 
     return render_template(
-        "chat/registration/04_identification.html",
+        "chat/registration/identification.html",
         now=now_str,
         room=room,
         user_unique_id=form.user_unique_id.data,
@@ -330,7 +329,7 @@ def create_user_identification():
     if not room:
         log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
         return render_template(
-            "chat/sell/04_identification.html",
+            "chat/sell/identification.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -345,7 +344,7 @@ def create_user_identification():
             form.room_unique_id.data,
         )
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/identification.html",
             error_message="Form submitting error",
             room=room,
             now=now_str,
@@ -355,7 +354,7 @@ def create_user_identification():
     if not form.file.data:
         log(log.ERROR, "No identification document: [%s]", form.file.data)
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/identification.html",
             error_message="No verification document, please upload your identification document",
             room=room,
             now=now_str,
@@ -367,7 +366,7 @@ def create_user_identification():
     if error_message:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/identification.html",
             error_message=error_message,
             room=room,
             now=now_str,
@@ -375,7 +374,7 @@ def create_user_identification():
         )
 
     return render_template(
-        "chat/registration/05_name.html",
+        "chat/registration/name.html",
         room=room,
         now=now_str,
         user_unique_id=form.user_unique_id.data,
@@ -397,7 +396,7 @@ def create_user_name():
             response.now_str,
         )
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/registration/name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -407,7 +406,7 @@ def create_user_name():
     if not response.params.name:
         log(log.ERROR, "Name not found: [%s]", response.params.name)
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/registration/name.html",
             error_message="Please, add your name",
             room=room,
             now=response.now_str,
@@ -415,11 +414,11 @@ def create_user_name():
         )
 
     assert user
-    assert room
+
     c.create_user_name(response.params, user, room)
 
     return render_template(
-        "chat/registration/06_last_name.html",
+        "chat/registration/last_name.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -441,7 +440,7 @@ def create_user_last_name():
             response.now_str,
         )
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/last_name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -451,7 +450,7 @@ def create_user_last_name():
     if not params.last_name:
         log(log.ERROR, "No name_input: [%s]", params.last_name)
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/last_name.html",
             error_message="Please, add your last name",
             room=room,
             now=response.now_str,
@@ -459,11 +458,11 @@ def create_user_last_name():
         )
 
     assert user
-    assert room
+
     c.create_user_last_name(params, user, room)
 
     return render_template(
-        "chat/registration/07_phone.html",
+        "chat/registration/phone.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -485,7 +484,7 @@ def create_user_phone():
             response.now_str,
         )
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/last_name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -494,7 +493,7 @@ def create_user_phone():
 
     if not params.phone:
         return render_template(
-            "chat/registration/07_phone.html",
+            "chat/registration/phone.html",
             error_message="Invalid phone format",
             now=response.now_str,
             room=room,
@@ -502,13 +501,13 @@ def create_user_phone():
         )
 
     assert user
-    assert room
+
     error_message = c.create_phone(params.phone, user, room)
 
     if error_message:
         log(log.ERROR, error_message)
         return render_template(
-            "chat/registration/07_phone.html",
+            "chat/registration/phone.html",
             error_message=error_message,
             room=room,
             now=response.now_str,
@@ -526,7 +525,7 @@ def create_user_phone():
         profile_url = f"{base_url}user/profile"
 
     return render_template(
-        "chat/registration/08_address.html",
+        "chat/registration/address.html",
         now=response.now_str,
         room=room,
         user_unique_id=user.unique_id,
@@ -549,7 +548,7 @@ def create_user_address():
             response.now_str,
         )
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/last_name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -559,7 +558,7 @@ def create_user_address():
     if not params.address:
         log(log.ERROR, "No name_input: [%s]", params.address)
         return render_template(
-            "chat/registration/08_address.html",
+            "chat/registration/address.html",
             error_message="Please, add your address",
             room=room,
             now=response.now_str,
@@ -567,11 +566,11 @@ def create_user_address():
         )
 
     assert user
-    assert room
+
     c.create_address(params.address, user, room)
 
     return render_template(
-        "chat/registration/09_birth_date.html",
+        "chat/registration/birth_date.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -593,7 +592,7 @@ def create_user_birth_date():
             response.now_str,
         )
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/registration/last_name.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -603,7 +602,7 @@ def create_user_birth_date():
     if not params.birth_date:
         log(log.ERROR, "No name_input: [%s]", params.birth_date)
         return render_template(
-            "chat/registration/09_birth_date.html",
+            "chat/registration/birth_date.html",
             error_message="Please, add your birth date",
             room=room,
             now=response.now_str,
@@ -611,11 +610,11 @@ def create_user_birth_date():
         )
 
     assert user
-    assert room
+
     c.create_birth_date(params.birth_date, user, room)
 
     return render_template(
-        "chat/registration/10_ask_social_profile.html",
+        "chat/registration/ask_social_profile.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -637,7 +636,7 @@ def create_user_social_profile():
             response.now_str,
         )
         return render_template(
-            "chat/registration/10_ask_social_profile.html",
+            "chat/registration/ask_social_profile.html",
             error_message="Form submitting error",
             room=room,
             now=response.now_str,
@@ -645,14 +644,14 @@ def create_user_social_profile():
         )
 
     assert user
-    assert room
+
     if params.without_social_profile:
         login_user(user)
-        c.send_message("You have been registered successfully", "Without social profile", room)
+        c.save_messages("You have been registered successfully", "Without social profile", room)
 
         log(log.INFO, f"User: {params.user_unique_id} logged in")
         return render_template(
-            "chat/registration/12_verified.html",
+            "chat/registration/verified.html",
             room=room,
             now=response.now_str,
         )
@@ -660,7 +659,7 @@ def create_user_social_profile():
     if not params.facebook and not params.instagram and not params.twitter:
         log(log.ERROR, "No social profile: [%s]", params.facebook)
         return render_template(
-            "chat/registration/11_social_profiles.html",
+            "chat/registration/social_profiles.html",
             room=room,
             now=response.now_str,
             user_unique_id=user.unique_id,
@@ -672,7 +671,7 @@ def create_user_social_profile():
     log(log.INFO, f"User: {user.email} logged in")
 
     return render_template(
-        "chat/registration/12_verified.html",
+        "chat/registration/verified.html",
         room=room,
         now=response.now_str,
     )

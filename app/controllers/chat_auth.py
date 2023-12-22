@@ -16,7 +16,7 @@ from config import config
 CFG = config()
 
 
-def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams, m.User | None, m.Room | None]:
+def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams, m.User | None, m.Room]:
     """
     The function to check and validate params.
 
@@ -26,21 +26,28 @@ def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams
     now = datetime.now()
     now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
 
+    # TODO: is needed to create a room if it does not exist?
     room_query = m.Room.select().where(m.Room.unique_id == params.room_unique_id)
     room: m.Room = db.session.scalar(room_query)
 
-    # TODO: is needed to create a room if it does not exist?
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
-        return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), None, room
-
     if not params.room_unique_id or not params.user_unique_id:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
         log(
             log.ERROR,
             "Form submitting error, user_unique_id: [%s], room_unique_id: [%s]",
             params.user_unique_id,
             params.room_unique_id,
         )
+        return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), None, room
+
+    if not room:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
         return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), None, room
 
     user_query = m.User.select().where(m.User.unique_id == params.user_unique_id)
@@ -53,7 +60,7 @@ def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams
     return s.ChatAuthResultParams(now_str=now_str, params=params, user=user), user, room
 
 
-def send_message(bot_message: str, user_message: str, room: m.Room):
+def save_messages(bot_message: str, user_message: str, room: m.Room):
     """
     The function to save message for history in chat.
     It is save message from chat-bot and user.
@@ -72,9 +79,7 @@ def send_message(bot_message: str, user_message: str, room: m.Room):
 
 
 def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.User | None]:
-    pattern = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-
-    match_pattern = re.search(pattern, email.lower())
+    match_pattern = re.search(app.config["PATTERN_EMAIL"], email.lower())
 
     if not match_pattern:
         return s.ChatAuthEmailValidate(email=email, message="Invalid email format", is_error=True), None
@@ -122,7 +127,7 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
     db.session.commit()
     log(log.INFO, f"User {email} created")
 
-    send_message("Please input your email", f"Email: {email}", room)
+    save_messages("Please input your email", f"Email: {email}", room)
 
     return s.ChatAuthEmailValidate(email=email), user
 
@@ -138,7 +143,7 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
     user.password = form.password.data
     user.save()
 
-    send_message("Please input your password", "Password has been created", room)
+    save_messages("Please input your password", "Password has been created", room)
 
     return True
 
@@ -151,12 +156,12 @@ def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
         return "Form submitting error"
 
-    response = c.image_upload(user, c.type_image.IDENTIFICATION)
+    response = c.image_upload(user, c.ImageCategory.IDENTIFICATION)
 
     if 200 not in response:
         return "Not valid type of verification document, please upload your identification document with right format"
 
-    send_message("Please upload your identification document", "Identification document has been uploaded", room)
+    save_messages("Please upload your identification document", "Identification document has been uploaded", room)
 
     return ""
 
@@ -165,19 +170,18 @@ def create_user_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
     user.name = params.name
     user.save()
 
-    send_message("Please input your name", f"Name: {params.name}", room)
+    save_messages("Please input your name", f"Name: {params.name}", room)
 
 
 def create_user_last_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
     user.last_name = params.last_name
     user.save()
 
-    send_message("Please input your last name", f"Last name: {params.last_name}", room)
+    save_messages("Please input your last name", f"Last name: {params.last_name}", room)
 
 
 def create_phone(phone: str, user: m.User, room: m.Room) -> str:
-    pattern = r"^\+?\d{10,13}$"
-    match_pattern = re.search(pattern, str(phone))
+    match_pattern = re.search(app.config["PATTERN_PHONE"], str(phone))
 
     if not match_pattern:
         return "Invalid phone format"
@@ -191,7 +195,7 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
     user.phone = phone
     user.save()
 
-    send_message("Please input your phone", f"Phone: {phone}", room)
+    save_messages("Please input your phone", f"Phone: {phone}", room)
 
     return ""
 
@@ -200,7 +204,7 @@ def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
     user.save()
 
-    send_message("Please input your address", f"Address: {address}", room)
+    save_messages("Please input your address", f"Address: {address}", room)
 
 
 def create_birth_date(birth_date: str, user: m.User, room: m.Room):
@@ -208,7 +212,7 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     user.activated = True
     user.save()
 
-    send_message("Please input your birth date", f"Birth date: {birth_date}", room)
+    save_messages("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
 def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room):
@@ -224,7 +228,7 @@ def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room)
         user.twitter = params.twitter
         message += f"twitter: {params.twitter}\n"
 
-    send_message("Please add your social profiles", message, room)
+    save_messages("Please add your social profiles", message, room)
 
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],

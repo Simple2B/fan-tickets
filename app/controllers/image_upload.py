@@ -6,12 +6,12 @@ from app import models as m
 from app.logger import log
 
 
-class type_image(Enum):
+class ImageCategory(Enum):
     LOGO = "logo"
     IDENTIFICATION = "identification"
 
 
-def image_upload(user: m.User, image_type: type_image):
+def image_upload(user: m.User, image_type: ImageCategory):
     """
     The function for uploading an image to the server.
     It is supposed to be universal for all models that have a picture.
@@ -59,13 +59,13 @@ def image_upload(user: m.User, image_type: type_image):
             filename=file.filename.split("/")[-1],
             file=img_bytes,
         ).save()
-        if image_type == type_image.LOGO:
+        if image_type == ImageCategory.LOGO:
             user.logo_id = picture.id
             user.save()
             log(log.INFO, "Uploaded image for user: [%s]", user)
             flash("Logo uploaded", "success")
             return {}, 200
-        if image_type == type_image.IDENTIFICATION:
+        if image_type == ImageCategory.IDENTIFICATION:
             user.identity_document_id = picture.id
             user.save()
             log(log.INFO, "Uploaded identity document for user: [%s]", user.email)
