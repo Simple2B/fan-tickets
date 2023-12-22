@@ -16,7 +16,7 @@ from config import config
 CFG = config()
 
 
-def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams, m.User | None, m.Room]:
+def check_required_params(params: s.ChatAuthRequiredParams) -> s.ChatAuthResultParams:
     """
     The function to check and validate params.
 
@@ -26,38 +26,16 @@ def check_user_room_id(params: s.ChatAuthParams) -> tuple[s.ChatAuthResultParams
     now = datetime.now()
     now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
 
-    # TODO: is needed to create a room if it does not exist?
-    room_query = m.Room.select().where(m.Room.unique_id == params.room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
     if not params.room_unique_id or not params.user_unique_id:
-        room = m.Room(
-            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        ).save()
         log(
             log.ERROR,
             "Form submitting error, user_unique_id: [%s], room_unique_id: [%s]",
             params.user_unique_id,
             params.room_unique_id,
         )
-        return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), None, room
+        return s.ChatAuthResultParams(now_str=now_str, is_error=True)
 
-    if not room:
-        room = m.Room(
-            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        ).save()
-
-        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
-        return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), None, room
-
-    user_query = m.User.select().where(m.User.unique_id == params.user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-
-    if not user:
-        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
-        return s.ChatAuthResultParams(now_str=now_str, params=params, is_error=True), user, room
-
-    return s.ChatAuthResultParams(now_str=now_str, params=params, user=user), user, room
+    return s.ChatAuthResultParams(now_str=now_str)
 
 
 def save_messages(bot_message: str, user_message: str, room: m.Room):
@@ -166,14 +144,14 @@ def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
     return ""
 
 
-def create_user_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
+def create_user_name(params: s.ChatAuthRequiredParams, user: m.User, room: m.Room):
     user.name = params.name
     user.save()
 
     save_messages("Please input your name", f"Name: {params.name}", room)
 
 
-def create_user_last_name(params: s.ChatAuthParams, user: m.User, room: m.Room):
+def create_user_last_name(params: s.ChatAuthRequiredParams, user: m.User, room: m.Room):
     user.last_name = params.last_name
     user.save()
 
@@ -215,7 +193,7 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     save_messages("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
-def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room):
+def create_social_profiles(params: s.ChatAuthRequiredParams, user: m.User, room: m.Room):
     message = ""
 
     if params.facebook:

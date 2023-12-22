@@ -8,4 +8,19 @@
       Something went wrong. {{ error_message }}
     </p>
   </div>
+
+  <div class="flex justify-end">
+    <div class="mt-2 w-5/6 flex gap-2">
+      <button id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        hx-trigger="click"
+        class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+        Selling
+      </button>
+      <button id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        hx-trigger="click"
+        class="w-1/2 p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
+        Buying
+      </button>
+    </div>
+  </div>
 </div>

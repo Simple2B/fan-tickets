@@ -5,7 +5,7 @@ from pydantic import (
 from pydantic_settings import SettingsConfigDict
 
 
-class ChatAuthParams(BaseModel):
+class ChatAuthRequiredParams(BaseModel):
     room_unique_id: str
     user_unique_id: str | None = None
     email: str | None = None
@@ -25,7 +25,7 @@ class ChatAuthParams(BaseModel):
 
 class ChatAuthResultParams(BaseModel):
     now_str: str
-    params: ChatAuthParams
+    params: ChatAuthRequiredParams
     is_error: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)

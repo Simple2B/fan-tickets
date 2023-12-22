@@ -162,7 +162,7 @@ def create_user_email():
     now = datetime.now()
     now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
 
-    params = s.ChatAuthParams.model_validate(dict(request.args))
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
 
     room_query = m.Room.select().where(m.Room.unique_id == params.room_unique_id)
     room: m.Room = db.session.scalar(room_query)
@@ -200,24 +200,20 @@ def create_user_email():
 
 @chat_auth_blueprint.route("/email_verification")
 def email_verification():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
             log.ERROR,
             "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
             response.params,
-            user,
-            room,
             response.now_str,
         )
         return render_template(
-            "chat/registration/name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
             now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
         )
 
     if not params.verification_code:
@@ -230,7 +226,15 @@ def email_verification():
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/registration/confirm_email.html",
+            error_message="No user, please confirm your email",
+            room=room,
+            now=response.now_str,
+            user_unique_id=params.user_unique_id,
+        )
 
     if user.verification_code != params.verification_code:
         log(log.ERROR, "Wrong verification code: [%s]", params.verification_code)
@@ -383,8 +387,8 @@ def create_user_identification():
 
 @chat_auth_blueprint.route("/create_user_name")
 def create_user_name():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
@@ -427,8 +431,8 @@ def create_user_name():
 
 @chat_auth_blueprint.route("/create_user_last_name")
 def create_user_last_name():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
@@ -471,8 +475,8 @@ def create_user_last_name():
 
 @chat_auth_blueprint.route("/create_user_phone")
 def create_user_phone():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
@@ -535,8 +539,8 @@ def create_user_phone():
 
 @chat_auth_blueprint.route("/create_user_address")
 def create_user_address():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
@@ -579,8 +583,8 @@ def create_user_address():
 
 @chat_auth_blueprint.route("/create_user_birth_date")
 def create_user_birth_date():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(
@@ -623,8 +627,8 @@ def create_user_birth_date():
 
 @chat_auth_blueprint.route("/create_user_social_profile", methods=["GET", "POST"])
 def create_user_social_profile():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
+    params = s.ChatAuthRequiredParams.model_validate(dict(request.args))
+    response, user, room = c.check_required_params(params)
 
     if response.is_error:
         log(

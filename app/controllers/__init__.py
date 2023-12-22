@@ -2,7 +2,7 @@
 from .pagination import create_pagination
 from .image_upload import image_upload, ImageCategory
 from .chat_auth import (
-    check_user_room_id,
+    check_required_params,
     create_user_name,
     create_user_last_name,
     save_messages,
