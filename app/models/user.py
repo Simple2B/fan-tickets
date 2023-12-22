@@ -44,9 +44,7 @@ class User(db.Model, UserMixin, ModelMixin):
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
     # Columns
-    username: orm.Mapped[str | None] = orm.mapped_column(
-        sa.String(64),
-    )
+    username: orm.Mapped[str | None] = orm.mapped_column(sa.String(64), nullable=True)
     email: orm.Mapped[str] = orm.mapped_column(
         sa.String(256),
         unique=True,
