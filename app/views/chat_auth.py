@@ -582,7 +582,7 @@ def create_user_address():
     c.create_address(params.address, user, room)
 
     return render_template(
-        "chat/registration/09_birth_date.html",
+        "chat/registration/10_ask_social_profile.html",
         room=room,
         now=response.now_str,
         user_unique_id=user.unique_id,
@@ -659,7 +659,7 @@ def create_user_social_profile():
     assert room
     if params.without_social_profile:
         login_user(user)
-        c.send_message("You have been registered successfully", "Without social profile", room)
+        c.send_message("You have successfully registered", "Without social profile", room)
 
         log(log.INFO, f"User: {params.user_unique_id} logged in")
         return render_template(

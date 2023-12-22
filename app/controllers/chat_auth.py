@@ -198,6 +198,8 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
 
 def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
+    # Delete when birth date will be added
+    user.activated = True
     user.save()
 
     send_message("Please input your address", f"Address: {address}", room)
@@ -229,5 +231,5 @@ def create_social_profiles(params: s.ChatAuthParams, user: m.User, room: m.Room)
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
-        text="Você foi registrado com sucesso. Por favor, verifique seu perfil.",
+        text="You have successfully registered",
     ).save()
