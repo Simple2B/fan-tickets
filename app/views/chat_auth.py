@@ -200,6 +200,7 @@ def create_user_email():
 
 @chat_auth_blueprint.route("/email_verification")
 def email_verification():
+    form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
     params = s.ChatAuthParams.model_validate(dict(request.args))
     response, user, room = c.check_user_room_id(params)
 
@@ -250,6 +251,7 @@ def email_verification():
         now=response.now_str,
         room=room,
         user_unique_id=user.unique_id,
+        form=form,
     )
 
 
