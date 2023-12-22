@@ -60,15 +60,31 @@ def get_pagarme_customer(customer_id: str):
     return response.text
 
 
-def create_pagarme_customer(customer_name: str, birthdate: str):
+def create_pagarme_customer(
+    customer_name: str,
+    code: str,
+    email: str,
+    birthdate: str,
+    document: str,
+    phone: str,
+):
     URL = "https://api.pagar.me/core/v5/customers"
 
     # payload = {"birthdate": "mm/dd/aaa"}
     payload = {
         "birthdate": birthdate,
         "name": customer_name,
-        "document": "93095135270",
+        "code": code,
+        "email": email,
+        "document": document,
         "type": "individual",
+        "phones": {
+            "mobile_phone": {
+                "country_code": CFG.BRASIL_COUNTRY_PHONE_CODE,
+                "area_code": CFG.BRASIL_COUNTRY_AREA_CODE,
+                "number": phone,
+            },
+        },
     }
 
     response = requests.post(URL, json=payload, headers=HEADERS)
@@ -132,10 +148,12 @@ def delete_pagarme_card(customer_id: str, card_id: str):
 
 def create_pagarme_order(
     item_amount: int,
+    item_code: str,
     item_description: str,
     item_quantity: int,
     item_category: str,
     customer_id: str,
+    code: str,
     name: str,
     birthdate: str,
     payments: list[s.PagarmeCheckout],
@@ -146,6 +164,7 @@ def create_pagarme_order(
         items=[
             s.PagarmeItem(
                 amount=item_amount,
+                code=item_code,
                 description=item_description,
                 quantity=item_quantity,
                 category=item_category,
@@ -156,6 +175,7 @@ def create_pagarme_order(
         #     name=name,
         #     birthdate=birthdate,
         # ).model_dump(),
+        code=code,
         customer_id=customer_id,
         payments=payments,
     ).model_dump()
@@ -169,4 +189,5 @@ def create_pagarme_order(
         f.write(response.text)
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
-    return s.PagarmeCreateOrderOutput.model_validate(response.json())
+    # return s.PagarmeCreateOrderOutput.model_validate(response.json())
+    return response.json()

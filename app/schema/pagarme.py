@@ -6,6 +6,8 @@ class PagarmeUserInput(BaseModel):
     id: str
     name: str
     birthdate: str
+    email: str
+    code: str
     delinquent: bool = False
     phone: dict = {}
 
@@ -79,6 +81,7 @@ class PagarmeItem(BaseModel):
     """
 
     amount: int
+    code: str
     description: str
     quantity: int
     category: str
@@ -131,6 +134,7 @@ class PagarmeCreateOrderInput(BaseModel):
     items: list[PagarmeItem]
     customer: PagarmeUserInput | None = None
     customer_id: str | None = None
+    code: str | None = None
     payments: list[PagarmeCheckout]
 
     model_config = SettingsConfigDict(from_attributes=True)

@@ -73,16 +73,20 @@ def test_pagarme_ticket_order(client: FlaskClient):
     letters = string.ascii_lowercase
     TESTING_USERNAME_ID = "".join(random.choice(letters) for _ in range(7))
     TESTING_USERNAME = f"{current_user.username} {TESTING_USERNAME_ID}"
-    # TESTING_USERNAME = current_user.username
 
     data = {
         "username": TESTING_USERNAME,
         "birthdate": "01/01/2000",
-        "number": "4242424242424242",
+        "code": current_user.unique_id,
+        "email": current_user.email,
+        "document": "93095135270",
+        "phone": random.randint(100000000, 999999999),
+        "card_number": "4242424242424242",
         "exp_month": "01",
         "exp_year": "2025",
         "cvv": "123",
         "item_amount": "1000",
+        "item_code": current_user.unique_id,  # replace by ticket's unique_id
         "item_description": "Testing Concert Ticket",
         "item_quantity": "2",
         "item_category": "Testing Concert Event",

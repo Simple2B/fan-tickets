@@ -28,16 +28,28 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 def ticket_order():
     username = request.form.get("username")
     birthdate = request.form.get("birthdate")
-    number = request.form.get("number")
+    code = request.form.get("code")
+    email = request.form.get("email")
+    document = request.form.get("document")
+    phone = request.form.get("phone")
+    number = request.form.get("card_number")
     exp_month = request.form.get("exp_month")
     exp_year = request.form.get("exp_year")
     cvv = request.form.get("cvv")
     item_amount = request.form.get("item_amount")
+    item_code = request.form.get("item_code")
     item_description = request.form.get("item_description")
     item_quantity = request.form.get("item_quantity")
     item_category = request.form.get("item_category")
 
-    created_pagarme_customer = create_pagarme_customer(username, birthdate)
+    created_pagarme_customer = create_pagarme_customer(
+        customer_name=username,
+        code=code,
+        email=email,
+        birthdate=birthdate,
+        document=document,
+        phone=phone,
+    )
 
     card_create_response = create_pagarme_card(
         customer_id=created_pagarme_customer.id,
@@ -78,10 +90,12 @@ def ticket_order():
 
     order_create_response = create_pagarme_order(
         item_amount=item_amount,
+        item_code=item_code,
         item_description=item_description,
         item_quantity=item_quantity,
         item_category=item_category,
         customer_id=created_pagarme_customer.id,
+        code=created_pagarme_customer.code,
         name=created_pagarme_customer.name,
         birthdate=birthdate_str,
         payments=checkout,
