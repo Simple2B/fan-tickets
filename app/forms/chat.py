@@ -4,6 +4,7 @@ from wtforms import (
     StringField,
     SubmitField,
     ValidationError,
+    FileField,
 )
 from wtforms.validators import DataRequired
 from flask_login import current_user
@@ -25,3 +26,18 @@ class ChatPhoneForm(FlaskForm):
         query = m.User.select().where(m.User.phone == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This phone is already registered.")
+
+
+class ChatAuthIdentityForm(FlaskForm):
+    room_unique_id = StringField("room_unique_id", [DataRequired()])
+    user_unique_id = StringField("user_unique_id", [DataRequired()])
+    file = FileField("file", [DataRequired()])
+    submit = SubmitField("Send verification code")
+
+
+class ChatAuthPasswordForm(FlaskForm):
+    room_unique_id = StringField("room_unique_id", [DataRequired()])
+    user_unique_id = StringField("user_unique_id", [DataRequired()])
+    password = StringField("password", [DataRequired()])
+    confirm_password = StringField("confirm_password", [DataRequired()])
+    submit = SubmitField("Send verification code")

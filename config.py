@@ -40,6 +40,8 @@ class BaseConfig(BaseSettings):
 
     # Super admin
     ADMIN_USERNAME: str
+    ADMIN_NAME: str = "Admin_name"
+    ADMIN_LAST_NAME: str = "Admin_last_name"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
@@ -70,6 +72,7 @@ class BaseConfig(BaseSettings):
     USER_PASSWORD_MAX_LENGTH: int = 30
 
     # Chat registration default values
+    CHAT_DEFAULT_USERNAME: str = "guest"
     CHAT_DEFAULT_BOT_ID: int = 2
     CHAT_DEFAULT_EMAIL: str = "empty@email.com"
     CHAT_DEFAULT_PHONE: str = "+3800000000000"

@@ -12,7 +12,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
-from app.controllers import create_pagination, image_upload
+from app.controllers import create_pagination, image_upload, type_image
 from app import models as m, db
 from app import forms as f
 from app.logger import log
@@ -145,7 +145,10 @@ def profile():
 @bp.route("/logo-upload", methods=["GET", "POST"])
 @login_required
 def logo_upload():
-    image_upload(current_user)
+    image_upload(
+        current_user,
+        type_image.LOGO,
+    )
     return {}, 200
 
 
@@ -276,7 +279,7 @@ def export():
         ]
         writer.writerow(row)
         row = [
-            current_user.username,
+            current_user.name,
             current_user.email,
             current_user.phone,
             current_user.card,
@@ -292,7 +295,7 @@ def export():
     return send_file(
         file_bytes,
         as_attachment=True,
-        download_name=f"report_{current_user.username}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+        download_name=f"report_{current_user.name}_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
         mimetype="text/csv",
         max_age=0,
         last_modified=now,

@@ -38,13 +38,28 @@ class User(db.Model, UserMixin, ModelMixin):
     __tablename__ = "users"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    username: orm.Mapped[str] = orm.mapped_column(
+
+    # Foreign keys
+    identity_document_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+
+    # Columns
+    username: orm.Mapped[str | None] = orm.mapped_column(
         sa.String(64),
+    )
+    email: orm.Mapped[str] = orm.mapped_column(
+        sa.String(256),
         unique=True,
         nullable=False,
     )
-    email: orm.Mapped[str] = orm.mapped_column(sa.String(256))
+    name: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
+    last_name: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    birth_date: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
+    facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    twitter: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     card: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
     verification_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(6))
     password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
@@ -62,9 +77,11 @@ class User(db.Model, UserMixin, ModelMixin):
         default=gen_password_reset_id,
     )
     role: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=UserRole.client.value)
-    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+    is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
-    picture: orm.Mapped["Picture"] = orm.relationship()
+    # Relationships
+    identity_document: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[identity_document_id])
+    picture: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[picture_id])
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
         foreign_keys="Ticket.seller_id",
         back_populates="seller",
@@ -76,19 +93,15 @@ class User(db.Model, UserMixin, ModelMixin):
     notifications: orm.Mapped[list["Notification"]] = orm.relationship(
         back_populates="user",
     )
-
     notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(back_populates="user")
-
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.reviewer_id",
         back_populates="reviewer",
     )
-
     receivers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.receiver_id",
         back_populates="receiver",
     )
-
     seller_chat_rooms: orm.Mapped[list["Room"]] = orm.relationship(
         foreign_keys="Room.seller_id",
         back_populates="seller",
@@ -101,7 +114,6 @@ class User(db.Model, UserMixin, ModelMixin):
         secondary=users_events,
         back_populates="subscribers",
     )
-    is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     @property
     def password(self):

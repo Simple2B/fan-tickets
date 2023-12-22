@@ -55,6 +55,8 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
         # activated = True if i - num_objects == 3 else False
         user = m.User(
             username=f"{first_name}{last_name}{randint(10, 99)}",
+            name=first_name,
+            last_name=last_name,
             email=email,
             phone=fake.phone_number(),
             card=faker.random_number(digits=16, fix_len=True),
@@ -229,7 +231,24 @@ def set_users_images():
     print("users images script worked successfully")
 
 
+def set_users_identity_documents():
+    with open("test_flask/users_pictures/default_passport.png", "rb") as img_file:
+        picture = m.Picture(
+            filename="default_passport",
+            file=img_file.read(),
+            mimetype="image/png",
+        ).save(False)
+
+        users = m.User.all()
+        for u in users:
+            user: m.User = u
+            user.identity_document = picture
+            user.save(False)
+        db.session.commit()
+
+
 def populate(count: int = NUM_TEST_USERS):
     generate_test_users()
     generate_test_events()
     set_users_images()
+    set_users_identity_documents()
