@@ -71,9 +71,9 @@ def test_pagarme_update_customer(client: FlaskClient):
 def test_pagarme_ticket_order(client: FlaskClient):
     login(client)
     letters = string.ascii_lowercase
-    # TESTING_USERNAME_ID = "".join(random.choice(letters) for _ in range(5))
-    # TESTING_USERNAME = f"{current_user.username}-{TESTING_USERNAME_ID}"
-    TESTING_USERNAME = current_user.username
+    TESTING_USERNAME_ID = "".join(random.choice(letters) for _ in range(7))
+    TESTING_USERNAME = f"{current_user.username} {TESTING_USERNAME_ID}"
+    # TESTING_USERNAME = current_user.username
 
     data = {
         "username": TESTING_USERNAME,

@@ -129,7 +129,8 @@ class PagarmeCreateOrderInput(BaseModel):
     """
 
     items: list[PagarmeItem]
-    customer: PagarmeUserInput
+    customer: PagarmeUserInput | None = None
+    customer_id: str | None = None
     payments: list[PagarmeCheckout]
 
     model_config = SettingsConfigDict(from_attributes=True)

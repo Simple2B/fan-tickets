@@ -67,6 +67,8 @@ def create_pagarme_customer(customer_name: str, birthdate: str):
     payload = {
         "birthdate": birthdate,
         "name": customer_name,
+        "document": "93095135270",
+        "type": "individual",
     }
 
     response = requests.post(URL, json=payload, headers=HEADERS)
@@ -149,11 +151,12 @@ def create_pagarme_order(
                 category=item_category,
             ).model_dump()
         ],
-        customer=s.PagarmeUserInput(
-            id=customer_id,
-            name=name,
-            birthdate=birthdate,
-        ).model_dump(),
+        # customer=s.PagarmeUserInput(
+        #     id=customer_id,
+        #     name=name,
+        #     birthdate=birthdate,
+        # ).model_dump(),
+        customer_id=customer_id,
         payments=payments,
     ).model_dump()
 
