@@ -203,3 +203,5 @@ if (categoryDropdowns) {
     }
   });
 }
+
+const chatMessageContainer = document.
