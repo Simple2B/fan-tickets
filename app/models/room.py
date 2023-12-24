@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin, gen_uuid
+from .utils import ModelMixin, gen_uuid, utcnow
 
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ class Room(db.Model, ModelMixin):
     is_open: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=utcnow,
     )
 
     ticket_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("tickets.id"))

@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, utcnow
 
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class Payment(db.Model, ModelMixin):
     description: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
-        default=datetime.utcnow,
+        default=utcnow,
     )
 
     ticket: orm.Mapped["Ticket"] = orm.relationship()

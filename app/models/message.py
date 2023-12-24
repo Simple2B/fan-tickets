@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin, gen_uuid
+from .utils import ModelMixin, gen_uuid, utcnow
 
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ class Message(db.Model, ModelMixin):
     room_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("rooms.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=utcnow,
     )
     viewed: orm.Mapped[bool] = orm.mapped_column(default=False)
     text: orm.Mapped[str] = orm.mapped_column(sa.Text)
