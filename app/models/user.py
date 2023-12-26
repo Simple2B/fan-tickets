@@ -10,7 +10,7 @@ from .users_events import users_events
 
 from enum import Enum
 from app.database import db
-from .utils import ModelMixin
+from .utils import ModelMixin, utcnow
 from app.logger import log
 from app import schema as s
 
@@ -64,7 +64,7 @@ class User(db.Model, UserMixin, ModelMixin):
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
-        default=datetime.utcnow,
+        default=utcnow,
     )
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),

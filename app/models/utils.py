@@ -1,4 +1,5 @@
 from typing import Any
+from datetime import datetime, UTC
 import sqlalchemy as sa
 from app import db
 from uuid import uuid4
@@ -64,3 +65,6 @@ def paginate(
 
 def gen_uuid() -> str:
     return str(uuid4())
+
+def utcnow():
+    return datetime.now(UTC)
