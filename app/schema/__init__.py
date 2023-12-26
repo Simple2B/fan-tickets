@@ -14,4 +14,5 @@ from .pagarme import (
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeBillingAddress,
+    PagarmeCreditCardPayment,
 )

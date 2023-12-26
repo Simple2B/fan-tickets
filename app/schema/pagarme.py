@@ -155,12 +155,28 @@ class PagarmeCreateOrderOutput(BaseModel):
     customer: object
     customer_id: string
     items: array of objects
-    payments: array of objects [credit_card: object, boleto: object, pix: object]
+    payments: array of objects [credit_card, checkout, pix]
     """
 
-    customer: PagarmeUserOutput
-    customer_id: str
+    id: str
+    code: str
+    amount: int
+    currency: str
+    closed: bool
     items: list[PagarmeItem]
-    payments: list[PagarmeCheckout]
+    customer: PagarmeUserOutput
+    status: str
+    created_at: str
+    updated_at: str
+    closed_at: str | None = None
+    charges: list
+    checkouts: list
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeCreditCardPayment(BaseModel):
+    status: str
+    user_pagar_id: str
+    ticket_unique_id: str
+    price_paid: float

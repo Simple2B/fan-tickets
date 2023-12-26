@@ -118,14 +118,12 @@ def ticket_order():
         payments=checkout,
     )
 
-    checkout_url = order_create_response.checkout_url
-
-    return {
-        "status": "success",
-        "username": created_pagarme_customer.name,
-        "birthdate": created_pagarme_customer.birthdate,
-        "checkout_url": checkout_url,
-    }, 200
+    return s.PagarmeCreditCardPayment(
+        status=order_create_response.charges[0]["last_transaction"]["antifraud_response"]["status"],
+        user_pagar_id=order_create_response.customer.code,
+        ticket_unique_id=order_create_response.items[0].code,
+        price_paid=order_create_response.charges[0]["last_transaction"]["amount"],
+    ).model_dump()
 
 
 @pay_blueprint.route("/webhook", methods=["POST"])

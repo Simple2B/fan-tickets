@@ -6,14 +6,12 @@ from config import config
 
 
 """
-1.  User requests my Flask app pressing for example "Pay" button
-2. Flask app accepts this request at first at the route that creates a pagar.me customer going to "https://api.pagar.me/core/v5/customers" endpoint.
-3. Flask app creates a pagar.me card going to the "https://api.pagar.me/core/v5/customers/customer_id/cards" endpoint.
-4. Flask app creates a pagar.me order going to the "https://api.pagar.me/core/v5/orders" endpoint.
-5. Flask app creates a pagar.me charge going to the "https://api.pagar.me/core/v5/charges" endpoint.
-6. Flask app creates a pagar.me item going to the "https://api.pagar.me/core/v5/orders/order_id/items" endpoint.
-7. Pagar.me proceeds the payment and sends a response to a flask app webhook
-8. Flask app receives the response on the webhook and saves payment info to a database
+1. User requests my Flask app pressing for example "Pay" button
+2. Checking if we have this customer on pagar.me https://api.pagar.me/core/v5/customers/{customer_id}
+3. If not creating a pagar.me customer going to "https://api.pagar.me/core/v5/customers" endpoint.
+4. For new user creating a pagar.me card going to the "https://api.pagar.me/core/v5/customers/customer_id/cards" endpoint.
+5. Creating a pagar.me order going to the "https://api.pagar.me/core/v5/orders" endpoint.
+6. Receiving a request from pagar.me to the webhook and saving/updating all user data to the database.
 """
 
 
@@ -76,7 +74,7 @@ def create_pagarme_customer(
     response = requests.post(URL, json=payload, headers=HEADERS)
 
     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
-    return s.PagarmeUserOutput.model_validate_json(response.text)
+    return s.PagarmeUserOutput.model_validate(response.json())
 
 
 def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_name: str = None):
@@ -91,7 +89,7 @@ def update_pagarme_customer(customer_id: str, birthdate: str = None, customer_na
     response = requests.put(URL, headers=HEADERS, json=payload)
 
     print(response.text)
-    return s.PagarmeUserOutput.model_validate_json(response.text)
+    return s.PagarmeUserOutput.model_validate(response.json())
 
 
 def create_pagarme_card(
@@ -118,7 +116,7 @@ def create_pagarme_card(
     response = requests.post(URL, headers=HEADERS, json=payload)
 
     log(log.INFO, "create_pagarme_card response: [%s]", response.text)
-    return s.PagarmeCardOutput.model_validate_json(response.text)
+    return s.PagarmeCardOutput.model_validate(response.json())
 
 
 def update_pagarme_card(customer_id: str, card_id: str):
@@ -163,11 +161,6 @@ def create_pagarme_order(
                 category=item_category,
             ).model_dump()
         ],
-        # customer=s.PagarmeUserInput(
-        #     id=customer_id,
-        #     name=name,
-        #     birthdate=birthdate,
-        # ).model_dump(),
         code=code,
         customer_id=customer_id,
         payments=payments,
@@ -182,5 +175,4 @@ def create_pagarme_order(
         f.write(response.text)
 
     log(log.INFO, "create_pagarme_order response: [%s]", response.text)
-    # return s.PagarmeCreateOrderOutput.model_validate(response.json())
-    return response.json()
+    return s.PagarmeCreateOrderOutput.model_validate(response.json())

@@ -13,12 +13,6 @@ from app.controllers.payments import (
     get_pagarme_customer,
     create_pagarme_customer,
     update_pagarme_customer,
-    # create_pagarme_card,
-    # update_pagarme_card,
-    # delete_pagarme_card,
-    # create_pagarme_order,
-    # create_pagarme_charge,
-    # create_pagarme_item,
 )
 
 
@@ -95,10 +89,9 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "item_code": current_user.unique_id,  # replace by ticket's unique_id
         "item_description": "Testing Concert Ticket",
         "item_quantity": "2",
-        "item_category": "Testing Concert Event",
+        "item_category": "Testing Concert Event",  # ticket.event.category
     }
     response = client.post("/pay/ticket_order", data=data)
 
     assert response.status_code == 200
-    assert response.json["status"] == "success"
-    assert response.json["username"] == TESTING_USERNAME
+    assert response.json["status"] == "approved"
