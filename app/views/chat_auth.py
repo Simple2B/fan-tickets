@@ -1,12 +1,15 @@
 from datetime import datetime
 import os
 from urllib.parse import urlparse
+
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
+from flask_mail import Message
+
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db
+from app import models as m, db, mail
 from app.logger import log
 from config import config
 
@@ -222,6 +225,17 @@ def create_user_email():
             room=room,
             now=c.utcnow_chat_format(),
         )
+
+    msg = Message(
+        subject=f"Verify email for {CFG.APP_NAME}",
+        sender=app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[user.email],
+    )
+    msg.html = render_template(
+        "email/email_confirm.htm",
+        verification_code=response.verification_code,
+    )
+    mail.send(msg)
 
     return render_template(
         "chat/registration/email_confirm.html",

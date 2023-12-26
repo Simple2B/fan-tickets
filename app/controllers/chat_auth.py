@@ -2,40 +2,37 @@ from datetime import datetime
 from random import randint
 import re
 
-from flask import render_template, current_app as app
-from flask_mail import Message
+import sqlalchemy as sa
+
+from flask import current_app as app
+
 
 from werkzeug.security import check_password_hash
 
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db, mail
+from app import models as m, db
 
 from app.logger import log
-from config import config
-
-CFG = config()
 
 
 def get_room(room_unique_id: str) -> m.Room | None:
-    room_query = m.Room.select().where(m.Room.unique_id == room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
+    room_query = sa.select(m.Room).where(m.Room.unique_id == room_unique_id)
+    room = db.session.scalar(room_query)
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", room_unique_id)
-        return None
 
     return room
 
 
 def get_user(user_unique_id: str) -> m.User | None:
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.Room = db.session.scalar(user_query)
+    user_query = sa.select(m.User).where(m.User.unique_id == user_unique_id)
+    user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", user_unique_id)
-        return None
 
     return user
 
@@ -65,8 +62,8 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
     if not match_pattern:
         return s.ChatAuthEmailValidate(email=email, message="Invalid email format", is_error=True), None
 
-    user_email_query = m.User.select().where(m.User.email == email)
-    user_email: m.User = db.session.scalar(user_email_query)
+    user_email_query = sa.select(m.User).where(m.User.email == email)
+    user_email = db.session.scalar(user_email_query)
 
     if user_email:
         return s.ChatAuthEmailValidate(email=email, message="Email already taken", is_error=True), None
@@ -92,17 +89,6 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
         verification_code=verification_code,
     ).save(False)
 
-    msg = Message(
-        subject=f"Verify email for {CFG.APP_NAME}",
-        sender=app.config["MAIL_DEFAULT_SENDER"],
-        recipients=[email],
-    )
-    msg.html = render_template(
-        "email/email_confirm.htm",
-        verification_code=verification_code,
-    )
-    mail.send(msg)
-
     db.session.flush()
     room.seller_id = user.id
     db.session.commit()
@@ -110,12 +96,12 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
 
     save_message("Please input your email", f"Email: {email}", room)
 
-    return s.ChatAuthEmailValidate(email=email), user
+    return s.ChatAuthEmailValidate(email=email, verification_code=verification_code), user
 
 
 def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
-    user_query = m.User.select().where(m.User.unique_id == form.user_unique_id.data)
-    user: m.User = db.session.scalar(user_query)
+    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
@@ -130,8 +116,8 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
 
 
 def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
-    user_query = m.User.select().where(m.User.unique_id == form.user_unique_id.data)
-    user: m.User = db.session.scalar(user_query)
+    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
@@ -148,8 +134,8 @@ def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
 
 
 def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
-    user_query = m.User.select().where(m.User.unique_id == form.user_unique_id.data)
-    user: m.User = db.session.scalar(user_query)
+    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
@@ -165,14 +151,14 @@ def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
     return ""
 
 
-def create_user_name(name: str, user: m.User, room: m.Room):
+def create_user_name(name: str, user, room: m.Room):
     user.name = name
     user.save()
 
     save_message("Please input your name", f"Name: {name}", room)
 
 
-def create_user_last_name(last_name: str, user: m.User, room: m.Room):
+def create_user_last_name(last_name: str, user, room: m.Room):
     user.last_name = last_name
     user.save()
 
@@ -185,8 +171,8 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
     if not match_pattern:
         return "Invalid phone format"
 
-    user_phone_query = m.User.select().where(m.User.phone == phone)
-    user_phone: m.User = db.session.scalar(user_phone_query)
+    user_phone_query = sa.select(m.User).where(m.User.phone == phone)
+    user_phone = db.session.scalar(user_phone_query)
 
     if user_phone:
         return "Phone already taken"
@@ -199,7 +185,7 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
     return ""
 
 
-def create_address(address: str, user: m.User, room: m.Room):
+def create_address(address: str, user, room: m.Room):
     user.address = address
     # TODO: Move to birth_date route when it will be added
     user.activated = True
@@ -208,7 +194,7 @@ def create_address(address: str, user: m.User, room: m.Room):
     save_message("Please input your address", f"Address: {address}", room)
 
 
-def create_birth_date(birth_date: str, user: m.User, room: m.Room):
+def create_birth_date(birth_date: str, user, room: m.Room):
     user.birth_date = datetime.strptime(birth_date, app.config["DATE_PICKER_FORMAT"])
     user.activated = True
     user.save()
@@ -216,7 +202,7 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     save_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
-def create_social_profiles(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
+def create_social_profiles(params: s.ChatAuthSocialProfileParams, user, room: m.Room):
     message = ""
 
     if params.facebook:

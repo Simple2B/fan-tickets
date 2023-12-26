@@ -49,6 +49,7 @@ class ChatAuthResultParams(BaseModel):
 
 class ChatAuthEmailValidate(BaseModel):
     email: str
+    verification_code: int | None = None
     message: str | None = None
     is_error: bool = False
 
