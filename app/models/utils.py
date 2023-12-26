@@ -56,15 +56,14 @@ def first(stmt: sa.sql.selectable.Select) -> Any | None:
     return db.session.scalar(stmt)
 
 
-def paginate(
-    stmt: sa.sql.selectable.Select, page: int, per_page: int
-) -> list[Any] | None:
+def paginate(stmt: sa.sql.selectable.Select, page: int, per_page: int) -> list[Any] | None:
     # Return records of query by page and per_page.
     return db.session.scalars(stmt.offset((page - 1) * per_page).limit(per_page)).all()
 
 
 def gen_uuid() -> str:
     return str(uuid4())
+
 
 def utcnow():
     return datetime.now(UTC)
