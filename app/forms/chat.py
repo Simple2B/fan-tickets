@@ -39,5 +39,4 @@ class ChatAuthPasswordForm(FlaskForm):
     room_unique_id = StringField("room_unique_id", [DataRequired()])
     user_unique_id = StringField("user_unique_id", [DataRequired()])
     password = StringField("password", [DataRequired()])
-    confirm_password = StringField("confirm_password", [DataRequired()])
     submit = SubmitField("Send verification code")

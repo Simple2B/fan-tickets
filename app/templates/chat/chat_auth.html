@@ -1,0 +1,66 @@
+<div class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %}
+
+  {% if error_message %}
+  <div class="mb-6 flex text-black justify-start">
+    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
+      {{ error_message }}: {{ email_input }}
+    </p>
+  </div>
+  {% endif %}
+
+  {% include 'chat/chat_spinner.html' %}
+  <div id="chat-message-container" data-send-message>
+    <div class="chat-message">
+      <div class=" flex text-white justify-start">
+        <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
+      </div>
+      <div class="flex text-black justify-start">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
+          You do not log in. Please log in or create account
+        </p>
+      </div>
+    </div>
+    {% set all_filters = "[name='from_sign_up'], [name='room_unique_id'], [name='user_unique_id']" %}
+    <div class="chat-message w-5/6 flex flex-col gap-1">
+      <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+      <input type="hidden" name="from_sign_up" value="True" />
+      <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
+        hx-swap="innerHTML" hx-trigger="click"
+        class="p-2 text-center text-grey hover:text-white transition-colors duration-200 bg-dark-grey rounded-t-lg">
+        Log in
+      </button>
+      <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.create_user_email') }}"
+        hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+        class="p-2 text-center text-grey hover:text-white transition-colors duration-200 bg-dark-grey rounded-b-lg">
+        Sign up
+      </button>
+    </div>
+  </div>
+</div>
+{% set all_filters = "[name='user_message'], [name='room_unique_id'], [name='user_unique_id']" %}
+<div>
+  <label for="chat" class="sr-only">Your message</label>
+  <div class="py-3 px-4 flex gap-2 items-center text-grey bg-dark-grey rounded-b-2xl">
+    <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    <input id="chat" rows="1" name="user_message"
+      class="block p-2.5 w-full text-sm text-white bg-dark-grey rounded-lg border border-middle-grey outline-none"
+      placeholder="{{ route }}" />
+    <button id="chat-send-message-button" type="button" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
+      hx-include="{{ all_filters }}"
+      class="inline-flex justify-center p-2 text-grey hover:text-light-grey-b0 rounded-full cursor-pointer">
+      <svg class="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor" viewBox="0 0 18 20">
+        <path
+          d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
+      </svg>
+      <span class="sr-only">Send message</span>
+    </button>
+  </div>
+</div>
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

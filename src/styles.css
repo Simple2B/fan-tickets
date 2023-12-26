@@ -447,3 +447,25 @@ select::-ms-expand {
     background-color: rgba(152, 128, 255, 0.2);
   }
 }
+
+.chat-spinner {
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.chat-spinner-active {
+  opacity: 1;
+}
+
+.chat-message {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.chat-message-active {
+  opacity: 1;
+  max-height: 1000px;
+  overflow: hidden;
+}
