@@ -139,4 +139,16 @@ def ticket_order():
 
 @pay_blueprint.route("/webhook", methods=["POST"])
 def webhook():
+    """
+    customer.created
+    customer.updated
+    card.created
+    card.updated
+    card.deleted
+    card.expired
+    order.paid
+    order.payment_failed
+    order.created
+    order.canceled
+    """
     return {"status": "success"}, 200

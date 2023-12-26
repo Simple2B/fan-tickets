@@ -40,7 +40,7 @@ def test_pagarme_get_customer(client: FlaskClient):
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
-def test_pagarme_update_customer(client: FlaskClient):
+def test_pagarme_customer(client: FlaskClient):
     login(client)
     TESTING_BIRTH_DATE = "01/01/2000"
     now = datetime.now().strftime("%m-%d-%H-%M-%S")
