@@ -91,8 +91,6 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
 
     db.session.flush()
     room.seller_id = user.id
-    db.session.commit()
-    log(log.INFO, f"User {email} created")
 
     save_message("Please input your email", f"Email: {email}", room)
 
@@ -108,7 +106,7 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
         return False
 
     user.password = form.password.data
-    user.save()
+    user.save(False)
 
     save_message("Please input your password", "Password has been added", room)
 
@@ -151,16 +149,16 @@ def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
     return ""
 
 
-def create_user_name(name: str, user, room: m.Room):
+def create_user_name(name: str, user: m.User, room: m.Room):
     user.name = name
-    user.save()
+    user.save(False)
 
     save_message("Please input your name", f"Name: {name}", room)
 
 
-def create_user_last_name(last_name: str, user, room: m.Room):
+def create_user_last_name(last_name: str, user: m.User, room: m.Room):
     user.last_name = last_name
-    user.save()
+    user.save(False)
 
     save_message("Please input your last name", f"Last name: {last_name}", room)
 
@@ -178,31 +176,31 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
         return "Phone already taken"
 
     user.phone = phone
-    user.save()
+    user.save(False)
 
     save_message("Please input your phone", f"Phone: {phone}", room)
 
     return ""
 
 
-def create_address(address: str, user, room: m.Room):
+def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
     # TODO: Move to birth_date route when it will be added
     user.activated = True
-    user.save()
+    user.save(False)
 
     save_message("Please input your address", f"Address: {address}", room)
 
 
-def create_birth_date(birth_date: str, user, room: m.Room):
+def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     user.birth_date = datetime.strptime(birth_date, app.config["DATE_PICKER_FORMAT"])
     user.activated = True
-    user.save()
+    user.save(False)
 
     save_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
-def create_social_profiles(params: s.ChatAuthSocialProfileParams, user, room: m.Room):
+def create_social_profiles(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
     message = ""
 
     if params.facebook:

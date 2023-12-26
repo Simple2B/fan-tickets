@@ -2,6 +2,8 @@ from datetime import datetime
 import os
 from urllib.parse import urlparse
 
+from sqlalchemy.exc import IntegrityError
+
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
 from flask_mail import Message
@@ -226,6 +228,19 @@ def create_user_email():
             now=c.utcnow_chat_format(),
         )
 
+    try:
+        db.session.commit()
+        log(log.INFO, f"User {user.email} created")
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User is not created: [%s]", e)
+        return render_template(
+            "chat/registration/email.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     msg = Message(
         subject=f"Verify email for {CFG.APP_NAME}",
         sender=app.config["MAIL_DEFAULT_SENDER"],
@@ -338,6 +353,19 @@ def create_user_password():
         )
 
     success = c.create_password(form, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "User password added")
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User is not created: [%s]", e)
+        return render_template(
+            "chat/registration/password.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     if not success:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
@@ -518,6 +546,19 @@ def create_user_name():
 
     c.create_user_name(params.user_message, user, room)
 
+    try:
+        db.session.commit()
+        log(log.INFO, "User name added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User name is not added: [%s]", e)
+        return render_template(
+            "chat/registration/name.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     return render_template(
         "chat/registration/last_name.html",
         room=room,
@@ -568,6 +609,19 @@ def create_user_last_name():
         )
 
     c.create_user_last_name(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "User last name added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User last name is not added: [%s]", e)
+        return render_template(
+            "chat/registration/last_name.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
         "chat/registration/phone.html",
@@ -631,6 +685,19 @@ def create_user_phone():
             phone=params.user_message,
         )
 
+    try:
+        db.session.commit()
+        log(log.INFO, "Phone added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Phone is not added: [%s]", e)
+        return render_template(
+            "chat/registration/phone.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     # parse url and get the domain name
     # TODO: add production url
     if os.environ.get("APP_ENV") == "development":
@@ -691,6 +758,19 @@ def create_user_address():
 
     c.create_address(params.user_message, user, room)
 
+    try:
+        db.session.commit()
+        log(log.INFO, "Address added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Address is not added: [%s]", e)
+        return render_template(
+            "chat/registration/address.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     return render_template(
         "chat/registration/ask_social_profile.html",
         room=room,
@@ -741,6 +821,19 @@ def create_user_birth_date():
         )
 
     c.create_birth_date(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "Birth date added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Birth date is not added: [%s]", e)
+        return render_template(
+            "chat/registration/birth_date.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
         "chat/registration/ask_social_profile.html",
