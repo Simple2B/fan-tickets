@@ -1,4 +1,5 @@
 # Payment system actions:
+
 - reserve
 - buy
 - cancel
@@ -14,9 +15,11 @@
 - delete_from_cart
 
 # Change payment credentials
+
 - ?
 
 # User's model changes
+
 - remove activated field
 - add email_verified field
 - add phone_verified field
@@ -25,20 +28,22 @@
 # Disable twilio after the demo
 
 # Ticket page
+
 - wrong template returning on empty search
 
 # Frontend
+
 - user/profile background change (mobile)
 - scrollbar styles for different browsers
 - user dropdown blur on scroll
 - hide error message after delay
 - align header desktop
-- add blur on header when scroll-y != 0
 - web chat: send data on button "Enter"
 - user dropdown blur on scroll
 - create mask for email/phone on edit routes
 
 # Chat
+
 - email verification
 - fix default user image
 - round price on the python side

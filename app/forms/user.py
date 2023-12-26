@@ -30,20 +30,12 @@ class UserForm(FlaskForm):
     submit = SubmitField("Save")
 
     def validate_username(self, field):
-        query = (
-            m.User.select()
-            .where(m.User.username == field.data)
-            .where(m.User.id != int(self.user_id.data))
-        )
+        query = m.User.select().where(m.User.username == field.data).where(m.User.id != int(self.user_id.data))
         if db.session.scalar(query) is not None:
             raise ValidationError("This username is taken.")
 
     def validate_email(self, field):
-        query = (
-            m.User.select()
-            .where(m.User.email == field.data)
-            .where(m.User.id != int(self.user_id.data))
-        )
+        query = m.User.select().where(m.User.email == field.data).where(m.User.id != int(self.user_id.data))
         if db.session.scalar(query) is not None:
             raise ValidationError("This email is already registered.")
 
@@ -78,11 +70,7 @@ class EmailEditForm(FlaskForm):
     submit = SubmitField("Save")
 
     def validate_email(self, field):
-        query = (
-            m.User.select()
-            .where(m.User.email == field.data)
-            .where(m.User.id != current_user.id)
-        )
+        query = m.User.select().where(m.User.email == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This email is already registered.")
 
@@ -92,11 +80,7 @@ class PhoneEditForm(FlaskForm):
     submit = SubmitField("Save")
 
     def validate_phone(self, field):
-        query = (
-            m.User.select()
-            .where(m.User.phone == field.data)
-            .where(m.User.id != current_user.id)
-        )
+        query = m.User.select().where(m.User.phone == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This phone is already registered.")
 
@@ -106,11 +90,7 @@ class CardEditForm(FlaskForm):
     submit = SubmitField("Save")
 
     def validate_card(self, field):
-        query = (
-            m.User.select()
-            .where(m.User.card == field.data)
-            .where(m.User.id != current_user.id)
-        )
+        query = m.User.select().where(m.User.card == field.data).where(m.User.id != current_user.id)
         if db.session.scalar(query):
             raise ValidationError("This card is already registered.")
 

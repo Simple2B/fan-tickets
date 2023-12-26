@@ -27,12 +27,8 @@ class NotificationsConfig(db.Model, ModelMixin):
     new_ticket: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     new_message: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     new_buyers_payment: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
-    ticket_transfer_confirmed: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean, default=True
-    )
-    your_payment_received: orm.Mapped[bool] = orm.mapped_column(
-        sa.Boolean, default=True
-    )
+    ticket_transfer_confirmed: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
+    your_payment_received: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     dispute_started: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
     dispute_resolved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=True)
 

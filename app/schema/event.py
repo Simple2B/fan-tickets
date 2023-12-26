@@ -15,9 +15,7 @@ from pydantic_settings import SettingsConfigDict
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
-def parse_datetime_from_str(
-    v: str | datetime, handler: ValidatorFunctionWrapHandler, info: ValidationInfo
-) -> datetime:
+def parse_datetime_from_str(v: str | datetime, handler: ValidatorFunctionWrapHandler, info: ValidationInfo) -> datetime:
     if info.mode == "json":
         assert isinstance(v, str), "In JSON mode the input must be a string!"
         # you can call the handler multiple times

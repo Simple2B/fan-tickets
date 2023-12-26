@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flask.app"
-version = "0.2.0"
+version = "0.2.7"
 description = ""
 authors = ["denys <denysburimov@gmail.com>"]
 
@@ -64,6 +64,7 @@ exclude = [
     "build",
     "dist",
     "node_modules",
+    "migrations",
 ]
 # Assume Python 3.12
 target-version = "py312"

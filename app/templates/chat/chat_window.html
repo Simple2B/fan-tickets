@@ -3,7 +3,7 @@
 
 
 {% if current_user.is_authenticated %}
-{% set user_name = current_user.username %}
+{% set user_name = current_user.name %}
 {% else %}
 {% set user_name = 'Guest' %}
 {% endif %}
@@ -19,7 +19,7 @@
     {% set justify = 'justify-end' %}
     {% else %}
     {% if current_user.is_authenticated %}
-    {% set user_name = current_user.username %}
+    {% set user_name = current_user.name %}
     {% else %}
     {% set user_name = 'Guest' %}
     {% endif %}
@@ -66,6 +66,7 @@
   <div class="py-2 px-4 flex justify-around text-grey  bg-dark-grey rounded-b-2xl transition-colors duration-200">
     <button type="button" class="p-2 flex flex-col items-center justify-center hover:text-white"
       hx-get="{{ url_for('chat.home')}}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click">
+      <!-- prettier-ignore -->
       <svg class="fill-current" width="32" height="33" viewBox="0 0 24 24" fill="none"
         xmlns="http://www.w3.org/2000/svg">
         <mask id="home-active_svg__a" fill="#fff">

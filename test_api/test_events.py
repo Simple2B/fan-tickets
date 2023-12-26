@@ -38,9 +38,7 @@ def test_get_events_by_location(
     db: Session,
 ):
     event = db.scalar(m.Event.select())
-    events_by_location = db.scalars(
-        m.Event.select().where(m.Event.location == event.location)
-    )
+    events_by_location = db.scalars(m.Event.select().where(m.Event.location == event.location))
     events_by_location_number = len(list(events_by_location))
     payload = s.EventsInput(location=f"{event.location.name}").model_dump()
     response = client.post(
@@ -61,9 +59,7 @@ def test_get_events_by_date_from(
     db: Session,
 ):
     event = db.scalar(m.Event.select())
-    events_by_date_from = db.scalars(
-        m.Event.select().where(m.Event.date_time >= event.date_time)
-    )
+    events_by_date_from = db.scalars(m.Event.select().where(m.Event.date_time >= event.date_time))
     events_by_date_from_number = len(list(events_by_date_from))
     payload = s.EventsInput(
         date_from=event.date_time.isoformat(),
