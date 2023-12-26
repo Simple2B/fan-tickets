@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin, gen_uuid
+from .utils import ModelMixin, gen_uuid, utcnow
 
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class Notification(db.Model, ModelMixin):
     )
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=utcnow,
     )
     type_of: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=NotificationType.TICKET_PUBLISHED.value)
     user_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
