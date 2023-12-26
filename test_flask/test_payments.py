@@ -13,42 +13,48 @@ from app.controllers.payments import (
     get_pagarme_customer,
     create_pagarme_customer,
     update_pagarme_customer,
+    get_pagarme_card,
 )
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
 def test_pagarme_get_customers(client: FlaskClient):
-    pagarme_customers = get_all_pagarme_customers()
-    assert pagarme_customers
+    response = get_all_pagarme_customers()
+    assert response["data"][0]["id"] == "cus_rwLbRMDIjIz5vy6d"
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
 def test_pagarme_get_customer(client: FlaskClient):
+    # Fake customer
     TESTING_CUSTOMER_ID = "cus_00000000000000"
-    pagarme_customer = get_pagarme_customer(TESTING_CUSTOMER_ID)
-    assert pagarme_customer
-    assert "Customer not found" in pagarme_customer
+    response = get_pagarme_customer(TESTING_CUSTOMER_ID)
+    assert response
+    assert response.status_code == 404
+    assert response.error == "Customer not found"
 
-    # Get real customer id from database
-    # Call the function again with the real customer id
-
-
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
-def test_pagarme_create_customer(client: FlaskClient):
-    TESTING_BIRTH_DATE = "01/01/2000"
-    now = datetime.now().strftime("%m-%d-%H-%M-%S")
-    TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
-    created_pagarme_customer = create_pagarme_customer(TESTING_CUSTOMER_NAME, TESTING_BIRTH_DATE)
-    assert created_pagarme_customer
-    assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME
+    # Real customer
+    TESTING_CUSTOMER_ID = "cus_rwLbRMDIjIz5vy6d"
+    response = get_pagarme_customer(TESTING_CUSTOMER_ID)
+    assert response
+    assert response.id == TESTING_CUSTOMER_ID
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
 def test_pagarme_update_customer(client: FlaskClient):
+    login(client)
     TESTING_BIRTH_DATE = "01/01/2000"
     now = datetime.now().strftime("%m-%d-%H-%M-%S")
     TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
-    created_pagarme_customer = create_pagarme_customer(TESTING_CUSTOMER_NAME, TESTING_BIRTH_DATE)
+    TEST_DOCUMENT = "93095135270"
+
+    created_pagarme_customer = create_pagarme_customer(
+        customer_name=TESTING_CUSTOMER_NAME,
+        code=current_user.unique_id,
+        email=current_user.email,
+        birthdate=TESTING_BIRTH_DATE,
+        document=TEST_DOCUMENT,
+        phone=current_user.phone,
+    )
     assert created_pagarme_customer
     assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME
 
@@ -62,15 +68,36 @@ def test_pagarme_update_customer(client: FlaskClient):
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+def test_pagarme_get_card(client: FlaskClient):
+    login(client)
+    TEST_CUSTOMER_ID = "cus_rwLbRMDIjIz5vy6d"
+    TEST_CARD_ID = "card_B1xW3aLTQT629gbX"
+    response = get_pagarme_card(TEST_CUSTOMER_ID, TEST_CARD_ID)
+    assert response
+    assert response.id == TEST_CARD_ID
+    assert response.customer.id == TEST_CUSTOMER_ID
+
+
+@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
 def test_pagarme_ticket_order(client: FlaskClient):
     login(client)
     letters = string.ascii_lowercase
     TESTING_USERNAME_ID = "".join(random.choice(letters) for _ in range(7))
     TESTING_USERNAME = f"{current_user.username} {TESTING_USERNAME_ID}"
+    TESTING_BIRTHDATE = "01/01/2000"
+
+    current_user.billing_line_1 = "Rua Teste"
+    current_user.billing_line_2 = "Teste"
+    current_user.billing_zip_code = "00000000"
+    current_user.billing_city = "City Teste"
+    current_user.billing_state = "RJ"
+    current_user.billing_country = "BR"
+    current_user.save()
 
     data = {
+        "user_unique_id": current_user.unique_id,
         "username": TESTING_USERNAME,
-        "birthdate": "01/01/2000",
+        "birthdate": TESTING_BIRTHDATE,
         "code": current_user.unique_id,
         "email": current_user.email,
         "document": "93095135270",
@@ -79,12 +106,6 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "exp_month": "01",
         "exp_year": "2025",
         "cvv": "123",
-        "billing_line_1": "Rua Teste",
-        "billing_line_2": "Teste",
-        "billing_zip_code": "00000000",
-        "billing_city": "City Teste",
-        "billing_state": "RJ",
-        "billing_country": "BR",
         "item_amount": "1000",
         "item_code": current_user.unique_id,  # replace by ticket's unique_id
         "item_description": "Testing Concert Ticket",

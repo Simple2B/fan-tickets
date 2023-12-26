@@ -45,7 +45,20 @@ class User(db.Model, UserMixin, ModelMixin):
     )
     email: orm.Mapped[str] = orm.mapped_column(sa.String(256))
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    birthdate: orm.Mapped[datetime | None] = orm.mapped_column(
+        sa.DateTime,
+        default=datetime.utcnow,
+    )
     card: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    card_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    pagarme_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    billing_line_1: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    billing_line_2: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
+    billing_zip_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    billing_city: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
+    billing_state: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    billing_country: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+
     verification_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(6))
     password_hash: orm.Mapped[str] = orm.mapped_column(sa.String(256), default="")
     activated: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)

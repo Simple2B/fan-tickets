@@ -1,5 +1,39 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_settings import SettingsConfigDict
+
+
+class PagarmeError(BaseModel):
+    status_code: int
+    error: str
+    details: str | None = None
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class UserMobilePhone(BaseModel):
+    country_code: str
+    area_code: str
+    number: str
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class UserPhones(BaseModel):
+    mobile_phone: UserMobilePhone
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeUserCreate(BaseModel):
+    name: str
+    birthdate: str
+    code: str
+    email: str
+    document: str
+    type: str = "individual"
+    phones: UserPhones
+
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class PagarmeUserInput(BaseModel):
@@ -17,6 +51,12 @@ class PagarmeUserInput(BaseModel):
 class PagarmeUserOutput(PagarmeUserInput):
     created_at: str
     updated_at: str
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeUsers(BaseModel):
+    data: list[PagarmeUserOutput]
 
     model_config = SettingsConfigDict(from_attributes=True)
 
@@ -72,6 +112,28 @@ class PagarmeCardInput(PagarmeCard):
     card_id: str
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class PagarmeCardCreate(BaseModel):
+    """
+    payload = {
+        "customer_id": customer_id,
+        "holder_name": holder_name,
+        "number": number,
+        "exp_month": exp_month,
+        "exp_year": exp_year,
+        "cvv": cvv,
+        "billing_address": billing_address,
+    }
+    """
+
+    customer_id: str
+    holder_name: str
+    number: int
+    exp_month: int
+    exp_year: int
+    cvv: int
+    billing_address: PagarmeBillingAddress
 
 
 class PagarmeCardOutput(PagarmeCard):

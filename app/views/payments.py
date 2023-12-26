@@ -1,9 +1,11 @@
 from datetime import datetime
 from flask import Blueprint, request, current_app as app
 from flask_login import login_required
-from app import schema as s
+from app import schema as s, models as m, db
 from app.controllers import (
+    get_pagarme_customer,
     create_pagarme_customer,
+    get_pagarme_card,
     create_pagarme_card,
     create_pagarme_order,
 )
@@ -26,6 +28,7 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 @pay_blueprint.route("/ticket_order", methods=["GET", "POST"])
 @login_required
 def ticket_order():
+    user_unique_id = request.form.get("user_unique_id")
     username = request.form.get("username")
     birthdate = request.form.get("birthdate")
     code = request.form.get("code")
@@ -36,58 +39,66 @@ def ticket_order():
     exp_month = request.form.get("exp_month")
     exp_year = request.form.get("exp_year")
     cvv = request.form.get("cvv")
-    billing_line_1 = request.form.get("billing_line_1")
-    billing_line_2 = request.form.get("billing_line_2")
-    billing_zip_code = request.form.get("billing_zip_code")
-    billing_city = request.form.get("billing_city")
-    billing_state = request.form.get("billing_state")
-    billing_country = request.form.get("billing_country")
     item_amount = request.form.get("item_amount")
-    item_code = request.form.get("item_code")
+    item_code = request.form.get("item_code")  # ticket_unique_id
     item_description = request.form.get("item_description")
     item_quantity = request.form.get("item_quantity")
     item_category = request.form.get("item_category")
 
-    created_pagarme_customer = create_pagarme_customer(
-        customer_name=username,
-        code=code,
-        email=email,
-        birthdate=birthdate,
-        document=document,
-        phone=phone,
-    )
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user: m.User = db.session.scalar(user_query)
+
+    if user.pagarme_id:
+        pagarme_customer = get_pagarme_customer(customer_id=user.pagarme_id)
+    else:
+        pagarme_customer = create_pagarme_customer(
+            customer_name=username,
+            code=code,
+            email=email,
+            birthdate=birthdate,
+            document=document,
+            phone=phone,
+        )
+        user.pagarme_id = pagarme_customer.id
+        user.save()
 
     billing_address = s.PagarmeBillingAddress(
-        line_1=billing_line_1,
-        line_2=billing_line_2,
-        zip_code=billing_zip_code,
-        city=billing_city,
-        state=billing_state,
-        country=billing_country,
+        line_1=user.billing_line_1,
+        line_2=user.billing_line_2,
+        zip_code=user.billing_zip_code,
+        city=user.billing_city,
+        state=user.billing_state,
+        country=user.billing_country,
     ).model_dump()
 
-    card_create_response = create_pagarme_card(
-        customer_id=created_pagarme_customer.id,
-        holder_name=created_pagarme_customer.name,
-        number=number,
-        exp_month=exp_month,
-        exp_year=exp_year,
-        cvv=cvv,
-        billing_address=billing_address,
-    )
+    if user.card_id:
+        card_details = get_pagarme_card(
+            customer_id=pagarme_customer.id,
+            card_id=user.card_id,
+        )
+    else:
+        card_details = create_pagarme_card(
+            customer_id=pagarme_customer.id,
+            holder_name=pagarme_customer.name,
+            number=number,
+            exp_month=exp_month,
+            exp_year=exp_year,
+            cvv=cvv,
+            billing_address=billing_address,
+        )
 
     card_input = s.PagarmeCardInput(
-        card_id=card_create_response.id,
-        first_six_digits=card_create_response.first_six_digits,
-        last_four_digits=card_create_response.last_four_digits,
-        brand=card_create_response.brand,
-        holder_name=card_create_response.holder_name,
-        exp_month=card_create_response.exp_month,
-        exp_year=card_create_response.exp_year,
+        card_id=card_details.id,
+        first_six_digits=card_details.first_six_digits,
+        last_four_digits=card_details.last_four_digits,
+        brand=card_details.brand,
+        holder_name=card_details.holder_name,
+        exp_month=card_details.exp_month,
+        exp_year=card_details.exp_year,
         billing_address=billing_address,
-        status=card_create_response.status,
-        type=card_create_response.type,
-        customer=created_pagarme_customer,
+        status=card_details.status,
+        type=card_details.type,
+        customer=pagarme_customer,
     )
 
     checkout = [
@@ -102,7 +113,7 @@ def ticket_order():
         ).model_dump()
     ]
 
-    birthdate_dt = datetime.fromisoformat(created_pagarme_customer.birthdate)
+    birthdate_dt = datetime.fromisoformat(pagarme_customer.birthdate)
     birthdate_str = birthdate_dt.strftime("%d/%m/%Y")
 
     order_create_response = create_pagarme_order(
@@ -111,9 +122,9 @@ def ticket_order():
         item_description=item_description,
         item_quantity=item_quantity,
         item_category=item_category,
-        customer_id=created_pagarme_customer.id,
-        code=created_pagarme_customer.code,
-        name=created_pagarme_customer.name,
+        customer_id=pagarme_customer.id,
+        code=pagarme_customer.code,
+        name=pagarme_customer.name,
         birthdate=birthdate_str,
         payments=checkout,
     )
