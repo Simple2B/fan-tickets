@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, request, current_app as app
+from flask import Blueprint, render_template, request, current_app as app
 from flask_login import login_required
 from app import schema as s, models as m, db
 from app.controllers import (
@@ -152,4 +152,18 @@ def webhook():
     order.created
     order.canceled
     """
+    with open("webhook-response.json", "w") as f:
+        # f.write(request.data.decode("utf-8"))
+        f.write(request.json)
     return {"status": "success"}, 200
+
+
+@pay_blueprint.route("/display_response", methods=["GET", "POST"])
+@login_required
+def display_response():
+    with open("webhook-response.json", "r") as f:
+        webhook_response = f.read()
+    return render_template(
+        "display_response.html",
+        webhook_response=webhook_response,
+    )
