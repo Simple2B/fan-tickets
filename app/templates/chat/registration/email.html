@@ -1,23 +1,28 @@
-<div>
+<div class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %}
 
-  <div class="flex text-white justify-end">
-    <small class="pt-1">FanTicket {{ now }}</small>
+  {% include 'chat/chat_spinner.html' %}
+  <div id="chat-message-container" data-send-message>
+    <div class="chat-message">
+      <div class=" flex text-white justify-start">
+        <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
+      </div>
+      <div class="flex text-black justify-start">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
+          Then let's get started!
+        </p>
+      </div>
+    </div>
+    <div class="chat-message">
+      <div class="flex text-black justify-start">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
+          Please input your email
+        </p>
+      </div>
+    </div>
   </div>
 
-  <div class="mb-2 flex text-black justify-end">
-    <p class="w-5/6 p-2 mb-2 rounded-lg bg-secondary">
-      Then let's get started!
-    </p>
-  </div>
-
-  <div class="mb-6 flex text-black justify-end">
-    <p class="w-5/6 p-2 rounded-lg bg-secondary">
-      Please input your email
-    </p>
-  </div>
-
-  <div class="flex justify-end">
+  <div class="flex justify-start">
     <div id="chat-email-spinner"
       class="htmx-indicator mb-6 flex flex-col items-center justify-center  gap-2 text-black w-5/6 p-2 rounded-lg bg-secondary">
       <p>Sending verification code. Please wait... </p>
@@ -45,24 +50,17 @@
 
   {% if error_message %}
 
-  <div class="mb-6 flex text-black justify-end">
+  <div class="mb-6 flex text-black justify-start">
     <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
       {{ error_message }}: {{ email_input }}
     </p>
   </div>
   {% endif %}
-
-  {% set all_filters = "[name='email'], [name='room_unique_id']" %}
-  <div class="flex justify-end">
-    <div class="mt-2 w-5/6 flex flex-col gap-2">
-      <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-      <input type="email" name="email" class="border border-white bg-transparent rounded-lg"
-        placeholder="example@mail.com" />
-      <button type="button" hx-get="{{ url_for('chat.create_user_email') }}" hx-target="#chat-body" hx-swap="innerHTML"
-        hx-trigger="click" hx-include="{{ all_filters }}" hx-indicator="#chat-email-spinner"
-        class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-        Submit
-      </button>
-    </div>
-  </div>
 </div>
+
+{% include 'chat/chat_submit_form.html' %}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

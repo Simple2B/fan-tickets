@@ -6,7 +6,7 @@
 
   <div class="mb-8 flex text-black justify-end">
     <p class="w-5/6 p-2 rounded-lg bg-secondary">
-      Please input your address
+      Please input your name
     </p>
   </div>
 
@@ -17,20 +17,25 @@
     </p>
   </div>
   {% endif %}
-  <!-- prettier-ignore -->
-  {% set all_filters = "[name='address'], [name='room_unique_id'], [name='user_unique_id']" %}
+  {% set all_filters = "[name='name'], [name='room_unique_id'], [name='user_unique_id']" %}
   <div class="flex justify-end">
     <div class=" w-5/6 flex flex-col gap-2">
       <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
       <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-      <!-- TODO: what address format do we need? -->
-      <input type="text" name="address" class="w-full border border-white bg-transparent rounded-lg"
-        placeholder="Avenida Atlântic, 7" />
-      <button type="button" hx-get="{{ url_for('chat.create_user_address') }}" hx-target="#chat-body"
-        hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+      <input type="text" name="name" class="w-full border border-white bg-transparent rounded-lg"
+        placeholder="Input your name" />
+      <button type="button" hx-get="{{ url_for('chat.create_user_name') }}" hx-target="#chat-body" hx-swap="innerHTML"
+        hx-trigger="click" hx-include="{{ all_filters }}"
         class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
         Submit
       </button>
     </div>
   </div>
 </div>
+
+{% include 'chat/chat_submit_form.html' %}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

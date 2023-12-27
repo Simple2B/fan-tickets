@@ -55,6 +55,8 @@ class BaseConfig(BaseSettings):
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
+    PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    PATTERN_PHONE: str = r"^\+?\d{10,13}$"
 
     # API
     IS_API: bool = False

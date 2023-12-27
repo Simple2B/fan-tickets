@@ -1,5 +1,7 @@
 import {easepick} from '@easepick/bundle';
 
+const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
+
 function scrollDown(element: HTMLDivElement) {
   setTimeout(() => {
     element.scrollTo({
@@ -10,7 +12,6 @@ function scrollDown(element: HTMLDivElement) {
 }
 
 function toggleChatWindow() {
-  const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
   chatWindow.classList.toggle('chat-window-close');
   chatWindow.classList.toggle('chat-window-open');
 }
@@ -22,10 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
 
   chatIcon.addEventListener('click', () => {
-    // openIcon.classList.toggle('chat-icon-inactive');
-    // closeIcon.classList.toggle('chat-icon-active');
     toggleChatWindow();
-    scrollDown(chatBody);
+    if (chatWindow.classList.contains('chat-window-open')) {
+      showMessage();
+      scrollDown(chatBody);
+    } else {
+      const chatMessages =
+        chatMessageContainer.querySelectorAll('.chat-message');
+      chatMessages.forEach(message => {
+        message.classList.remove('chat-message-active');
+      });
+    }
 
     const observer = new MutationObserver(mutations => {
       const locationButton = document.querySelector(
@@ -202,4 +210,42 @@ if (categoryDropdowns) {
       });
     }
   });
+}
+
+const chatMessageContainer = document.querySelector('#chat-message-container');
+const sendMessageButton = document.querySelector('#chat-send-message-button');
+
+if (chatMessageContainer.hasAttribute('data-send-message')) {
+  sendMessageButton;
+
+  showMessage();
+}
+
+async function showMessage() {
+  const chatMessages = chatMessageContainer.querySelectorAll('.chat-message');
+  const chatSpinner: HTMLDivElement = document.querySelector('.chat-spinner');
+
+  if (!chatMessages || !chatSpinner) return;
+
+  for (let index = 0; index < chatMessages.length; index++) {
+    const message = chatMessages[index];
+    await showSpinnerAndMessage(message, chatSpinner);
+  }
+}
+
+async function showSpinnerAndMessage(
+  message: Element,
+  chatSpinner: HTMLDivElement,
+) {
+  const timeTyping = 1500;
+  const spinnerClone = chatSpinner.cloneNode(true) as HTMLDivElement;
+  message.parentNode.insertBefore(spinnerClone, message);
+
+  spinnerClone.style.display = 'flex';
+  spinnerClone.classList.add('chat-spinner-active');
+
+  await new Promise(resolve => setTimeout(resolve, timeTyping));
+
+  spinnerClone.remove();
+  message.classList.add('chat-message-active');
 }

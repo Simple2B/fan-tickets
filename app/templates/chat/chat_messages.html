@@ -2,7 +2,7 @@
 {% if message.sender_id == get_chatbot_id() %}
 {% set user_name = 'FanTicket' %}
 {% set background_color = 'bg-secondary' %}
-{% set justify = 'justify-end' %}
+{% set justify = 'justify-start' %}
 {% else %}
 {% if current_user.is_authenticated %}
 {% set user_name = current_user.name %}
@@ -10,6 +10,7 @@
 {% set user_name = 'Guest' %}
 {% endif %}
 {% set background_color = 'bg-white' %}
+{% set justify = 'justify-end' %}
 {% endif %}
 <div class="flex text-white {{justify}}">
     <small class="pt-1">{{ user_name }} {{ cut_seconds(message.created_at) }}</small>
