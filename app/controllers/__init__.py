@@ -2,9 +2,8 @@
 from .pagination import create_pagination
 from .image_upload import image_upload, ImageType
 from .utils import utcnow_chat_format
+from .chat import get_room, save_message
 from .chat_sell import (
-    check_room_id,
-    send_message,
     create_event,
     create_ticket,
     add_ticket_category,
@@ -16,11 +15,9 @@ from .chat_sell import (
     add_ticket_price,
 )
 from .chat_auth import (
-    get_room,
     get_user,
     create_user_name,
     create_user_last_name,
-    save_message,
     create_email,
     create_password,
     confirm_password,
