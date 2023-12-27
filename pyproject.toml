@@ -44,6 +44,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.mypy]
 plugins = ["pydantic.mypy"]
 files = ["app/**/*.py", "api/**/*.py", "test_api/**/*.py", "test_flask/**/*.py"]
+exclude = ["migrations", "venv"]
 ignore_missing_imports = true
 check_untyped_defs = true
 
