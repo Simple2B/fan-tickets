@@ -87,7 +87,7 @@ class BaseConfig(BaseSettings):
 
     # pagar.me
     PAGARME_CONNECTION: bool = False
-    PAGARME_SECRET_KEY: str
+    PAGARME_SECRET_KEY: str | None
     PAGARME_CHECKOUT_EXPIRES_IN: int = 30  # minutes
     PAGARME_DEFAULT_PAYMENT_METHOD: str = "credit_card"
     BRASIL_COUNTRY_PHONE_CODE: str = "55"
