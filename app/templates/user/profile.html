@@ -1,19 +1,19 @@
 {% extends 'landing/base.html' %} {% block main_content %}
 <div class="mt-16 flex flex-col gap-8">
   <div class="relative self-center" id="profile_image">
-    <button
-      class="bottom-0 right-0 absolute"
-      data-modal-toggle="user-upload-image-modal">
+    <button class="bottom-0 right-0 absolute" data-modal-toggle="user-upload-image-modal">
       <!-- prettier-ignore -->
-      <svg  xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"> <circle cx="24" cy="24" r="24" fill="#5D4B15" /> <path d="M24.7609 23.2391L19.3805 28.6195M31.2175 23.2391L20.5511 33.9054C20.4906 33.966 20.4084 34 20.3228 34H14.3228C14.1445 34 14 33.8555 14 33.6772L14 27.6772C14 27.5916 14.034 27.5094 14.0946 27.4489L24.7609 16.7825M31.2175 23.2391L33.6848 20.7717C34.1051 20.3515 34.1051 19.6701 33.6848 19.2499L28.7501 14.3152C28.3299 13.8949 27.6485 13.8949 27.2283 14.3152L24.7609 16.7825M31.2175 23.2391L24.7609 16.7825" stroke="#F2B705" stroke-width="2" stroke-linecap="round" /> </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="24" fill="#5D4B15" />
+        <path
+          d="M24.7609 23.2391L19.3805 28.6195M31.2175 23.2391L20.5511 33.9054C20.4906 33.966 20.4084 34 20.3228 34H14.3228C14.1445 34 14 33.8555 14 33.6772L14 27.6772C14 27.5916 14.034 27.5094 14.0946 27.4489L24.7609 16.7825M31.2175 23.2391L33.6848 20.7717C34.1051 20.3515 34.1051 19.6701 33.6848 19.2499L28.7501 14.3152C28.3299 13.8949 27.6485 13.8949 27.2283 14.3152L24.7609 16.7825M31.2175 23.2391L24.7609 16.7825"
+          stroke="#F2B705" stroke-width="2" stroke-linecap="round" />
+      </svg>
     </button>
-    <img
-      class="w-48 h-48 rounded-50%"
-      src="{{ user.picture.base64_src }}"
-      alt="avatar" />
+    <img class="w-48 h-48 rounded-50%" src="{{ user.picture.base64_src }}" alt="avatar" />
   </div>
 
-  <h1 class="self-center text-6xl">{{ current_user.username }}</h1>
+  <h1 class="self-center text-6xl">{{ current_user.name }}</h1>
 </div>
 {% endblock %} {% block content %}
 <section class="bg-black">
@@ -23,11 +23,7 @@
       <div class="">
         <div class="pb-8 border-b border-grey">
           <p class="font-medium text-3xl">Endereço de Email</p>
-          <form
-            method="post"
-            id="profile_email"
-            hx-post="{{ url_for('user.save_email') }}"
-            hx-target="#profile_email"
+          <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
             hx-swap="innerHTML">
             {{ email_form.hidden_tag() }} {% include 'user/email_save.html' %}
           </form>
@@ -35,11 +31,7 @@
 
         <div class="py-8 border-b border-grey">
           <p class="font-medium text-3xl">Phone</p>
-          <form
-            method="post"
-            id="profile_phone"
-            hx-post="{{ url_for('user.save_phone') }}"
-            hx-target="#profile_phone"
+          <form method="post" id="profile_phone" hx-post="{{ url_for('user.save_phone') }}" hx-target="#profile_phone"
             hx-swap="innerHTML">
             {{ phone_form.hidden_tag() }} {% include 'user/phone_save.html' %}
           </form>
@@ -56,13 +48,15 @@
           <p class="mb-4 text-grey">
             Uma visão geral de tudo o que você segue na FanTicket
           </p>
-          <div
-            id="user-profile-subscribe-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
+          <div id="user-profile-subscribe-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% for subscribe in user.subscribed_events %}
             <div class="flex gap-6">
               <!-- prettier-ignore -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <rect width="24" height="24" rx="12" fill="#5D4B15"/> <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="12" fill="#5D4B15" />
+                <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
               <p>
                 <!-- prettier-ignore -->
                 {{ subscribe.name }} - {{ subscribe.date_time.strftime('%a, %d %b') }}
@@ -70,9 +64,7 @@
             </div>
             {% endfor %}
           </div>
-          <button
-            class="text-secondary underline"
-            id="user-profile-subscribe-btn">
+          <button class="text-secondary underline" id="user-profile-subscribe-btn">
             Mostrar
           </button>
         </div>
@@ -82,7 +74,11 @@
           <div class="mb-4 flex gap-2 justify-between">
             <!-- prettier-ignore -->
             <div class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none"> <path d="M24.1467 12.0733C24.1467 5.40546 18.7412 0 12.0733 0C5.40546 0 0 5.40536 0 12.0733C0 18.0994 4.41507 23.0943 10.1869 24V15.5633H7.12138V12.0733H10.1869V9.41343C10.1869 6.38755 11.9894 4.71615 14.7471 4.71615C16.0681 4.71615 17.4497 4.95195 17.4497 4.95195V7.92313H15.9274C14.4274 7.92313 13.9598 8.85381 13.9598 9.80864V12.0733H17.3083L16.773 15.5633H13.9598V24C19.7316 23.0943 24.1467 18.0995 24.1467 12.0733Z" fill="#99A1A3"/> </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                <path
+                  d="M24.1467 12.0733C24.1467 5.40546 18.7412 0 12.0733 0C5.40546 0 0 5.40536 0 12.0733C0 18.0994 4.41507 23.0943 10.1869 24V15.5633H7.12138V12.0733H10.1869V9.41343C10.1869 6.38755 11.9894 4.71615 14.7471 4.71615C16.0681 4.71615 17.4497 4.95195 17.4497 4.95195V7.92313H15.9274C14.4274 7.92313 13.9598 8.85381 13.9598 9.80864V12.0733H17.3083L16.773 15.5633H13.9598V24C19.7316 23.0943 24.1467 18.0995 24.1467 12.0733Z"
+                  fill="#99A1A3" />
+              </svg>
               <a href="#" class="text-grey">Facebook</a>
             </div>
             <a href="#" class="self-end text-secondary underline">Verificar</a>
@@ -90,7 +86,11 @@
           <div class="flex gap-2 justify-between">
             <!-- prettier-ignore -->
             <div class="flex gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20" fill="none"> <path d="M24 2.3143C23.1174 2.70538 22.1693 2.96963 21.1726 3.08907C22.201 2.47368 22.9704 1.50514 23.3373 0.364152C22.371 0.938086 21.3135 1.34207 20.2107 1.55855C19.4691 0.766723 18.4868 0.241886 17.4164 0.0655253C16.3459 -0.110836 15.2472 0.0711458 14.2907 0.583216C13.3343 1.09529 12.5737 1.9088 12.127 2.89744C11.6803 3.88609 11.5725 4.99456 11.8203 6.05075C9.86244 5.95245 7.94711 5.44357 6.19863 4.55713C4.45016 3.67069 2.90761 2.42651 1.6711 0.905331C1.2483 1.63465 1.0052 2.48024 1.0052 3.3808C1.00473 4.19151 1.20437 4.98979 1.58641 5.70484C1.96846 6.41988 2.52109 7.02957 3.19528 7.4798C2.4134 7.45493 1.64877 7.24366 0.965031 6.86358V6.927C0.964952 8.06404 1.35827 9.1661 2.07823 10.0462C2.7982 10.9262 3.80048 11.5301 4.915 11.7553C4.18968 11.9516 3.42923 11.9805 2.69109 11.8399C3.00555 12.8182 3.61807 13.6738 4.44291 14.2867C5.26776 14.8997 6.26363 15.2394 7.29111 15.2582C5.5469 16.6274 3.39282 17.3701 1.17537 17.3669C0.782575 17.367 0.39011 17.344 0 17.2982C2.25083 18.7454 4.87097 19.5134 7.5469 19.5105C16.6053 19.5105 21.5573 12.0079 21.5573 5.50112C21.5573 5.28972 21.552 5.07621 21.5425 4.86481C22.5057 4.16823 23.3372 3.30564 23.9979 2.31747L24 2.3143Z" fill="#99A1A3"/> </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20" fill="none">
+                <path
+                  d="M24 2.3143C23.1174 2.70538 22.1693 2.96963 21.1726 3.08907C22.201 2.47368 22.9704 1.50514 23.3373 0.364152C22.371 0.938086 21.3135 1.34207 20.2107 1.55855C19.4691 0.766723 18.4868 0.241886 17.4164 0.0655253C16.3459 -0.110836 15.2472 0.0711458 14.2907 0.583216C13.3343 1.09529 12.5737 1.9088 12.127 2.89744C11.6803 3.88609 11.5725 4.99456 11.8203 6.05075C9.86244 5.95245 7.94711 5.44357 6.19863 4.55713C4.45016 3.67069 2.90761 2.42651 1.6711 0.905331C1.2483 1.63465 1.0052 2.48024 1.0052 3.3808C1.00473 4.19151 1.20437 4.98979 1.58641 5.70484C1.96846 6.41988 2.52109 7.02957 3.19528 7.4798C2.4134 7.45493 1.64877 7.24366 0.965031 6.86358V6.927C0.964952 8.06404 1.35827 9.1661 2.07823 10.0462C2.7982 10.9262 3.80048 11.5301 4.915 11.7553C4.18968 11.9516 3.42923 11.9805 2.69109 11.8399C3.00555 12.8182 3.61807 13.6738 4.44291 14.2867C5.26776 14.8997 6.26363 15.2394 7.29111 15.2582C5.5469 16.6274 3.39282 17.3701 1.17537 17.3669C0.782575 17.367 0.39011 17.344 0 17.2982C2.25083 18.7454 4.87097 19.5134 7.5469 19.5105C16.6053 19.5105 21.5573 12.0079 21.5573 5.50112C21.5573 5.28972 21.552 5.07621 21.5425 4.86481C22.5057 4.16823 23.3372 3.30564 23.9979 2.31747L24 2.3143Z"
+                  fill="#99A1A3" />
+              </svg>
               <a href="#" class="text-grey">Twitter</a>
             </div>
             <a href="#" class="self-end text-secondary underline">Verificar</a>
@@ -107,13 +107,15 @@
           <p class="mb-4 text-grey">
             Uma visão geral de todos os seus pagamentos
           </p>
-          <div
-            id="user-profile-payment-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
+          <div id="user-profile-payment-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% for payment in payments %}
             <div class="flex gap-6">
               <!-- prettier-ignore -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"> <rect width="24" height="24" rx="12" fill="#5D4B15"/> <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="12" fill="#5D4B15" />
+                <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
               <p>
                 {{ payment.ticket.event.name }} - {{
                 payment.ticket.event.date_time.strftime('%a, %d %b') }}
@@ -121,20 +123,14 @@
             </div>
             {% endfor %}
           </div>
-          <button
-            class="text-secondary underline"
-            id="user-profile-payment-btn">
+          <button class="text-secondary underline" id="user-profile-payment-btn">
             Mostrar
           </button>
         </div>
 
         <div class="py-8 border-b border-grey">
           <p class="mb-3 font-medium text-3xl">Dados bancários</p>
-          <form
-            method="post"
-            id="profile_card"
-            hx-post="{{ url_for('user.save_card') }}"
-            hx-target="#profile_card"
+          <form method="post" id="profile_card" hx-post="{{ url_for('user.save_card') }}" hx-target="#profile_card"
             hx-swap="innerHTML">
             {{ card_form.hidden_tag() }} {% include 'user/card_save.html' %}
           </form>
@@ -151,9 +147,7 @@
             Controle quais e-mails você deseja receber
           </p>
 
-          <div
-            id="user-profile-email-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
+          <div id="user-profile-email-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% include 'user/notifications_save.html' %}
           </div>
           <button class="text-secondary underline" id="user-profile-email-btn">
@@ -168,14 +162,10 @@
       </div>
     </div>
     <div class="flex gap-8 justify-center">
-      <a
-        class="p-2 text-lg text-secondary underline cursor-pointer"
-        href="{{url_for('user.export')}}">
+      <a class="p-2 text-lg text-secondary underline cursor-pointer" href="{{url_for('user.export')}}">
         Exportar meus dados
       </a>
-      <a
-        class="p-2 text-lg text-danger underline cursor-pointer"
-        href="{{url_for('user.deactivate')}}">
+      <a class="p-2 text-lg text-danger underline cursor-pointer" href="{{url_for('user.deactivate')}}">
         Remover minha conta
       </a>
     </div>
@@ -183,8 +173,5 @@
 </section>
 
 {% include 'user/upload_image.html' %} {% endblock %} {% block scripts %}
-<script
-  src="{{ url_for('static', filename='js/user.js') }}"
-  type="text/javascript"
-  defer></script>
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
 {% endblock %}

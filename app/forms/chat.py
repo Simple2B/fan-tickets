@@ -1,6 +1,11 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, ValidationError, FileField
+from wtforms import (
+    StringField,
+    SubmitField,
+    ValidationError,
+    FileField,
+)
 from wtforms.validators import DataRequired
 from flask_login import current_user
 
@@ -27,4 +32,18 @@ class ChatTicketDocumentForm(FlaskForm):
     room_unique_id = StringField("room_unique_id", [DataRequired()])
     ticket_unique_id = StringField("ticket_unique_id", [DataRequired()])
     file = FileField("file", [DataRequired()])
+    submit = SubmitField("Send verification code")
+
+
+class ChatAuthIdentityForm(FlaskForm):
+    room_unique_id = StringField("room_unique_id", [DataRequired()])
+    user_unique_id = StringField("user_unique_id", [DataRequired()])
+    file = FileField("file", [DataRequired()])
+    submit = SubmitField("Send verification code")
+
+
+class ChatAuthPasswordForm(FlaskForm):
+    room_unique_id = StringField("room_unique_id", [DataRequired()])
+    user_unique_id = StringField("user_unique_id", [DataRequired()])
+    password = StringField("password", [DataRequired()])
     submit = SubmitField("Send verification code")

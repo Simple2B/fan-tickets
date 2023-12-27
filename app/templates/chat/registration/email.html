@@ -1,0 +1,66 @@
+<div class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %}
+
+  {% include 'chat/chat_spinner.html' %}
+  <div id="chat-message-container" data-send-message>
+    <div class="chat-message">
+      <div class=" flex text-white justify-start">
+        <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
+      </div>
+      <div class="flex text-black justify-start">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
+          Then let's get started!
+        </p>
+      </div>
+    </div>
+    <div class="chat-message">
+      <div class="flex text-black justify-start">
+        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
+          Please input your email
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-start">
+    <div id="chat-email-spinner"
+      class="htmx-indicator mb-6 flex flex-col items-center justify-center  gap-2 text-black w-5/6 p-2 rounded-lg bg-secondary">
+      <p>Sending verification code. Please wait... </p>
+      <!--prettier-ignore-->
+      <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .spinner_5nOS {
+            transform-origin: center;
+            animation: spinner_sEAn .75s infinite linear
+          }
+
+          @keyframes spinner_sEAn {
+            100% {
+              transform: rotate(360deg)
+            }
+          }
+        </style>
+        <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25" />
+        <path
+          d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"
+          class="spinner_5nOS" />
+      </svg>
+    </div>
+  </div>
+
+  {% if error_message %}
+
+  <div class="mb-6 flex text-black justify-start">
+    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
+      {{ error_message }}: {{ email_input }}
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+{% include 'chat/chat_submit_form.html' %}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

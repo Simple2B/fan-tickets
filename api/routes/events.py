@@ -22,9 +22,7 @@ def get_events(
 
     events_query = m.Event.select()
     if events_input.location:
-        events_query = events_query.where(
-            m.Event.location.has(name=events_input.location)
-        )
+        events_query = events_query.where(m.Event.location.has(name=events_input.location))
         log(log.INFO, "events queried by location [%s]: ", events_input.location)
     if events_input.date_from:
         date_from = datetime.fromisoformat(events_input.date_from)

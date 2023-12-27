@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
-from .utils import ModelMixin, gen_uuid
+from .utils import ModelMixin, gen_uuid, utcnow
 
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ class Location(db.Model, ModelMixin):
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=utcnow,
     )
 
     picture: orm.Mapped["Picture"] = orm.relationship()

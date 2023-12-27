@@ -31,12 +31,19 @@ def init(app: Flask):
                 filename="default_avatar",
                 file=f.read(),
             ).save()
+        with open("app/static/img/default_passport.png", "rb") as f:
+            document: m.Picture = m.Picture(
+                filename="default_passport",
+                file=f.read(),
+            ).save(False)
         query = m.User.select().where(m.User.email == app.config["ADMIN_EMAIL"])
         if db.session.execute(query).first():
             print(f"User with e-mail: [{app.config['ADMIN_EMAIL']}] already exists")
             return
         m.User(
             username=app.config["ADMIN_USERNAME"],
+            name=app.config["ADMIN_NAME"],
+            last_name=app.config["ADMIN_LAST_NAME"],
             email=app.config["ADMIN_EMAIL"],
             phone="+380000000000",
             card="0000000000000000",
@@ -44,6 +51,7 @@ def init(app: Flask):
             activated=True,
             role=m.UserRole.admin.value,
             picture_id=picture.id,
+            identity_document=document,
         ).save()
         print("admin created")
 
@@ -133,7 +141,7 @@ def init(app: Flask):
                 db.session.delete(payment)
         db.session.delete(user)
         db.session.commit()
-        print(f"User {user.username} deleted")
+        print(f"User {user.email} deleted")
 
     @app.cli.command("all-users")
     def all_users():
