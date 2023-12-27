@@ -12,7 +12,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 import sqlalchemy as sa
-from app.controllers import create_pagination, image_upload, type_image
+from app.controllers import create_pagination, image_upload, ImageType
 from app import models as m, db
 from app import forms as f
 from app.logger import log
@@ -147,7 +147,7 @@ def profile():
 def logo_upload():
     image_upload(
         current_user,
-        type_image.LOGO,
+        ImageType.LOGO,
     )
     return {}, 200
 

@@ -28,13 +28,13 @@ def test_create_user_email(client: FlaskClient):
         buyer_id=2,
     ).save()
 
-    response = client.get("/chat/create_user_email?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_email?room_unique_id={room.unique_id}")
     assert response.status_code == 200
-    assert "Form submitting error" in response.data.decode()
+    assert "Add your email" in response.data.decode()
 
     TESTING_EMAIL = "new@email.com"
     users_count = len(m.User.all())
-    response = client.get(f"/chat/create_user_email?room_unique_id={room.unique_id}&email={TESTING_EMAIL}")
+    response = client.get(f"/chat/create_user_email?room_unique_id={room.unique_id}&user_message={TESTING_EMAIL}")
     assert response.status_code == 200
     assert len(m.User.all()) == users_count + 1
     assert len(room.messages) == 2
@@ -53,32 +53,50 @@ def test_password(client: FlaskClient):
         email=TESTING_EMAIL,
     ).save(False)
     db.session.commit()
-    test_password = "123456"
+    TEST_PASSWORD = "123456"
+    messages_count = len(room.messages)
+    MESSAGES_IN_CHAT = 2
 
     response = client.post(
         "/chat/create_user_password",
         data=dict(
             room_unique_id=room.unique_id,
             user_unique_id=user.unique_id,
-            password=test_password,
-            confirm_password="000000",
+            password=TEST_PASSWORD,
         ),
     )
+    messages_count += MESSAGES_IN_CHAT
+
     assert response.status_code == 200
-    assert "Passwords do not match" in response.data.decode()
+    assert "Password has been added" in response.data.decode()
+    assert len(room.messages) == messages_count
 
     response = client.post(
-        "/chat/create_user_password",
+        "/chat/confirm_user_password",
         data=dict(
             room_unique_id=room.unique_id,
             user_unique_id=user.unique_id,
-            password=test_password,
-            confirm_password=test_password,
+            password="000000",
         ),
     )
+    messages_count += MESSAGES_IN_CHAT
     assert response.status_code == 200
-    assert "Password has been created" in response.data.decode()
-    assert len(room.messages) == 2
+    assert "Password does not match" in response.data.decode()
+    assert len(room.messages) == messages_count
+
+    response = client.post(
+        "/chat/confirm_user_password",
+        data=dict(
+            room_unique_id=room.unique_id,
+            user_unique_id=user.unique_id,
+            password=TEST_PASSWORD,
+        ),
+    )
+    messages_count += MESSAGES_IN_CHAT
+
+    assert response.status_code == 200
+    assert "Password has been confirmed" in response.data.decode()
+    assert len(room.messages) == messages_count
 
 
 def test_create_user_name(client: FlaskClient):
@@ -88,13 +106,13 @@ def test_create_user_name(client: FlaskClient):
     ).save(False)
     user: m.User = m.User(email="new@gmail.com").save()
 
-    response = client.get("/chat/create_user_name?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}")
     assert response.status_code == 200
-    assert "Form submitting error" in response.data.decode()
+    assert "Please, add your name" in response.data.decode()
 
     TESTING_NAME = "Robert"
     response = client.get(
-        f"/chat/create_user_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&name={TESTING_NAME}"
+        f"/chat/create_user_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&user_message={TESTING_NAME}"
     )
     assert response.status_code == 200
     assert len(room.messages) == 2
@@ -109,13 +127,19 @@ def test_create_user_last_name(client: FlaskClient):
     ).save(False)
     user: m.User = m.User(email="new@gmail.com").save()
 
-    response = client.get("/chat/create_user_last_name?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_last_name?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Form submitting error" in response.data.decode()
 
+    response = client.get(
+        f"/chat/create_user_last_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}"
+    )
+    assert response.status_code == 200
+    assert "Please, add your last name" in response.data.decode()
+
     TESTING_LAST_NAME = "Dickson"
     response = client.get(
-        f"/chat/create_user_last_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&last_name={TESTING_LAST_NAME}"
+        f"/chat/create_user_last_name?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&user_message={TESTING_LAST_NAME}"
     )
     assert response.status_code == 200
     assert len(room.messages) == 2
@@ -130,13 +154,17 @@ def test_create_user_phone(client: FlaskClient):
         buyer_id=2,
     ).save()
 
-    response = client.get("/chat/create_user_phone?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_phone?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Form submitting error" in response.data.decode()
 
+    response = client.get(f"/chat/create_user_phone?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}")
+    assert response.status_code == 200
+    assert "Please, add your phone" in response.data.decode()
+
     TESTING_PHONE = "380000000000"
     response = client.get(
-        f"/chat/create_user_phone?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&phone={TESTING_PHONE}"
+        f"/chat/create_user_phone?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&user_message={TESTING_PHONE}"
     )
     assert response.status_code == 200
     assert f"Phone: {TESTING_PHONE}" in response.data.decode()
@@ -151,13 +179,19 @@ def test_create_user_birth_date(client: FlaskClient):
     ).save(False)
     user: m.User = m.User(email="new@gmail.com").save()
 
-    response = client.get("/chat/create_user_birth_date?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_birth_date?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Form submitting error" in response.data.decode()
 
+    response = client.get(
+        f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}"
+    )
+    assert response.status_code == 200
+    assert "Please, add your birth date" in response.data.decode()
+
     TESTING_BIRTH_DATE = "10/22/1990"
     response = client.get(
-        f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&birth_date={TESTING_BIRTH_DATE}"
+        f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&user_message={TESTING_BIRTH_DATE}"
     )
     assert response.status_code == 200
     assert len(room.messages) == 2
@@ -172,13 +206,17 @@ def test_create_user_address(client: FlaskClient):
     ).save(False)
     user: m.User = m.User(email="new@gmail.com").save()
 
-    response = client.get("/chat/create_user_address?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_address?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Form submitting error" in response.data.decode()
 
+    response = client.get(f"/chat/create_user_address?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}")
+    assert response.status_code == 200
+    assert "Please, add your address" in response.data.decode()
+
     TESTING_ADDRESS = "Street 1"
     response = client.get(
-        f"/chat/create_user_address?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&address={TESTING_ADDRESS}"
+        f"/chat/create_user_address?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&user_message={TESTING_ADDRESS}"
     )
     assert response.status_code == 200
     assert len(room.messages) == 2
@@ -193,7 +231,7 @@ def test_create_user_social_profile(client: FlaskClient):
     ).save(False)
     user: m.User = m.User(email="new@gmail.com").save()
 
-    response = client.get("/chat/create_user_social_profile?room_unique_id={room.unique_id}")
+    response = client.get(f"/chat/create_user_social_profile?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Form submitting error" in response.data.decode()
 

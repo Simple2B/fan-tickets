@@ -7,14 +7,17 @@ from .payments import (
     get_pagarme_card,
     create_pagarme_order,
 )
-from .image_upload import image_upload, type_image
+from .utils import utcnow_chat_format
+from .image_upload import image_upload, ImageType
 from .chat_auth import (
-    check_user_room_id,
+    get_room,
+    get_user,
     create_user_name,
     create_user_last_name,
-    send_message,
+    save_message,
     create_email,
     create_password,
+    confirm_password,
     add_identity_document,
     create_phone,
     create_address,

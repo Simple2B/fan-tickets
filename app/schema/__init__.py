@@ -22,5 +22,15 @@ from .pagarme import (
     PagarmeCreditCardPayment,
     PagarmeError,
 )
-from .chat_auth import ChatAuthParams, ChatAuthResultParams, ChatAuthEmailValidate, ChatAuthPhoneValidate
+
+from .chat_auth import (
+    ChatRequiredParams,
+    ChatAuthEmailParams,
+    ChatAuthRequiredParams,
+    ChatAuthSocialProfileParams,
+    ChatAuthParams,
+    ChatAuthResultParams,
+    ChatAuthEmailValidate,
+    ChatAuthPhoneValidate,
+)
 from .room import Room
