@@ -1,12 +1,17 @@
 from datetime import datetime
 import os
 from urllib.parse import urlparse
+
+from sqlalchemy.exc import IntegrityError
+
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
+from flask_mail import Message
+
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db
+from app import models as m, db, mail
 from app.logger import log
 from config import config
 
@@ -119,7 +124,7 @@ def sell():
     if current_user.is_authenticated:
         template = "chat/sell/01_event_name.html"
     else:
-        template = "chat/registration/01_email.html"
+        template = "chat/chat_auth.html"
 
     return render_template(
         template,
@@ -159,40 +164,97 @@ def buy():
 
 @chat_auth_blueprint.route("/create_user_email")
 def create_user_email():
-    now = datetime.now()
-    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
-
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-
-    room_query = m.Room.select().where(m.Room.unique_id == params.room_unique_id)
-    room: m.Room = db.session.scalar(room_query)
-
-    if not params.email or not params.room_unique_id:
-        log(log.ERROR, "Form submitting error")
+    try:
+        params = s.ChatAuthEmailParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/01_email.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=now_str,
-            email_input=params.email,
+            now=c.utcnow_chat_format(),
         )
 
-    response, user = c.create_email(params.email, room)
+    if not params.room_unique_id:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.from_sign_up:
+        c.save_message("You do not log in. Please log in or create account", "Sign up", room)
+        log(log.INFO, "Sign up from selling")
+        return render_template(
+            "chat/registration/email.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No email: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/email.html",
+            error_message="Add your email",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    response, user = c.create_email(params.user_message, room)
 
     if response.is_error:
         return render_template(
-            "chat/registration/01_email.html",
+            "chat/registration/email.html",
             error_message=response.message,
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             email_input=response.email,
         )
 
-    assert user
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/email.html",
+            error_message="Form submitting error",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    try:
+        db.session.commit()
+        log(log.INFO, f"User {user.email} created")
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User is not created: [%s]", e)
+        return render_template(
+            "chat/registration/email.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    msg = Message(
+        subject=f"Verify email for {CFG.APP_NAME}",
+        sender=app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[user.email],
+    )
+    msg.html = render_template(
+        "email/email_confirm.htm",
+        verification_code=response.verification_code,
+    )
+    mail.send(msg)
 
     return render_template(
-        "chat/registration/02_confirm_email.html",
-        now=now_str,
+        "chat/registration/email_confirm.html",
+        now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=user.unique_id,
     )
@@ -201,54 +263,61 @@ def create_user_email():
 @chat_auth_blueprint.route("/email_verification")
 def email_verification():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
 
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    if not params.verification_code:
-        log(log.ERROR, "No verification code: [%s]", params.verification_code)
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
         return render_template(
-            "chat/registration/02_confirm_email.html",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No verification code: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/email_confirm.html",
             error_message="No verification code, please confirm your email",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
+    user = c.get_user(params.user_unique_id)
 
-    if user.verification_code != params.verification_code:
-        log(log.ERROR, "Wrong verification code: [%s]", params.verification_code)
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
         return render_template(
-            "chat/registration/02_confirm_email.html",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if user.verification_code != params.user_message:
+        log(log.ERROR, "Wrong verification code: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/email.confirm.html",
             error_message="Wrong verification code, please confirm your email",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    c.send_message("Please confirm your email", "Email confirmed", room)
+    c.save_message("Please confirm your email", "Email confirmed", room)
 
     return render_template(
-        "chat/registration/03_pass.html",
-        now=response.now_str,
+        "chat/registration/password.html",
+        now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=user.unique_id,
         form=form,
@@ -259,21 +328,13 @@ def email_verification():
 def create_user_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
 
-    now = datetime.now()
-    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
-
-    room_query = m.Room.select().where(m.Room.unique_id == form.room_unique_id.data)
-    room: m.Room = db.session.scalar(room_query)
+    room = c.get_room(form.room_unique_id.data)
 
     if not room:
-        log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
         return render_template(
-            "chat/sell/03_pass.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=now_str,
-            user_unique_id=form.user_unique_id.data,
-            form=form,
+            now=c.utcnow_chat_format(),
         )
 
     if not form.validate_on_submit():
@@ -283,63 +344,112 @@ def create_user_password():
             form.errors,
         )
         return render_template(
-            "chat/registration/03_pass.html",
-            error_message="Form submitting error. Please, add your password",
+            "chat/registration/password.html",
+            error_message="Please, add your password",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
-            form=form,
-        )
-
-    if form.password.data != form.confirm_password.data:
-        return render_template(
-            "chat/registration/03_pass.html",
-            now=now_str,
-            room=room,
-            user_unique_id=form.user_unique_id.data,
-            error="Passwords do not match",
             form=form,
         )
 
     success = c.create_password(form, room)
 
+    try:
+        db.session.commit()
+        log(log.INFO, "User password added")
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User is not created: [%s]", e)
+        return render_template(
+            "chat/registration/password.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     if not success:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
         return render_template(
-            "chat/registration/03_pass.html",
+            "chat/registration/password.html",
             error_message="Form submitting error",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
 
     return render_template(
-        "chat/registration/04_identification.html",
-        now=now_str,
+        "chat/registration/passport.html",
+        now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=form.user_unique_id.data,
         form=form,
     )
 
 
-@chat_auth_blueprint.route("/create_user_identification", methods=["GET", "POST"])
-def create_user_identification():
+@chat_auth_blueprint.route("/confirm_user_password", methods=["POST"])
+def confirm_user_password():
+    form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
+
+    room = c.get_room(form.room_unique_id.data)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not form.validate_on_submit():
+        log(
+            log.ERROR,
+            "Form submitting error: [%s]",
+            form.errors,
+        )
+        return render_template(
+            "chat/registration/password_confirm.html",
+            error_message="Please, confirm your password",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=form.user_unique_id.data,
+            form=form,
+        )
+
+    success = c.confirm_password(form, room)
+
+    if not success:
+        log(log.ERROR, "Password not confirmed: [%s]", form.password.data)
+        return render_template(
+            "chat/registration/password_confirm.html",
+            error_message="Password does not match. Please, confirm your password",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=form.user_unique_id.data,
+            form=form,
+        )
+
+    return render_template(
+        "chat/registration/passport.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+        user_unique_id=form.user_unique_id.data,
+        form=form,
+    )
+
+
+@chat_auth_blueprint.route("/create_user_passport", methods=["GET", "POST"])
+def create_user_passport():
     form: f.ChatAuthIdentityForm = f.ChatAuthIdentityForm()
 
-    now = datetime.now()
-    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
-
-    room_query = m.Room.select().where(m.Room.unique_id == form.room_unique_id.data)
-    room: m.Room = db.session.scalar(room_query)
+    room = c.get_room(form.room_unique_id.data)
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
         return render_template(
-            "chat/sell/04_identification.html",
+            "chat/sell/passport.html",
             error_message="Form submitting error",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
@@ -352,10 +462,10 @@ def create_user_identification():
             form.room_unique_id.data,
         )
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/passport.html",
             error_message="Form submitting error",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
@@ -363,10 +473,10 @@ def create_user_identification():
     if not form.file.data:
         log(log.ERROR, "No identification document: [%s]", form.file.data)
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/passport.html",
             error_message="No verification document, please upload your identification document",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
@@ -376,18 +486,18 @@ def create_user_identification():
     if error_message:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
         return render_template(
-            "chat/registration/04_identification.html",
+            "chat/registration/passport.html",
             error_message=error_message,
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
 
     return render_template(
-        "chat/registration/05_name.html",
+        "chat/registration/name.html",
         room=room,
-        now=now_str,
+        now=c.utcnow_chat_format(),
         user_unique_id=form.user_unique_id.data,
         form=form,
     )
@@ -395,136 +505,197 @@ def create_user_identification():
 
 @chat_auth_blueprint.route("/create_user_name")
 def create_user_name():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    if not response.params.name:
-        log(log.ERROR, "Name not found: [%s]", response.params.name)
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
         return render_template(
-            "chat/registration/05_name.html",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No name provided: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/name.html",
             error_message="Please, add your name",
             room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
-    c.create_user_name(response.params, user, room)
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    c.create_user_name(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "User name added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User name is not added: [%s]", e)
+        return render_template(
+            "chat/registration/name.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
-        "chat/registration/06_last_name.html",
+        "chat/registration/last_name.html",
         room=room,
-        now=response.now_str,
+        now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
     )
 
 
 @chat_auth_blueprint.route("/create_user_last_name")
 def create_user_last_name():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    if not params.last_name:
-        log(log.ERROR, "No name_input: [%s]", params.last_name)
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No last name provided: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/last_name.html",
             error_message="Please, add your last name",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
-    c.create_user_last_name(params, user, room)
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    c.create_user_last_name(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "User last name added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "User last name is not added: [%s]", e)
+        return render_template(
+            "chat/registration/last_name.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
-        "chat/registration/07_phone.html",
+        "chat/registration/phone.html",
         room=room,
-        now=response.now_str,
+        now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
     )
 
 
 @chat_auth_blueprint.route("/create_user_phone")
 def create_user_phone():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    if not params.phone:
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
         return render_template(
-            "chat/registration/07_phone.html",
-            error_message="Invalid phone format",
-            now=response.now_str,
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No last name provided: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/phone.html",
+            error_message="Please, add your phone",
             room=room,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
-    error_message = c.create_phone(params.phone, user, room)
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    error_message = c.create_phone(params.user_message, user, room)
 
     if error_message:
         log(log.ERROR, error_message)
         return render_template(
-            "chat/registration/07_phone.html",
+            "chat/registration/phone.html",
             error_message=error_message,
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
-            phone=params.phone,
+            phone=params.user_message,
+        )
+
+    try:
+        db.session.commit()
+        log(log.INFO, "Phone added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Phone is not added: [%s]", e)
+        return render_template(
+            "chat/registration/phone.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
         )
 
     # parse url and get the domain name
@@ -537,8 +708,8 @@ def create_user_phone():
         profile_url = f"{base_url}user/profile"
 
     return render_template(
-        "chat/registration/08_address.html",
-        now=response.now_str,
+        "chat/registration/address.html",
+        now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=user.unique_id,
         profile_url=profile_url,
@@ -547,133 +718,179 @@ def create_user_phone():
 
 @chat_auth_blueprint.route("/create_user_address")
 def create_user_address():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
+        )
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
         )
 
-    if not params.address:
-        log(log.ERROR, "No name_input: [%s]", params.address)
+    if not params.user_message:
+        log(log.ERROR, "No address provided: [%s]", params.user_message)
         return render_template(
-            "chat/registration/08_address.html",
+            "chat/registration/address.html",
             error_message="Please, add your address",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
-    c.create_address(params.address, user, room)
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    c.create_address(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "Address added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Address is not added: [%s]", e)
+        return render_template(
+            "chat/registration/address.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
-        "chat/registration/10_ask_social_profile.html",
+        "chat/registration/ask_social_profile.html",
         room=room,
-        now=response.now_str,
+        now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
     )
 
 
 @chat_auth_blueprint.route("/create_user_birth_date")
 def create_user_birth_date():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/06_last_name.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    if not params.birth_date:
-        log(log.ERROR, "No name_input: [%s]", params.birth_date)
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
         return render_template(
-            "chat/registration/09_birth_date.html",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No birth date provided: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/birth_date.html",
             error_message="Please, add your birth date",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
         )
 
-    assert user
-    assert room
-    c.create_birth_date(params.birth_date, user, room)
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    c.create_birth_date(params.user_message, user, room)
+
+    try:
+        db.session.commit()
+        log(log.INFO, "Birth date added: [%s]", params.user_message)
+    except IntegrityError as e:
+        db.session.rollback()
+        log(log.ERROR, "Birth date is not added: [%s]", e)
+        return render_template(
+            "chat/registration/birth_date.html",
+            error_message="Form submitting error. Please add your email again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
-        "chat/registration/10_ask_social_profile.html",
+        "chat/registration/ask_social_profile.html",
         room=room,
-        now=response.now_str,
+        now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
     )
 
 
 @chat_auth_blueprint.route("/create_user_social_profile", methods=["GET", "POST"])
 def create_user_social_profile():
-    params = s.ChatAuthParams.model_validate(dict(request.args))
-    response, user, room = c.check_user_room_id(params)
-
-    if response.is_error:
-        log(
-            log.ERROR,
-            "check_user_room_id return not correct data params:[%s], user_id:[%s], room_id:[%s], now_str:[%s]",
-            response.params,
-            user,
-            room,
-            response.now_str,
-        )
+    try:
+        params = s.ChatAuthSocialProfileParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/registration/10_ask_social_profile.html",
+            "chat/chat_error.html",
             error_message="Form submitting error",
-            room=room,
-            now=response.now_str,
-            user_unique_id=response.params.user_unique_id,
+            now=c.utcnow_chat_format(),
         )
 
-    assert user
-    assert room
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
     if params.without_social_profile:
         login_user(user)
-        c.send_message("You have successfully registered", "Without social profile", room)
+        c.save_message("You have successfully registered", "Without social profile", room)
 
-        log(log.INFO, f"User: {params.user_unique_id} logged in")
+        log(log.INFO, f"User: {user.email} logged in")
         return render_template(
-            "chat/registration/12_verified.html",
+            "chat/registration/verified.html",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
         )
 
     if not params.facebook and not params.instagram and not params.twitter:
         log(log.ERROR, "No social profile: [%s]", params.facebook)
         return render_template(
-            "chat/registration/11_social_profiles.html",
+            "chat/registration/social_profiles.html",
             room=room,
-            now=response.now_str,
+            now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
         )
 
@@ -683,9 +900,9 @@ def create_user_social_profile():
     log(log.INFO, f"User: {user.email} logged in")
 
     return render_template(
-        "chat/registration/12_verified.html",
+        "chat/registration/verified.html",
         room=room,
-        now=response.now_str,
+        now=c.utcnow_chat_format(),
     )
 
 

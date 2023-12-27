@@ -399,3 +399,73 @@ select {
 select::-ms-expand {
   display: none; /* Remove default arrow in Internet Explorer/Edge */
 }
+
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #99a1a3;
+  color: #99a1a3;
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+}
+.dot-flashing::before,
+.dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #99a1a3;
+  color: #99a1a3;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #99a1a3;
+  color: #99a1a3;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+  0% {
+    background-color: #99a1a3;
+  }
+  50%,
+  100% {
+    background-color: rgba(152, 128, 255, 0.2);
+  }
+}
+
+.chat-spinner {
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.chat-spinner-active {
+  opacity: 1;
+}
+
+.chat-message {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.chat-message-active {
+  opacity: 1;
+  max-height: 1000px;
+  overflow: hidden;
+}
