@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from flask_mail import Message
+
+from app import schema as s
 from app import models as m, db, mail
 from app.logger import log
 from config import config
@@ -106,6 +108,20 @@ def get_events():
         event_location=location_input,
         event_date=date_input,
     )
+
+
+@chat_buy_blueprint.route("/get_event_name")
+@login_required
+def get_event_name():
+    try:
+        params = s.ChatRequiredParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
 
 
 @chat_buy_blueprint.route("/event", methods=["GET", "POST"])

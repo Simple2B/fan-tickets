@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
+
+from app import schema as s
 from app import models as m, db
 from app.logger import log
 from config import config
