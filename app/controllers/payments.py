@@ -191,9 +191,7 @@ def create_pagarme_order(
     item_category: str,
     customer_id: str,
     code: str,
-    name: str,
-    birthdate: str,
-    payments: list[s.PagarmeCheckout],
+    payments: list[dict],
 ):
     URL = "https://api.pagar.me/core/v5/orders"
 

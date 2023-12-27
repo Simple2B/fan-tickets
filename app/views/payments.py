@@ -29,20 +29,20 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 @login_required
 def ticket_order():
     user_unique_id = request.form.get("user_unique_id")
-    username = request.form.get("username")
-    birthdate = request.form.get("birthdate")
-    code = request.form.get("code")
-    email = request.form.get("email")
-    document = request.form.get("document")
-    phone = request.form.get("phone")
-    number = request.form.get("card_number")
-    exp_month = request.form.get("exp_month")
-    exp_year = request.form.get("exp_year")
-    cvv = request.form.get("cvv")
-    item_amount = request.form.get("item_amount")
+    username = request.form.get("username", "none")
+    birthdate = request.form.get("birthdate", "01/01/2000")
+    code = request.form.get("code", "00000000000")
+    email = request.form.get("email", "none@email.com")
+    document = request.form.get("document", "93095135270")
+    phone = request.form.get("phone", "11999999999")
+    number = request.form.get("card_number", 4111111111111111)
+    exp_month = request.form.get("exp_month", 12)
+    exp_year = request.form.get("exp_year", datetime.now().year + 1)
+    cvv = request.form.get("cvv", 123)
+    item_amount = request.form.get("item_amount", 0)
     item_code = request.form.get("item_code")  # ticket_unique_id
     item_description = request.form.get("item_description")
-    item_quantity = request.form.get("item_quantity")
+    item_quantity = request.form.get("item_quantity", 1)
     item_category = request.form.get("item_category")
 
     user_query = m.User.select().where(m.User.unique_id == user_unique_id)
@@ -62,6 +62,9 @@ def ticket_order():
         user.pagarme_id = pagarme_customer.id
         user.save()
 
+    if isinstance(pagarme_customer, s.PagarmeError):
+        return pagarme_customer.model_dump()
+
     billing_address = s.PagarmeBillingAddress(
         line_1=user.billing_line_1,
         line_2=user.billing_line_2,
@@ -80,10 +83,10 @@ def ticket_order():
         card_details = create_pagarme_card(
             customer_id=pagarme_customer.id,
             holder_name=pagarme_customer.name,
-            number=number,
-            exp_month=exp_month,
-            exp_year=exp_year,
-            cvv=cvv,
+            number=int(number),
+            exp_month=int(exp_month),
+            exp_year=int(exp_year),
+            cvv=int(cvv),
             billing_address=billing_address,
         )
 
@@ -113,19 +116,17 @@ def ticket_order():
         ).model_dump()
     ]
 
-    birthdate_dt = datetime.fromisoformat(pagarme_customer.birthdate)
-    birthdate_str = birthdate_dt.strftime("%d/%m/%Y")
+    if isinstance(pagarme_customer, s.PagarmeError):
+        return pagarme_customer.model_dump()
 
     order_create_response = create_pagarme_order(
-        item_amount=item_amount,
-        item_code=item_code,
-        item_description=item_description,
-        item_quantity=item_quantity,
-        item_category=item_category,
+        item_amount=int(item_amount),
+        item_code=str(item_code),
+        item_description=str(item_description),
+        item_quantity=int(item_quantity),
+        item_category=str(item_category),
         customer_id=pagarme_customer.id,
         code=pagarme_customer.code,
-        name=pagarme_customer.name,
-        birthdate=birthdate_str,
         payments=checkout,
     )
 
