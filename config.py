@@ -87,6 +87,14 @@ class BaseConfig(BaseSettings):
     # platform commission rate
     PLATFORM_COMMISSION_RATE: float = 1.08
 
+    # pagar.me
+    PAGARME_CONNECTION: bool = False
+    PAGARME_SECRET_KEY: str | None = None
+    PAGARME_CHECKOUT_EXPIRES_IN: int = 30  # minutes
+    PAGARME_DEFAULT_PAYMENT_METHOD: str = "credit_card"
+    BRASIL_COUNTRY_PHONE_CODE: str = "55"
+    BRASIL_COUNTRY_AREA_CODE: str = "11"
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: e4c9a229a541
+Revision ID: aa16e2083cd7
 Revises: 
-Create Date: 2023-12-05 12:01:55.042669
+Create Date: 2023-12-26 18:53:57.948333
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e4c9a229a541'
+revision = 'aa16e2083cd7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,10 +46,27 @@ def upgrade():
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(length=64), nullable=False),
+    sa.Column('identity_document_id', sa.Integer(), nullable=True),
+    sa.Column('picture_id', sa.Integer(), nullable=True),
+    sa.Column('username', sa.String(length=64), nullable=True),
     sa.Column('email', sa.String(length=256), nullable=False),
+    sa.Column('name', sa.String(length=64), nullable=True),
+    sa.Column('last_name', sa.String(length=64), nullable=True),
     sa.Column('phone', sa.String(length=32), nullable=True),
+    sa.Column('address', sa.String(length=256), nullable=True),
+    sa.Column('birth_date', sa.DateTime(), nullable=True),
+    sa.Column('facebook', sa.String(length=256), nullable=True),
+    sa.Column('instagram', sa.String(length=256), nullable=True),
+    sa.Column('twitter', sa.String(length=256), nullable=True),
     sa.Column('card', sa.String(length=16), nullable=True),
+    sa.Column('card_id', sa.String(length=16), nullable=True),
+    sa.Column('pagarme_id', sa.String(length=32), nullable=True),
+    sa.Column('billing_line_1', sa.String(length=256), nullable=True),
+    sa.Column('billing_line_2', sa.String(length=256), nullable=True),
+    sa.Column('billing_zip_code', sa.String(length=16), nullable=True),
+    sa.Column('billing_city', sa.String(length=64), nullable=True),
+    sa.Column('billing_state', sa.String(length=16), nullable=True),
+    sa.Column('billing_country', sa.String(length=16), nullable=True),
     sa.Column('verification_code', sa.String(length=6), nullable=True),
     sa.Column('password_hash', sa.String(length=256), nullable=False),
     sa.Column('activated', sa.Boolean(), nullable=False),
@@ -57,11 +74,11 @@ def upgrade():
     sa.Column('unique_id', sa.String(length=36), nullable=False),
     sa.Column('reset_password_uid', sa.String(length=64), nullable=False),
     sa.Column('role', sa.String(length=32), nullable=False),
-    sa.Column('picture_id', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['identity_document_id'], ['pictures.id'], name=op.f('fk_users_identity_document_id_pictures')),
     sa.ForeignKeyConstraint(['picture_id'], ['pictures.id'], name=op.f('fk_users_picture_id_pictures')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
-    sa.UniqueConstraint('username', name=op.f('uq_users_username'))
+    sa.UniqueConstraint('email', name=op.f('uq_users_email'))
     )
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -81,7 +98,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['picture_id'], ['pictures.id'], name=op.f('fk_events_picture_id_pictures')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_events'))
     )
-    op.create_table('notification',
+    op.create_table('notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
@@ -89,8 +106,8 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('text', sa.String(length=512), nullable=False),
     sa.Column('is_viewed', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_notification_user_id_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_notification'))
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_notifications_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_notifications'))
     )
     op.create_table('notifications_configs',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -120,7 +137,7 @@ def upgrade():
     op.create_table('tickets',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
-    sa.Column('description', sa.String(length=512), nullable=False),
+    sa.Column('description', sa.String(length=512), nullable=True),
     sa.Column('ticket_type', sa.String(length=32), nullable=False),
     sa.Column('ticket_category', sa.String(length=32), nullable=False),
     sa.Column('file', sa.LargeBinary(), nullable=True),
@@ -137,7 +154,7 @@ def upgrade():
     sa.Column('is_reserved', sa.Boolean(), nullable=False),
     sa.Column('is_sold', sa.Boolean(), nullable=False),
     sa.Column('seller_id', sa.Integer(), nullable=False),
-    sa.Column('buyer_id', sa.Integer(), nullable=False),
+    sa.Column('buyer_id', sa.Integer(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_tickets_buyer_id_users')),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], name=op.f('fk_tickets_event_id_events')),
@@ -212,7 +229,7 @@ def downgrade():
     op.drop_table('tickets')
     op.drop_table('reviews')
     op.drop_table('notifications_configs')
-    op.drop_table('notification')
+    op.drop_table('notifications')
     op.drop_table('events')
     op.drop_table('users')
     op.drop_table('locations')
