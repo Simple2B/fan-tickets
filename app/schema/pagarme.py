@@ -36,6 +36,28 @@ class PagarmeUserCreate(BaseModel):
     model_config = SettingsConfigDict(from_attributes=True)
 
 
+class PagarmeUpdateUserOutput(BaseModel):
+    """
+        {
+      "id": "cus_o873mYLFOFlVRe0D",
+      "name": "UpdatedTestingCustomer",
+      "delinquent": false,
+      "created_at": "2023-12-28T12:16:35Z",
+      "updated_at": "2023-12-28T12:17:06Z",
+      "birthdate": "2000-02-02T00:00:00Z",
+      "phones": {}
+    }
+    """
+
+    id: str
+    name: str
+    delinquent: bool
+    created_at: str
+    updated_at: str
+    birthdate: str
+    phones: dict
+
+
 class PagarmeUserInput(BaseModel):
     id: str
     name: str
@@ -43,7 +65,7 @@ class PagarmeUserInput(BaseModel):
     email: str
     code: str
     delinquent: bool = False
-    phone: dict = {}
+    phones: dict = {}
 
     model_config = SettingsConfigDict(from_attributes=True)
 

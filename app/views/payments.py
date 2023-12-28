@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template, request, current_app as app
+from flask import Blueprint, request, current_app as app
 from flask_login import login_required
 from app import schema as s, models as m, db
 from app.controllers import (
@@ -9,6 +9,7 @@ from app.controllers import (
     create_pagarme_card,
     create_pagarme_order,
 )
+from app.logger import log
 
 pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 
@@ -141,29 +142,129 @@ def ticket_order():
 @pay_blueprint.route("/webhook", methods=["POST"])
 def webhook():
     """
-    customer.created
-    customer.updated
-    card.created
-    card.updated
-    card.deleted
-    card.expired
-    order.paid
-    order.payment_failed
-    order.created
-    order.canceled
+        {
+      "id": "hook_RyEKQO789TRpZjv5",
+      "account": {
+        "id": "acc_jZkdN857et650oNv",
+        "name": "Lojinha"
+      },
+      "type": "order.paid",
+      "created_at": "2017-06-29T20:23:47",
+      "data": {
+        "id": "or_ZdnB5BBCmYhk534R",
+        "code": "1303724",
+        "amount": 12356,
+        "currency": "BRL",
+        "closed": true,
+        "items": [
+          {
+            "id": "oi_EqnMMrbFgBf0MaN1",
+            "description": "Produto",
+            "amount": 10166,
+            "quantity": 1,
+            "status": "active",
+            "created_at": "2022-06-29T20:23:42",
+            "updated_at": "2022-06-29T20:23:42"
+          }
+        ],
+        "customer": {
+          "id": "cus_oy23JRQCM1cvzlmD",
+          "name": "FABIO ",
+          "email": "abc@teste.com",
+          "document": "09006068709",
+          "type": "individual",
+          "delinquent": false,
+          "created_at": "2022-06-29T20:23:42",
+          "updated_at": "2022-06-29T20:23:42",
+          "phones": {}
+        },
+        "shipping": {
+          "amount": 2190,
+          "description": "Economico",
+          "address": {
+            "zip_code": "90265",
+            "city": "Malibu",
+            "state": "CA",
+            "country": "US",
+            "line_1": "10880, Malibu Point, Malibu Central"
+          }
+        },
+        "status": "paid",
+        "created_at": "2022-06-29T20:23:42",
+        "updated_at": "2022-06-29T20:23:47",
+        "closed_at": "2022-06-29T20:23:44",
+        "charges": [
+          {
+            "id": "ch_d22356Jf4WuGr8no",
+            "code": "1303624",
+            "gateway_id": "da7f2304-1937-42a4-b995-0f4ea2b36264",
+            "amount": 12356,
+            "status": "paid",
+            "currency": "BRL",
+            "payment_method": "credit_card",
+            "paid_at": "2022-06-29T20:23:47",
+            "created_at": "2022-06-29T20:23:42",
+            "updated_at": "2022-06-29T20:23:47",
+            "customer": {
+              "id": "cus_oybzJRQ231cvzlmD",
+              "name": "FABIO E RACHEL ",
+              "email": "fabiomello11@gmail.com",
+              "document": "09006507709",
+              "type": "individual",
+              "delinquent": false,
+              "created_at": "2022-06-29T20:23:42",
+              "updated_at": "2022-06-29T20:23:42",
+              "phones": {}
+            },
+            "last_transaction": {
+              "id": "tran_opAqDj2390S1lKQO",
+              "transaction_type": "credit_card",
+              "gateway_id": "3b12320a-0d67-4c06-b497-6622fe9763c8",
+              "amount": 12356,
+              "status": "captured",
+              "success": true,
+              "installments": 2,
+              "acquirer_name": "redecard",
+              "acquirer_affiliation_code": "30233726",
+              "acquirer_tid": "247391236",
+              "acquirer_nsu": "247391236",
+              "acquirer_auth_code": "236689",
+              "operation_type": "capture",
+              "card": {
+                "id": "card_BjKOmahgAf0D23lw",
+                "last_four_digits": "4485",
+                "brand": "Visa",
+                "holder_name": "FABIO",
+                "exp_month": 6,
+                "exp_year": 2025,
+                "status": "active",
+                "created_at": "2022-06-29T20:23:42",
+                "updated_at": "2022-06-29T20:23:42",
+                "billing_address": {
+                  "zip_code": "90265",
+                  "city": "Malibu",
+                  "state": "CA",
+                  "country": "US",
+                  "line_1": "10880, Malibu Point, Malibu Central"
+                },
+                "type": "credit"
+              },
+              "created_at": "2022-06-29T20:23:47",
+              "updated_at": "2022-06-29T20:23:47",
+              "gateway_response": {
+                "code": "200"
+              }
+            }
+          }
+        ]
+      }
+    }
     """
-    with open("webhook-response.json", "w") as f:
-        # f.write(request.data.decode("utf-8"))
-        f.write(request.json)
+    res = request.json
+
+    if not res:
+        log(log.ERROR, "No webhook data received")
+        return {"status": "failed"}, 400
+
+    log(log.INFO, res)
     return {"status": "success"}, 200
-
-
-@pay_blueprint.route("/display_response", methods=["GET", "POST"])
-@login_required
-def display_response():
-    with open("webhook-response.json", "r") as f:
-        webhook_response = f.read()
-    return render_template(
-        "display_response.html",
-        webhook_response=webhook_response,
-    )

@@ -10,7 +10,9 @@
       "request": "launch",
       "module": "pytest",
       "justMyCode": false,
-      "args": ["test_flask"],
+      "args": [
+        "test_flask"
+      ],
       "env": {
         "IS_API": "true"
       }
@@ -20,7 +22,12 @@
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["api:app", "--reload", "--port", "5002"],
+      "args": [
+        "api:app",
+        "--reload",
+        "--port",
+        "5002"
+      ],
       "justMyCode": true,
       "env": {
         "IS_API": "true"
@@ -37,7 +44,29 @@
         "FLASK_DEBUG": "1",
         "DEBUG": "true"
       },
-      "args": ["run", "--port", "5000"],
+      "args": [
+        "run",
+        "--port",
+        "5000"
+      ],
+      "jinja": true,
+      "justMyCode": false
+    },
+    {
+      "name": "S2B Redirect",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "wsgi:app",
+        "APP_ENV": "development",
+        "FLASK_DEBUG": "1"
+      },
+      "args": [
+        "run",
+        "--port",
+        "8010"
+      ],
       "jinja": true,
       "justMyCode": false
     },

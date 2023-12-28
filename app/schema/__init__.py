@@ -10,6 +10,7 @@ from .pagarme import (
     UserMobilePhone,
     PagarmeUserInput,
     PagarmeUserOutput,
+    PagarmeUpdateUserOutput,
     PagarmeUsers,
     PagarmeCardInput,
     PagarmeCardOutput,

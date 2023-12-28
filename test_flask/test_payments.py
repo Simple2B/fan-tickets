@@ -49,7 +49,8 @@ def test_pagarme_customer(client: FlaskClient):
     TESTING_BIRTH_DATE = "01/01/2000"
     now = datetime.now().strftime("%m-%d-%H-%M-%S")
     TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
-    TEST_DOCUMENT = "93095135270"
+    TEST_DOCUMENT = "93095135271"
+    TEST_PHONE = "11999999992"
 
     created_pagarme_customer = create_pagarme_customer(
         customer_name=TESTING_CUSTOMER_NAME,
@@ -57,7 +58,7 @@ def test_pagarme_customer(client: FlaskClient):
         email=current_user.email,
         birthdate=TESTING_BIRTH_DATE,
         document=TEST_DOCUMENT,
-        phone=current_user.phone,
+        phone=TEST_PHONE,
     )
     assert created_pagarme_customer
     assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME

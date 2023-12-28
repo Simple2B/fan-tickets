@@ -98,7 +98,7 @@ def update_pagarme_customer(
     customer_id: str,
     birthdate: str | None = None,
     customer_name: str | None = None,
-) -> s.PagarmeUserOutput:
+) -> s.PagarmeUpdateUserOutput:
     URL = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
     payload = {}
@@ -110,7 +110,7 @@ def update_pagarme_customer(
     response = requests.put(URL, headers=HEADERS, json=payload)
 
     print(response.text)
-    return s.PagarmeUserOutput.model_validate(response.json())
+    return s.PagarmeUpdateUserOutput.model_validate(response.json())
 
 
 def create_pagarme_card(
