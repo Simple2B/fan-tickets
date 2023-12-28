@@ -1,41 +1,23 @@
-<div>
+{% from 'chat/_macros_chat_message.html' import (bot_message, bot_message_without_date, user_message,
+submit_message_get)
+%}
+
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %}
+  {% include 'chat/chat_spinner.html' %}
 
-  <div class="flex text-white justify-end">
-    <small class="pt-1">FanTicket {{ now }}</small>
-  </div>
-
-  <div class="mb-6 flex text-black justify-end">
-    <p class="w-5/6 p-2 rounded-lg bg-secondary">
-      Please input your phone
-    </p>
-  </div>
-
-  {% if error_message %}
-  <div class="mb-6 flex text-black justify-end">
-    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
-      {{ error_message }}: {{ phone }}
-    </p>
-  </div>
-  {% endif %}
-
-  {% set all_filters = "[name='phone'], [name='room_unique_id'], [name='user_unique_id']" %}
-  <div class="flex justify-end">
-    <div class="mt-2 w-5/6 flex flex-col gap-2">
-      <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-      <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-      <input type="phone" name="phone" class="p-2.5 border border-white bg-transparent rounded-lg"
-        placeholder="some format?" />
-      <button type="button" hx-get="{{ url_for('chat.create_user_phone') }}" hx-target="#chat-body" hx-swap="innerHTML"
-        hx-trigger="click" hx-include="{{ all_filters }}"
-        class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-        Submit
-      </button>
-    </div>
+  <div id="chat-message-container" data-send-message>
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% endif %}
+    {{ bot_message("Please input your phone") }}
   </div>
 </div>
 
-{% include 'chat/chat_submit_form.html' %}
+<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+<input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+{{ submit_message_get('chat.create_user_email', "[name='room_unique_id'], "[name='user_unique_id']",
+[name='user_message']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

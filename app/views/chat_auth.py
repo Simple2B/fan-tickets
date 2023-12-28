@@ -191,7 +191,7 @@ def create_user_email():
         )
 
     if params.from_sign_up:
-        c.save_message("You do not log in. Please log in or create account", "Sign up", room)
+        c.save_message("You do not log in. Please log in or sign up", "Sign up", room)
         log(log.INFO, "Sign up from selling")
         return render_template(
             "chat/registration/email.html",
@@ -203,7 +203,7 @@ def create_user_email():
         log(log.ERROR, "No email: [%s]", params.user_message)
         return render_template(
             "chat/registration/email.html",
-            error_message="Add your email",
+            error_message="Field is empty",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -291,6 +291,7 @@ def email_verification():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
+            form=form,
         )
 
     user = c.get_user(params.user_unique_id)
@@ -311,6 +312,7 @@ def email_verification():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
+            form=form,
         )
 
     c.save_message("Please confirm your email", "Email confirmed", room)
@@ -379,7 +381,7 @@ def create_user_password():
         )
 
     return render_template(
-        "chat/registration/passport.html",
+        "chat/registration/password_confirm.html",
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=form.user_unique_id.data,

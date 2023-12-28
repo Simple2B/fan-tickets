@@ -49,6 +49,7 @@ module.exports = {
       height: ({theme}) => ({
         264: '264px',
         448: '448px',
+        475: '475px',
         517: '517px',
         600: '600px',
         650: '650px',
@@ -59,6 +60,9 @@ module.exports = {
       },
       margin: ({theme}) => ({
         '50%': '50%',
+      }),
+      maxWidth: () => ({
+        265: '265px',
       }),
       top: ({theme}) => ({
         '60%': '50%',

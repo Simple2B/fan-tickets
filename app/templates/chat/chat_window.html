@@ -1,5 +1,5 @@
 {% include 'chat/chat_icon.html' %}
-
+{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get %}
 
 
 {% if current_user.is_authenticated %}
@@ -8,9 +8,12 @@
 {% set user_name = 'Guest' %}
 {% endif %}
 
-<div id="chat-window" class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 ">
-  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch bg-chat-window rounded-2xl">
-    <div class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
+<div id="chat-window"
+  class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
+  {% include 'chat/chat_header.html' %}
+
+  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
+    <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
       {% if get_chat_room_messages() %}
       {% for message in get_chat_room_messages() %}
       {% if message.sender_id == 2 %}
@@ -37,60 +40,27 @@
       {% endif %}
       {% include 'chat/chat_spinner.html' %}
 
-      <div id="chat-message-container">
-        <div class="chat-message">
-          <div class=" flex text-white justify-start">
-            <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
-          </div>
-          <div class="flex text-black justify-start">
-            <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
-              Hi, {{ user_name }}! <br>
-              Are you looking for buying or selling tickets?
-            </p>
-          </div>
-        </div>
-        <div class="chat-message w-5/6 flex flex-col gap-1">
-          <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
-            hx-swap="innerHTML" hx-trigger="click"
-            class="p-2 text-center text-grey hover:text-white transition-colors duration-200 bg-dark-grey rounded-t-lg">
-            Selling
-          </button>
-          <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body"
-            hx-swap="innerHTML" hx-trigger="click"
-            class="p-2 text-center text-grey hover:text-white transition-colors duration-200 bg-dark-grey rounded-b-lg">
-            Buying
-          </button>
-        </div>
+      {% set html_element %}
+      <div class="mt-2 flex justify-stretch gap-2">
+        <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
+          hx-swap="innerHTML" hx-trigger="click"
+          class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+          Selling
+        </button>
+        <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body"
+          hx-swap="innerHTML" hx-trigger="click"
+          class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+          Buying
+        </button>
       </div>
-      <div class="flex justify-start">
-        <div class="mt-2 w-5/6 flex gap-2">
-        </div>
+      {% endset %}
+
+      <div id="chat-message-container">
+        {{ bot_message('Hello! I am FanTicket chatbot. How can I help you?', html_element) }}
       </div>
     </div>
 
-    {% set all_filters = "[name='user_message'], [name='room_unique_id'], [name='user_unique_id']" %}
-    <div>
-      <label for="chat" class="sr-only">Your message</label>
-      <div class="py-3 px-4 flex gap-2 items-center text-grey bg-dark-grey rounded-b-2xl">
-        <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-        {% if room %}
-        <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-        {% endif %}
-        <input id="chat" rows="1" name="user_message"
-          class="block p-2.5 w-full text-sm text-white bg-dark-grey rounded-lg border border-middle-grey outline-none"
-          placeholder="{{ route }}" />
-        <button id="chat-send-message-button" type="button" hx-target="#chat-body" hx-swap="innerHTML"
-          hx-trigger="click" hx-include="{{ all_filters }}"
-          class="inline-flex justify-center p-2 text-grey hover:text-light-grey-b0 rounded-full cursor-pointer">
-          <svg class="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor" viewBox="0 0 18 20">
-            <path
-              d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-          </svg>
-          <span class="sr-only">Send message</span>
-        </button>
-      </div>
-    </div>
+    {{ submit_message_get('chat.sell', disabled='disabled') }}
   </div>
   <!-- TODO: ask client about footer. Maybe will be deleted in the future -->
   <!-- <div class="py-2 px-4 flex justify-around text-grey  bg-dark-grey rounded-b-2xl transition-colors duration-200">
