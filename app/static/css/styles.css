@@ -1618,8 +1618,17 @@ input:checked + .toggle-bg{
   height: 100%;
 }
 
+.h-max{
+  height: -moz-max-content;
+  height: max-content;
+}
+
 .h-screen{
   height: 100vh;
+}
+
+.h-475{
+  height: 475px;
 }
 
 .max-h-40{
@@ -1741,6 +1750,10 @@ input:checked + .toggle-bg{
 
 .min-w-0{
   min-width: 0px;
+}
+
+.max-w-265{
+  max-width: 265px;
 }
 
 .max-w-2xl{
@@ -1932,6 +1945,10 @@ input:checked + .toggle-bg{
 
 .justify-around{
   justify-content: space-around;
+}
+
+.justify-stretch{
+  justify-content: stretch;
 }
 
 .justify-items-start{
@@ -2143,6 +2160,11 @@ input:checked + .toggle-bg{
 .rounded-t{
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
+}
+
+.rounded-t-2xl{
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
 }
 
 .rounded-t-lg{

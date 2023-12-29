@@ -200,23 +200,17 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     save_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
-def create_social_profiles(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
+def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
     message = ""
 
     if params.facebook:
-        user.facebook = params.facebook
-        message += f"facebook: {params.facebook}\n"
+        user.facebook = params.user_message
+        message = "Facebook url added"
     if params.instagram:
-        user.instagram = params.instagram
-        message += f"instagram: {params.instagram}\n"
+        user.instagram = params.user_message
+        message = "Instagram url added"
     if params.twitter:
-        user.twitter = params.twitter
-        message += f"twitter: {params.twitter}\n"
+        user.twitter = params.user_message
+        message = "Twitter url added"
 
     save_message("Please add your social profiles", message, room)
-
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="You have successfully registered",
-    ).save()
