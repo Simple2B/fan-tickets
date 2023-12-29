@@ -34,11 +34,11 @@ class ChatAuthSocialProfileParams(ChatAuthRequiredParams):
     user_message: str | None = None
     without_social_profile: bool = False
     without_facebook: bool = False
-    facebook: str | None = None
+    facebook: bool = False
     without_twitter: bool = False
-    twitter: str | None = None
+    twitter: bool = False
     without_instagram: bool = False
-    instagram: str | None = None
+    instagram: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 
