@@ -1013,11 +1013,6 @@ def create_user_social_profile():
     )
 
 
-@chat_auth_blueprint.route("/update_header")
-def update_header():
-    return render_template("landing/header/header.html")
-
-
 @chat_auth_blueprint.route("/home")
 def home():
     return render_template("chat/chat_home.html")

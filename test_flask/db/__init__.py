@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from random import randint
+from random import randint, choice
 from faker import Faker
 from app import db
 from app import models as m
@@ -99,20 +99,23 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
 def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
     FOLDER_PATH = "test_flask/locations_pictures"  # replace with your folder path
 
+    location_picture_ids = []
     for filename in os.listdir(FOLDER_PATH):
-        if os.path.isfile(os.path.join(FOLDER_PATH, filename)):
+        if ".png" in filename:
             with open(f"{FOLDER_PATH}/{filename}", "rb") as img_file:
                 filename = filename.split(".")[0]
-                m.Picture(
+                picture = m.Picture(
                     filename=filename,
                     file=img_file.read(),
                     mimetype="png",
-                ).save(False)
+                ).save()
+                location_picture_ids.append(picture.id)
+    print(location_picture_ids)
     test_locations: list[m.Location] = []
     for location_name in TEST_LOCATIONS:
         location = m.Location(
             name=location_name,
-            picture_id=randint(1, len(os.listdir(FOLDER_PATH))),
+            picture_id=choice(location_picture_ids),
         ).save(False)
         test_locations.append(location)
     test_categories: list[m.Category] = []
