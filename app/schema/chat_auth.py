@@ -33,13 +33,10 @@ class ChatAuthParams(ChatAuthRequiredParams):
 class ChatAuthSocialProfileParams(ChatAuthRequiredParams):
     user_message: str | None = None
     without_social_profile: bool = False
-    has_facebook: bool = False
     without_facebook: bool = False
     facebook: str | None = None
-    has_twitter: bool = False
     without_twitter: bool = False
     twitter: str | None = None
-    has_instagram: bool = False
     without_instagram: bool = False
     instagram: str | None = None
 
