@@ -22,5 +22,5 @@ from .chat_auth import (
     create_phone,
     create_address,
     create_birth_date,
-    create_social_profiles,
+    create_social_profile,
 )

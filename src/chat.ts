@@ -4,9 +4,17 @@ const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
 const timeTyping = 1500;
 
 function scrollDown(element: HTMLDivElement) {
+  element.scrollTo({
+    top: element.scrollHeight,
+  });
+  console.log('scroll down');
+}
+
+function scrollDownSmooth(element: HTMLDivElement) {
   setTimeout(() => {
     element.scrollTo({
       top: element.scrollHeight,
+      behavior: 'smooth',
     });
     console.log('scroll down');
   }, 200);
@@ -254,5 +262,5 @@ async function showSpinnerAndMessage(
 
   spinnerClone.remove();
   message.classList.add('chat-message-active');
-  scrollDown(chatMain);
+  scrollDownSmooth(chatMain);
 }

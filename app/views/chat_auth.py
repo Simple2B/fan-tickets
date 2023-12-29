@@ -889,18 +889,119 @@ def create_user_social_profile():
         )
 
     if not params.facebook and not params.instagram and not params.twitter:
-        log(log.ERROR, "No social profile: [%s]", params.facebook)
+        log(log.ERROR, "No social profiles: [%s]", params.facebook)
         return render_template(
-            "chat/registration/social_profiles.html",
+            "chat/registration/profile_facebook.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
         )
 
-    c.create_social_profiles(params, user, room)
+    if params.facebook:
+        c.create_social_profile(params, user, room)
+        try:
+            db.session.commit()
+            log(log.INFO, "Facebook added: [%s]", params.user_message)
+            return render_template(
+                "chat/registration/profile_instagram.html",
+                room=room,
+                now=c.utcnow_chat_format(),
+                user_unique_id=params.user_unique_id,
+            )
+        except IntegrityError as e:
+            db.session.rollback()
+            log(log.ERROR, "Facebook is not added: [%s]", e)
+            return render_template(
+                "chat/registration/profile_facebook.html",
+                error_message="Form submitting error. Please add your facebook url again",
+                room=room,
+                now=c.utcnow_chat_format(),
+                user_unique_id=params.user_unique_id,
+            )
 
-    login_user(user)
-    log(log.INFO, f"User: {user.email} logged in")
+    if params.without_facebook:
+        log(log.INFO, "Without facebook")
+        return render_template(
+            "chat/registration/profile_instagram.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
+        )
+
+    if params.instagram:
+        c.create_social_profile(params, user, room)
+        try:
+            db.session.commit()
+            log(log.INFO, "Instagram added: [%s]", params.user_message)
+            return render_template(
+                "chat/registration/profile_twitter.html",
+                room=room,
+                now=c.utcnow_chat_format(),
+                user_unique_id=params.user_unique_id,
+            )
+        except IntegrityError as e:
+            db.session.rollback()
+            log(log.ERROR, "Instagram is not added: [%s]", e)
+            return render_template(
+                "chat/registration/profile_instagram.html",
+                error_message="Form submitting error. Please add your instagram url again",
+                room=room,
+                now=c.utcnow_chat_format(),
+                user_unique_id=params.user_unique_id,
+            )
+
+    if params.without_instagram:
+        log(log.INFO, "Without instagram")
+        return render_template(
+            "chat/registration/profile_twitter.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
+        )
+
+    if params.twitter:
+        c.create_social_profile(params, user, room)
+        try:
+            db.session.commit()
+            log(log.INFO, "Twitter added: [%s]", params.user_message)
+
+            login_user(user)
+            m.Message(
+                sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+                room_id=room.id,
+                text="You have successfully registered",
+            ).save()
+            log(log.INFO, f"User: {user.email} logged in")
+            return render_template(
+                "chat/registration/verified.html",
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+        except IntegrityError as e:
+            db.session.rollback()
+            log(log.ERROR, "Twitter is not added: [%s]", e)
+            return render_template(
+                "chat/registration/profile_twitter.html",
+                error_message="Form submitting error. Please add your twitter url again",
+                room=room,
+                now=c.utcnow_chat_format(),
+                user_unique_id=params.user_unique_id,
+            )
+
+    if params.without_twitter:
+        log(log.INFO, "Without twitter")
+        login_user(user)
+        m.Message(
+            sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+            room_id=room.id,
+            text="You have successfully registered",
+        ).save()
+        log(log.INFO, f"User: {user.email} logged in")
+        return render_template(
+            "chat/registration/verified.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     return render_template(
         "chat/registration/verified.html",

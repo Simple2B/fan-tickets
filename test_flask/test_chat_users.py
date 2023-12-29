@@ -3,14 +3,13 @@ from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
-from test_flask.utils import login
+from test_flask.utils import login, logout
 
 
 def test_chat_window(client: FlaskClient):
     login(client)
     response = client.get("/")
-    assert f"Hi, {current_user.name}" in response.data.decode()
-    assert "Are you looking for buying or selling tickets?" in response.data.decode()
+    assert "Hello! Welcome to FanTicketBot" in response.data.decode()
 
 
 def test_chat_sell(client: FlaskClient):
@@ -30,7 +29,7 @@ def test_create_user_email(client: FlaskClient):
 
     response = client.get(f"/chat/create_user_email?room_unique_id={room.unique_id}")
     assert response.status_code == 200
-    assert "Add your email" in response.data.decode()
+    assert "Field is empty" in response.data.decode()
 
     TESTING_EMAIL = "new@email.com"
     users_count = len(m.User.all())
@@ -239,14 +238,40 @@ def test_create_user_social_profile(client: FlaskClient):
     TESTING_INSTAGRAM = "https://www.instagram.com/profile/1"
     TESTING_TWITTER = "https://www.twitter.com/profile/1"
     response = client.get(
-        f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&facebook={TESTING_FACEBOOK}&instagram={TESTING_INSTAGRAM}&twitter={TESTING_TWITTER}"
+        f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&facebook={True}&user_message={TESTING_FACEBOOK}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 3
+    assert len(room.messages) == 2
     assert user.facebook == TESTING_FACEBOOK
+    assert "Facebook url added" in response.data.decode()
+
+    response = client.get(
+        f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&instagram={True}&user_message={TESTING_INSTAGRAM}"
+    )
+    assert response.status_code == 200
+    assert len(room.messages) == 4
     assert user.instagram == TESTING_INSTAGRAM
+    assert "Instagram url added" in response.data.decode()
+
+    response = client.get(
+        f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&twitter={True}&user_message={TESTING_TWITTER}"
+    )
+    assert response.status_code == 200
+    assert len(room.messages) == 7
     assert user.twitter == TESTING_TWITTER
-    assert "Search tickets" in response.data.decode()
+    assert "Twitter url added" in response.data.decode()
+    assert "You have successfully registered" in response.data.decode()
+    assert user.email == current_user.email
+
+    logout(client)
+    response = client.get(
+        f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.unique_id}&without_social_profile={True}"
+    )
+    assert response.status_code == 200
+    assert len(room.messages) == 9
+    assert "You have successfully registered" in response.data.decode()
+    assert "Without social profile" in response.data.decode()
+    assert user.email == current_user.email
 
 
 def test_chat_home(client: FlaskClient):
