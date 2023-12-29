@@ -264,3 +264,10 @@ async function showSpinnerAndMessage(
   message.classList.add('chat-message-active');
   scrollDownSmooth(chatMain);
 }
+
+const updateHeaderButton: HTMLButtonElement = document.querySelector(
+  '#chat-update-header-button',
+);
+if (updateHeaderButton) {
+  updateHeaderButton.click();
+}

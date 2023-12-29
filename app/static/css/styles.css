@@ -1562,6 +1562,10 @@ input:checked + .toggle-bg{
   height: 11rem;
 }
 
+.h-475{
+  height: 475px;
+}
+
 .h-48{
   height: 12rem;
 }
@@ -1625,10 +1629,6 @@ input:checked + .toggle-bg{
 
 .h-screen{
   height: 100vh;
-}
-
-.h-475{
-  height: 475px;
 }
 
 .max-h-40{
