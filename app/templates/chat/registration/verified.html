@@ -8,6 +8,11 @@ submit_message_get
 
   {% set all_filters = "[name='room_unique_id'], [name='user_unique_id']" %}
 
+  <button id="chat-update-header-button" type="button" hx-get="{{ url_for('chat.update_header') }}" hx-target="#header"
+    hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}" class="hidden">
+    Only for update header
+  </button>
+
   {% set html_element %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
