@@ -347,7 +347,7 @@ def create_user_password():
         )
         return render_template(
             "chat/registration/password.html",
-            error_message="Please, add your password",
+            error_message="You did not add your password",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
@@ -392,6 +392,7 @@ def create_user_password():
 @chat_auth_blueprint.route("/confirm_user_password", methods=["POST"])
 def confirm_user_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
+    form_file = f.ChatAuthIdentityForm()
 
     room = c.get_room(form.room_unique_id.data)
 
@@ -435,7 +436,7 @@ def confirm_user_password():
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=form.user_unique_id.data,
-        form=form,
+        form=form_file,
     )
 
 

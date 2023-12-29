@@ -54,7 +54,7 @@
 		<div class="flex text-grey justify-start">
 			<small class="pt-1">FanTicket {{ cut_seconds() }}</small>
 		</div>
-		<div class="p-4 flex text-white bg-dark-grey rounded-t-lg rounded-br-lg justify-start">
+		<div class="p-4 flex text-grey bg-dark-grey rounded-t-lg rounded-br-lg justify-start">
 			<p>
 				{{ message }}
 			</p>
@@ -69,7 +69,7 @@
 		<div class="flex text-grey justify-end">
 			<small class="pt-1">{{ username }} {{ cut_seconds() }}</small>
 		</div>
-		<div class="p-4 flex justify-center text-white bg-dark-grey rounded-t-lg rounded-bl-lg">
+		<div class="p-4 flex justify-center text-grey bg-dark-grey rounded-t-lg rounded-bl-lg">
 			<p>
 				{{ message }}
 			</p>
@@ -121,14 +121,14 @@
 </div>
 {% endmacro %}
 
-{% macro submit_message_post(route, filters, disabled) -%}
+{% macro submit_message_post(route, filters, disabled, form) -%}
 <div>
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post='/chat/{{ route }}' hx-target="#chat-body"
 			hx-include="{{ filters }}" hx-swap="innerHTML">
 			{{ form.hidden_tag() }}
-			<input id="chat-post" rows="1" name="user_message"
+			<input id="chat-post" rows="1" name="password"
 				class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none"
 				placeholder="Write here..." />
 			<button {{ disabled }} type="submit"
@@ -151,7 +151,7 @@
 </div>
 {% endmacro %}
 
-{% macro submit_message_file(route, filters, disabled) -%}
+{% macro submit_message_file(route, filters, disabled, form) -%}
 <div>
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
@@ -159,7 +159,7 @@
 			hx-post='/chat/{{ route }}' hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML">
 			{{ form.hidden_tag() }}
 			<input name="file" placeholder="Upload identity document" type="file"
-				class="block text-sm text-white border border-grey rounded-lg cursor-pointer bg-transparent dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+				class="block text-sm text-grey rounded-lg cursor-pointer bg-transparent dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
 				id="chat-auth-identity-input" type="file">
 			<button {{ disabled }} type="submit"
 				class="inline-flex justify-center p-2 text-grey hover:text-light-grey-b0 rounded-full cursor-pointer">

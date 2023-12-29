@@ -1,5 +1,5 @@
-{% from 'chat/_macros_chat_message.html' import (bot_message, bot_message_without_date, user_message,
-submit_message_get)
+{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
+submit_message_get
 %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
@@ -16,7 +16,7 @@ submit_message_get)
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-{{ submit_message_get('chat.create_user_email', "[name='room_unique_id'], "[name='user_unique_id']",
+{{ submit_message_get('chat.create_user_last_name', "[name='room_unique_id'], [name='user_unique_id'],
 [name='user_message']") }}
 
 {% block scripts %}

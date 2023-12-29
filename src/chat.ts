@@ -7,7 +7,6 @@ function scrollDown(element: HTMLDivElement) {
   setTimeout(() => {
     element.scrollTo({
       top: element.scrollHeight,
-      behavior: 'smooth',
     });
     console.log('scroll down');
   }, 200);
