@@ -135,29 +135,26 @@ def sell():
     )
 
 
-@chat_auth_blueprint.route("/buy", methods=["GET", "POST"])
+@chat_auth_blueprint.route("/buy")
 def buy():
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
-
     room = m.Room(
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     m.Message(
         sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
         room_id=room.id,
-        text="Are you looking for buying or selling tickets?",
+        text="Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
     ).save(False)
     m.Message(
         room_id=room.id,
-        text="Buying",
+        text="Buy",
     ).save(False)
     db.session.commit()
 
     return render_template(
-        "chat/buy/events_01_filters.html",
+        "chat/buy/event_name.html",
         locations=m.Location.all(),
-        now=now_str,
+        now=c.utcnow_chat_format(),
         room=room,
     )
 

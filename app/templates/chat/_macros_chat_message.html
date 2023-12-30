@@ -31,11 +31,13 @@
 		</svg>
 	</div>
 	<div class="max-w-265">
+		{% if message %}
 		<div class="p-4 flex text-white bg-dark-grey rounded-t-lg rounded-br-lg justify-start">
 			<p>
 				{{ message }}
 			</p>
 		</div>
+		{% endif %}
 		{{ html_element }}
 	</div>
 </div>

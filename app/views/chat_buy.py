@@ -2,6 +2,11 @@ from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from flask_mail import Message
+
+import sqlalchemy as sa
+
+from app import controllers as c
+from app import schema as s
 from app import models as m, db, mail
 from app.logger import log
 from config import config
@@ -9,6 +14,105 @@ from config import config
 CFG = config()
 
 chat_buy_blueprint = Blueprint("buy", __name__, url_prefix="/buy")
+
+
+@chat_buy_blueprint.route("/get_event_name", methods=["GET", "POST"])
+@login_required
+def get_event_name():
+    try:
+        params = s.ChatBuyEventParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.renew_search:
+        log(log.ERROR, "Renew search")
+        return render_template(
+            "chat/buy/event_name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No event name provided: [%s]", params.user_message)
+        return render_template(
+            "chat/buy/event_name.html",
+            error_message="No event date provided. Please add event name",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    events = c.get_event_by_name(params.user_message, room)
+
+    if not events:
+        log(log.INFO, "Events not found: [%s]", params.user_message)
+        return render_template(
+            "chat/buy/ticket_not_found.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    first_event: m.Event = events[0]
+    if len(events) == 1:
+        log(log.INFO, "Only 1 event found: [%s]", params.user_message)
+
+        tickets = c.get_tickets_by_event(first_event, room)
+        if not tickets:
+            log(log.ERROR, "Tickets not found: [%s]", params.user_message)
+            return render_template(
+                "chat/buy/ticket_not_found.html",
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+
+        log(log.INFO, "Tickets found: [%s]", tickets)
+        return render_template(
+            "chat/buy/ticket_list.html",
+            event_id=first_event.unique_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+            tickets=tickets,
+        )
+
+    locations = c.get_locations_by_events(events, room)
+    if not locations:
+        log(log.ERROR, "Locations not found: [%s]", params.user_message)
+        return render_template(
+            "chat/buy/ticket_not_found.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if len(locations) == 1:
+        log(log.INFO, "Only 1 location found: [%s]", params.user_message)
+        return render_template(
+            "chat/buy/ticket_date.html",
+            events=events,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    return render_template(
+        "chat/buy/location_list.html",
+        event_unique_id=first_event.unique_id,
+        locations=locations,
+        room=room,
+        now=c.utcnow_chat_format(),
+    )
 
 
 @chat_buy_blueprint.route("/", methods=["GET", "POST"])

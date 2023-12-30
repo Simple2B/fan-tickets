@@ -44,23 +44,22 @@
 
 # Chat
 
-- email verification
-- fix default user image
+- add logic to subscribe on event
 - round price on the python side
-- footer with home, subscriptions, cart
 
 # Testing database
+
 - add a cli command to set events pictures
 
-
 # Pagar.me
+
 - include cases when pagar returns errors
 - second route for checkout (if needed)
 - user changes: pagar_id, all address fields, username property
 
-
 # Pagar.me questions
-- why we are using not sk_... key but something interim
+
+- why we are using not sk\_... key but something interim
 - how to get checkout url to redirect a user to pagar.me payment form
 - where and when we pass metadata
 - how to get all customers (the method doesn't work)
