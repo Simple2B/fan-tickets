@@ -74,26 +74,6 @@ def save():
         return redirect(url_for("user.get_all"))
 
 
-@bp.route("/create", methods=["POST"])
-@login_required
-def create():
-    form = f.NewUserForm()
-    if form.validate_on_submit():
-        user = m.User(
-            username=form.username.data,
-            email=form.email.data,
-            password=form.password.data,
-            activated=form.activated.data,
-        )
-        log(log.INFO, "Form submitted. User: [%s]", user)
-        flash("User added!", "success")
-        user.save()
-        return redirect(url_for("user.get_all"))
-
-
-# TODO: create admins and clients separately (by admin only)
-
-
 @bp.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete(id: int):
