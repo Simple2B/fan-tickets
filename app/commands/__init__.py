@@ -100,6 +100,7 @@ def init(app: Flask):
         print(user)
 
         user.subscribed_events.extend(events)
+        user.password = "pass"
         user.save()
 
         print(user.subscribed_events)

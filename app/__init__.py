@@ -28,6 +28,7 @@ def create_app(environment="development") -> Flask:
         chat_sell_blueprint,
         chat_buy_blueprint,
         pay_blueprint,
+        chat_disputes_blueprint,
     )
     from app import models as m
 
@@ -58,6 +59,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(chat_sell_blueprint)
     app.register_blueprint(chat_buy_blueprint)
     app.register_blueprint(pay_blueprint)
+    app.register_blueprint(chat_disputes_blueprint)
 
     # Set up flask login.
     @login_manager.user_loader

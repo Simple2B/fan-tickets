@@ -65,6 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+const startDisputeButton: HTMLButtonElement =
+  document.querySelector('#start-dispute');
+
+if (startDisputeButton) {
+  chatWindow.classList.add('chat-window-open');
+  chatWindow.classList.remove('chat-window-close');
+}
+
 const locationButton = document.querySelector('.chat-filter-location-button');
 const dropdownFilterDate: HTMLDivElement = document.querySelector(
   '#chat-filter-location-dropdown',
