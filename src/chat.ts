@@ -7,7 +7,6 @@ function scrollDown(element: HTMLDivElement) {
   element.scrollTo({
     top: element.scrollHeight,
   });
-  console.log('scroll down');
 }
 
 function scrollDownSmooth(element: HTMLDivElement) {
@@ -16,7 +15,6 @@ function scrollDownSmooth(element: HTMLDivElement) {
       top: element.scrollHeight,
       behavior: 'smooth',
     });
-    console.log('scroll down');
   }, 200);
 }
 
@@ -25,11 +23,21 @@ function toggleChatWindow() {
   chatWindow.classList.toggle('chat-window-open');
 }
 
+function closeChatWindow() {
+  chatWindow.classList.remove('chat-window-open');
+  chatWindow.classList.add('chat-window-close');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const chatIcon = document.querySelector('#chat-icon');
   const chatMain: HTMLDivElement = document.querySelector('#chat-main');
   const openIcon = chatIcon.querySelector('.chat-icon-open');
   const closeIcon = chatIcon.querySelector('.chat-icon-close');
+  const chatCloseButton = document.querySelector('#chat-close-button');
+
+  chatCloseButton.addEventListener('click', () => {
+    closeChatWindow();
+  });
 
   chatIcon.addEventListener('click', () => {
     toggleChatWindow();
@@ -54,8 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
-          console.log('A child node has been added or removed.');
-
           scrollDown(chatMain);
         }
       });
@@ -236,8 +242,6 @@ const sendMessageButton = document.querySelector('#chat-send-message-button');
 
 if (chatMessageContainer.hasAttribute('data-send-message')) {
   sendMessageButton;
-  console.log('send message');
-
   showMessage();
 }
 

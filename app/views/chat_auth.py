@@ -888,15 +888,6 @@ def create_user_social_profile():
             now=c.utcnow_chat_format(),
         )
 
-    if not params.facebook and not params.instagram and not params.twitter:
-        log(log.ERROR, "No social profiles: [%s]", params.facebook)
-        return render_template(
-            "chat/registration/profile_facebook.html",
-            room=room,
-            now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
-        )
-
     if params.facebook:
         c.create_social_profile(params, user, room)
         try:
@@ -920,6 +911,7 @@ def create_user_social_profile():
             )
 
     if params.without_facebook:
+        c.save_message("Do you want to add your facebook profile?", "Without facebook profile", room)
         log(log.INFO, "Without facebook")
         return render_template(
             "chat/registration/profile_instagram.html",
@@ -951,6 +943,7 @@ def create_user_social_profile():
             )
 
     if params.without_instagram:
+        c.save_message("Do you want to add your instagram profile?", "Without instagram profile", room)
         log(log.INFO, "Without instagram")
         return render_template(
             "chat/registration/profile_twitter.html",
@@ -989,6 +982,7 @@ def create_user_social_profile():
             )
 
     if params.without_twitter:
+        c.save_message("Do you want to add your twitter profile?", "Without twitter profile", room)
         log(log.INFO, "Without twitter")
         login_user(user)
         m.Message(
@@ -1001,6 +995,15 @@ def create_user_social_profile():
             "chat/registration/verified.html",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if not params.facebook and not params.instagram and not params.twitter:
+        log(log.ERROR, "No social profiles: [%s]", params.facebook)
+        return render_template(
+            "chat/registration/profile_facebook.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
         )
 
     return render_template(
