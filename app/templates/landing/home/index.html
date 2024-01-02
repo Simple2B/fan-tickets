@@ -286,18 +286,6 @@
         loop: true,
       });
     });
-
-  var source = new EventSource(
-    "{{ url_for('sse.stream', channel='room_unique_id') }}",
-  );
-  source.addEventListener(
-    'greeting',
-    function (event) {
-      var data = JSON.parse(event.data);
-      console.log(data);
-    },
-    false,
-  );
 </script>
 <!-- prettier-ignore -->
 <script src="{{ url_for('static', filename='js/home.js') }}" type="text/javascript" defer></script>

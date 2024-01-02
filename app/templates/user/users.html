@@ -2,12 +2,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-  <div class="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+  <div class="flex items-center justify-center mt-4 py-4 bg-white dark:bg-gray-800">
     <label for="table-search" class="sr-only">Search</label>
     <div class="relative">
       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-
-        <!-- prettier-ignore -->
         <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd"
@@ -15,31 +13,21 @@
             clip-rule="evenodd"></path>
         </svg>
       </div>
-      <!-- prettier-ignore -->
+
       <input {% if search_query %}value={{ search_query }}{% endif %} type="text" id="table-search-users"
         class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="Search for users" />
     </div>
-    <!-- prettier-ignore -->
+
     <button type="button" id="table-search-user-button"
-      class="px-3 py-2 text-xs text-gray-300 border border-gray-300 hover:bg-blue-800 hover:text-white hover:border-white focus:ring-4 focus:outline-none focus:ring-blue-300 ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><svg
+      class="px-3 py-2 text-xs text-gray-300 border border-gray-300 hover:bg-blue-800 hover:text-white hover:border-white focus:ring-4 focus:outline-none focus:ring-blue-300 ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 dark:hover:bg-gray-500 dark:focus:ring-blue-800"><svg
         class="w-5 h-5 text-white-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         stroke-width="1.5" stroke="currentColor" class="w-6 h-6 ml-0 mr-1">
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg></button>
-    <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
-      <button type="button" data-modal-toggle="add-user-modal"
-        class="inline-flex items-center justify-center w-1/2 mr-2 px-3 py-2 text-sm font-medium text-center text-blue-500 rounded-lg border border-blue-500 hover:bg-blue-800 hover:text-white focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        <svg class="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd"
-            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-            clip-rule="evenodd"></path>
-        </svg>
-        Add user
-      </button>
-    </div>
   </div>
+
   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
       <tr>
@@ -47,6 +35,7 @@
         <th scope="col" class="px-6 py-3">Name</th>
         <th scope="col" class="px-6 py-3">Tickets for sale</th>
         <th scope="col" class="px-6 py-3">Actions</th>
+        <th scope="col" class="px-6 py-3 flex justify-center">Is activated</th>
       </tr>
     </thead>
     <tbody>
@@ -60,12 +49,14 @@
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
           <div class="pl-3">
             <div class="text-base font-semibold">{{ user.username }}</div>
-            <div class="font-normal text-gray-500"><a class="hover:text-blue-500" href="mailto:{{ user.email }}">{{
-                user.email }}</a></div>
+            <a href="#">
+              <div class="font-normal text-gray-500">
+                {{ user.email }}
+              </div>
+            </a>
           </div>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          <!-- {{ user.tickets_for_sale | length }} -->
           {{user.role}}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
@@ -89,7 +80,9 @@
             Delete user
           </button>
         </td>
-        <td>{{user.activated}}</td>
+        <td class="flex justify-center items-center">
+          <p>{{user.activated}}</p>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

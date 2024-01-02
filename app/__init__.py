@@ -63,15 +63,16 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
 
+    # TODO SSE
     # SSE
-    @sse.before_request
-    def check_access():
-        if not current_user.is_authenticated:
-            abort(403)
+    # @sse.before_request
+    # def check_access():
+    #     if not current_user.is_authenticated:
+    #         abort(403)
 
-        # TODO check if user not admin and in room
+    #     # TODO check if user not admin and in room
 
-    app.register_blueprint(sse, url_prefix="/stream")
+    # app.register_blueprint(sse, url_prefix="/stream")
 
     # Set up flask login.
     @login_manager.user_loader

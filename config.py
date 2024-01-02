@@ -76,6 +76,7 @@ class BaseConfig(BaseSettings):
     # Chat registration default values
     CHAT_DEFAULT_USERNAME: str = "guest"
     CHAT_DEFAULT_BOT_ID: int = 2
+    CHAT_DEFAULT_BOT_USERNAME: str = "FanTicket"
     CHAT_DEFAULT_EMAIL: str = "empty@email.com"
     CHAT_DEFAULT_PHONE: str = "+3800000000000"
     CHAT_DEFAULT_CARD: str = "0000000000000000"
