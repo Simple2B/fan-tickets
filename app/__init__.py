@@ -1,11 +1,13 @@
 import os
 
-from flask import Flask, render_template
-from flask_login import LoginManager
+import sqlalchemy as sa
+
+from flask import Flask, render_template, request, g, abort
+from flask_login import LoginManager, current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
-
+from flask_sse import sse
 from app.logger import log
 from .database import db
 
@@ -60,6 +62,16 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(chat_buy_blueprint)
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
+
+    # SSE
+    @sse.before_request
+    def check_access():
+        if not current_user.is_authenticated:
+            abort(403)
+
+        # TODO check if user not admin and in room
+
+    app.register_blueprint(sse, url_prefix="/stream")
 
     # Set up flask login.
     @login_manager.user_loader

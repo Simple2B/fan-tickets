@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from flask_mail import Message
+from flask_sse import sse
 from app import models as m, db, mail
 from app.controllers import utcnow_chat_format, save_message
 from app.logger import log
@@ -36,3 +37,14 @@ def start_dispute():
         now=utcnow_chat_format(),
         room=room,
     )
+
+
+@chat_disputes_blueprint.route("/send/<room_unique_id>")
+@login_required
+def send_message():
+    sse.publish(
+        {"message": "Hello!"},
+        type="greeting",
+        channel="room_unique_id",
+    )
+    return "Message sent!"

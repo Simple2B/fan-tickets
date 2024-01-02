@@ -95,6 +95,9 @@ class BaseConfig(BaseSettings):
     BRASIL_COUNTRY_PHONE_CODE: str = "55"
     BRASIL_COUNTRY_AREA_CODE: str = "11"
 
+    # Redis
+    REDIS_URL: str
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
@@ -111,6 +114,9 @@ class DevelopmentConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DEVEL_DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
+    )
+    REDIS_URL: str = Field(
+        alias="REDIS_URL_LOCAL",
     )
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
