@@ -166,7 +166,7 @@ def init(app: Flask):
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
         for user in users:
-            print(user.id, user.email, user.role)
+            print(user.id, user.email, user.role, user.tickets_bought)
 
     @app.cli.command("rollback")
     def rollback():

@@ -81,13 +81,15 @@ window.addEventListener('scroll', () => {
   }
 });
 
-scrollTopButton.addEventListener('click', e => {
-  e.preventDefault();
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth',
+if (scrollTopButton) {
+  scrollTopButton.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   });
-});
+}
 
 // register verification modal
 // TODO: disabled while twilio is not working
