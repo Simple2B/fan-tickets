@@ -1,13 +1,14 @@
 import os
 
-import sqlalchemy as sa
+# import sqlalchemy as sa
 
-from flask import Flask, render_template, request, g, abort
-from flask_login import LoginManager, current_user
+from flask import Flask, render_template  # , request, g, abort
+from flask_login import LoginManager  # , current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
-from flask_sse import sse
+
+# from flask_sse import sse
 from app.logger import log
 from .database import db
 

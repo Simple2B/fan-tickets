@@ -6,15 +6,18 @@
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
       <tr>
         <th scope="col" class="px-6 py-3">#</th>
-        <th scope="col" class="px-6 py-3">ticket</th>
-        <th scope="col" class="px-6 py-3">description</th>
-        <th scope="col" class="px-6 py-3">is_active</th>
+        <th scope="col" class="px-6 py-3">event</th>
+        <th scope="col" class="px-6 py-3">seller</th>
         <th scope="col" class="px-6 py-3">buyer</th>
+        <th scope="col" class="px-6 py-3">is open</th>
       </tr>
     </thead>
     <tbody>
       {% for dispute in disputes %}
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+      <tr
+        class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer"
+        hx-get="{{ url_for('disputes.send_message', room_unique_id=dispute.unique_id) }}" hx-target="#chat-body"
+        hx-swap="innerHTML" hx-trigger="click">
         <td class="w-4 p-4">
           <div class="flex items-center">
             {{ loop.index }}

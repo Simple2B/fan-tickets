@@ -12,24 +12,23 @@
         <th scope="col" class="px-6 py-3">warning</th>
         <th scope="col" class="px-6 py-3">date</th>
         <th scope="col" class="px-6 py-3">days from now</th>
-        <th scope="col" class="px-6 py-3">location</th>
-        <th scope="col" class="px-6 py-3">category</th>
         <th scope="col" class="px-6 py-3">created_by</th>
         <th scope="col" class="px-6 py-3">tickets</th>
       </tr>
     </thead>
     <tbody>
       {% for event in events %}
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+      <tr class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
         <td class="w-4 p-4">
           <div class="flex items-center">
             {{ loop.index }}
           </div>
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-          <div class="pl-3">
+          <a href="{{ url_for('admin.event', event_unique_id=event.unique_id) }}" class="pl-3">
             <div class="text-base font-semibold">{{ event.name }}</div>
-          </div>
+            <p>{{ event.location.name }} <span>{{ event.category.name }}</span></p>
+          </a>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
           {{ event.url }}
@@ -45,12 +44,6 @@
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ time_delta(event.date_time) }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.location.name }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.category.name }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ event.creator.username }}

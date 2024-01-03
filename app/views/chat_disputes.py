@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
-from flask_mail import Message
-from flask_sse import sse
-from app import models as m, db, mail
+
+# from flask_sse import sse
+from app import models as m, db
 from app.controllers import utcnow_chat_format
 from app.logger import log
 from config import config
@@ -23,6 +22,7 @@ def start_dispute():
     room: m.Room = db.session.scalar(room_query)
 
     if not room:
+        log(log.INFO, "Creating dispute room for payment [%s]", payment.id)
         room = m.Room(
             type_of=m.RoomType.DISPUTE.value,
             seller_id=payment.ticket.seller_id,
@@ -43,6 +43,7 @@ def start_dispute():
             room=room,
         )
 
+    log(log.INFO, "Dispute room already exists for payment [%s]", payment.id)
     return render_template(
         "admin/messages.html",
         now=utcnow_chat_format(),

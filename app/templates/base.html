@@ -68,6 +68,7 @@
   {% endwith %}
 
   {% block body %}
+  {% include 'chat/chat_window.html' %}
 
   <!-- SideBar -->
   <!-- prettier-ignore -->
@@ -82,6 +83,7 @@
 
   <!-- prettier-ignore -->
   <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
   <script src="https://unpkg.com/htmx.org@1.9.5"></script>
 
   {% block scripts %} {% endblock %}

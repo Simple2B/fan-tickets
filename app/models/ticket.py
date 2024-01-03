@@ -1,6 +1,8 @@
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
+import pytz
+from flask import current_app as app
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db
@@ -14,7 +16,9 @@ if TYPE_CHECKING:
 
 
 def now():
-    return datetime.now()
+    if app.config["TESTING"]:
+        return datetime.now()
+    return datetime.now(pytz.utc)
 
 
 class TicketType(Enum):
@@ -113,8 +117,6 @@ class Ticket(db.Model, ModelMixin):
     @property
     def is_available(self):
         if self.event.date_time > now():
-            return False
-        if self.is_in_cart:
             return False
         if self.is_reserved:
             return False

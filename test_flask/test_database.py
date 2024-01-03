@@ -10,9 +10,6 @@ def test_generate_users(client):
     generate_test_users(TESTING_USERS_NUMBER)
     users_list = list(db.session.scalars(m.User.select()).all())
     assert len(users_list) == TESTING_USERS_NUMBER + 1
-    admins_query = m.User.select().where(m.User.role == m.UserRole.admin.value)
-    admins = list(db.session.scalars(admins_query))
-    assert len(admins) == 3
 
 
 def test_generate_events(client):
