@@ -5,7 +5,6 @@ from .location import Location
 from .event import Event
 from .ticket import Ticket, TicketType, TicketCategory
 from .room import Room, RoomType
-from .dispute import Dispute
 from .review import Review
 from .notification import Notification, NotificationType
 from .message import Message

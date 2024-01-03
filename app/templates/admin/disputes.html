@@ -22,17 +22,17 @@
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
           <div class="pl-3">
-            <div class="text-base font-semibold">{{ dispute.ticket }}</div>
+            <div class="text-base font-semibold">{{ dispute.ticket.event.name }}</div>
           </div>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.description[:32] }}
+          {{ dispute.seller }}
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.is_active }}
+          {{ dispute.buyer }}
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.buyer.username }}
+          {{ dispute.is_open }}
         </td>
       </tr>
       {% endfor %}

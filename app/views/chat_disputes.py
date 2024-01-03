@@ -20,11 +20,16 @@ def start_dispute():
     payment_query = m.Payment.select().where(m.Payment.id == payment_id)
     payment: m.Payment = db.session.scalar(payment_query)
 
-    room = m.Room(
-        seller_id=payment.ticket.seller_id,
-        buyer_id=current_user.id,
-        ticket_id=payment.ticket_id,
-    ).save()
+    room_query = m.Room.select().where(m.Room.ticket_id == payment.ticket_id)
+    room: m.Room = db.session.scalar(room_query)
+
+    if not room:
+        room = m.Room(
+            type_of=m.RoomType.DISPUTE.value,
+            seller_id=payment.ticket.seller_id,
+            buyer_id=current_user.id,
+            ticket_id=payment.ticket_id,
+        ).save()
 
     # save_message(
     #     "Message from the bot",
