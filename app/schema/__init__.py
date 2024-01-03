@@ -33,5 +33,5 @@ from .chat_auth import (
     ChatAuthEmailValidate,
     ChatAuthPhoneValidate,
 )
-from .chat_buy import ChatBuyEventParams
+from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
 from .room import Room

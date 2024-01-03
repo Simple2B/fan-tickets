@@ -121,3 +121,32 @@ def test_get_event_name(client: FlaskClient):
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
     assert response.status_code == 200
     assert f"See all {len(tickets)}" in response.data.decode()
+
+
+def test_get_events_by_location(client: FlaskClient):
+    room = m.Room(
+        seller_id=None,
+        buyer_id=2,
+    ).save(False)
+    populate()
+    login(client)
+    event: m.Event = db.session.scalar(m.Event.select())
+    event_name = event.name[:1]
+    events = db.session.scalars(m.Event.select().where(m.Event.name.ilike(f"%{event_name}%"))).all()
+    locations_query = m.Location.select().filter(
+        m.Location.event.has(m.Event.name.in_([event.name for event in events]))
+    )
+    locations: list[m.Location] = db.session.scalars(locations_query).all()
+    tickets: list[m.Ticket] = db.session.scalars(m.Ticket.select().where(m.Ticket.event_id == event.id)).all()
+
+    response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}")
+    assert response.status_code == 200
+    assert "No event date provided. Please add event name" in response.data.decode()
+
+    response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event_name.lower()}")
+    assert response.status_code == 200
+    assert f"locations length {len(locations)}" in response.data.decode()
+
+    response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
+    assert response.status_code == 200
+    assert f"See all {len(tickets)}" in response.data.decode()

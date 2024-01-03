@@ -82,7 +82,7 @@ history_message_user %}
       <span>Subscriptions</span>
     </button>
     {% if current_user.is_authenticated %}
-    {% set cart_url = url_for('buy.cart', cart_from_navbar=True) %}
+    {# set cart_url = url_for('buy.cart', cart_from_navbar=True) #}
     {% else %}
     {% set cart_url = url_for('chat.login_form', login_from_navbar=True) %}
     {% endif %}

@@ -159,6 +159,126 @@ def buy():
     )
 
 
+@chat_auth_blueprint.route("/login_email")
+def login_email():
+    try:
+        params = s.ChatAuthEmailParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.room_unique_id:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.from_sign_up:
+        c.save_message("You do not log in. Please log in or sign up", "Sign in", room)
+        log(log.INFO, "Sign in from login form")
+        return render_template(
+            "chat/registration/login_email.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No email: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/login_email.html",
+            error_message="Please, add your email",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    user = c.get_user_by_email(params.user_message)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/login_email.html",
+            error_message="Email not found, add correct email",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    return render_template(
+        "chat/registration/login_password.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+        user_unique_id=user.unique_id,
+        form=f.ChatAuthPasswordForm(),
+    )
+
+
+@chat_auth_blueprint.route("/login_password")
+def login_password():
+    form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
+
+    room = c.get_room(form.room_unique_id.data)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not form.validate_on_submit():
+        log(
+            log.ERROR,
+            "Form submitting error: [%s]",
+            form.errors,
+        )
+        return render_template(
+            "chat/registration/login_password.html",
+            error_message=f"{form.errors}",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=form.user_unique_id.data,
+            form=form,
+        )
+
+    result, user = c.confirm_password(form, room)
+
+    if not result:
+        c.save_message("Please enter your password", "Password does not match", room)
+        log(log.ERROR, "Password not confirmed: [%s]", form.password.data)
+        return render_template(
+            "chat/registration/password_confirm.html",
+            error_message="Password does not match. Please, inout correct password",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=form.user_unique_id.data,
+            form=form,
+        )
+
+    login_user(user)
+    log(log.INFO, "Login successful")
+
+    c.save_message("Please enter your password", "You are logged in", room)
+
+    return render_template(
+        "chat/chat_home.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+    )
+
+
 @chat_auth_blueprint.route("/create_user_email")
 def create_user_email():
     try:
@@ -415,9 +535,10 @@ def confirm_user_password():
             form=form,
         )
 
-    success = c.confirm_password(form, room)
+    result = c.confirm_password(form, room)
 
-    if not success:
+    if not result:
+        c.save_message("Please confirm your password", "Password does not match", room)
         log(log.ERROR, "Password not confirmed: [%s]", form.password.data)
         return render_template(
             "chat/registration/password_confirm.html",
@@ -427,6 +548,8 @@ def confirm_user_password():
             user_unique_id=form.user_unique_id.data,
             form=form,
         )
+
+    c.save_message("Please confirm your password", "Password has been confirmed", room)
 
     return render_template(
         "chat/registration/passport.html",

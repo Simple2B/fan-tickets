@@ -34,12 +34,14 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket
-    appears?", html_element) }}
+    {{ bot_message("Please leave your email to get the notification.", html_element) }}
   </div>
 </div>
 
-{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
+<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+<input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
+<input type="hidden" name="has_email" value="True" />
+{{ submit_message_get('buy.subscribe_on_event', "[name='room_unique_id'], [name='user_message'], [name='has_email']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

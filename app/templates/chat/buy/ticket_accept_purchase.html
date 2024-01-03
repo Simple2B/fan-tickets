@@ -7,20 +7,13 @@ submit_message_get
   {% include 'chat/chat_spinner.html' %}
 
   {% set html_element %}
-  {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='event_unique_id']" %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-  <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
   <div class="mt-2 flex flex-col gap-2">
-    <!-- TODO: Add subscribe to event -->
-    <button type="button" hx-get="{{ url_for('buy.subscribe_on_event') }}" hx-target="#chat-body" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('buy.payment') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      Yes
-    </button>
-    <button type="button" hx-get="{{ url_for('chat.home') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
-      class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      No
+      Proceed to purchase
     </button>
     <button type="button" hx-get="{{ url_for('buy.get_event_name', renew_search=True) }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
@@ -30,12 +23,14 @@ submit_message_get
   </div>
   {% endset %}
 
+  {% set message = "Awesome! The cost for ticket is " ~ total_prices.net ~ ". Price for service is "
+  ~ total_prices.service ~ ". Total price is " ~ total_prices.total %}
+
   <div id="chat-message-container" data-send-message>
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket
-    appears?", html_element) }}
+    {{ bot_message(message, html_element=html_element) }}
   </div>
 </div>
 

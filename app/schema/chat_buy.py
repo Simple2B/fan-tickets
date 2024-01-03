@@ -14,6 +14,8 @@ class ChatBuyRequiredParams(BaseModel):
 class ChatBuyEventParams(ChatBuyRequiredParams):
     user_message: str | None = None
     renew_search: bool = False
+    location_unique_id: str | None = None
+    event_name: str | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)
 
@@ -22,11 +24,15 @@ class ChatBuyTicketParams(ChatBuyRequiredParams):
     event_unique_id: str | None = None
     ticket_unique_id: str | None = None
     user_message: str | None = None
-    ticket_type: str | None = None
-    ticket_category: str | None = None
-    ticket_has_section: bool = True
-    ticket_section: str | None = None
-    ticket_has_queue: bool = True
-    ticket_queue: str | None = None
+    ask_payment: bool = False
+    has_email: bool = False
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class ChatBuyTicketTotalPrice(BaseModel):
+    total: float
+    service: float
+    net: float
 
     model_config = SettingsConfigDict(from_attributes=True)
