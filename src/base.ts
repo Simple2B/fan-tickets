@@ -64,22 +64,27 @@ themeToggleButtons.forEach(function (themeToggleBtn) {
 const header = document.querySelector('.header');
 // 20% of the viewport heights
 const scrollPosition = 0.2 * window.innerHeight;
-window.addEventListener('scroll', () => {
-  header.classList.toggle('header-sticky', window.scrollY > 0);
-});
+
+if (header) {
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('header-sticky', window.scrollY > 0);
+  });
+}
 
 // function to show and hide the scroll to top button
 const scrollTopButton = document.querySelector('.footer-scroll-top');
 
-window.addEventListener('scroll', () => {
-  if (window.scrollY > scrollPosition) {
-    scrollTopButton.classList.remove('scroll-top-anchor-close');
-    scrollTopButton.classList.add('scroll-top-anchor-open');
-  } else {
-    scrollTopButton.classList.remove('scroll-top-anchor-open');
-    scrollTopButton.classList.add('scroll-top-anchor-close');
-  }
-});
+if (scrollTopButton) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > scrollPosition) {
+      scrollTopButton.classList.remove('scroll-top-anchor-close');
+      scrollTopButton.classList.add('scroll-top-anchor-open');
+    } else {
+      scrollTopButton.classList.remove('scroll-top-anchor-open');
+      scrollTopButton.classList.add('scroll-top-anchor-close');
+    }
+  });
+}
 
 if (scrollTopButton) {
   scrollTopButton.addEventListener('click', e => {
