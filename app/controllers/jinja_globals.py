@@ -46,3 +46,7 @@ def get_chat_room_messages():
 
 def get_chatbot_id():
     return app.config.get("CHAT_DEFAULT_BOT_ID")
+
+
+def round_to_two_places(number: float) -> float:
+    return round(number, 2)

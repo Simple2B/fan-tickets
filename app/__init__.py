@@ -99,6 +99,7 @@ def create_app(environment="development") -> Flask:
         get_categories,
         get_chat_room_messages,
         get_chatbot_id,
+        round_to_two_places,
     )
 
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
@@ -109,5 +110,6 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_categories"] = get_categories
     app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
+    app.jinja_env.globals["round_to_two_places"] = round_to_two_places
 
     return app
