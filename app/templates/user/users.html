@@ -14,7 +14,10 @@
         </svg>
       </div>
 
-      <input {% if search_query %}value={{ search_query }}{% endif %} type="text" id="table-search-users"
+      <input {% if search_query %}value={{ search_query }}{% endif %} type="search" id="table-search-users"
+        hx-get="{{url_for('user.get_all', search=True)}}" hx-swap="outerHTML" hx-target="#users-table"
+        hx-trigger="keyup changed delay:1000ms" hx-include="[name='search_query']" name="search_query"
+        autocomplete="off"
         class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="Search for users" />
     </div>
@@ -28,66 +31,7 @@
       </svg></button>
   </div>
 
-  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
-        <th scope="col" class="px-6 py-3">#</th>
-        <th scope="col" class="px-6 py-3">Name</th>
-        <th scope="col" class="px-6 py-3">Phone</th>
-        <th scope="col" class="px-6 py-3 flex justify-center">Is activated</th>
-        <th scope="col" class="px-6 py-3">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-      <tr class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-        <td class="w-4 p-4">
-          <div class="flex items-center">
-            {{ loop.index + page.skip }}
-          </div>
-        </td>
-
-        <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-          <div class="pl-3 cursor-pointer" hx-get="{{url_for('user.get_activities', user_unique_id=user.unique_id)}}"
-            hx-swap="outerHTML" hx-target="#row_{{user.unique_id}}" hx-trigger="click">
-            <div class="text-base font-semibold">
-              {{ user.username }}
-              {% if user.role == "admin"%}<span class="text-gray-300 dark:text-gray-700 text-sm">admin</span>
-              {% endif %}
-            </div>
-            <div class="font-normal text-gray-500">
-              {{ user.email }}
-            </div>
-          </div>
-        </td>
-
-        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ user.phone }}
-        </td>
-
-        <td class="flex justify-center items-center">
-          <p>{{ user.activated }}</p>
-        </td>
-
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          <button data-user-id={{ user.id }} type="button"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center border border-red-700 text-red-700 rounded-lg hover:bg-red-800 hover:text-white focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900 delete-user-btn">
-            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd"
-                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                clip-rule="evenodd"></path>
-            </svg>
-            Delete user
-          </button>
-        </td>
-
-      </tr>
-
-      {% include 'user/activities.html' %}
-
-      {% endfor %}
-    </tbody>
-  </table>
+  {% include 'user/search.html' %}
 </div>
 
 {% if page.pages > 1 %}
