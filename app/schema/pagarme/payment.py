@@ -95,7 +95,7 @@ class PagarmeCardCreate(BaseModel):
 
     customer_id: str
     holder_name: str
-    number: int
+    number: str
     exp_month: int
     exp_year: int
     cvv: int

@@ -1,5 +1,7 @@
 import os
 
+import sqlalchemy as sa
+
 from flask import Flask, render_template
 from flask_login import LoginManager
 from werkzeug.exceptions import HTTPException
@@ -66,8 +68,8 @@ def create_app(environment="development") -> Flask:
 
     # Set up flask login.
     @login_manager.user_loader
-    def get_user(id: int):
-        query = m.User.select().where(m.User.id == int(id))
+    def get_user(id: int) -> m.User | None:
+        query = sa.select(m.User).where(m.User.id == int(id))
         return db.session.scalar(query)
 
     login_manager.login_view = "auth.login"

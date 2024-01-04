@@ -1,14 +1,20 @@
-from datetime import datetime
-from flask import Blueprint, request, current_app as app
-from flask_login import login_required
+import sqlalchemy as sa
+
+from flask import render_template, Blueprint
+from flask_login import login_required, current_user
+
+from app.logger import log
 from app import schema as s, models as m, db
 from app import pagarme_client
+from app import forms as f
 from app.controllers import (
     get_pagarme_customer,
     create_pagarme_customer,
     get_pagarme_card,
     create_pagarme_card,
     create_pagarme_order,
+    get_room,
+    utcnow_chat_format,
 )
 
 pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
@@ -29,43 +35,62 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 @pay_blueprint.route("/ticket_order", methods=["GET", "POST"])
 @login_required
 def ticket_order():
-    # DB
-    user_unique_id = request.form.get("user_unique_id")
-    username = request.form.get("username", "none")
-    birthdate = request.form.get("birthdate", "01/01/2000")
-    code = request.form.get("code", "00000000000")
-    email = request.form.get("email", "none@email.com")
-    document = request.form.get("document", "93095135270")
-    phone = request.form.get("phone", "11999999999")
-    # ============
-    # From front end
-    number = request.form.get("card_number", 4111111111111111)
-    exp_month = request.form.get("exp_month", 12)
-    exp_year = request.form.get("exp_year", datetime.now().year + 1)
-    cvv = request.form.get("cvv", 123)
-    # =============
+    current_user: m.User = current_user
 
-    # [item_amount = request.form.get("item_amount", 0)
-    # item_code = request.form.get("item_code")  # ticket_unique_id
-    # item_description = request.form.get("item_description")
-    # item_quantity = request.form.get("item_quantity", 1)
-    # item_category = request.form.get("item_category")]
+    if not current_user.phone:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="You did not add your phone",
+            now=utcnow_chat_format(),
+        )
 
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    card_form = f.OrderCreateForm()
+    room = get_room(card_form.room_unique_id.data)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=utcnow_chat_format(),
+        )
+
+    if not card_form.validate_on_submit():
+        log(
+            log.ERROR,
+            "Form submitting error: [%s]",
+            card_form.errors,
+        )
+        return render_template(
+            "chat/registration/password.html",
+            error_message="You did not add your password",
+            room=room,
+            now=utcnow_chat_format(),
+            user_unique_id=card_form.user_unique_id.data,
+            form=card_form,
+        )
+
+    user_query = m.User.select().where(m.User.unique_id == current_user.unique_id)
     user: m.User = db.session.scalar(user_query)
 
-    # buyer_id == current_user.id, resereved == True
+    tickets = db.session.scalars(
+        sa.select(m.Ticket).where(m.Ticket.buyer_id == current_user.id, m.Ticket.is_reserved.is_(True))
+    )
 
     if user.pagarme_id:
         pagarme_client.get_customer(user.pagarme_id)
     else:
-        phone_data = pagarme_client.generate_customer_phone(phone)
+        phone_data = pagarme_client.generate_customer_phone(current_user.phone)
         phones_data = s.PagarmeCustomerPhones(
             mobile_phone=phone_data,
         )
 
         customer_data = s.PagarmeCustomerCreate(
-            name=username, birthdate=birthdate, code=code, email=email, document=document, phones=phones_data
+            name=current_user.username,
+            birthdate=current_user.birth_date,
+            code=current_user.pagarme_id,
+            email=current_user.email,
+            document=card_form.document_identity_number.data,
+            phones=phones_data,
         )
 
         pagarme_customer = pagarme_client.create_customer(customer_data)
@@ -91,10 +116,10 @@ def ticket_order():
         card_data = s.PagarmeCardCreate(
             customer_id=pagarme_customer.id,
             holder_name=pagarme_customer.name,
-            number=int(number),
-            exp_month=int(exp_month),
-            exp_year=int(exp_year),
-            cvv=int(cvv),
+            number=card_form.card_number.data,
+            exp_month=card_form.exp_month.data,
+            exp_year=card_form.exp_year.data,
+            cvv=card_form.cvv.data,
             billing_address=billing_address,
         )
 
@@ -118,17 +143,20 @@ def ticket_order():
         pagarme_client.generate_checkout_data(card_input),
     ]
 
-    order_item = s.PagarmeItem(
-        amount=int(item_amount),
-        code=int(item_code),
-        description="Ticket",
-        quantity=1,
-        # TODO investigate: category=int(item_category),
-    )
+    order_items = []
+    for ticket in tickets:
+        order_items.append(
+            s.PagarmeItem(
+                amount=ticket.price_gross,
+                code=ticket.unique_id,
+                description="Ticket",
+                quantity=1,
+                # TODO investigate: category=int(item_category),
+            )
+        )
+
     order_data = s.PagarmeCreateOrderInput(
-        items=[
-            order_item,
-        ],
+        items=order_items,
         code=pagarme_customer.code,
         customer_id=pagarme_customer.id,
         payments=checkout,
