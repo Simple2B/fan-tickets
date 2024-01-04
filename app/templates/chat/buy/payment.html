@@ -12,30 +12,29 @@ submit_message_get
   <form class="flex flex-col gap-3 text-grey" hx-post="{{ url_for('pay.ticket_order') }}" hx-target="#chat-body"
     hx-include="{{ filters }}" hx-swap="innerHTML">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-    <input type="hidden" name="total_amount" value="{{ total_prices.total }}" />
-
-    <div class="flex flex-col">
+    {{ form.hidden_tag() }}
+    <!-- <div class="flex flex-col">
       <label for="card-on-name">Name on card</label>
       <input id="card-on-name" type="text"
         class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
         placeholder="Nome conforme está no cartão de crédito">
-    </div>
+    </div> -->
     <div class="flex flex-col">
       <label for="card-number">Card number</label>
-      <input id="card-number" type="text"
+      <input id="card-number" type="text" name="card_number"
         class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
         placeholder="XXXXXXXXXXXXXXXX">
     </div>
     <div class="flex gap-2">
       <div class="w-1/2 flex flex-col">
         <label for="card-date">Valid to</label>
-        <input id="card-date" type="text"
+        <input id="card-date" type="text" name="expire"
           class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
           placeholder="MM/YY">
       </div>
       <div class="w-1/2 flex flex-col">
         <label for="card-cvv">CVV</label>
-        <input id="card-cvv" type="text"
+        <input id="card-cvv" type="text" name="cvv"
           class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
           placeholder="XXX">
       </div>

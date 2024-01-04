@@ -18,7 +18,7 @@ class OrderCreateForm(FlaskForm):
     def validate_expire(self, field):
         exp_values = field.data.split("/")
 
-        if not len(exp_values) != 2:
+        if len(exp_values) != 2:
             raise ValueError("Invalid expire date")
 
         exp_month, exp_year = exp_values
@@ -32,7 +32,7 @@ class OrderCreateForm(FlaskForm):
         if exp_month < 1 or exp_month > 12:
             raise ValueError("Invalid expire date")
 
-        if int(str(date.today().year)[2:]) >= exp_year:
+        if int(str(date.today().year)[2:]) > exp_year:
             raise ValueError("Invalid expire date")
 
         self.exp_month.data = exp_month

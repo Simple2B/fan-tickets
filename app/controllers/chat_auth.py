@@ -213,11 +213,13 @@ def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, r
     save_message("Please add your social profiles", message, room)
 
 
-def get_user_by_email(email: str) -> m.User | None:
+def get_user_by_email(email: str, room: m.Room) -> m.User | None:
     user_query = sa.select(m.User).where(m.User.email == email)
     user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", email)
+
+    c.save_message("To sign in, please input your email", f"{email}", room)
 
     return user

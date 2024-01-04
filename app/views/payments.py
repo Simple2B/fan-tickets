@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 
+
 from flask import render_template, Blueprint
 from flask_login import login_required, current_user
 
@@ -8,11 +9,6 @@ from app import schema as s, models as m, db
 from app import pagarme_client
 from app import forms as f
 from app.controllers import (
-    get_pagarme_customer,
-    create_pagarme_customer,
-    get_pagarme_card,
-    create_pagarme_card,
-    create_pagarme_order,
     get_room,
     utcnow_chat_format,
 )
@@ -35,9 +31,9 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 @pay_blueprint.route("/ticket_order", methods=["GET", "POST"])
 @login_required
 def ticket_order():
-    current_user: m.User = current_user
+    cu: m.User = current_user
 
-    if not current_user.phone:
+    if not cu.phone:
         return render_template(
             "chat/chat_error.html",
             error_message="You did not add your phone",
@@ -61,51 +57,59 @@ def ticket_order():
             card_form.errors,
         )
         return render_template(
-            "chat/registration/password.html",
-            error_message="You did not add your password",
+            "chat/buy/payment.html",
+            error_message=f"Form submitting error: {card_form.errors}",
             room=room,
             now=utcnow_chat_format(),
-            user_unique_id=card_form.user_unique_id.data,
             form=card_form,
         )
 
-    user_query = m.User.select().where(m.User.unique_id == current_user.unique_id)
+    user_query = m.User.select().where(m.User.unique_id == cu.unique_id)
     user: m.User = db.session.scalar(user_query)
 
     tickets = db.session.scalars(
-        sa.select(m.Ticket).where(m.Ticket.buyer_id == current_user.id, m.Ticket.is_reserved.is_(True))
-    )
+        sa.select(m.Ticket).where(
+            m.Ticket.buyer_id == cu.id,
+            m.Ticket.is_reserved.is_(True),
+            m.Ticket.is_sold.is_(False),
+        )
+    ).all()
 
     if user.pagarme_id:
-        pagarme_client.get_customer(user.pagarme_id)
+        pagarme_customer = pagarme_client.get_customer(user.pagarme_id)
     else:
-        phone_data = pagarme_client.generate_customer_phone(current_user.phone)
+        # TODO: remove hard code phone number
+        phone_data = pagarme_client.generate_customer_phone("432337789")
         phones_data = s.PagarmeCustomerPhones(
             mobile_phone=phone_data,
         )
 
         customer_data = s.PagarmeCustomerCreate(
-            name=current_user.username,
-            birthdate=current_user.birth_date,
-            code=current_user.pagarme_id,
-            email=current_user.email,
+            name=cu.username,
+            birthdate="03/13/1990",
+            code=cu.unique_id,
+            email=cu.email,
             document=card_form.document_identity_number.data,
             phones=phones_data,
         )
 
         pagarme_customer = pagarme_client.create_customer(customer_data)
 
+        assert pagarme_customer
+
         user.pagarme_id = pagarme_customer.id
         user.save()
 
     billing_address = s.PagarmeBillingAddress(
-        line_1=user.billing_line_1,
+        line_1="Avenue7",
         line_2=user.billing_line_2,
-        zip_code=user.billing_zip_code,
-        city=user.billing_city,
-        state=user.billing_state,
-        country=user.billing_country,
+        zip_code="02332132",
+        city="Rio de Janeiro",
+        state="RJ",
+        country="BR",
     )
+
+    assert pagarme_customer
 
     if user.card_id:
         card_details = pagarme_client.get_customer_card(
@@ -147,7 +151,8 @@ def ticket_order():
     for ticket in tickets:
         order_items.append(
             s.PagarmeItem(
-                amount=ticket.price_gross,
+                # TODO: change price to int
+                amount=int(ticket.price_gross) * 100,
                 code=ticket.unique_id,
                 description="Ticket",
                 quantity=1,
@@ -164,12 +169,35 @@ def ticket_order():
 
     order_create_response = pagarme_client.create_order(order_data)
 
-    return s.PagarmeCreditCardPayment(
-        status=order_create_response.charges[0]["last_transaction"]["antifraud_response"]["status"],
+    response = s.PagarmeCreditCardPayment(
+        status=order_create_response.charges[0]["last_transaction"]["status"],
         user_pagar_id=order_create_response.customer.code,
         ticket_unique_id=order_create_response.items[0].code,
         price_paid=order_create_response.charges[0]["last_transaction"]["amount"],
     ).model_dump()
+
+    if response["status"] == "captured":
+        for ticket in tickets:
+            ticket.is_reserved = False
+            ticket.is_sold = True
+
+        db.session.commit()
+
+        log(log.INFO, "Payment success: [%s]", response)
+        return render_template(
+            "chat/buy/payment_success.html",
+            room=room,
+            tickets=tickets,
+            now=utcnow_chat_format(),
+        )
+
+    log(log.ERROR, "Payment error: [%s]", response)
+    return render_template(
+        "chat/buy/payment.html",
+        error_message="Something went wrong, try again please",
+        room=room,
+        now=utcnow_chat_format(),
+    )
 
 
 @pay_blueprint.route("/webhook", methods=["POST"])

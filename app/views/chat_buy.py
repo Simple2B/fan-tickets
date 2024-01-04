@@ -8,6 +8,7 @@ from psycopg2 import IntegrityError
 from app import controllers as c
 from app import schema as s
 from app import models as m, db, mail
+from app import forms as f
 from app.logger import log
 from config import config
 
@@ -412,6 +413,7 @@ def payment():
         room=room,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,
+        form=f.OrderCreateForm(),
     )
 
 

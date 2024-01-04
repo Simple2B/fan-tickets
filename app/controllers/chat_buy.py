@@ -4,7 +4,8 @@ from flask import current_app as app
 
 from app import controllers as c
 from app import schema as s
-from app import models as m, db
+from app import models as m
+from app.database import db
 
 from app.logger import log
 
@@ -50,7 +51,11 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
 
 
 def get_tickets_by_event(event: m.Event, room: m.Room) -> list[m.Ticket] | None:
-    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id, m.Ticket.is_reserved.is_(False))
+    tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.event_id == event.id,
+        m.Ticket.is_reserved.is_(False),
+        m.Ticket.is_sold.is_(False),
+    )
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:
@@ -71,7 +76,11 @@ def get_tickets_by_event_id(event_unique_id: str, room: m.Room) -> list[m.Ticket
         log(log.INFO, "Event not found: [%s]", event_unique_id)
         return None
 
-    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id, m.Ticket.is_reserved.is_(False))
+    tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.event_id == event.id,
+        m.Ticket.is_reserved.is_(False),
+        m.Ticket.is_sold.is_(False),
+    )
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:
@@ -132,7 +141,11 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
 
 
 def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
-    tickets_query = sa.select(m.Ticket).where(m.Ticket.buyer_id == user.id, m.Ticket.is_reserved.is_(True))
+    tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.buyer_id == user.id,
+        m.Ticket.is_reserved.is_(True),
+        m.Ticket.is_sold.is_(False),
+    )
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:

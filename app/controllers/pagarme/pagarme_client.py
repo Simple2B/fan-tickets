@@ -123,7 +123,13 @@ class PagarmeClient:
 
     def create_customer(self, customer_data: s.PagarmeCustomerCreate):
         response = self.api.post(self.__generate_url__("customers"), json=customer_data.model_dump(exclude_none=True))
+
+        print(response.status_code)
+        if response.status_code != HTTPStatus.OK:
+            log(log.ERROR, "create_pagarme_customer response: [%s]", response.text)
+            return None
         log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
+
         return s.PagarmeCustomerOutput.model_validate(response.json())
 
     def generate_customer_phone(self, phone: str):
@@ -148,4 +154,6 @@ class PagarmeClient:
         )
         # TODO check for errors
         log(log.INFO, "create_pagarme_card response: [%s]", response.text)
+        print("-------")
+        print(response.json())
         return s.PagarmeCardOutput.model_validate(response.json())

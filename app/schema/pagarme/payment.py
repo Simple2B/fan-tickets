@@ -277,7 +277,7 @@ class PagarmePaymentCheckoutData(BaseModel):
 
 
 class PagarmeOrderCheckoutCreateData(PagarmeOrderCreateData):
-    payments: list[PagarmePaymentCheckoutData]
+    payments: list[PagarmePaymentData]
 
 
 class PagarmeOrderCreditCardCreate(BaseModel):
