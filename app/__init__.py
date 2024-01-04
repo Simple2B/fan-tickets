@@ -92,6 +92,7 @@ def create_app(environment="development") -> Flask:
 
     # Jinja globals
     from app.controllers.jinja_globals import (
+        today,
         form_hidden_tag,
         date_from_datetime,
         time_delta,
@@ -103,6 +104,7 @@ def create_app(environment="development") -> Flask:
         round_to_two_places,
     )
 
+    app.jinja_env.globals["today"] = today
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
     app.jinja_env.globals["time_delta"] = time_delta

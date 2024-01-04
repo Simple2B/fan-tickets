@@ -17,16 +17,16 @@ class EventForm(FlaskForm):
             categories.remove(category)
             self.category.choices.append((category.id, category.name))
 
-            for category in categories:
-                self.category.choices.append((category.id, category.name))
+        for category in categories:
+            self.category.choices.append((category.id, category.name))
 
         if "location" in kwargs.keys():
             location = kwargs["location"]
             locations.remove(location)
             self.location.choices.append((location.id, location.name))
 
-            for location in locations:
-                self.location.choices.append((location.id, location.name))
+        for location in locations:
+            self.location.choices.append((location.id, location.name))
 
     name = StringField("Username", [DataRequired(), Length(min=3, max=64)])
     url = StringField("URL", [DataRequired(), Length(min=3, max=256)])

@@ -7,6 +7,10 @@ from flask_login import current_user
 from app import models as m, db
 
 
+def today():
+    return datetime.today().strftime("%Y-%m-%d")
+
+
 def form_hidden_tag():
     form = FlaskForm()
     return form.hidden_tag()

@@ -94,7 +94,31 @@ def get_event(event_unique_id):
         return render_template("admin/event.html", event=event, form=form)
 
 
-# TODO add event
+@admin_blueprint.route("/add_event", methods=["GET", "POST"])
+@login_required
+def add_event():
+    form = f.EventForm()
+    if request.method == "GET":
+        return render_template("admin/event_add.html", form=form)
+
+    if form.validate_on_submit():
+        log(log.INFO, "Event form validated: [%s]", form)
+        event = m.Event(
+            name=form.name.data,
+            url=form.url.data,
+            observations=form.observations.data,
+            warning=form.warning.data,
+            date_time=form.date_time.data,
+            category_id=form.category.data,
+            location_id=form.location.data,
+            creator_id=current_user.id,
+        ).save()
+        log(log.INFO, "Event saved: [%s]", event)
+        return redirect(url_for("admin.get_event", event_unique_id=event.unique_id))
+
+    else:
+        log(log.INFO, "Event form not validated: [%s]", form.errors)
+        return render_template("admin/event_add.html", form=form)
 
 
 @admin_blueprint.route("/tickets")
