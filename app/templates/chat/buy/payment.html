@@ -1,0 +1,66 @@
+{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
+submit_message_get
+%}
+
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %}
+  {% include 'chat/chat_spinner.html' %}
+
+  {% set html_element %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search']" %}
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+  <form class="flex flex-col gap-3 text-grey" hx-post="{{ url_for('buy.payment') }}" hx-target="#chat-body"
+    hx-include="{{ filters }}" hx-swap="innerHTML">
+    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    <input type="hidden" name="total_amount" value="{{ total_prices.total }}" />
+
+    <div class="flex flex-col">
+      <label for="card-on-name">Name on card</label>
+      <input id="card-on-name" type="text"
+        class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+        placeholder="Nome conforme está no cartão de crédito">
+    </div>
+    <div class="flex flex-col">
+      <label for="card-number">Card number</label>
+      <input id="card-number" type="number"
+        class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+        placeholder="XXXXXXXXXXXXXXXX">
+    </div>
+    <div class="flex gap-2">
+      <div class="w-1/2 flex flex-col">
+        <label for="card-date">Valid to</label>
+        <input id="card-date" type="number"
+          class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+          placeholder="MM/YY">
+      </div>
+      <div class="w-1/2 flex flex-col">
+        <label for="card-cvv">CVV</label>
+        <input id="card-cvv" type="number"
+          class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+          placeholder="XXX">
+      </div>
+    </div>
+    <button type="submit"
+      class="link mt-1 p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+      Submit
+    </button>
+  </form>
+  {% endset %}
+
+  <div id="chat-message-container" data-send-message>
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% endif %}
+    {{ bot_message("To proceed with the purchase, please provide your payment details.") }}
+    {{ bot_message_without_date("⚠️ We do not store card details in our system, all credentials are immediately passed
+    to Pagar.me") }}
+    {{ bot_message_without_date(html_element=html_element) }}
+  </div>
+</div>
+
+{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

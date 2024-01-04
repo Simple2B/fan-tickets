@@ -8,6 +8,7 @@ from .utils import ModelMixin, gen_uuid, utcnow
 
 if TYPE_CHECKING:
     from .picture import Picture
+    from .event import Event
 
 
 class Location(db.Model, ModelMixin):
@@ -26,6 +27,7 @@ class Location(db.Model, ModelMixin):
     )
 
     picture: orm.Mapped["Picture"] = orm.relationship()
+    event: orm.Mapped["Event"] = orm.relationship(viewonly=True)
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"
