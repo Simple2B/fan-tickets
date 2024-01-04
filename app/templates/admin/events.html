@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-  <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">Events</p>
-  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+  <div class="mt-3 flex justify-between">
+    <p class="mt-6 mb-2 ml-3 text-3xl dark:text-gray-400">Events</p>
+
+    <a href="#" class="w-44 mx-3 my-6">
+      <button type="button"
+        class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+        Add
+      </button>
+    </a>
+  </div>
+  <table class="w-full text-sm text-left text-black dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-black dark:bg-secondary">
       <tr>
         <th scope="col" class="px-6 py-3">#</th>
         <th scope="col" class="px-6 py-3">Name</th>

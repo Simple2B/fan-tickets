@@ -44,7 +44,8 @@ def picture_upload():
 @login_required
 def get_events():
     # TODO pending events, added by users, added by admin
-    events = m.Event.all()
+    events_query = m.Event.select().order_by(m.Event.date_time.desc())
+    events = db.session.scalars(events_query).all()
     return render_template("admin/events.html", events=events)
 
 

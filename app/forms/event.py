@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, ValidationError
+from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Length
 import sqlalchemy as sa
 from app import models as m
@@ -28,10 +28,10 @@ class EventForm(FlaskForm):
             for location in locations:
                 self.location.choices.append((location.id, location.name))
 
-    name = StringField("Username", [DataRequired()])
-    url = StringField("URL", [DataRequired()])
-    observations = StringField("Observations", [DataRequired()])
-    warning = StringField("Warning", [DataRequired()])
+    name = StringField("Username", [DataRequired(), Length(min=3, max=64)])
+    url = StringField("URL", [DataRequired(), Length(min=3, max=256)])
+    observations = StringField("Observations", [DataRequired(), Length(min=3, max=64)])
+    warning = StringField("Warning", [DataRequired(), Length(min=3, max=64)])
     date_time = StringField("DateTime", [DataRequired()])
     category = SelectField("Category", choices=[])
     location = SelectField("Location", choices=[])
