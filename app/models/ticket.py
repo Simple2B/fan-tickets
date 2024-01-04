@@ -1,7 +1,6 @@
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
-from flask import current_app as app
 import sqlalchemy as sa
 from sqlalchemy import orm
 from app.database import db

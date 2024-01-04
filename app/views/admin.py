@@ -73,7 +73,11 @@ def get_events():
         events_query = events_query.where(m.Event.category_id == int(category_id))
 
     if status == "pending":
-        events_query = events_query.where(m.Event.status == status)
+        events_query = events_query.where(m.Event.approved.is_(False))
+    elif status == "users":
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
+    elif status == "admins":
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
 
     events = db.session.scalars(events_query).all()
     locations = db.session.scalars(locations_query).all()
