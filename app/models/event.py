@@ -35,6 +35,7 @@ class Event(db.Model, ModelMixin):
     observations: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
     warning: orm.Mapped[str | None] = orm.mapped_column()
     date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
+    approved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
 

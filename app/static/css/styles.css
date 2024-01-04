@@ -1236,6 +1236,10 @@ input:checked + .toggle-bg{
   margin: 0.75rem;
 }
 
+.m-2{
+  margin: 0.5rem;
+}
+
 .-mx-1{
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -3524,10 +3528,6 @@ select::-ms-expand {
   max-height: 1000px;
   overflow: hidden;
 }
-
-/* .admin-select {
-  border: 1px solid rgb(242 183 5);
-} */
 
 .admin-select:focus {
   border: 1px solid rgb(242 183 5);

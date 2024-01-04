@@ -45,15 +45,39 @@ def picture_upload():
 def get_events():
     # Filters
     location_id = request.args.get("location_id")
+    location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
     date_to_str = request.args.get("date_to")
     category_id = request.args.get("category_id")
+    category_id = None if category_id == "all" else category_id
     status = request.args.get("status")
+    status = None if status == "all" else status
 
+    # Query for all events
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
+    locations_query = m.Location.select()
+    categories_query = m.Category.select()
+
+    if location_id:
+        events_query = events_query.where(m.Event.location_id == int(location_id))
+
+    if date_from_str:
+        date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
+        events_query = events_query.where(m.Event.date_time >= date_from)
+
+    if date_to_str:
+        date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
+        events_query = events_query.where(m.Event.date_time <= date_to)
+
+    if category_id:
+        events_query = events_query.where(m.Event.category_id == int(category_id))
+
+    if status == "pending":
+        events_query = events_query.where(m.Event.status == status)
+
     events = db.session.scalars(events_query).all()
-    locations = m.Location.all()
-    categories = m.Category.all()
+    locations = db.session.scalars(locations_query).all()
+    categories = db.session.scalars(categories_query).all()
     return render_template(
         "admin/events.html",
         events=events,

@@ -5,6 +5,7 @@ from faker import Faker
 from app import db
 from app import models as m
 from app.logger import log
+from app.models.utils import utcnow
 
 
 faker = Faker()
@@ -118,7 +119,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             location_id=location_id,
             category_id=category_id,
             creator_id=seller_id,
-            date_time=datetime.now() + timedelta(days=randint(-10, 100)),
+            date_time=utcnow() + timedelta(days=randint(-10, 100)),
         ).save(False)
         for j in range(12):
             price_net = randint(10, 1000)
