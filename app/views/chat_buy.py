@@ -79,7 +79,7 @@ def get_event_name():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(tickets, room)
+        tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
 
         log(log.INFO, "Tickets found: [%s]", tickets)
         return render_template(
@@ -89,6 +89,8 @@ def get_event_name():
             now=c.utcnow_chat_format(),
             tickets=tickets_cheapest,
             tickets_all_length=len(tickets),
+            tickets_per_chat=app.config["TICKETS_PER_CHAT"],
+            tickets_show_all=params.tickets_show_all,
         )
 
     locations = c.get_locations_by_events(events, room)
@@ -188,7 +190,7 @@ def get_events_by_location():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(tickets, room)
+        tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
 
         log(log.INFO, "Tickets found: [%s]", tickets)
         return render_template(
@@ -198,7 +200,8 @@ def get_events_by_location():
             now=c.utcnow_chat_format(),
             tickets=tickets_cheapest,
             tickets_all_length=len(tickets),
-            ticket_per_chat=app.config["TICKETS_PER_CHAT"],
+            tickets_per_chat=app.config["TICKETS_PER_CHAT"],
+            tickets_show_all=params.tickets_show_all,
         )
 
     return render_template(
@@ -209,8 +212,8 @@ def get_events_by_location():
     )
 
 
-@chat_buy_blueprint.route("/get_all_tickets")
-def get_all_tickets():
+@chat_buy_blueprint.route("/get_tickets")
+def get_tickets():
     try:
         params = s.ChatBuyTicketParams.model_validate(dict(request.args))
     except Exception as e:
@@ -251,73 +254,21 @@ def get_all_tickets():
             now=c.utcnow_chat_format(),
         )
 
-    return render_template(
-        "chat/buy/ticket_list.html",
-        event_unique_id=params.event_unique_id,
-        room=room,
-        now=c.utcnow_chat_format(),
-        tickets=tickets,
-        show_all_tickets=True,
-    )
+    tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
 
-
-@chat_buy_blueprint.route("/add_ticket")
-def add_ticket():
-    try:
-        params = s.ChatBuyTicketParams.model_validate(dict(request.args))
-    except Exception as e:
-        log(log.ERROR, "Form submitting error: [%s]", e)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
-
-    room = c.get_room(params.room_unique_id)
-
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
-
-    if not params.event_unique_id:
-        log(log.ERROR, "No event unique id provided: [%s]", params.event_unique_id)
-        return render_template(
-            "chat/buy/event_name.html",
-            error_message="Something went wrong. Please add event name",
-            room=room,
-            now=c.utcnow_chat_format(),
-        )
-
-    tickets = c.get_tickets_by_event_id(params.event_unique_id, room)
-
-    if not tickets:
-        log(log.ERROR, "Tickets not found: [%s]", params.event_unique_id)
-        return render_template(
-            "chat/buy/event_name.html",
-            error_message="Something went wrong. Please add event name",
-            room=room,
-            now=c.utcnow_chat_format(),
-        )
-
-    tickets_cheapest = c.get_cheapest_tickets(tickets, room)
-
-    log(log.INFO, "Tickets found: [%s]", tickets)
     return render_template(
         "chat/buy/ticket_list.html",
         event_unique_id=params.event_unique_id,
         room=room,
         now=c.utcnow_chat_format(),
         tickets=tickets_cheapest,
+        tickets_show_all=params.tickets_show_all,
+        tickets_per_chat=app.config["TICKETS_PER_CHAT"],
         tickets_all_length=len(tickets),
     )
 
 
 @chat_buy_blueprint.route("/booking_ticket")
-@login_required
 def booking_ticket():
     try:
         params = s.ChatBuyTicketParams.model_validate(dict(request.args))

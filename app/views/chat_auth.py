@@ -535,7 +535,7 @@ def confirm_user_password():
             form=form,
         )
 
-    result = c.confirm_password(form, room)
+    result, user = c.confirm_password(form, room)
 
     if not result:
         c.save_message("Please confirm your password", "Password does not match", room)
@@ -1135,4 +1135,34 @@ def create_user_social_profile():
 
 @chat_auth_blueprint.route("/home")
 def home():
-    return render_template("chat/chat_home.html")
+    try:
+        params = s.ChatRequiredParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.room_unique_id:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    return render_template(
+        "chat/chat_home.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+    )

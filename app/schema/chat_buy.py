@@ -16,6 +16,7 @@ class ChatBuyEventParams(ChatBuyRequiredParams):
     renew_search: bool = False
     location_unique_id: str | None = None
     event_name: str | None = None
+    tickets_show_all: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 
@@ -26,6 +27,7 @@ class ChatBuyTicketParams(ChatBuyRequiredParams):
     user_message: str | None = None
     ask_payment: bool = False
     has_email: bool = False
+    tickets_show_all: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 

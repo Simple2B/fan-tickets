@@ -1,12 +1,9 @@
-from datetime import datetime
-
 import sqlalchemy as sa
 
 from flask import current_app as app
 
 from app import controllers as c
 from app import schema as s
-from app import forms as f
 from app import models as m, db
 
 from app.logger import log
@@ -84,9 +81,8 @@ def get_tickets_by_event_id(event_unique_id: str, room: m.Room) -> list[m.Ticket
     return tickets
 
 
-def get_cheapest_tickets(tickets: list[m.Ticket], room: m.Room) -> list[m.Ticket]:
+def get_cheapest_tickets(tickets: list[m.Ticket], room: m.Room, limit_tickets: bool) -> list[m.Ticket]:
     tickets.sort(key=lambda ticket: ticket.price_gross)
-    ticket_limit = app.config["TICKETS_PER_PAGE"]
     event_name = tickets[0].event.name
 
     c.save_message(
@@ -94,8 +90,10 @@ def get_cheapest_tickets(tickets: list[m.Ticket], room: m.Room) -> list[m.Ticket
         f"{event_name}",
         room,
     )
+    if limit_tickets:
+        tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
 
-    return tickets[:3]
+    return tickets
 
 
 def book_ticket(ticket_unique_id: str, user: m.User) -> m.Ticket | None:
