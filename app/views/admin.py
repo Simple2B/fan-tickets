@@ -46,7 +46,14 @@ def get_events():
     # TODO pending events, added by users, added by admin
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
     events = db.session.scalars(events_query).all()
-    return render_template("admin/events.html", events=events)
+    locations = m.Location.all()
+    categories = m.Category.all()
+    return render_template(
+        "admin/events.html",
+        events=events,
+        locations=locations,
+        categories=categories,
+    )
 
 
 @admin_blueprint.route("/event/<event_unique_id>", methods=["GET", "POST"])

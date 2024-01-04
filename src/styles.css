@@ -469,3 +469,12 @@ select::-ms-expand {
   max-height: 1000px;
   overflow: hidden;
 }
+
+.admin-select {
+  border: 1px solid rgb(242 183 5);
+}
+
+.admin-select:focus {
+  border: 1px solid rgb(242 183 5)!important;
+  outline: none!important;
+}
