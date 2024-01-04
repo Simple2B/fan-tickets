@@ -1,6 +1,7 @@
+from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, request
 from flask_login import current_user, login_required
-from app import models as m, db
+from app import models as m, db, forms as f
 from app.controllers.image_upload import image_upload, ImageType
 from app.logger import log
 
@@ -16,6 +17,7 @@ def admin():
 
 
 @admin_blueprint.route("/locations")
+@login_required
 def get_locations():
     locations = m.Location.all()
     log(log.INFO, "Locations: [%s]", locations)
@@ -23,6 +25,7 @@ def get_locations():
 
 
 @admin_blueprint.route("/categories")
+@login_required
 def get_categories():
     categories = m.Category.all()
     log(log.INFO, "Categories: [%s]", categories)
@@ -38,18 +41,70 @@ def picture_upload():
 
 
 @admin_blueprint.route("/events")
+@login_required
 def get_events():
+    # TODO pending events, added by users, added by admin
     events = m.Event.all()
     return render_template("admin/events.html", events=events)
 
 
+@admin_blueprint.route("/event/<event_unique_id>", methods=["GET", "POST"])
+@login_required
+def get_event(event_unique_id):
+    event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
+    event: m.Event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.INFO, "Event not found: [%s]", event_unique_id)
+        return redirect(url_for("admin.get_events"))
+
+    form = f.EventForm(category=event.category, location=event.location)
+    if request.method == "GET":
+        form.name.data = event.name
+        form.url.data = event.url
+        form.observations.data = event.observations
+        form.warning.data = event.warning
+
+        date_time_str = event.date_time.strftime("%m/%d/%Y")
+        form.date_time.data = date_time_str
+        # form.category.data = event.category_id
+        # form.location.data = event.location_id
+
+        log(log.INFO, "request.method = GET. Event form populated: [%s]", event)
+        return render_template("admin/event.html", event=event, form=form)
+
+    if form.validate_on_submit():
+        log(log.INFO, "Event form validated: [%s]", event)
+        event.name = form.name.data
+        event.url = form.url.data
+        event.observations = form.observations.data
+        event.warning = form.warning.data
+
+        date_time_data = datetime.strptime(form.date_time.data, "%m/%d/%Y")
+        event.date_time = date_time_data
+        event.category_id = form.category.data
+        event.location_id = form.location.data
+        event.save()
+        log(log.INFO, "Event saved: [%s]", event)
+        return redirect(url_for("admin.get_event", event_unique_id=event_unique_id))
+
+    else:
+        log(log.INFO, "Event form not validated: [%s]", form.errors)
+        return render_template("admin/event.html", event=event, form=form)
+
+
+# TODO add event
+
+
 @admin_blueprint.route("/tickets")
+@login_required
 def get_tickets():
     tickets = m.Ticket.all()
     return render_template("admin/tickets.html", tickets=tickets)
 
 
 @admin_blueprint.route("/disputes")
+@login_required
 def get_disputes():
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
@@ -62,6 +117,7 @@ def get_disputes():
 
 
 @admin_blueprint.route("/notifications")
+@login_required
 def get_notifications():
     notifications = m.Notification.all()
     return render_template("admin/notifications.html", notifications=notifications)

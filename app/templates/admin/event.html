@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <form action="{{url_for('admin.get_event', event_unique_id=event.unique_id)}}" method="post">
+        <table class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
+                <tr>
+                    <th scope="col" class="px-6 py-3">parameter</th>
+                    <th scope="col" class="px-6 py-3">value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            name
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <input type="text" value="{{ event.name }}"
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            url
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <input type="text" value="{{ event.url }}"
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            observations
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <input type="text" value="{{ event.observations }}"
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            warning
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <input type="text" value="{{ event.warning }}"
+                            class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            date_time
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <input datepicker type="text" name="paid_until" autocomplete="off" id="paid_until"
+                            class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+                            placeholder="{{ date_from_datetime(event.date_time) }}">
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            category
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        {{form.category(
+                        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg
+                        focus:ring-secondary block w-full p-2
+                        dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+                        )
+                        }}
+                        {% for error in form.errors.category %}
+                        <small class="text-danger">{{error}}</small>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            location
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        {{form.location(
+                        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg
+                        focus:ring-secondary block w-full p-2
+                        dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+                        )
+                        }}
+                        {% for error in form.errors.location %}
+                        <small class="text-danger">{{error}}</small>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            created_by
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ event.creator }}
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            picture
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ event.picture.base64_src }}
+                    </td>
+                </tr>
+
+                <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        <button type="submit"
+                            class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+                            Save
+                        </button>
+                    </td>
+                </tr>
+
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            Tickets:
+                        </div>
+                    </td>
+                </tr>
+
+                {% for ticket in event.tickets %}
+                <tr
+                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            {{ ticket.price_gross }}
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ ticket.unique_id}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

@@ -8,12 +8,9 @@
         <th scope="col" class="px-6 py-3">#</th>
         <th scope="col" class="px-6 py-3">Name</th>
         <th scope="col" class="px-6 py-3">url</th>
-        <th scope="col" class="px-6 py-3">observations</th>
-        <th scope="col" class="px-6 py-3">warning</th>
         <th scope="col" class="px-6 py-3">date</th>
         <th scope="col" class="px-6 py-3">days from now</th>
         <th scope="col" class="px-6 py-3">created_by</th>
-        <th scope="col" class="px-6 py-3">tickets</th>
       </tr>
     </thead>
     <tbody>
@@ -25,19 +22,13 @@
           </div>
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-          <a href="{{ url_for('admin.event', event_unique_id=event.unique_id) }}" class="pl-3">
+          <a href="{{ url_for('admin.get_event', event_unique_id=event.unique_id) }}" class="pl-3">
             <div class="text-base font-semibold">{{ event.name }}</div>
             <p>{{ event.location.name }} <span>{{ event.category.name }}</span></p>
           </a>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
           {{ event.url }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.observations[:23] }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.warning }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ date_from_datetime(event.date_time) }}
@@ -47,9 +38,6 @@
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ event.creator.username }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ event.tickets }}
         </td>
       </tr>
       {% endfor %}
