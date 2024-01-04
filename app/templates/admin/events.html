@@ -31,19 +31,19 @@
 
       <div class="cursor-pointer">
         <p class="text-gray-400">Dates</p>
-        <div
+        <div id="event-dates"
           class="admin-select w-40 h-10 flex items-center bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <p class="ms-3">All</p>
         </div>
       </div>
       <div id="event_dates" class="hidden">
         <p>Date from</p>
-        <input datepicker type="text" name="date_from" autocomplete="off" id="paid_until"
+        <input datepicker type="text" name="date_from" autocomplete="off" id="date-from"
           class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
           placeholder="{{ today() }}">
 
         <p>Date to</p>
-        <input datepicker type="text" name="date_to" autocomplete="off" id="paid_until"
+        <input datepicker type="text" name="date_to" autocomplete="off" id="date-to"
           class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
           placeholder="{{ today() }}">
       </div>
@@ -124,5 +124,7 @@
 </div>
 
 {% endblock %}
+
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
 {% endblock %}
