@@ -16,3 +16,4 @@ from .user import (
     NotificationsConfigForm,
 )
 from .chat import ChatPhoneForm, ChatAuthIdentityForm, ChatAuthPasswordForm
+from .event import EventForm

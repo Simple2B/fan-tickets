@@ -173,12 +173,20 @@ const emailContainer: HTMLDivElement = document.querySelector(
   '#user-profile-email-container',
 );
 
-subscribeButton.addEventListener('click', () => {
-  openCloseDropdown(subscribeButton, subscribeContainer);
-});
-paymentButton.addEventListener('click', () => {
-  openCloseDropdown(paymentButton, paymentContainer);
-});
-emailButton.addEventListener('click', () => {
-  openCloseDropdown(emailButton, emailContainer);
-});
+if (subscribeButton) {
+  subscribeButton.addEventListener('click', () => {
+    openCloseDropdown(subscribeButton, subscribeContainer);
+  });
+}
+
+if (paymentButton) {
+  paymentButton.addEventListener('click', () => {
+    openCloseDropdown(paymentButton, paymentContainer);
+  });
+}
+
+if (emailButton) {
+  emailButton.addEventListener('click', () => {
+    openCloseDropdown(emailButton, emailContainer);
+  });
+}

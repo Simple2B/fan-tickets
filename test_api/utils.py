@@ -147,13 +147,6 @@ def generate_test_events(
             for k in range(4):
                 type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
                 if type_of == m.RoomType.DISPUTE.value:
-                    dispute = m.Dispute(
-                        description=fake.text(max_nb_chars=200),
-                        is_active=True,
-                        buyer_id=buyer_id,
-                        ticket_id=ticket.id,
-                    )
-                    session.add(dispute)
                     notification = m.Notification(
                         type_of=m.NotificationType.DISPUTE_CREATED.value,
                         text=f"Dispute created for ticket {ticket.id} of user {seller_id}",

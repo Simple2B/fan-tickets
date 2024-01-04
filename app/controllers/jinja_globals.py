@@ -12,8 +12,8 @@ def form_hidden_tag():
     return form.hidden_tag()
 
 
-def date_from_datetime(created_at: datetime):
-    return created_at.date()
+def date_from_datetime(date_time: datetime):
+    return date_time.date()
 
 
 def time_delta(created_at: datetime) -> int:
@@ -46,3 +46,7 @@ def get_chat_room_messages():
 
 def get_chatbot_id():
     return app.config.get("CHAT_DEFAULT_BOT_ID")
+
+
+def round_to_two_places(number: float) -> float:
+    return round(number, 2)

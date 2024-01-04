@@ -52,7 +52,21 @@ def init(app: Flask):
             role=m.UserRole.admin.value,
             picture_id=picture.id,
             identity_document=document,
-        ).save()
+        ).save(False)
+        m.User(
+            username=app.config["CHAT_DEFAULT_BOT_USERNAME"],
+            name=app.config["CHAT_DEFAULT_BOT_USERNAME"],
+            last_name=app.config["CHAT_DEFAULT_BOT_USERNAME"],
+            email=app.config["CHAT_DEFAULT_EMAIL"],
+            phone="+380000000001",
+            card="0000000000000001",
+            password=app.config["ADMIN_PASSWORD"],
+            activated=True,
+            role=m.UserRole.admin.value,
+            picture_id=picture.id,
+            identity_document=document,
+        ).save(False)
+        db.session.commit()
         print("admin created")
 
     @app.cli.command("print-users")
@@ -100,6 +114,7 @@ def init(app: Flask):
         print(user)
 
         user.subscribed_events.extend(events)
+        user.password = "pass"
         user.save()
 
         print(user.subscribed_events)
@@ -150,7 +165,8 @@ def init(app: Flask):
         """
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
-        print(users)
+        for user in users:
+            print(user.id, user.email, user.role, user.tickets_bought)
 
     @app.cli.command("rollback")
     def rollback():
