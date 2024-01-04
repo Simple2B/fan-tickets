@@ -8,7 +8,9 @@
   },
   "cSpell.words": [
     "amarelo",
+    "Antifraud",
     "Cadastro",
+    "CNPJ",
     "conta",
     "Continuar",
     "Crie",
@@ -20,6 +22,8 @@
     "ilike",
     "jsonify",
     "motivos",
+    "Pagar",
+    "Pagarme",
     "pydantic",
     "pytest",
     "pytz",

@@ -39,7 +39,7 @@ def test_pagarme_get_customer(client: FlaskClient):
     TESTING_CUSTOMER_ID = "cus_rwLbRMDIjIz5vy6d"
     response = get_pagarme_customer(TESTING_CUSTOMER_ID)
     assert response
-    if isinstance(response, s.PagarmeUserOutput):
+    if isinstance(response, s.PagarmeCustomerOutput):
         assert response.id == TESTING_CUSTOMER_ID
 
 

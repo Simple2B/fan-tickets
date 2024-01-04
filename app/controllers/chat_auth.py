@@ -9,10 +9,12 @@ from flask import current_app as app
 
 from werkzeug.security import check_password_hash
 
+from app.database import db
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db
+from app import models as m
+
 
 from app.logger import log
 

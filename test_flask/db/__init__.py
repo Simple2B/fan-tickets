@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 from random import randint
 from faker import Faker
-from app import db
+from app.database import db
 from app import models as m
 from app.logger import log
 

@@ -24,3 +24,4 @@ from .chat_auth import (
     create_birth_date,
     create_social_profiles,
 )
+from .pagarme import PagarmeClient
