@@ -1,28 +1,13 @@
+{% from 'chat/_macros_chat_message.html' import history_message_bot, history_message_user %}
+
 {% for message in room.messages %}
 {% if message.sender_id == get_chatbot_id() %}
-{% set user_name = 'FanTicket' %}
-{% set background_color = 'bg-secondary' %}
-{% set justify = 'justify-start' %}
+{{ history_message_bot(message.text) }}
 {% else %}
 {% if current_user.is_authenticated %}
-{% set user_name = current_user.name %}
+{{ history_message_user(message.text, current_user.name, current_user.picture.base64_src) }}
 {% else %}
-{% set user_name = 'Guest' %}
+{{ history_message_user(message.text, "Guest") }}
 {% endif %}
-{% set background_color = 'bg-white' %}
-{% set justify = 'justify-end' %}
 {% endif %}
-<div class="flex text-white {{justify}}">
-    <small class="pt-1">{{ user_name }} {{ cut_seconds(message.created_at) }}</small>
-</div>
-
-<div class="flex text-black {{justify}}">
-    {% if "\n" in message.text %}
-    <pre class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">{{message.text }}</pre>
-    {% else %}
-    <p class="w-5/6 p-2 mb-2 rounded-lg {{background_color}}">
-        {{message.text }}
-    </p>
-    {% endif %}
-</div>
 {% endfor %}

@@ -115,22 +115,17 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
     return True
 
 
-def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
+def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, m.User | None]:
     user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
-        return False
+        return False, user
 
     result = check_password_hash(user.password, form.password.data)
 
-    if result:
-        save_message("Please confirm your password", "Password has been confirmed", room)
-    else:
-        save_message("Please confirm your password", "Password does not match", room)
-
-    return result
+    return result, user
 
 
 def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
@@ -202,23 +197,27 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     save_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
-def create_social_profiles(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
+def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
     message = ""
 
     if params.facebook:
-        user.facebook = params.facebook
-        message += f"facebook: {params.facebook}\n"
+        user.facebook = params.user_message
+        message = "Facebook url added"
     if params.instagram:
-        user.instagram = params.instagram
-        message += f"instagram: {params.instagram}\n"
+        user.instagram = params.user_message
+        message = "Instagram url added"
     if params.twitter:
-        user.twitter = params.twitter
-        message += f"twitter: {params.twitter}\n"
+        user.twitter = params.user_message
+        message = "Twitter url added"
 
     save_message("Please add your social profiles", message, room)
 
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="You have successfully registered",
-    ).save()
+
+def get_user_by_email(email: str) -> m.User | None:
+    user_query = sa.select(m.User).where(m.User.email == email)
+    user = db.session.scalar(user_query)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", email)
+
+    return user

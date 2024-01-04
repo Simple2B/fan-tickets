@@ -50,6 +50,7 @@ class BaseConfig(BaseSettings):
     PAGE_LINKS_NUMBER: int
     EVENTS_PER_PAGE: int
     TICKETS_PER_PAGE: int = 10
+    TICKETS_PER_CHAT: int = 3
 
     # UI config
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"

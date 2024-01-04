@@ -6,21 +6,26 @@ submit_message_get
   {% include 'chat/chat_messages.html' %}
   {% include 'chat/chat_spinner.html' %}
 
-  {% set all_filters = "[name='room_unique_id'], [name='user_unique_id']" %}
-
   {% set html_element %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='event_unique_id']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-  <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-  <div class="mt-2 flex gap-2">
-    <button type="button" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
+  <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
+  <div class="mt-2 flex flex-col gap-2">
+    <!-- TODO: Add subscribe to event -->
+    <button type="button" hx-get="{{ url_for('buy.subscribe_on_event') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      Add
+      Yes
     </button>
-    <button type="button" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
+    <button type="button" hx-get="{{ url_for('chat.home') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      Search
+      No
+    </button>
+    <button type="button" hx-get="{{ url_for('buy.get_event_name', renew_search=True) }}" hx-target="#chat-body"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+      class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+      Renew my search
     </button>
   </div>
   {% endset %}
@@ -29,12 +34,12 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Do you want to add or search tickets?", html_element) }}
+    {{ bot_message("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket
+    appears?", html_element) }}
   </div>
 </div>
 
-{{ submit_message_get('chat.create_user_birth_date', "[name='room_unique_id'], [name='user_unique_id'],
-[name='user_message']", disabled='disabled') }}
+{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
 
 {% block scripts %}
 <!-- prettier-ignore -->
