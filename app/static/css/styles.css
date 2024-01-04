@@ -3525,12 +3525,13 @@ select::-ms-expand {
   overflow: hidden;
 }
 
-.admin-select {
+/* .admin-select {
   border: 1px solid rgb(242 183 5);
-}
+} */
 
 .admin-select:focus {
   border: 1px solid rgb(242 183 5)!important;
+  color: rgb(242 183 5);
   outline: none!important;
 }
 
@@ -3678,11 +3679,6 @@ select::-ms-expand {
 .hover\:text-red-700:hover{
   --tw-text-opacity: 1;
   color: rgb(200 30 30 / var(--tw-text-opacity));
-}
-
-.hover\:text-secondary:hover{
-  --tw-text-opacity: 1;
-  color: rgb(242 183 5 / var(--tw-text-opacity));
 }
 
 .hover\:text-white:hover{

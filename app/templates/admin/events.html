@@ -15,59 +15,69 @@
       </button>
     </a>
   </div>
-  <div class="m-3 flex justify-between">
-    <div class="cursor-pointer">
-      <p class="text-gray-400">Location</p>
-      <select name="location"
-        class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
-        <option value="all">All</option>
-        {% for location in locations %}
-        <option value="{{ location.id }}">{{ location.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
 
-    <div class="cursor-pointer">
-      <p class="text-gray-400">Dates</p>
-      <div
-        class="admin-select w-40 h-10 flex items-center bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
-        <p class="ms-3">All</p>
+  <form action="{{url_for('admin.get_events')}}" class="m-3">
+    <div class="flex justify-between">
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Location</p>
+        <select name="location_id"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          {% for location in locations %}
+          <option value="{{ location.id }}">{{ location.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Dates</p>
+        <div
+          class="admin-select w-40 h-10 flex items-center bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <p class="ms-3">All</p>
+        </div>
+      </div>
+      <div id="event_dates" class="hidden">
+        <p>Date from</p>
+        <input datepicker type="text" name="date_from" autocomplete="off" id="paid_until"
+          class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+          placeholder="{{ today() }}">
+
+        <p>Date to</p>
+        <input datepicker type="text" name="date_to" autocomplete="off" id="paid_until"
+          class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+          placeholder="{{ today() }}">
+      </div>
+
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Category</p>
+        <select name="category_id"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Status</p>
+        <select name="status"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          <option value="active">Pending</option>
+          <option value="inactive">Created by users</option>
+          <option value="inactive">Created by admin</option>
+        </select>
       </div>
     </div>
-    <div id="event_dates" class="hidden">
-      <p>Date from</p>
-      <input datepicker type="text" name="date_time" autocomplete="off" id="paid_until"
-        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
-        placeholder="{{ today() }}">
 
-      <p>Date to</p>
-      <input datepicker type="text" name="date_time" autocomplete="off" id="paid_until"
-        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
-        placeholder="{{ today() }}">
+    <div class="my-5 flex justify-center">
+      <button type="submit"
+        class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+        Apply
+      </button>
     </div>
-
-    <div class="cursor-pointer">
-      <p class="text-gray-400">Category</p>
-      <select name="category"
-        class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
-        <option value="all">All</option>
-        {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div class="cursor-pointer">
-      <p class="text-gray-400">Status</p>
-      <select name="status"
-        class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
-        <option value="all">All</option>
-        <option value="active">Pending</option>
-        <option value="inactive">Created by users</option>
-        <option value="inactive">Created by admin</option>
-      </select>
-    </div>
-  </div>
+  </form>
 
   <table class="w-full text-sm text-left text-black dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-black dark:bg-secondary">

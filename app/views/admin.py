@@ -43,7 +43,13 @@ def picture_upload():
 @admin_blueprint.route("/events")
 @login_required
 def get_events():
-    # TODO pending events, added by users, added by admin
+    # Filters
+    location_id = request.args.get("location_id")
+    date_from_str = request.args.get("date_from")
+    date_to_str = request.args.get("date_to")
+    category_id = request.args.get("category_id")
+    status = request.args.get("status")
+
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
     events = db.session.scalars(events_query).all()
     locations = m.Location.all()
