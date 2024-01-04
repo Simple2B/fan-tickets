@@ -79,7 +79,12 @@ def get_event_name():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
+        tickets_cheapest = c.get_cheapest_tickets(
+            tickets,
+            room,
+            params.tickets_show_all,
+            params.add_ticket,
+        )
 
         log(log.INFO, "Tickets found: [%s]", tickets)
         return render_template(
@@ -190,7 +195,12 @@ def get_events_by_location():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
+        tickets_cheapest = c.get_cheapest_tickets(
+            tickets,
+            room,
+            params.tickets_show_all,
+            params.add_ticket,
+        )
 
         log(log.INFO, "Tickets found: [%s]", tickets)
         return render_template(
@@ -254,7 +264,12 @@ def get_tickets():
             now=c.utcnow_chat_format(),
         )
 
-    tickets_cheapest = c.get_cheapest_tickets(tickets, room, params.tickets_show_all)
+    tickets_cheapest = c.get_cheapest_tickets(
+        tickets,
+        room,
+        params.tickets_show_all,
+        params.add_ticket,
+    )
 
     return render_template(
         "chat/buy/ticket_list.html",
@@ -305,7 +320,7 @@ def booking_ticket():
             now=c.utcnow_chat_format(),
         )
 
-    ticket = c.book_ticket(params.ticket_unique_id, current_user)
+    ticket = c.book_ticket(params.ticket_unique_id, current_user, room)
 
     if not ticket:
         log(log.ERROR, "Ticket not found: [%s]", params.ticket_unique_id)

@@ -41,6 +41,11 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
             room,
         )
 
+    c.save_message(
+        "Fantastic choice! There are several location for this event. Please choose below👇",
+        f"{location.name}",
+        room,
+    )
     return events
 
 
@@ -81,22 +86,35 @@ def get_tickets_by_event_id(event_unique_id: str, room: m.Room) -> list[m.Ticket
     return tickets
 
 
-def get_cheapest_tickets(tickets: list[m.Ticket], room: m.Room, limit_tickets: bool) -> list[m.Ticket]:
+def get_cheapest_tickets(
+    tickets: list[m.Ticket],
+    room: m.Room,
+    limit_ticket: bool,
+    add_ticket: bool,
+) -> list[m.Ticket]:
     tickets.sort(key=lambda ticket: ticket.price_gross)
     event_name = tickets[0].event.name
 
-    c.save_message(
-        "Great! To get started, could you please write below name of the event you're looking for?",
-        f"{event_name}",
-        room,
-    )
-    if limit_tickets:
+    if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
+
+    if add_ticket:
+        c.save_message(
+            "Got it! Do you want to buy another one or proceed to purchase?",
+            "Add ticket",
+            room,
+        )
+    else:
+        c.save_message(
+            "Great! To get started, could you please write below name of the event you're looking for?",
+            f"{event_name}",
+            room,
+        )
 
     return tickets
 
 
-def book_ticket(ticket_unique_id: str, user: m.User) -> m.Ticket | None:
+def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket | None:
     ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket_unique_id)
     ticket = db.session.scalar(ticket_query)
 
@@ -106,6 +124,9 @@ def book_ticket(ticket_unique_id: str, user: m.User) -> m.Ticket | None:
 
     ticket.is_reserved = True
     ticket.buyer_id = user.id
+
+    # TODO: create string with ticket info
+    c.save_message("We have found tickets. What ticket do you want?", f"ticket seat: {ticket.seat}", room)
 
     return ticket
 
