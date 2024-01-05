@@ -5,6 +5,7 @@
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <form action="{{url_for('admin.get_event', event_unique_id=event.unique_id)}}" method="post">
+        {{ form.hidden_tag() }}
         <table class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
                 <tr>

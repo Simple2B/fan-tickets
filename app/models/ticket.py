@@ -14,35 +14,21 @@ if TYPE_CHECKING:
 
 
 class TicketType(Enum):
+    GENERAL = "general"
     TRACK = "track"
     BOX = "box"
     BACK_STAGE = "back_stage"
+    OTHER = "other"
 
 
 class TicketCategory(Enum):
-    LOT = "lot"
-    SOCIAL_ENTRY = "social_entry"
-    ENTIRE = "entire"
+    STUDENT = "student"
+    ELDERLY = "elderly"
+    SOCIAL = "social"
+    OTHER = "other"
 
 
 class Ticket(db.Model, ModelMixin):
-    """
-    Payment system actions:
-    reserve
-    buy
-    cancel
-    refund
-    transfer
-    send_to_buyer
-    mark_as_paid
-    confirm_receive
-    mark_as_sold
-    mark_as_available
-    mark_as_unavailable
-    mark_as_in_cart
-    delete_from_cart
-    """
-
     __tablename__ = "tickets"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -54,9 +40,9 @@ class Ticket(db.Model, ModelMixin):
 
     description: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
-    ticket_type: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketType.TRACK.value)
+    ticket_type: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketType.GENERAL.value)
 
-    ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.LOT.value)
+    ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.ELDERLY.value)
 
     # The ticket file could be a PDF or a stringed QR code
     # TODO: add relation to many tickets (one to many relationship)

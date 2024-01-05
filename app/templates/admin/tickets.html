@@ -26,7 +26,7 @@
           </div>
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-          <a href="{{ url_for('admin.get_event', event_unique_id=ticket.event.unique_id) }}" class="pl-3">
+          <a href="{{ url_for('admin.get_ticket', ticket_unique_id=ticket.unique_id) }}" class="pl-3">
             <div class="text-base font-semibold">{{ ticket.event.name }}</div>
             <p>{{ ticket.event.location.name }} <span>{{ ticket.event.category.name }}</span></p>
           </a>

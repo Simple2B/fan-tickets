@@ -190,6 +190,50 @@ def get_tickets():
     return render_template("admin/tickets.html", tickets=tickets)
 
 
+@admin_blueprint.route("/ticket/<ticket_unique_id>", methods=["GET", "POST"])
+@login_required
+def get_ticket(ticket_unique_id):
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    if not ticket:
+        log(log.INFO, "Ticket not found: [%s]", ticket_unique_id)
+        return redirect(url_for("admin.get_tickets"))
+
+    form = f.TicketForm()
+    if request.method == "GET":
+        form.description.data = ticket.description
+        form.warning.data = ticket.warning
+        form.ticket_type.data = ticket.ticket_type
+        form.ticket_category.data = ticket.ticket_category
+        form.section.data = ticket.section
+        form.queue.data = ticket.queue
+        form.seat.data = ticket.seat
+        form.price_net.data = ticket.price_net
+        form.price_gross.data = ticket.price_gross
+
+        log(log.INFO, "request.method = GET. Ticket form populated: [%s]", ticket)
+        return render_template("admin/ticket.html", ticket=ticket, form=form)
+
+    if form.validate_on_submit():
+        log(log.INFO, "Ticket form validated: [%s]", ticket)
+        ticket.description = form.description.data
+        ticket.warning = form.warning.data
+        ticket.ticket_type = form.ticket_type.data
+        ticket.ticket_category = form.ticket_category.data
+        ticket.section = form.section.data
+        ticket.queue = form.queue.data
+        ticket.seat = form.seat.data
+        ticket.price_net = form.price_net.data
+        ticket.save()
+        log(log.INFO, "Ticket saved: [%s]", ticket)
+        return redirect(url_for("admin.get_ticket", ticket_unique_id=ticket_unique_id))
+
+    else:
+        log(log.INFO, "Ticket form not validated: [%s]", form.errors)
+        return render_template("admin/ticket.html", ticket=ticket, form=form)
+
+
 @admin_blueprint.route("/disputes")
 @login_required
 def get_disputes():
