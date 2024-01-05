@@ -186,7 +186,7 @@ def add_event():
 @admin_blueprint.route("/tickets")
 @login_required
 def get_tickets():
-    location_id = request.args.get("location")
+    location_id = request.args.get("location_id")
     location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
     date_to_str = request.args.get("date_to")
