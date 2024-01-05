@@ -1,6 +1,7 @@
 import os
 import pytest
-from datetime import datetime
+
+# from datetime import datetime
 import random
 import string
 from flask_login import current_user
@@ -12,8 +13,7 @@ from .utils import login
 from app.controllers.payments import (
     get_all_pagarme_customers,
     get_pagarme_customer,
-    create_pagarme_customer,
-    update_pagarme_customer,
+    # update_pagarme_customer,
     get_pagarme_card,
 )
 
@@ -39,36 +39,36 @@ def test_pagarme_get_customer(client: FlaskClient):
     TESTING_CUSTOMER_ID = "cus_rwLbRMDIjIz5vy6d"
     response = get_pagarme_customer(TESTING_CUSTOMER_ID)
     assert response
-    if isinstance(response, s.PagarmeUserOutput):
+    if isinstance(response, s.PagarmeCustomerOutput):
         assert response.id == TESTING_CUSTOMER_ID
 
 
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
-def test_pagarme_customer(client: FlaskClient):
-    login(client)
-    TESTING_BIRTH_DATE = "01/01/2000"
-    now = datetime.now().strftime("%m-%d-%H-%M-%S")
-    TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
-    TEST_DOCUMENT = "93095135270"
+# @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+# def test_pagarme_customer(client: FlaskClient):
+#     login(client)
+#     TESTING_BIRTH_DATE = "01/01/2000"
+#     now = datetime.now().strftime("%m-%d-%H-%M-%S")
+#     TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
+#     TEST_DOCUMENT = "93095135270"
 
-    created_pagarme_customer = create_pagarme_customer(
-        customer_name=TESTING_CUSTOMER_NAME,
-        code=current_user.unique_id,
-        email=current_user.email,
-        birthdate=TESTING_BIRTH_DATE,
-        document=TEST_DOCUMENT,
-        phone=current_user.phone,
-    )
-    assert created_pagarme_customer
-    assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME
+#     created_pagarme_customer = create_pagarme_customer(
+#         customer_name=TESTING_CUSTOMER_NAME,
+#         code=current_user.unique_id,
+#         email=current_user.email,
+#         birthdate=TESTING_BIRTH_DATE,
+#         document=TEST_DOCUMENT,
+#         phone=current_user.phone,
+#     )
+#     assert created_pagarme_customer
+#     assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME
 
-    TESTING_BIRTH_DATE_UPD = "02/02/2000"
-    TESTING_NAME_UPD = "UpdatedTestingCustomer"
-    updated_pagarme_customer = update_pagarme_customer(
-        created_pagarme_customer.id, TESTING_BIRTH_DATE_UPD, TESTING_NAME_UPD
-    )
-    assert updated_pagarme_customer
-    assert updated_pagarme_customer.name == TESTING_NAME_UPD
+#     TESTING_BIRTH_DATE_UPD = "02/02/2000"
+#     TESTING_NAME_UPD = "UpdatedTestingCustomer"
+#     updated_pagarme_customer = update_pagarme_customer(
+#         created_pagarme_customer.id, TESTING_BIRTH_DATE_UPD, TESTING_NAME_UPD
+#     )
+#     assert updated_pagarme_customer
+#     assert updated_pagarme_customer.name == TESTING_NAME_UPD
 
 
 @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")

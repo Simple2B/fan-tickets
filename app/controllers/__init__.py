@@ -2,7 +2,6 @@
 from .pagination import create_pagination
 from .payments import (
     get_pagarme_customer,
-    create_pagarme_customer,
     create_pagarme_card,
     get_pagarme_card,
     create_pagarme_order,
@@ -37,3 +36,4 @@ from .chat_buy import (
     subscribe_event,
     create_user,
 )
+from .pagarme import PagarmeClient

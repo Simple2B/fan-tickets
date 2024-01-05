@@ -1,5 +1,7 @@
 import os
 
+import sqlalchemy as sa
+
 from flask import Flask, render_template
 from flask_login import LoginManager
 from werkzeug.exceptions import HTTPException
@@ -7,12 +9,14 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 
 from app.logger import log
+from app.controllers import PagarmeClient
 from .database import db
 
 # instantiate extensions
 login_manager = LoginManager()
 migration = Migrate()
 mail = Mail()
+pagarme_client = PagarmeClient()
 
 
 def create_app(environment="development") -> Flask:
@@ -47,6 +51,9 @@ def create_app(environment="development") -> Flask:
     login_manager.init_app(app)
     mail.init_app(app)
 
+    # init pagarme client
+    pagarme_client.configure(configuration)
+
     # Register blueprints.
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
@@ -61,8 +68,8 @@ def create_app(environment="development") -> Flask:
 
     # Set up flask login.
     @login_manager.user_loader
-    def get_user(id: int):
-        query = m.User.select().where(m.User.id == int(id))
+    def get_user(id: int) -> m.User | None:
+        query = sa.select(m.User).where(m.User.id == int(id))
         return db.session.scalar(query)
 
     login_manager.login_view = "auth.login"

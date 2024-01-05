@@ -205,7 +205,7 @@ def login_email():
             now=c.utcnow_chat_format(),
         )
 
-    user = c.get_user_by_email(params.user_message)
+    user = c.get_user_by_email(params.user_message, room)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", params.user_message)

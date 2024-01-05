@@ -8,6 +8,7 @@ from psycopg2 import IntegrityError
 from app import controllers as c
 from app import schema as s
 from app import models as m, db, mail
+from app import forms as f
 from app.logger import log
 from config import config
 
@@ -400,6 +401,7 @@ def payment():
         )
 
     if params.ask_payment:
+        c.save_message("Got it! Do you want to buy another one or proceed to purchase?", "Purchase", room)
         return render_template(
             "chat/buy/ticket_accept_purchase.html",
             room=room,
@@ -407,11 +409,17 @@ def payment():
             total_prices=total_prices,
         )
 
+    c.save_message(
+        f"Awesome! The cost for ticket is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        "Payment",
+        room,
+    )
     return render_template(
         "chat/buy/payment.html",
         room=room,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,
+        form=f.OrderCreateForm(),
     )
 
 

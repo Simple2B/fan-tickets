@@ -89,6 +89,8 @@ class BaseConfig(BaseSettings):
     PLATFORM_COMMISSION_RATE: float = 1.08
 
     # pagar.me
+    PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"
+    PAGARME_WEBHOOK_URL: str = "http://localhost:8080/pay/webhook"
     PAGARME_CONNECTION: bool = False
     PAGARME_SECRET_KEY: str | None = None
     PAGARME_CHECKOUT_EXPIRES_IN: int = 30  # minutes

@@ -32,7 +32,7 @@ def get_all_pagarme_customers():
     return response.json()
 
 
-def get_pagarme_customer(customer_id: str) -> s.PagarmeUserOutput | s.PagarmeError:
+def get_pagarme_customer(customer_id: str) -> s.PagarmeCustomerOutput | s.PagarmeError:
     URL = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
     response = requests.get(URL, headers=HEADERS)
@@ -43,62 +43,62 @@ def get_pagarme_customer(customer_id: str) -> s.PagarmeUserOutput | s.PagarmeErr
             status_code=404,
             error="Customer not found",
         )
-    return s.PagarmeUserOutput.model_validate(response.json())
+    return s.PagarmeCustomerOutput.model_validate(response.json())
 
 
-def create_pagarme_customer(
-    customer_name: str,
-    code: str,
-    email: str,
-    birthdate: str,
-    document: str,
-    phone: str,
-) -> s.PagarmeUserOutput:
-    URL = "https://api.pagar.me/core/v5/customers"
+# def create_pagarme_customer(
+#     customer_name: str,
+#     code: str,
+#     email: str,
+#     birthdate: str,
+#     document: str,
+#     phone: str,
+# ) -> s.PagarmeCustomerOutput:
+#     URL = "https://api.pagar.me/core/v5/customers"
 
-    """
-    payload = {
-        "name": customer_name,
-        "birthdate": birthdate,
-        "code": code,
-        "email": email,
-        "document": document,
-        "type": "individual",
-        "phones": {
-            "mobile_phone": {
-                "country_code": CFG.BRASIL_COUNTRY_PHONE_CODE,
-                "area_code": CFG.BRASIL_COUNTRY_AREA_CODE,
-                "number": phone,
-            },
-        },
-    }
-    """
-    payload = s.PagarmeUserCreate(
-        name=customer_name,
-        birthdate=birthdate,
-        code=code,
-        email=email,
-        document=document,
-        phones=s.UserPhones(
-            mobile_phone=s.UserMobilePhone(
-                country_code=CFG.BRASIL_COUNTRY_PHONE_CODE,
-                area_code=CFG.BRASIL_COUNTRY_AREA_CODE,
-                number=phone,
-            )
-        ),
-    ).model_dump()
+#     """
+#     payload = {
+#         "name": customer_name,
+#         "birthdate": birthdate,
+#         "code": code,
+#         "email": email,
+#         "document": document,
+#         "type": "individual",
+#         "phones": {
+#             "mobile_phone": {
+#                 "country_code": CFG.BRASIL_COUNTRY_PHONE_CODE,
+#                 "area_code": CFG.BRASIL_COUNTRY_AREA_CODE,
+#                 "number": phone,
+#             },
+#         },
+#     }
+#     """
+#     payload = s.PagarmeCustomerCreate(
+#         name=customer_name,
+#         birthdate=birthdate,
+#         code=code,
+#         email=email,
+#         document=document,
+#         phones=s.PagarmeCustomerPhones(
+#             mobile_phone=s.PagarmeCustomerMobilePhone(
+#                 country_code=CFG.BRASIL_COUNTRY_PHONE_CODE,
+#                 area_code=CFG.BRASIL_COUNTRY_AREA_CODE,
+#                 number=phone,
+#             )
+#         ),
+#     ).model_dump()
 
-    response = requests.post(URL, json=payload, headers=HEADERS)
+#     response = requests.post(URL, json=payload, headers=HEADERS)
 
-    log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
-    return s.PagarmeUserOutput.model_validate(response.json())
+#     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
+#     return s.PagarmeCustomerOutput.model_validate(response.json())
 
 
 def update_pagarme_customer(
     customer_id: str,
     birthdate: str | None = None,
     customer_name: str | None = None,
-) -> s.PagarmeUserOutput:
+) -> s.PagarmeCustomerOutput:
     URL = f"https://api.pagar.me/core/v5/customers/{customer_id}"
 
     payload = {}
@@ -110,7 +110,7 @@ def update_pagarme_customer(
     response = requests.put(URL, headers=HEADERS, json=payload)
 
     print(response.text)
-    return s.PagarmeUserOutput.model_validate(response.json())
+    return s.PagarmeCustomerOutput.model_validate(response.json())
 
 
 def create_pagarme_card(
@@ -153,6 +153,8 @@ def create_pagarme_card(
             status_code=404,
             error="Card not found",
         )
+    print("--------")
+    print(response.json())
     return s.PagarmeCardOutput.model_validate(response.json())
 
 

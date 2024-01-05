@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import click
 from flask import Flask
 import sqlalchemy as sa
@@ -52,6 +53,7 @@ def init(app: Flask):
             role=m.UserRole.admin.value,
             picture_id=picture.id,
             identity_document=document,
+            birth_date=datetime.now() - timedelta(days=365 * 20),
         ).save()
         print("admin created")
 

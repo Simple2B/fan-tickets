@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 from random import randint, choice
 from faker import Faker
-from app import db
+from app.database import db
 from app import models as m
 from app.logger import log
 
@@ -63,6 +63,7 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             role=role.value,
             # password="pass",
             activated=True,
+            birth_date=datetime.now() - timedelta(days=365 * randint(18, 60)),
         ).save(commit=False)
         # db.session.add(user)
         # db.session.flush()

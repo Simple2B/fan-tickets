@@ -1,7 +1,7 @@
 from typing import Any
 from datetime import datetime, UTC
 import sqlalchemy as sa
-from app import db
+from app.database import db
 from uuid import uuid4
 
 

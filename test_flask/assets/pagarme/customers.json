@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "total": 2
+  },
+  "data": [
+    {
+      "id": "cus_lDaeODJ4fvFqBmVK",
+      "name": "Customer Name 12-21-09-34-03",
+      "delinquent": false,
+      "created_at": "2023-12-21T07:34:10+00:00",
+      "updated_at": "2023-12-21T07:34:10+00:00",
+      "birthdate": "2000-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "cus_lDaeODJ4fvFqBmV2",
+      "name": "Customer Name 12-21-09-34-01",
+      "delinquent": false,
+      "created_at": "2023-12-21T07:34:10+00:00",
+      "updated_at": "2023-12-21T07:34:10+00:00",
+      "birthdate": "2000-01-01T00:00:00+00:00"
+    }
+  ]
+}

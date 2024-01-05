@@ -18,6 +18,13 @@ def test_get_event_name(client: FlaskClient):
         m.Location.event.has(m.Event.name.in_([event.name for event in events]))
     )
     locations: list[m.Location] = db.session.scalars(locations_query).all()
+    tickets: list[m.Ticket] = db.session.scalars(
+        m.Ticket.select().where(
+            m.Ticket.event_id == event.id,
+            m.Ticket.is_reserved.is_(False),
+            m.Ticket.is_sold.is_(False),
+        )
+    ).all()
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}")
     assert response.status_code == 200
@@ -29,7 +36,7 @@ def test_get_event_name(client: FlaskClient):
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
     assert response.status_code == 200
-    assert f"{event.name}" in response.data.decode()
+    assert f"We have found {len(tickets)} available tickets" in response.data.decode()
 
 
 def test_get_events_by_location(client: FlaskClient):
@@ -41,7 +48,11 @@ def test_get_events_by_location(client: FlaskClient):
     event: m.Event = db.session.scalar(m.Event.select())
     location: m.Location = db.session.scalar(m.Location.select().where(m.Location.event == event))
     tickets: list[m.Ticket] = db.session.scalars(
-        m.Ticket.select().where(m.Ticket.event_id == event.id, m.Ticket.is_reserved.is_(False))
+        m.Ticket.select().where(
+            m.Ticket.event_id == event.id,
+            m.Ticket.is_reserved.is_(False),
+            m.Ticket.is_sold.is_(False),
+        )
     ).all()
 
     response = client.get(f"/buy/get_events_by_location?room_unique_id={room.unique_id}")
@@ -77,7 +88,11 @@ def test_get_tickets(client: FlaskClient):
     populate()
     event: m.Event = db.session.scalar(m.Event.select())
     tickets: list[m.Ticket] = db.session.scalars(
-        m.Ticket.select().where(m.Ticket.event_id == event.id, m.Ticket.is_reserved.is_(False))
+        m.Ticket.select().where(
+            m.Ticket.event_id == event.id,
+            m.Ticket.is_reserved.is_(False),
+            m.Ticket.is_sold.is_(False),
+        )
     ).all()
 
     response = client.get(f"/buy/get_tickets?room_unique_id={room.unique_id}")
@@ -97,7 +112,11 @@ def test_booking_ticket(client: FlaskClient):
     populate()
     event: m.Event = db.session.scalar(m.Event.select())
     ticket: m.Ticket = db.session.scalar(
-        m.Ticket.select().where(m.Ticket.event_id == event.id, m.Ticket.is_reserved.is_(False))
+        m.Ticket.select().where(
+            m.Ticket.event_id == event.id,
+            m.Ticket.is_reserved.is_(False),
+            m.Ticket.is_sold.is_(False),
+        )
     )
 
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}")
