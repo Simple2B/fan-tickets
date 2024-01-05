@@ -26,7 +26,7 @@ bp = Blueprint("user", __name__, url_prefix="/user")
 def get_all():
     search = request.args.get("search")
     q = request.args.get("search_query")
-    query = m.User.select().order_by(m.User.id)
+    query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
 
     template = "user/users.html"

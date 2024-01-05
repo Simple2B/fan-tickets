@@ -187,7 +187,14 @@ def add_event():
 @login_required
 def get_tickets():
     tickets = m.Ticket.all()
-    return render_template("admin/tickets.html", tickets=tickets)
+    ticket_types = [x.value for x in m.TicketType]
+    ticket_categories = [x.value for x in m.TicketCategory]
+    return render_template(
+        "admin/tickets.html",
+        tickets=tickets,
+        ticket_types=ticket_types,
+        ticket_categories=ticket_categories,
+    )
 
 
 @admin_blueprint.route("/ticket/<ticket_unique_id>", methods=["GET", "POST"])
