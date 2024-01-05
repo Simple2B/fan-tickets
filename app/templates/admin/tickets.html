@@ -10,26 +10,10 @@
       <tr>
         <th scope="col" class="px-6 py-3">#</th>
         <th scope="col" class="px-6 py-3">Event Name</th>
-        <th scope="col" class="px-6 py-3">ticket_type</th>
-        <th scope="col" class="px-6 py-3">ticket_category</th>
-        <th scope="col" class="px-6 py-3">description</th>
-        <th scope="col" class="px-6 py-3">warning</th>
         <th scope="col" class="px-6 py-3">date</th>
-        <th scope="col" class="px-6 py-3">days from now</th>
-        <th scope="col" class="px-6 py-3">location</th>
-        <th scope="col" class="px-6 py-3">created_by</th>
-        <th scope="col" class="px-6 py-3">section</th>
-        <th scope="col" class="px-6 py-3">queue</th>
-        <th scope="col" class="px-6 py-3">seat</th>
-        <th scope="col" class="px-6 py-3">price_net</th>
-        <th scope="col" class="px-6 py-3">price_gross</th>
-        <th scope="col" class="px-6 py-3">quantity</th>
-        <th scope="col" class="px-6 py-3">is_in_cart</th>
-        <th scope="col" class="px-6 py-3">is_reserved</th>
-        <th scope="col" class="px-6 py-3">is_sold</th>
+        <th scope="col" class="px-6 py-3">price</th>
         <th scope="col" class="px-6 py-3">seller</th>
         <th scope="col" class="px-6 py-3">buyer</th>
-        <th scope="col" class="px-6 py-3">chat rooms</th>
         <th scope="col" class="px-6 py-3">is_available</th>
       </tr>
     </thead>
@@ -42,74 +26,22 @@
           </div>
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-          <div class="pl-3">
+          <a href="{{ url_for('admin.get_event', event_unique_id=ticket.event.unique_id) }}" class="pl-3">
             <div class="text-base font-semibold">{{ ticket.event.name }}</div>
-          </div>
-        </td>
-        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ ticket.ticket_type }}
-        </td>
-        <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ ticket.ticket_category }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.description[:23] }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.warning[:23] }}
+            <p>{{ ticket.event.location.name }} <span>{{ ticket.event.category.name }}</span></p>
+          </a>
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ date_from_datetime(ticket.event.date_time) }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ time_delta(ticket.event.date_time) }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.event.location.name }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.seller.username }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.section }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.queue }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.seat }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.price_net }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.price_gross }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.quantity }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.is_in_cart }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.is_reserved }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {{ ticket.is_sold }}
+          {{ round_to_two_places(ticket.price_gross) }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ ticket.seller.username }}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ ticket.buyer.username }}
-        </td>
-        <td class="p-4 space-x-2 whitespace-nowrap">
-          {% for room in ticket.rooms %}
-          <a href="{{ url_for('admin.get_disputes', ticket_unique_id=ticket.unique_id) }}"
-            class="text-blue-700 font-semibold">
-            {{ room.seller.username }} - {{ room.buyer.username }} |
-          </a>
-          {% endfor %}
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ ticket.is_available }}

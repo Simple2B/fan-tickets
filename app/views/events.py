@@ -20,7 +20,7 @@ def get_filter_events():
     data["categories"] = request.args.getlist("categories")
     event_filter = s.EventFilter.model_validate(data)
 
-    events_query = m.Event.select()
+    events_query = m.Event.select().where(m.Event.approved.is_(True))
 
     if event_filter.location:
         events_query = events_query.where(m.Event.location.has(name=event_filter.location))
