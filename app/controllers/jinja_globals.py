@@ -20,6 +20,10 @@ def date_from_datetime(date_time: datetime):
     return date_time.date()
 
 
+def event_form_date(date_time: datetime):
+    return date_time.strftime("%m/%d/%Y")
+
+
 def time_delta(created_at: datetime) -> int:
     now = datetime.now(pytz.utc)
     if os.environ.get("APP_ENV") == "testing":

@@ -168,6 +168,24 @@ def init(app: Flask):
         for user in users:
             print(user.id, user.email, user.role, user.tickets_bought)
 
+    @app.cli.command("reassign-events")
+    @click.option("--username", type=str)
+    def reassign_events(username: str):
+        """
+        Command for reassigning events to another user
+        """
+        user_query = m.User.select().where(m.User.username == username)
+        user: m.User = db.session.scalar(user_query)
+        if not user:
+            print(f"User with username: [{username}] not found")
+            return
+        events = db.session.scalars(m.Event.select()).all()
+        for event in events[:6]:
+            event.creator_id = user.id
+            event.approved = True
+            event.save()
+        print(f"Events of user {user.username} reassigned")
+
     @app.cli.command("rollback")
     def rollback():
         """

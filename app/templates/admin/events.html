@@ -89,6 +89,7 @@
         <th scope="col" class="px-6 py-3">date</th>
         <th scope="col" class="px-6 py-3">days from now</th>
         <th scope="col" class="px-6 py-3">created_by</th>
+        <th scope="col" class="px-6 py-3">approved</th>
       </tr>
     </thead>
 
@@ -117,6 +118,9 @@
         </td>
         <td class="p-4 space-x-2 whitespace-nowrap">
           {{ event.creator.username }}
+        </td>
+        <td class="p-4 space-x-2 whitespace-nowrap">
+          {{ event.approved }}
         </td>
       </tr>
       {% endfor %}

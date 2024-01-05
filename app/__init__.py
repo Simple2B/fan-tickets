@@ -102,11 +102,13 @@ def create_app(environment="development") -> Flask:
         get_chat_room_messages,
         get_chatbot_id,
         round_to_two_places,
+        event_form_date,
     )
 
     app.jinja_env.globals["today"] = today
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
+    app.jinja_env.globals["event_form_date"] = event_form_date
     app.jinja_env.globals["time_delta"] = time_delta
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask

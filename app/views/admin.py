@@ -109,8 +109,7 @@ def get_event(event_unique_id):
 
         date_time_str = event.date_time.strftime("%m/%d/%Y")
         form.date_time.data = date_time_str
-        # form.category.data = event.category_id
-        # form.location.data = event.location_id
+        form.approved.data = event.approved
 
         log(log.INFO, "request.method = GET. Event form populated: [%s]", event)
         return render_template("admin/event.html", event=event, form=form)
@@ -126,6 +125,7 @@ def get_event(event_unique_id):
         event.date_time = date_time_data
         event.category_id = form.category.data
         event.location_id = form.location.data
+        event.approved = True if form.approved.data == "True" else False
         event.save()
         log(log.INFO, "Event saved: [%s]", event)
         return redirect(url_for("admin.get_event", event_unique_id=event_unique_id))
@@ -153,6 +153,7 @@ def add_event():
             category_id=form.category.data,
             location_id=form.location.data,
             creator_id=current_user.id,
+            approved=True,
         ).save()
         log(log.INFO, "Event saved: [%s]", event)
         return redirect(url_for("admin.get_event", event_unique_id=event.unique_id))

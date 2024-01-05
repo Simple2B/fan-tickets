@@ -30,9 +30,10 @@ class EventForm(FlaskForm):
 
     name = StringField("Username", [DataRequired(), Length(min=3, max=64)])
     url = StringField("URL", [DataRequired(), Length(min=3, max=256)])
-    observations = StringField("Observations", [DataRequired(), Length(min=3, max=64)])
+    observations = StringField("Observations", [DataRequired(), Length(min=3, max=256)])
     warning = StringField("Warning", [DataRequired(), Length(min=3, max=64)])
     date_time = StringField("DateTime", [DataRequired()])
     category = SelectField("Category", choices=[])
     location = SelectField("Location", choices=[])
+    approved = SelectField("Approved", choices=[(True, "Approved"), (False, "Not approved")])
     submit = SubmitField("Login")
