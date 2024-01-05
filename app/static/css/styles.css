@@ -1136,6 +1136,10 @@ input:checked + .toggle-bg{
   right: 2.5rem;
 }
 
+.right-2{
+  right: 0.5rem;
+}
+
 .right-3{
   right: 0.75rem;
 }
@@ -2174,6 +2178,11 @@ input:checked + .toggle-bg{
   border-bottom-left-radius: 0.5rem;
 }
 
+.rounded-l{
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
 .rounded-l-lg{
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
@@ -2297,6 +2306,11 @@ input:checked + .toggle-bg{
 .border-red-700{
   --tw-border-opacity: 1;
   border-color: rgb(200 30 30 / var(--tw-border-opacity));
+}
+
+.border-red-800{
+  --tw-border-opacity: 1;
+  border-color: rgb(155 28 28 / var(--tw-border-opacity));
 }
 
 .border-secondary{
@@ -3548,16 +3562,21 @@ select::-ms-expand {
 }
 
 .admin-select:focus {
-  border: 1px solid rgb(242 183 5);
-  color: rgb(242 183 5);
-  outline: transparent!important;
+  border: 1px solid rgb(156 163 175);
+  /* color: rgb(242 183 5); */
+  outline: transparent !important;
 }
 
 .admin-select:focus-visible {
-  border: 1px solid rgb(242 183 5);
-  color: rgb(242 183 5);
-  outline: transparent!important;
-  box-shadow: none!important;
+  border: 1px solid rgb(156 163 175);
+  /* color: rgb(242 183 5); */
+  outline: transparent !important;
+  box-shadow: none !important;
+}
+
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
 }
 
 .placeholder\:text-black::-moz-placeholder{
@@ -3704,6 +3723,11 @@ select::-ms-expand {
 .hover\:text-red-700:hover{
   --tw-text-opacity: 1;
   color: rgb(200 30 30 / var(--tw-text-opacity));
+}
+
+.hover\:text-red-800:hover{
+  --tw-text-opacity: 1;
+  color: rgb(155 28 28 / var(--tw-text-opacity));
 }
 
 .hover\:text-white:hover{
