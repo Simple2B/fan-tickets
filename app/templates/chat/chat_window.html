@@ -1,4 +1,6 @@
+{% if not "/admin/" in request.path %}
 {% include 'chat/chat_icon.html' %}
+{% endif %}
 {% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get %}
 
 
