@@ -24,6 +24,26 @@ def get_locations():
     return render_template("admin/locations.html", locations=locations)
 
 
+@admin_blueprint.route("/add_location", methods=["GET", "POST"])
+@login_required
+def add_location():
+    form = f.LocationForm()
+    if request.method == "GET":
+        return render_template("admin/location_add.html", form=form)
+
+    if form.validate_on_submit():
+        log(log.INFO, "Location form validated: [%s]", form)
+        location = m.Location(
+            name=form.name.data,
+        ).save()
+        log(log.INFO, "Location saved: [%s]", location)
+        return redirect(url_for("admin.get_locations"))
+
+    else:
+        log(log.INFO, "Location form not validated: [%s]", form.errors)
+        return render_template("admin/location_add.html", form=form)
+
+
 @admin_blueprint.route("/categories")
 @login_required
 def get_categories():

@@ -43,7 +43,7 @@ class Event(db.Model, ModelMixin):
 
     creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    location: orm.Mapped["Location"] = orm.relationship()
+    location: orm.Mapped["Location"] = orm.relationship(back_populates="events")
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")

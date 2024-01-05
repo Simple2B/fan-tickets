@@ -17,3 +17,4 @@ from .user import (
 )
 from .chat import ChatPhoneForm, ChatAuthIdentityForm, ChatAuthPasswordForm
 from .event import EventForm
+from .location import LocationForm
