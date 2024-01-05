@@ -9,6 +9,7 @@
           d="M24.7609 23.2391L19.3805 28.6195M31.2175 23.2391L20.5511 33.9054C20.4906 33.966 20.4084 34 20.3228 34H14.3228C14.1445 34 14 33.8555 14 33.6772L14 27.6772C14 27.5916 14.034 27.5094 14.0946 27.4489L24.7609 16.7825M31.2175 23.2391L33.6848 20.7717C34.1051 20.3515 34.1051 19.6701 33.6848 19.2499L28.7501 14.3152C28.3299 13.8949 27.6485 13.8949 27.2283 14.3152L24.7609 16.7825M31.2175 23.2391L24.7609 16.7825"
           stroke="#F2B705" stroke-width="2" stroke-linecap="round" />
       </svg>
+      <span class="sr-only">Upload image</span>
     </button>
     <img class="w-48 h-48 rounded-50%" src="{{ user.picture.base64_src }}" alt="avatar" />
   </div>
@@ -109,21 +110,24 @@
           </p>
           <div id="user-profile-payment-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% for payment in payments %}
-            <div class="flex gap-6">
+            <div class="flex gap-12">
               <!-- prettier-ignore -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect width="24" height="24" rx="12" fill="#5D4B15" />
-                <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <p>
-                {{ payment.ticket.event.name }} - {{
-                payment.ticket.event.date_time.strftime('%a, %d %b') }}
-              </p>
-              <button class="text-red-700 cursor-pointer"
+              <div class="flex gap-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect width="24" height="24" rx="12" fill="#5D4B15" />
+                  <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <p>
+                  {{ payment.ticket.event.name }} - {{
+                  payment.ticket.event.date_time.strftime('%a, %d %b') }}
+                </p>
+              </div>
+              <button
+                class="px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-xl cursor-pointer transition-colors duration-200"
                 hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}" hx-target="#chat-body"
                 hx-swap="innerHTML" hx-trigger="click">
-                !
+                Start dispute
               </button>
             </div>
             {% endfor %}

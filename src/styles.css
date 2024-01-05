@@ -471,14 +471,19 @@ select::-ms-expand {
 }
 
 .admin-select:focus {
-  border: 1px solid rgb(242 183 5);
-  color: rgb(242 183 5);
-  outline: transparent!important;
+  border: 1px solid rgb(156 163 175);
+  /* color: rgb(242 183 5); */
+  outline: transparent !important;
 }
 
 .admin-select:focus-visible {
-  border: 1px solid rgb(242 183 5);
-  color: rgb(242 183 5);
-  outline: transparent!important;
-  box-shadow: none!important;
+  border: 1px solid rgb(156 163 175);
+  /* color: rgb(242 183 5); */
+  outline: transparent !important;
+  box-shadow: none !important;
+}
+
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
 }
