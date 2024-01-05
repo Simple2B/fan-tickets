@@ -200,7 +200,7 @@ def get_ticket(ticket_unique_id):
         log(log.INFO, "Ticket not found: [%s]", ticket_unique_id)
         return redirect(url_for("admin.get_tickets"))
 
-    form = f.TicketForm()
+    form = f.TicketForm(ticket_type=ticket.ticket_type, ticket_category=ticket.ticket_category)
     if request.method == "GET":
         form.description.data = ticket.description
         form.warning.data = ticket.warning

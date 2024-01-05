@@ -4093,6 +4093,10 @@ select::-ms-expand {
     margin-right: 6rem;
   }
 
+  .md\:block{
+    display: block;
+  }
+
   .md\:hidden{
     display: none;
   }
@@ -4103,6 +4107,10 @@ select::-ms-expand {
 
   .md\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:flex-row{
+    flex-direction: row;
   }
 
   .md\:items-center{

@@ -69,6 +69,7 @@ class Ticket(db.Model, ModelMixin):
     is_in_cart: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_reserved: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
+    is_deleted: orm.Mapped[bool] = orm.mapped_column(default=False, server_default=sa.false())
     seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
