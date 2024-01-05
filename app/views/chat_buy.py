@@ -401,6 +401,7 @@ def payment():
         )
 
     if params.ask_payment:
+        c.save_message("Got it! Do you want to buy another one or proceed to purchase?", "Purchase", room)
         return render_template(
             "chat/buy/ticket_accept_purchase.html",
             room=room,
@@ -408,6 +409,11 @@ def payment():
             total_prices=total_prices,
         )
 
+    c.save_message(
+        f"Awesome! The cost for ticket is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        "Payment",
+        room,
+    )
     return render_template(
         "chat/buy/payment.html",
         room=room,
