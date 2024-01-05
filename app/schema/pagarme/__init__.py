@@ -1,3 +1,4 @@
+# ruff: noqa: F401
 from .api import PagarmeError, PagarmePaginationQuery
 from .customer import (
     PagarmeCustomerMobilePhone,

@@ -46,52 +46,52 @@ def get_pagarme_customer(customer_id: str) -> s.PagarmeCustomerOutput | s.Pagarm
     return s.PagarmeCustomerOutput.model_validate(response.json())
 
 
-def create_pagarme_customer(
-    customer_name: str,
-    code: str,
-    email: str,
-    birthdate: str,
-    document: str,
-    phone: str,
-) -> s.PagarmeCustomerOutput:
-    URL = "https://api.pagar.me/core/v5/customers"
+# def create_pagarme_customer(
+#     customer_name: str,
+#     code: str,
+#     email: str,
+#     birthdate: str,
+#     document: str,
+#     phone: str,
+# ) -> s.PagarmeCustomerOutput:
+#     URL = "https://api.pagar.me/core/v5/customers"
 
-    """
-    payload = {
-        "name": customer_name,
-        "birthdate": birthdate,
-        "code": code,
-        "email": email,
-        "document": document,
-        "type": "individual",
-        "phones": {
-            "mobile_phone": {
-                "country_code": CFG.BRASIL_COUNTRY_PHONE_CODE,
-                "area_code": CFG.BRASIL_COUNTRY_AREA_CODE,
-                "number": phone,
-            },
-        },
-    }
-    """
-    payload = s.PagarmeCustomerCreate(
-        name=customer_name,
-        birthdate=birthdate,
-        code=code,
-        email=email,
-        document=document,
-        phones=s.PagarmeCustomerPhones(
-            mobile_phone=s.PagarmeCustomerMobilePhone(
-                country_code=CFG.BRASIL_COUNTRY_PHONE_CODE,
-                area_code=CFG.BRASIL_COUNTRY_AREA_CODE,
-                number=phone,
-            )
-        ),
-    ).model_dump()
+#     """
+#     payload = {
+#         "name": customer_name,
+#         "birthdate": birthdate,
+#         "code": code,
+#         "email": email,
+#         "document": document,
+#         "type": "individual",
+#         "phones": {
+#             "mobile_phone": {
+#                 "country_code": CFG.BRASIL_COUNTRY_PHONE_CODE,
+#                 "area_code": CFG.BRASIL_COUNTRY_AREA_CODE,
+#                 "number": phone,
+#             },
+#         },
+#     }
+#     """
+#     payload = s.PagarmeCustomerCreate(
+#         name=customer_name,
+#         birthdate=birthdate,
+#         code=code,
+#         email=email,
+#         document=document,
+#         phones=s.PagarmeCustomerPhones(
+#             mobile_phone=s.PagarmeCustomerMobilePhone(
+#                 country_code=CFG.BRASIL_COUNTRY_PHONE_CODE,
+#                 area_code=CFG.BRASIL_COUNTRY_AREA_CODE,
+#                 number=phone,
+#             )
+#         ),
+#     ).model_dump()
 
-    response = requests.post(URL, json=payload, headers=HEADERS)
+#     response = requests.post(URL, json=payload, headers=HEADERS)
 
-    log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
-    return s.PagarmeCustomerOutput.model_validate(response.json())
+#     log(log.INFO, "create_pagarme_customer response: [%s]", response.text)
+#     return s.PagarmeCustomerOutput.model_validate(response.json())
 
 
 def update_pagarme_customer(
