@@ -2022,14 +2022,6 @@ input:checked + .toggle-bg{
   gap: 2rem;
 }
 
-.gap-24{
-  gap: 6rem;
-}
-
-.gap-10{
-  gap: 2.5rem;
-}
-
 .-space-x-px > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
   margin-right: calc(-1px * var(--tw-space-x-reverse));
@@ -2178,6 +2170,11 @@ input:checked + .toggle-bg{
   border-bottom-left-radius: 0.5rem;
 }
 
+.rounded-l{
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
 .rounded-l-lg{
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
@@ -2303,6 +2300,11 @@ input:checked + .toggle-bg{
   border-color: rgb(200 30 30 / var(--tw-border-opacity));
 }
 
+.border-red-800{
+  --tw-border-opacity: 1;
+  border-color: rgb(155 28 28 / var(--tw-border-opacity));
+}
+
 .border-secondary{
   --tw-border-opacity: 1;
   border-color: rgb(242 183 5 / var(--tw-border-opacity));
@@ -2315,11 +2317,6 @@ input:checked + .toggle-bg{
 .border-white{
   --tw-border-opacity: 1;
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
-}
-
-.border-red-800{
-  --tw-border-opacity: 1;
-  border-color: rgb(155 28 28 / var(--tw-border-opacity));
 }
 
 .border-b-grey{
@@ -3710,14 +3707,14 @@ select::-ms-expand {
   color: rgb(200 30 30 / var(--tw-text-opacity));
 }
 
-.hover\:text-white:hover{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
 .hover\:text-red-800:hover{
   --tw-text-opacity: 1;
   color: rgb(155 28 28 / var(--tw-text-opacity));
+}
+
+.hover\:text-white:hover{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover{
