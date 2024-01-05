@@ -21,7 +21,7 @@ from app.logger import log
 bp = Blueprint("user", __name__, url_prefix="/user")
 
 
-@bp.route("/", methods=["GET"])
+@bp.route("/admin", methods=["GET"])
 @login_required
 def get_all():
     search = request.args.get("search")

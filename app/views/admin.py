@@ -186,14 +186,44 @@ def add_event():
 @admin_blueprint.route("/tickets")
 @login_required
 def get_tickets():
-    tickets = m.Ticket.all()
+    location_id = request.args.get("location")
+    location_id = None if location_id == "all" else location_id
+    date_from_str = request.args.get("date_from")
+    date_to_str = request.args.get("date_to")
+    ticket_type = request.args.get("ticket_type")
+    ticket_type = None if ticket_type == "all" else ticket_type
+    ticket_category = request.args.get("ticket_category")
+    ticket_category = None if ticket_category == "all" else ticket_category
+
+    tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
+
+    if location_id:
+        tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.location_id == int(location_id)))
+
+    if date_from_str:
+        date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
+        tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.date_time >= date_from))
+
+    if date_to_str:
+        date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
+        tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.date_time <= date_to))
+
+    if ticket_type:
+        tickets_query = tickets_query.where(m.Ticket.ticket_type == ticket_type)
+
+    if ticket_category:
+        tickets_query = tickets_query.where(m.Ticket.ticket_category == ticket_category)
+
+    tickets = db.session.scalars(tickets_query).all()
     ticket_types = [x.value for x in m.TicketType]
     ticket_categories = [x.value for x in m.TicketCategory]
+    locations = m.Location.all()
     return render_template(
         "admin/tickets.html",
         tickets=tickets,
         ticket_types=ticket_types,
         ticket_categories=ticket_categories,
+        locations=locations,
     )
 
 

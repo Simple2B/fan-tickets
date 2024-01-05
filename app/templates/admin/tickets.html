@@ -5,7 +5,7 @@
     <p class="my-6 ml-3 text-3xl dark:text-gray-400">Tickets</p>
   </div>
 
-  <form action="{{url_for('admin.get_events')}}" class="m-3">
+  <form action="{{url_for('admin.get_tickets')}}" class="m-3">
     <div class="flex justify-between">
       <div class="cursor-pointer">
         <p class="text-gray-400">Location</p>
@@ -18,7 +18,7 @@
         </select>
       </div>
 
-      <div class="relative cursor-pointer">
+      <div class="relative w-max cursor-pointer">
         <p class="text-gray-400">Dates</p>
         <div id="event-dates"
           class="admin-select w-40 h-10 flex items-center bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
@@ -36,6 +36,12 @@
             class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
             placeholder="{{ today() }}">
         </div>
+        <svg class="absolute right-2 top-1/2 w-5 fill-current" width="24" height="24" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M18.601 8.39897C18.269 8.06702 17.7309 8.06702 17.3989 8.39897L12 13.7979L6.60099 8.39897C6.26904 8.06702 5.73086 8.06702 5.39891 8.39897C5.06696 8.73091 5.06696 9.2691 5.39891 9.60105L11.3989 15.601C11.7309 15.933 12.269 15.933 12.601 15.601L18.601 9.60105C18.9329 9.2691 18.9329 8.73091 18.601 8.39897Z"
+            fill="rgb(120 120 120)"></path>
+        </svg>
       </div>
 
       <div class="cursor-pointer">
