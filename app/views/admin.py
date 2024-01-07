@@ -1,5 +1,8 @@
 from datetime import datetime
-from flask import Blueprint, redirect, url_for, render_template, request
+
+import filetype
+
+from flask import Blueprint, redirect, url_for, render_template, request, flash
 from flask_login import current_user, login_required
 from app import models as m, db, forms as f
 from app.controllers.image_upload import image_upload, ImageType
@@ -7,6 +10,12 @@ from app.logger import log
 
 
 admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+@admin_blueprint.before_request
+def check_if_user_is_admin():
+    if current_user.role != m.UserRole.admin.value:
+        return redirect(url_for("main.index"))
 
 
 @admin_blueprint.route("/")
@@ -35,13 +44,44 @@ def add_location():
         log(log.INFO, "Location form validated: [%s]", form)
         location = m.Location(
             name=form.name.data,
-        ).save()
+        )
+
+        if form.picture.data:
+            image_type = filetype.guess(form.picture.data.stream)
+            if not image_type.mime.startswith("image"):
+                log(log.WARNING, "File is not an image: [%s]", form.picture.data.filename)
+                flash(f"Wrong image format: {image_type.mime}", "danger")
+                return render_template("admin/location_add.html", form=form)
+
+            location.picture = m.Picture(
+                filename=form.picture.data.filename, mimetype=image_type.mime, file=form.picture.data.read()
+            )
+
+        db.session.add(location)
+        db.session.commit()
+
         log(log.INFO, "Location saved: [%s]", location)
         return redirect(url_for("admin.get_locations"))
 
     else:
         log(log.INFO, "Location form not validated: [%s]", form.errors)
         return render_template("admin/location_add.html", form=form)
+
+
+@admin_blueprint.route("/location/delete/<location_id>", methods=["GET"])
+@login_required
+def location_delete(location_id):
+    location = db.session.get(m.Location, location_id)
+
+    if not location:
+        log(log.INFO, "Location not found: [%s]", location_id)
+        return redirect(url_for("admin.get_locations"))
+
+    db.session.delete(location.picture)
+    db.session.delete(location)
+    db.session.commit()
+    log(log.INFO, "Location deleted: [%s]", location_id)
+    return redirect(url_for("admin.get_locations"))
 
 
 @admin_blueprint.route("/categories")
@@ -259,3 +299,51 @@ def get_disputes():
 def get_notifications():
     notifications = m.Notification.all()
     return render_template("admin/notifications.html", notifications=notifications)
+
+
+@admin_blueprint.route("/add_category", methods=["GET", "POST"])
+@login_required
+def add_category():
+    form = f.CategoryForm()
+
+    if request.method == "GET":
+        return render_template("admin/category_add.html", form=form)
+
+    if form.validate_on_submit():
+        log(log.INFO, "Location form validated: [%s]", form)
+        category = m.Category(
+            name=form.name.data,
+        )
+
+        if form.picture.data:
+            image_type = filetype.guess(form.picture.data.stream)
+            if not image_type.mime.startswith("image"):
+                log(log.WARNING, "File is not an image: [%s]", form.picture.data.filename)
+                flash(f"Wrong image format: {image_type.mime}", "danger")
+                return render_template("admin/category_add.html", form=form)
+
+            category.picture = m.Picture(
+                filename=form.picture.data.filename, mimetype=image_type.mime, file=form.picture.data.read()
+            )
+
+        db.session.add(category)
+        db.session.commit()
+
+        log(log.INFO, "Category saved: [%s]", category)
+        return redirect(url_for("admin.get_categories"))
+
+
+@admin_blueprint.route("/category/delete/<category_id>", methods=["GET"])
+@login_required
+def delete_category(category_id):
+    category = db.session.get(m.Category, category_id)
+
+    if not category:
+        log(log.INFO, "Location not found: [%s]", category_id)
+        return redirect(url_for("admin.get_categories"))
+
+    db.session.delete(category.picture)
+    db.session.delete(category)
+    db.session.commit()
+    log(log.INFO, "Category deleted: [%s]", category_id)
+    return redirect(url_for("admin.get_categories"))
