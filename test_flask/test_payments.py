@@ -18,7 +18,10 @@ from app.controllers.payments import (
 )
 
 
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+@pytest.mark.skipif(
+    not os.environ.get("PAGARME_CONNECTION"),
+    reason="no pagar.me API secret key",
+)
 def test_pagarme_get_customers(client: FlaskClient):
     response = get_all_pagarme_customers()
     assert response["data"][0]["id"] == "cus_rwLbRMDIjIz5vy6d"

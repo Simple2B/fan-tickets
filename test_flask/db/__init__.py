@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 from random import randint, choice
 from faker import Faker
 from app import db
