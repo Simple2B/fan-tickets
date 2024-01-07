@@ -28,14 +28,15 @@ TEST_CATEGORIES = [
 ]
 NUM_TEST_EVENTS = 12
 TEST_TICKET_TYPES = [
+    m.TicketType.GENERAL.value,
     m.TicketType.TRACK.value,
     m.TicketType.BOX.value,
     m.TicketType.BACK_STAGE.value,
 ]
 TEST_TICKET_CATEGORIES = [
-    m.TicketCategory.LOT.value,
-    m.TicketCategory.SOCIAL_ENTRY.value,
-    m.TicketCategory.ENTIRE.value,
+    m.TicketCategory.STUDENT.value,
+    m.TicketCategory.ELDERLY.value,
+    m.TicketCategory.SOCIAL.value,
 ]
 
 

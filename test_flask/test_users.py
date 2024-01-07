@@ -9,7 +9,7 @@ from test_flask.utils import login
 def test_list(client_with_data: FlaskClient):
     login(client_with_data)
     DEFAULT_PAGE_SIZE = app.config["DEFAULT_PAGE_SIZE"]
-    response = client_with_data.get("/user/")
+    response = client_with_data.get("/user/admin")
     assert response
     assert response.status_code == 200
     html = response.data.decode()
@@ -20,13 +20,13 @@ def test_list(client_with_data: FlaskClient):
     assert users[10].username not in html
 
     client_with_data.application.config["PAGE_LINKS_NUMBER"] = 6
-    response = client_with_data.get("/user/?page=6")
+    response = client_with_data.get("/user/admin?page=3")
     assert response
     assert response.status_code == 200
     html = response.data.decode()
-    assert "/user/?page=6" in html
-    assert "/user/?page=3" in html
-    assert "/user/?page=10" not in html
+    assert "/user/admin?page=6" in html
+    assert "/user/admin?page=3" in html
+    assert "/user/admin?page=10" not in html
 
 
 def test_create_admin(runner: FlaskCliRunner):

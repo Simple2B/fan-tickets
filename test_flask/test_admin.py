@@ -63,3 +63,10 @@ def test_location_images(client: FlaskClient):
             ).save()
             pictures += 1
     assert m.Picture.count() == previous_images_number + pictures
+
+
+def test_events(client_with_data: FlaskClient):
+    login(client_with_data)
+
+    response = client_with_data.get("/admin/events")
+    assert response.status_code == 200

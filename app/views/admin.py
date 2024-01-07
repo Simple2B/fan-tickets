@@ -261,7 +261,6 @@ def get_tickets():
         tickets_query = tickets_query.where(m.Ticket.ticket_category == ticket_category)
         count_query = count_query.where(m.Ticket.ticket_category == ticket_category)
 
-    # tickets = db.session.scalars(tickets_query).all()
     ticket_types = [x.value for x in m.TicketType]
     ticket_categories = [x.value for x in m.TicketCategory]
     locations = m.Location.all()
