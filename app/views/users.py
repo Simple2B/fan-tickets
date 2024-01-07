@@ -50,7 +50,7 @@ def get_all():
         ).scalars(),
         page=pagination,
         search_query=q,
-        visibility=False,
+        # visibility=False,
     )
 
 

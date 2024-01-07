@@ -3,6 +3,7 @@ from flask import Blueprint, redirect, url_for, render_template, request
 from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app import models as m, db, forms as f
+from app.controllers import create_pagination
 from app.controllers.image_upload import image_upload, ImageType
 from app.logger import log
 
@@ -78,42 +79,58 @@ def get_events():
 
     # Query for all events
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
+    count_query = sa.select(sa.func.count()).select_from(m.Event)
     locations_query = m.Location.select()
     categories_query = m.Category.select()
 
     template = "admin/events.html"
     if search_query or search:
         events_query = events_query.where(m.Event.name.ilike(f"%{search_query}%"))
+        count_query = count_query.where(m.Event.name.ilike(f"%{search_query}%"))
         template = "admin/events_list.html"
 
     location_unique_id = None
     if location_id:
         events_query = events_query.where(m.Event.location_id == int(location_id))
+        count_query = count_query.where(m.Event.location_id == int(location_id))
         location_unique_id = db.session.scalar(sa.select(m.Location.unique_id).where(m.Location.id == int(location_id)))
 
     if date_from_str:
         date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
         events_query = events_query.where(m.Event.date_time >= date_from)
+        count_query = count_query.where(m.Event.date_time >= date_from)
 
     if date_to_str:
         date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
         events_query = events_query.where(m.Event.date_time <= date_to)
+        count_query = count_query.where(m.Event.date_time <= date_to)
 
     category_selected = None
     if category_id:
         events_query = events_query.where(m.Event.category_id == int(category_id))
+        count_query = count_query.where(m.Event.category_id == int(category_id))
         category_selected = db.session.scalar(sa.select(m.Category.name).where(m.Category.id == int(category_id)))
 
     if status == "pending":
         events_query = events_query.where(m.Event.approved.is_(False))
+        count_query = count_query.where(m.Event.approved.is_(False))
     elif status == "users":
         events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
     elif status == "admins":
         events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
 
-    events = db.session.scalars(events_query).all()
+    # events = db.session.scalars(events_query).all()
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
+
+    pagination = create_pagination(total=db.session.scalar(count_query))
+
+    events_query = events_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
+    events = db.session.execute(
+        events_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
+    ).scalars()
 
     return render_template(
         template,
@@ -123,6 +140,8 @@ def get_events():
         location_unique_id=location_unique_id,
         category_selected=category_selected,
         status_selected=status,
+        page=pagination,
+        search_query=search_query,
     )
 
 
