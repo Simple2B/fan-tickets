@@ -19,12 +19,16 @@
   <form action="{{url_for('admin.get_events')}}" class="m-3">
     <div class="flex flex-col lg:flex-row gap-2 justify-between">
       <div class="cursor-pointer">
-        <p class="text-gray-400">Location</p>
+        <p class="text-gray-400">Location {{location_selected}}</p>
         <select name="location_id"
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
           {% for location in locations %}
+          {% if location.unique_id == location_unique_id %}
+          <option value="{{ location.id }}" selected>{{ location.name }}</option>
+          {% else %}
           <option value="{{ location.id }}">{{ location.name }}</option>
+          {% endif %}
           {% endfor %}
         </select>
       </div>
@@ -61,7 +65,11 @@
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
           {% for category in categories %}
+          {% if category.name == category_selected %}
+          <option value="{{ category.id }}" selected>{{ category.name }}</option>
+          {% else %}
           <option value="{{ category.id }}">{{ category.name }}</option>
+          {% endif %}
           {% endfor %}
         </select>
       </div>
@@ -79,10 +87,19 @@
     </div>
 
     <div class="my-5 flex justify-center">
-      <button type="submit"
-        class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
-        Apply
-      </button>
+      <div>
+        <button type="submit"
+          class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+          Apply
+        </button>
+      </div>
+
+      <a href="{{url_for('admin.get_events')}}">
+        <button type="button"
+          class="link mx-2 p-2 w-44 text-center text-gray-400 border border-gray-400 rounded-xl transition-colors duration-200">
+          reset
+        </button>
+      </a>
     </div>
   </form>
 

@@ -79,8 +79,10 @@ def get_events():
     locations_query = m.Location.select()
     categories_query = m.Category.select()
 
+    location_unique_id = None
     if location_id:
         events_query = events_query.where(m.Event.location_id == int(location_id))
+        location_unique_id = db.session.scalar(sa.select(m.Location.unique_id).where(m.Location.id == int(location_id)))
 
     if date_from_str:
         date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
@@ -90,8 +92,10 @@ def get_events():
         date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
         events_query = events_query.where(m.Event.date_time <= date_to)
 
+    category_selected = None
     if category_id:
         events_query = events_query.where(m.Event.category_id == int(category_id))
+        category_selected = db.session.scalar(sa.select(m.Category.name).where(m.Category.id == int(category_id)))
 
     if status == "pending":
         events_query = events_query.where(m.Event.approved.is_(False))
@@ -108,6 +112,9 @@ def get_events():
         events=events,
         locations=locations,
         categories=categories,
+        location_unique_id=location_unique_id,
+        category_selected=category_selected,
+        status_selected=status,
     )
 
 
