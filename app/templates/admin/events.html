@@ -79,9 +79,23 @@
         <select name="status"
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
+          {% if status_selected == "pending" %}
+          <option value="pending" selected>Pending</option>
+          {% else %}
           <option value="pending">Pending</option>
+          {% endif %}
+
+          {% if status_selected == "pending" %}
+          <option value="users" selected>Created by users</option>
+          {% else %}
           <option value="users">Created by users</option>
+          {% endif %}
+
+          {% if status_selected == "pending" %}
+          <option value="admins" selected>Created by admin</option>
+          {% else %}
           <option value="admins">Created by admin</option>
+          {% endif %}
         </select>
       </div>
     </div>
