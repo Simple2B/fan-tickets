@@ -990,6 +990,10 @@ input:checked + .toggle-bg{
   .container{
     max-width: 1536px;
   }
+
+  .pagination-block-centered{
+    max-width: none;
+  }
 }
 
 .sr-only{

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <div class="mt-3 flex justify-between">
-    <p class="mt-6 ml-3 text-3xl dark:text-gray-400">Users {{request.path}}</p>
+    <p class="mt-6 ml-3 text-3xl dark:text-gray-400">Users</p>
   </div>
 
   <div class="flex items-center justify-center pb-4 bg-white dark:bg-black">
@@ -39,7 +39,7 @@
 </div>
 
 {% if page.pages > 1 %}
-<div class="container content-center mt-3 flex bg-white dark:bg-black">
+<div class="container content-center pagination-block-centered w-full mt-3 flex bg-white dark:bg-black">
   <nav aria-label="Page navigation example" class="mx-auto">
     <ul class="inline-flex items-center -space-x-px">
       <li>

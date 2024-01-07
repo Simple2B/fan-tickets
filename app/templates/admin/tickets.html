@@ -13,7 +13,11 @@
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
           {% for location in locations %}
+          {% if location.unique_id == location_unique_id %}
+          <option value="{{ location.id }}" selected>{{ location.name }}</option>
+          {% else %}
           <option value="{{ location.id }}">{{ location.name }}</option>
+          {% endif %}
           {% endfor %}
         </select>
       </div>
@@ -50,7 +54,11 @@
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
           {% for ticket_type in ticket_types %}
+          {% if ticket_type == ticket_type_selected %}
+          <option value="{{ ticket_type }}" selected>{{ ticket_type }}</option>
+          {% else %}
           <option value="{{ ticket_type }}">{{ ticket_type }}</option>
+          {% endif %}
           {% endfor %}
         </select>
       </div>
@@ -61,17 +69,30 @@
           class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
           <option value="all">All</option>
           {% for ticket_category in ticket_categories %}
+          {% if ticket_category == ticket_category_selected %}
+          <option value="{{ ticket_category }}" selected>{{ ticket_category }}</option>
+          {% else %}
           <option value="{{ ticket_category }}">{{ ticket_category }}</option>
+          {% endif %}
           {% endfor %}
         </select>
       </div>
     </div>
 
     <div class="my-5 flex justify-center">
-      <button type="submit"
-        class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
-        Apply
-      </button>
+      <div>
+        <button type="submit"
+          class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+          Apply
+        </button>
+      </div>
+
+      <a href="{{url_for('admin.get_tickets', locatoin_id=all, ticket_type=all)}}">
+        <button type="button"
+          class="link mx-2 p-2 w-44 text-center text-gray-400 border border-gray-400 rounded-xl transition-colors duration-200">
+          reset
+        </button>
+      </a>
     </div>
   </form>
 
@@ -124,5 +145,6 @@
 
 {% endblock %}
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js" defer></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
 {% endblock %}

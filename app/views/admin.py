@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, request
 from flask_login import current_user, login_required
+import sqlalchemy as sa
 from app import models as m, db, forms as f
 from app.controllers.image_upload import image_upload, ImageType
 from app.logger import log
@@ -197,8 +198,10 @@ def get_tickets():
 
     tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
 
+    location_unique_id = None
     if location_id:
         tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.location_id == int(location_id)))
+        location_unique_id = db.session.scalar(sa.select(m.Location.unique_id).where(m.Location.id == int(location_id)))
 
     if date_from_str:
         date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
@@ -224,6 +227,9 @@ def get_tickets():
         ticket_types=ticket_types,
         ticket_categories=ticket_categories,
         locations=locations,
+        location_unique_id=location_unique_id,
+        ticket_type_selected=ticket_type,
+        ticket_category_selected=ticket_category,
     )
 
 
