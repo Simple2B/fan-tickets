@@ -202,6 +202,7 @@ def add_event():
 @admin_blueprint.route("/tickets")
 @login_required
 def get_tickets():
+    buyer_unique_id = request.args.get("buyer_unique_id")
     location_id = request.args.get("location_id")
     location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
@@ -212,6 +213,9 @@ def get_tickets():
     ticket_category = None if ticket_category == "all" else ticket_category
 
     tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
+
+    if buyer_unique_id:
+        tickets_query = tickets_query.where(m.Ticket.buyer.has(m.User.unique_id == buyer_unique_id))
 
     location_unique_id = None
     if location_id:
@@ -245,6 +249,7 @@ def get_tickets():
         location_unique_id=location_unique_id,
         ticket_type_selected=ticket_type,
         ticket_category_selected=ticket_category,
+        user_unique_id=buyer_unique_id,
     )
 
 

@@ -287,14 +287,3 @@ def export():
         max_age=0,
         last_modified=now,
     )
-
-
-@bp.route("/get_activities", methods=["GET"])
-@login_required
-def get_activities():
-    user_unique_id = request.args.get("user_unique_id")
-    close = request.args.get("close")
-    visibility = False if close else True
-    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
-    user: m.User = db.session.scalar(user_query)
-    return render_template("user/activities.html", user=user, visibility=visibility, now=datetime.now())

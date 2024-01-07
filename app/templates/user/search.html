@@ -18,9 +18,7 @@
             </td>
 
             <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                <div class="pl-3 cursor-pointer"
-                    hx-get="{{url_for('user.get_activities', user_unique_id=user.unique_id)}}" hx-swap="outerHTML"
-                    hx-target="#row_{{user.unique_id}}" hx-trigger="click">
+                <div>
                     <div class="text-base font-semibold">
                         {{ user.username }}
                         {% if user.role == "admin"%}<span class="text-gray-300 dark:text-gray-700 text-sm">admin</span>
@@ -29,7 +27,19 @@
                     <div class="font-normal text-gray-500">
                         {{ user.email }}
                     </div>
+
+                    <div class="flex">
+                        <a href="{{url_for('admin.get_tickets', buyer_unique_id=user.unique_id)}}"
+                            class="cursor-pointer">
+                            <p class="me-2 text-xs hover:text-secondary">tickets bought</p>
+                        </a>
+                        <a href="{{url_for('admin.get_tickets', seller_unique_id=user.unique_id)}}"
+                            class="cursor-pointer">
+                            <p class="text-xs hover:text-secondary">tickets for sale</p>
+                        </a>
+                    </div>
                 </div>
+                </a>
             </td>
 
             <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
@@ -54,8 +64,6 @@
             </td>
 
         </tr>
-
-        {% include 'user/activities.html' %}
 
         {% endfor %}
     </tbody>

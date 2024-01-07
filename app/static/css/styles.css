@@ -990,10 +990,6 @@ input:checked + .toggle-bg{
   .container{
     max-width: 1536px;
   }
-
-  .pagination-block-centered{
-    max-width: none;
-  }
 }
 
 .sr-only{
@@ -1407,6 +1403,10 @@ input:checked + .toggle-bg{
 
 .mb-9{
   margin-bottom: 2.25rem;
+}
+
+.me-2{
+  margin-inline-end: 0.5rem;
 }
 
 .ml-0{
@@ -3732,6 +3732,11 @@ select::-ms-expand {
 .hover\:text-white:hover{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:text-secondary:hover{
+  --tw-text-opacity: 1;
+  color: rgb(242 183 5 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover{
