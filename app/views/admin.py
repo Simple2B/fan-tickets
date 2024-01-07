@@ -65,6 +65,8 @@ def picture_upload():
 @login_required
 def get_events():
     # Filters
+    search_query = request.args.get("search_query")
+    search = request.args.get("search")
     location_id = request.args.get("location_id")
     location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
@@ -78,6 +80,11 @@ def get_events():
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
     locations_query = m.Location.select()
     categories_query = m.Category.select()
+
+    template = "admin/events.html"
+    if search_query or search:
+        events_query = events_query.where(m.Event.name.ilike(f"%{search_query}%"))
+        template = "admin/events_list.html"
 
     location_unique_id = None
     if location_id:
@@ -107,8 +114,9 @@ def get_events():
     events = db.session.scalars(events_query).all()
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
+
     return render_template(
-        "admin/events.html",
+        template,
         events=events,
         locations=locations,
         categories=categories,
