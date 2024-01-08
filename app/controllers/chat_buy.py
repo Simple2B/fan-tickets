@@ -15,11 +15,6 @@ def get_events_by_event_name(event_name: str, room: m.Room) -> list[m.Event]:
     events = db.session.scalars(event_query).all()
     if not events:
         log(log.INFO, "Events not found: [%s]", event_name)
-        c.save_message(
-            "Great! To get started, could you please write below name of the event you're looking for?",
-            f"{event_name}",
-            room,
-        )
     return events
 
 
@@ -36,15 +31,10 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
 
     if not events:
         log(log.INFO, "Events not found: [%s], [%s]", params.event_name, location.name)
-        c.save_message(
-            "Great! To get started, could you please write below name of the event you're looking for?",
-            f"{params.event_name}",
-            room,
-        )
 
     c.save_message(
         "Fantastic choice! There are several location for this event. Please choose below👇",
-        f"{location.name}",
+        f"Location:{location.name}, Event:{params.event_name}",
         room,
     )
     return events
@@ -60,20 +50,16 @@ def get_tickets_by_event(event: m.Event, room: m.Room) -> list[m.Ticket] | None:
 
     if not tickets:
         log(log.INFO, "Tickets not found: [%s]", event.name)
-        c.save_message(
-            "Great! To get started, could you please write below name of the event you're looking for?",
-            f"{event.name}",
-            room,
-        )
+
     return tickets
 
 
-def get_tickets_by_event_id(event_unique_id: str, room: m.Room) -> list[m.Ticket] | None:
-    event_query = sa.select(m.Event).where(m.Event.unique_id == event_unique_id)
+def get_tickets_by_event_id(params: s.ChatBuyTicketParams, room: m.Room) -> list[m.Ticket] | None:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id)
     event = db.session.scalar(event_query)
 
     if not event:
-        log(log.INFO, "Event not found: [%s]", event_unique_id)
+        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
         return None
 
     tickets_query = sa.select(m.Ticket).where(
@@ -84,13 +70,7 @@ def get_tickets_by_event_id(event_unique_id: str, room: m.Room) -> list[m.Ticket
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:
-        log(log.INFO, "Tickets not found: [%s]", event_unique_id)
-
-    c.save_message(
-        f"Great news! We have found {len(tickets)} available tickets",
-        "All tickets",
-        room,
-    )
+        log(log.INFO, "Tickets not found: [%s]", params.event_unique_id)
 
     return tickets
 
@@ -107,18 +87,18 @@ def get_cheapest_tickets(
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
 
-    if add_ticket:
-        c.save_message(
-            "Got it! Do you want to buy another one or proceed to purchase?",
-            "Add ticket",
-            room,
-        )
-    else:
-        c.save_message(
-            "Great! To get started, could you please write below name of the event you're looking for?",
-            f"{event_name}",
-            room,
-        )
+    # if add_ticket:
+    #     c.save_message(
+    #         "Got it! Do you want to buy another one or proceed to purchase?",
+    #         "Add ticket",
+    #         room,
+    #     )
+    # else:
+    #     c.save_message(
+    #         "Great! To get started, could you please write below name of the event you're looking for?",
+    #         f"{event_name}",
+    #         room,
+    #     )
 
     return tickets
 
@@ -173,16 +153,12 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
 
 def get_locations_by_events(events: list[m.Event], room: m.Room) -> list[m.Location] | None:
     events_names = [event.name for event in events]
-    locations_query = sa.select(m.Location).filter(m.Location.event.has(m.Event.name.in_(events_names)))
+    locations_query = sa.select(m.Location).filter(m.Location.events.any(m.Event.name.in_(events_names)))
     locations = db.session.scalars(locations_query).all()
 
     if not locations:
         log(log.INFO, "Locations not found: [%s]", events)
-        c.save_message(
-            "Great! To get started, could you please write below name of the event you're looking for?",
-            f"{events[0].name}",
-            room,
-        )
+
     return locations
 
 
