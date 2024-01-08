@@ -1,254 +1,277 @@
-{% extends 'base.html' %}
-{% block links %}
+{% extends 'base.html' %} {% block links %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
-{% endblock %}
-{% block content %}
+{% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <form action="{{url_for('admin.get_event', event_unique_id=event.unique_id)}}" method="post">
-        {{ form.hidden_tag() }}
-        <table class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
-                <tr>
-                    <th scope="col" class="px-6 py-3">parameter</th>
-                    <th scope="col" class="px-6 py-3">value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            name
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <input type="text" name="name" value="{{ event.name }}"
-                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
-                    </td>
-                </tr>
+  <form
+    action="{{url_for('admin.event.get_event', event_unique_id=event.unique_id)}}"
+    method="post">
+    {{ form.hidden_tag() }}
+    <table
+      class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead
+        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
+        <tr>
+          <th scope="col" class="px-6 py-3">parameter</th>
+          <th scope="col" class="px-6 py-3">value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">name</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+              type="text"
+              name="name"
+              value="{{ event.name }}"
+              class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary" />
+          </td>
+        </tr>
 
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            url
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <input type="text" name="url" value="{{ event.url }}"
-                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
-                    </td>
-                </tr>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">url</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+              type="text"
+              name="url"
+              value="{{ event.url }}"
+              class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary" />
+          </td>
+        </tr>
 
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            observations
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <input type="text" name="observations" value="{{ event.observations }}"
-                            class="w-full max-w-2xl  bg-black border-0 rounded-lg dark:focus:ring-secondary">
-                    </td>
-                </tr>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">observations</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+              type="text"
+              name="observations"
+              value="{{ event.observations }}"
+              class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary" />
+          </td>
+        </tr>
 
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            warning
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <input type="text" name="warning" value="{{ event.warning }}"
-                            class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary">
-                    </td>
-                </tr>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">warning</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+              type="text"
+              name="warning"
+              value="{{ event.warning }}"
+              class="w-full max-w-2xl bg-black border-0 rounded-lg dark:focus:ring-secondary" />
+          </td>
+        </tr>
 
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            date_time
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <input datepicker type="text" name="date_time" autocomplete="off" id="paid_until"
-                            class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
-                            value="{{ event_form_date(event.date_time) }}">
-                    </td>
-                </tr>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">date_time</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+              datepicker
+              type="text"
+              name="date_time"
+              autocomplete="off"
+              id="paid_until"
+              class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
+              value="{{ event_form_date(event.date_time) }}" />
+          </td>
+        </tr>
 
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            category
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        {{form.category(
-                        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg
-                        focus:ring-secondary block w-full p-2
-                        dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
-                        )
-                        }}
-                        {% for error in form.errors.category %}
-                        <small class="text-danger">{{error}}</small>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            location
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        {{form.location(
-                        class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg
-                        focus:ring-secondary block w-full p-2
-                        dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
-                        )
-                        }}
-                        {% for error in form.errors.location %}
-                        <small class="text-danger">{{error}}</small>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            approved {{ event.approved }}
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <select name="approved" id="approved" class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg
-                        focus:ring-secondary block w-full p-2
-                        dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer">
-                            {% if event.approved %}
-                            <option value="True" selected>Approved</option>
-                            <option value="False">Not approved</option>
-                            {% else %}
-                            <option value="True">Approved</option>
-                            <option value="False" selected>Not approved</option>
-                            {% endif %}
-                        </select>
-                    </td>
-                </tr>
-
-                <tr
-                    class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            created_by
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ event.creator }}
-                    </td>
-                </tr>
-
-                <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            picture
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <div class="relative self-center border border-secondary rounded-md" id="event_image">
-                            {% if event.picture %}
-                            <div class="flex justify-center items-center p-3">
-                                <img class="w-48 h-48 rounded-50%" src="{{ event.picture.base64_src }}" alt="avatar" />
-                            </div>
-                            {% else %}
-                            <div class="w-46 h-48 flex items-center justify-center bg-secondary text-black">
-                                <p>No image</p>
-                            </div>
-                            {% endif %}
-                            <input type="hidden" id="event-unique-id" name="event_unique_id"
-                                value="{{event.unique_id}}">
-                            <input id="event-image-input" accept=".png, .jpg" type="file" class=" rounded-b-lg" />
-                        </div>
-
-                    </td>
-                </tr>
-
-                <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-
-                        </div>
-                    </td>
-                    <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <button type="submit"
-                            class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
-                            Save
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
-
-    <table class="w-full mt-5">
-        <thead>
-
-        </thead>
-
-        <tbody>
-            <tr>
-                <td class="w-full flex justify-between">
-                    <div class="flex items-center text-2xl w-44 mx-3 my-5 text-gray-400">
-                        Tickets
-                    </div>
-
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <table class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
-            <tr>
-                <th scope="col" class="px-6 py-3">Is available</th>
-                <th scope="col" class="px-6 py-3">Price Gross</th>
-                <th scope="col" class="px-6 py-3">Seller</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ticket in event.tickets %}
-            <tr
-                class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
-                <td class="w-4 p-4">
-                    <div class="flex items-center">
-                        {{ ticket.is_available }}
-                    </div>
-                </td>
-
-                <td class="w-4 p-4">
-                    <div class="flex items-center">
-                        {{ ticket.price_gross }}
-                    </div>
-                </td>
-
-                <td class="w-4 p-4">
-                    <div class="flex items-center">
-                        {{ ticket.seller.username }}
-                    </div>
-                </td>
-            </tr>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">category</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            {{form.category( class="max-w-2xl border-0 text-black
+            placeholder:text-black text-sm rounded-lg focus:ring-secondary block
+            w-full p-2 dark:bg-black dark:placeholder-white dark:text-white
+            dark:focus:ring-secondary cursor-pointer" ) }} {% for error in
+            form.errors.category %}
+            <small class="text-danger">{{error}}</small>
             {% endfor %}
-        </tbody>
+          </td>
+        </tr>
+
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">location</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            {{form.location( class="max-w-2xl border-0 text-black
+            placeholder:text-black text-sm rounded-lg focus:ring-secondary block
+            w-full p-2 dark:bg-black dark:placeholder-white dark:text-white
+            dark:focus:ring-secondary cursor-pointer" ) }} {% for error in
+            form.errors.location %}
+            <small class="text-danger">{{error}}</small>
+            {% endfor %}
+          </td>
+        </tr>
+
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">approved {{ event.approved }}</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <select
+              name="approved"
+              id="approved"
+              class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer">
+              {% if event.approved %}
+              <option value="True" selected>Approved</option>
+              <option value="False">Not approved</option>
+              {% else %}
+              <option value="True">Approved</option>
+              <option value="False" selected>Not approved</option>
+              {% endif %}
+            </select>
+          </td>
+        </tr>
+
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">created_by</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            {{ event.creator }}
+          </td>
+        </tr>
+
+        <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
+          <td class="w-4 p-4">
+            <div class="flex items-center">picture</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <div
+              class="relative self-center border border-secondary rounded-md"
+              id="event_image">
+              {% if event.picture %}
+              <div class="flex justify-center items-center p-3">
+                <img
+                  class="w-48 h-48 rounded-50%"
+                  src="{{ event.picture.base64_src }}"
+                  alt="avatar" />
+              </div>
+              {% else %}
+              <div
+                class="w-46 h-48 flex items-center justify-center bg-secondary text-black">
+                <p>No image</p>
+              </div>
+              {% endif %}
+              <input
+                type="hidden"
+                id="event-unique-id"
+                name="event_unique_id"
+                value="{{event.unique_id}}" />
+              <input
+                id="event-image-input"
+                accept=".png, .jpg"
+                type="file"
+                class="rounded-b-lg" />
+            </div>
+          </td>
+        </tr>
+
+        <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
+          <td class="w-4 p-4">
+            <div class="flex items-center"></div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <button
+              type="submit"
+              class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+              Save
+            </button>
+          </td>
+        </tr>
+      </tbody>
     </table>
+  </form>
+
+  <table class="w-full mt-5">
+    <thead></thead>
+
+    <tbody>
+      <tr>
+        <td class="w-full flex justify-between">
+          <div class="flex items-center text-2xl w-44 mx-3 my-5 text-gray-400">
+            Tickets
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead
+      class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
+      <tr>
+        <th scope="col" class="px-6 py-3">Is available</th>
+        <th scope="col" class="px-6 py-3">Price Gross</th>
+        <th scope="col" class="px-6 py-3">Seller</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in event.tickets %}
+      <tr
+        class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
+        <td class="w-4 p-4">
+          <div class="flex items-center">{{ ticket.is_available }}</div>
+        </td>
+
+        <td class="w-4 p-4">
+          <div class="flex items-center">{{ ticket.price_gross }}</div>
+        </td>
+
+        <td class="w-4 p-4">
+          <div class="flex items-center">{{ ticket.seller.username }}</div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
-{% endblock %}
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+{% endblock %} {% block scripts %}
+<script
+  src="{{ url_for('static', filename='js/user.js') }}"
+  type="text/javascript"
+  defer></script>
 {% endblock %}

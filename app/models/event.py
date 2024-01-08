@@ -37,10 +37,8 @@ class Event(db.Model, ModelMixin):
     date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
     approved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
-    category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
-
     location_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("locations.id"))
-
+    category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
     creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     location: orm.Mapped["Location"] = orm.relationship(back_populates="events")
