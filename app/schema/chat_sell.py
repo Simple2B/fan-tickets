@@ -33,5 +33,8 @@ class ChatSellTicketParams(ChatSellRequiredParams):
     ticket_section: str | None = None
     ticket_has_queue: bool = True
     ticket_queue: str | None = None
+    ticket_seat: str | None = None
+    ticket_notes: str | None = None
+    ticket_price: int | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)

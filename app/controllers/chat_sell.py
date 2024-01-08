@@ -4,10 +4,11 @@ from flask import current_app as app
 
 import sqlalchemy as sa
 
+from app.database import db
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db
+from app import models as m
 
 from app.logger import log
 from config import config
@@ -146,12 +147,12 @@ def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
 
 
 def add_ticket_document(form: f.ChatTicketDocumentForm, room: m.Room, user: m.User) -> str:
-    response = c.image_upload(user, c.type_image.IDENTIFICATION)
+    response = c.image_upload(user, c.ImageType.IDENTIFICATION)
 
     if 200 not in response:
         return "Not valid type of ticket document, please upload your ticket document with right format"
 
-    save_message("Please upload your ticket document", "Ticket document has been uploaded", room)
+    c.save_message("Please upload your ticket document", "Ticket document has been uploaded", room)
 
     return ""
 
@@ -169,6 +170,6 @@ def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
     ticket.save()
     log(log.INFO, "Ticket price added: [%s], price_gross: [%s]", params.ticket_notes, price_gross)
 
-    save_message("Please, input ticket price", f"Ticket price: {params.ticket_section}", room)
+    c.save_message("Please, input ticket price", f"Ticket price: {params.ticket_section}", room)
 
     return ticket
