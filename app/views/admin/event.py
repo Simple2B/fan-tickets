@@ -1,6 +1,16 @@
 from datetime import datetime
 
-from flask import Blueprint, request, render_template, redirect, url_for
+import filetype
+import sqlalchemy as sa
+
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+)
 from flask_login import login_required, current_user
 
 
@@ -73,33 +83,57 @@ def get_event(event_unique_id):
         log(log.INFO, "Event not found: [%s]", event_unique_id)
         return redirect(url_for("admin.event.get_events"))
 
-    form = f.EventForm(category=event.category, location=event.location)
+    form = f.EventUpdateForm(category=event.category, location=event.location)
+    form.category.choices = [(category.id, category.name) for category in db.session.scalars(m.Category.select())]
+    form.location.choices = [(location.id, location.name) for location in db.session.scalars(m.Location.select())]
+
     if request.method == "GET":
         form.name.data = event.name
         form.url.data = event.url
         form.observations.data = event.observations
+        form.date_time.data = event.date_time.date()
         form.warning.data = event.warning
-
-        date_time_str = event.date_time.strftime("%m/%d/%Y")
-        form.date_time.data = date_time_str
+        form.category.data = str(event.category_id)
+        form.location.data = str(event.location_id)
         form.approved.data = event.approved
 
         log(log.INFO, "request.method = GET. Event form populated: [%s]", event)
         return render_template("admin/event.html", event=event, form=form)
 
-    if form.validate_on_submit():
+    elif form.validate_on_submit():
+        if db.session.scalar(sa.select(m.Event).where(m.Event.name == form.name.data)):
+            log(log.WARNING, "Event already exists: [%s]", form.name.data)
+            flash(f"Event already exists: {form.name.data}", "danger")
+            render_template("admin/event.html", event=event, form=form)
+
         log(log.INFO, "Event form validated: [%s]", event)
         event.name = form.name.data
         event.url = form.url.data
         event.observations = form.observations.data
         event.warning = form.warning.data
 
-        date_time_data = datetime.strptime(form.date_time.data, "%m/%d/%Y")
-        event.date_time = date_time_data
-        event.category_id = form.category.data
-        event.location_id = form.location.data
-        event.approved = True if form.approved.data == "True" else False
-        event.save()
+        event.date_time = form.date_time.data
+        event.category_id = int(form.category.data)
+        event.location_id = int(form.location.data)
+        event.approved = form.approved.data
+
+        if form.picture.data:
+            image_type = filetype.guess(form.picture.data.stream)
+            if not image_type.mime.startswith("image"):
+                log(log.WARNING, "File is not an image: [%s]", form.picture.data.filename)
+                flash(f"Wrong image format: {image_type.mime}", "danger")
+                return render_template("admin/event.html", event=event, form=form)
+
+            picture = m.Picture(
+                filename=form.picture.data.filename, mimetype=image_type.mime, file=form.picture.data.read()
+            )
+
+            if event.picture:
+                db.session.delete(event.picture)
+
+            event.picture = picture
+
+        db.session.commit()
         log(log.INFO, "Event saved: [%s]", event)
         return redirect(url_for("admin.event.get_event", event_unique_id=event_unique_id))
 
@@ -112,11 +146,22 @@ def get_event(event_unique_id):
 @login_required
 def add_event():
     form = f.EventForm()
+
+    form.category.choices = [(category.id, category.name) for category in db.session.scalars(m.Category.select())]
+    form.location.choices = [(location.id, location.name) for location in db.session.scalars(m.Location.select())]
+
     if request.method == "GET":
+        form.date_time.data = datetime.now().date()
         return render_template("admin/event_add.html", form=form)
 
     if form.validate_on_submit():
         log(log.INFO, "Event form validated: [%s]", form)
+
+        if db.session.scalar(sa.select(m.Event).where(m.Event.name == form.name.data)):
+            log(log.WARNING, "Event already exists: [%s]", form.name.data)
+            flash(f"Event already exists: {form.name.data}", "danger")
+            return render_template("admin/event_add.html", form=form)
+
         event = m.Event(
             name=form.name.data,
             url=form.url.data,
@@ -126,11 +171,30 @@ def add_event():
             category_id=form.category.data,
             location_id=form.location.data,
             creator_id=current_user.id,
-            approved=True,
+            approved=form.approved.data,
         ).save()
         log(log.INFO, "Event saved: [%s]", event)
         return redirect(url_for("admin.event.get_event", event_unique_id=event.unique_id))
 
     else:
+        form.date_time.data = datetime.now().date()
         log(log.INFO, "Event form not validated: [%s]", form.errors)
+        flash(form.errors, "danger")
         return render_template("admin/event_add.html", form=form)
+
+
+@event_blueprint.route("/delete_event/<event_id>", methods=["GET"])
+def delete_event(event_id: int):
+    event = db.session.get(m.Event, event_id)
+    if not event:
+        log(log.INFO, "Event not found: [%s]", event_id)
+        flash("Event not found", "danger")
+        return redirect(url_for("admin.event.get_events"))
+
+    if event.picture:
+        db.session.delete(event.picture)
+
+    db.session.delete(event)
+    db.session.commit()
+
+    return redirect(url_for("admin.event.get_events"))

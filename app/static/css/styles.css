@@ -2727,6 +2727,10 @@ input:checked + .toggle-bg{
   padding-top: 2rem;
 }
 
+.ps-3\.5{
+  padding-inline-start: 0.875rem;
+}
+
 .text-left{
   text-align: left;
 }
