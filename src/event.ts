@@ -1,3 +1,5 @@
+import {handleHideElements} from './utils';
+
 document.addEventListener('DOMContentLoaded', function () {
   const buttonFilterDate = document.querySelector('#events-filter-date-button');
   const buttonLocation: HTMLDivElement = document.querySelector(
@@ -30,46 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
     '#events-filter-location-list',
   ) as HTMLDataListElement;
 
-  function addHiddenClass(element: HTMLElement) {
-    element.classList.add('hidden');
-  }
-
-  function handleHideEvents(
-    event: MouseEvent,
-    element: HTMLElement,
-    otherElement?: HTMLElement[],
-  ) {
-    if (
-      !element.contains(event.target as Node) &&
-      !otherElement.some(el => el.contains(event.target as Node))
-    ) {
-      addHiddenClass(element);
-    }
-  }
-
-  function addHideEventsForElement(
-    element: HTMLElement,
-    otherElement: HTMLElement[] = [],
-  ) {
-    element.classList.toggle('hidden');
-    window.addEventListener('mouseup', (event: MouseEvent) => {
-      handleHideEvents(event, element, otherElement);
-    });
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        addHiddenClass(element);
-      }
-    });
-  }
-
   buttonFilterDate.addEventListener('click', () => {
     const datePickers = document.querySelectorAll('.datepicker');
     const datePickerArray: HTMLElement[] = Array.from(
       datePickers,
     ) as HTMLElement[];
 
-    addHideEventsForElement(dropdownFilterDate, datePickerArray);
+    handleHideElements(dropdownFilterDate, datePickerArray);
   });
 
   buttonDateApply.addEventListener('click', () => {
@@ -77,12 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   buttonLocation.addEventListener('click', () => {
-    addHideEventsForElement(dropdownFilterLocation);
+    handleHideElements(dropdownFilterLocation);
     inputLocation.focus();
   });
 
   buttonCategories.addEventListener('click', () => {
-    addHideEventsForElement(dropdownFilterCategories);
+    handleHideElements(dropdownFilterCategories);
   });
 
   inputLocation.onfocus = function () {
