@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, render_template, request
+from flask import Blueprint, redirect, url_for, render_template, request, jsonify
 from flask_login import current_user, login_required
 from app import models as m, db, forms as f
 from app.controllers.image_upload import image_upload, ImageType
@@ -26,7 +26,7 @@ def admin():
 def picture_upload():
     user: m.User = current_user
     image_upload(user, ImageType.LOGO)
-    return {}, 200
+    return jsonify({})
 
 
 @admin_blueprint.route("/tickets")

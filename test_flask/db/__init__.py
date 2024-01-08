@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 from random import randint, choice
 from faker import Faker
 from app import db
@@ -33,9 +33,9 @@ TEST_TICKET_TYPES = [
     m.TicketType.BACK_STAGE.value,
 ]
 TEST_TICKET_CATEGORIES = [
-    m.TicketCategory.LOT.value,
-    m.TicketCategory.SOCIAL_ENTRY.value,
-    m.TicketCategory.ENTIRE.value,
+    m.TicketCategory.STUDENT.value,
+    m.TicketCategory.ELDERLY.value,
+    m.TicketCategory.OTHER.value,
 ]
 
 
