@@ -30,9 +30,9 @@ TEST_TICKET_TYPES = [
     m.TicketType.BACK_STAGE.value,
 ]
 TEST_TICKET_CATEGORIES = [
-    m.TicketCategory.LOT.value,
-    m.TicketCategory.SOCIAL_ENTRY.value,
-    m.TicketCategory.ENTIRE.value,
+    m.TicketCategory.STUDENT.value,
+    m.TicketCategory.ELDERLY.value,
+    m.TicketCategory.OTHER.value,
 ]
 
 fake = Faker()

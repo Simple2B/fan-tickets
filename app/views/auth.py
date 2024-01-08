@@ -58,7 +58,7 @@ def register():
     elif form.is_submitted():
         log(log.WARNING, "Form submitted error: [%s]", form.errors)
         flash(f"The given data was invalid. {form.errors}", "danger")
-        # TODO: change to render_template("auth/register.html", form=form)
+
     return render_template("auth/register.html", form=form)
 
 

@@ -8,7 +8,7 @@ from app import models as m, db
 
 
 def today():
-    return datetime.today().strftime("%Y-%m-%d")
+    return datetime.today().strftime("%Y/%m/%d")
 
 
 def form_hidden_tag():
