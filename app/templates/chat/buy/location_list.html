@@ -10,8 +10,6 @@ submit_message_get
   {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='location_unique_id'],
   [name='event_name']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-  <!-- for testing locations length {{ locations|length }} -->
-
   <div class="mt-2 w-265 flex flex-col gap-3">
     <div class="flex flex-col gap-2">
       {% for event in events %}

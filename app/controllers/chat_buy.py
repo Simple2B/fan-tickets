@@ -82,23 +82,9 @@ def get_cheapest_tickets(
     add_ticket: bool,
 ) -> list[m.Ticket]:
     tickets.sort(key=lambda ticket: ticket.price_gross)
-    event_name = tickets[0].event.name
 
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
-
-    # if add_ticket:
-    #     c.save_message(
-    #         "Got it! Do you want to buy another one or proceed to purchase?",
-    #         "Add ticket",
-    #         room,
-    #     )
-    # else:
-    #     c.save_message(
-    #         "Great! To get started, could you please write below name of the event you're looking for?",
-    #         f"{event_name}",
-    #         room,
-    #     )
 
     return tickets
 
