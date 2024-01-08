@@ -30,6 +30,7 @@ class ChatBuyTicketParams(ChatBuyRequiredParams):
     has_email: bool = False
     tickets_show_all: bool = False
     add_ticket: bool = False
+    from_date_template: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 
