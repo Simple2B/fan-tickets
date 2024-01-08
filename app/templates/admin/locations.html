@@ -3,7 +3,7 @@
   <div class="mt-3 flex justify-between">
     <p class="mt-6 mb-2 ml-3 text-3xl dark:text-gray-400">Locations</p>
 
-    <a href="{{url_for('admin.add_location')}}" class="w-44 mx-3 my-6">
+    <a href="{{url_for('admin.location.add_location')}}" class="w-44 mx-3 my-6">
       <button
         type="button"
         class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
@@ -40,12 +40,16 @@
           scope="row"
           class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
           <div class="pl-3">
-            <p class="text-base font-semibold">{{ location.name }}</p>
+            <a
+              href="{{url_for('admin.location.update_location', location_id=location.id)}}"
+              ><p class="text-base font-semibold">{{ location.name }}</p></a
+            >
           </div>
         </td>
 
         <td class="p-4 space-x-2 whitespace-nowrap">
-          <a href="{{url_for('admin.get_events', location_id=location.id)}}">
+          <a
+            href="{{url_for('admin.event.get_events', location_id=location.id)}}">
             <p class="text-base font-semibold">
               {{ location.events | length }}
             </p>
@@ -54,7 +58,7 @@
 
         <td class="p-4 space-x-2 whitespace-nowrap">
           <a
-            href="{{url_for('admin.location_delete', location_id=location.id)}}">
+            href="{{url_for('admin.location.location_delete', location_id=location.id)}}">
             <svg
               class="w-6 h-6 text-gray-800 dark:text-white"
               aria-hidden="true"

@@ -3,7 +3,7 @@
   <div class="mt-3 flex justify-between">
     <p class="my-6 ml-3 text-3xl dark:text-gray-400">Categories</p>
 
-    <a href="{{url_for('admin.add_category')}}" class="w-44 mx-3 my-6">
+    <a href="{{url_for('admin.category.add_category')}}" class="w-44 mx-3 my-6">
       <button
         type="button"
         class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
@@ -44,13 +44,17 @@
           scope="row"
           class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
           <div class="pl-3">
-            <p class="text-base font-semibold">{{ category.name }}</p>
+            <a
+              href="{{ url_for('admin.category.update_category', category_id=category.id) }}">
+              <p class="text-base font-semibold">{{ category.name }}</p>
+            </a>
           </div>
         </td>
 
         <!-- Events -->
         <td class="p-4 space-x-2 whitespace-nowrap">
-          <a href="{{url_for('admin.get_events', category_id=category.id)}}">
+          <a
+            href="{{url_for('admin.event.get_events', category_id=category.id)}}">
             <p class="text-base font-semibold">
               {{ category.events | length }}
             </p>
@@ -60,7 +64,7 @@
         <!-- Remove button -->
         <td class="p-4 space-x-2 whitespace-nowrap">
           <a
-            href="{{url_for('admin.delete_category', category_id=category.id)}}">
+            href="{{url_for('admin.category.delete_category', category_id=category.id)}}">
             <svg
               class="w-6 h-6 text-gray-800 dark:text-white"
               aria-hidden="true"
