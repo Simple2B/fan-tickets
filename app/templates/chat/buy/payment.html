@@ -1,0 +1,101 @@
+{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
+submit_message_get
+%}
+
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %}
+  {% include 'chat/chat_spinner.html' %}
+
+  {% set html_element %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search']" %}
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+  <form class="flex flex-col gap-3 text-grey" hx-post="{{ url_for('pay.ticket_order') }}" hx-target="#chat-body"
+    hx-include="{{ filters }}" hx-swap="innerHTML" hx-indicator="#chat-payment-spinner">
+    <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+    {{ form.hidden_tag() }}
+    <!-- <div class="flex flex-col">
+      <label for="card-on-name">Name on card</label>
+      <input id="card-on-name" type="text"
+        class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+        placeholder="Nome conforme está no cartão de crédito">
+    </div> -->
+    <div class="flex flex-col">
+      <label for="card-number">Card number</label>
+      <input id="card-number" type="text" name="card_number"
+        class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+        placeholder="XXXXXXXXXXXXXXXX">
+    </div>
+    <div class="flex gap-2">
+      <div class="w-1/2 flex flex-col">
+        <label for="card-date">Valid to</label>
+        <input id="card-date" type="text" name="expire"
+          class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+          placeholder="MM/YY">
+      </div>
+      <div class="w-1/2 flex flex-col">
+        <label for="card-cvv">CVV</label>
+        <input id="card-cvv" type="text" name="cvv"
+          class="w-full px-3 py-3.5 text-sm button-gradient-grey ring-0 placeholder-grey border-transparent  outline-none focus:border-transparent focus:ring-0"
+          placeholder="XXX">
+      </div>
+    </div>
+    <button type="submit"
+      class="link mt-1 p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+      Submit
+    </button>
+  </form>
+  {% endset %}
+
+  <div id="chat-message-container" data-send-message>
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% endif %}
+    {{ bot_message("To proceed with the purchase, please provide your payment details.") }}
+    {{ bot_message_without_date("⚠️ We do not store card details in our system, all credentials are immediately passed
+    to Pagar.me") }}
+    {{ bot_message_without_date(html_element=html_element) }}
+
+    <div id="chat-payment-spinner" class="htmx-indicator flex gap-2 justify-start">
+      <div class="p-2 h-max self-end rounded-full bg-dark-grey">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M14.5158 0H12.3845C11.8992 0 11.4601 0.252772 11.1879 0.653633C10.4998 1.67493 9.32627 2.34899 7.99615 2.34899C6.66602 2.34899 5.49254 1.67749 4.80436 0.653633C4.53475 0.252772 4.09308 0 3.60777 0H1.48162C0.662494 0 0 0.658739 0 1.47323V14.4335C0 15.248 0.662494 15.9068 1.48162 15.9068H3.61034C4.09565 15.9068 4.53475 15.654 4.80693 15.2531C5.4951 14.2318 6.66859 13.5578 7.99872 13.5578C9.32884 13.5578 10.5023 14.2293 11.1905 15.2531C11.4601 15.654 11.9018 15.9068 12.3871 15.9068H14.5184C15.3375 15.9068 16 15.248 16 14.4335V1.47323C16 0.658739 15.3375 0 14.5184 0H14.5158ZM5.0406 4.24861H10.9568C11.306 4.24861 11.5911 4.53202 11.5911 4.87927C11.5911 5.22651 11.306 5.50992 10.9568 5.50992H5.0406C4.69138 5.50992 4.40635 5.22651 4.40635 4.87927C4.40635 4.53202 4.69138 4.24861 5.0406 4.24861ZM4.55272 8.02998H3.03258C2.68336 8.02998 2.39833 7.74657 2.39833 7.39933C2.39833 7.05208 2.68336 6.76867 3.03258 6.76867H4.55272C4.90194 6.76867 5.18697 7.05208 5.18697 7.39933C5.18697 7.74657 4.90194 8.02998 4.55272 8.02998ZM11.1314 10.3662C10.2687 11.2241 9.13369 11.6556 7.99872 11.6556C6.86375 11.6556 5.72878 11.2267 4.86599 10.3662C4.61948 10.1211 4.61948 9.72023 4.86599 9.47512C5.1125 9.23001 5.51565 9.23001 5.76216 9.47512C6.9947 10.7007 9.00273 10.7007 10.2353 9.47512C10.4818 9.23001 10.8849 9.23001 11.1314 9.47512C11.3779 9.72023 11.3779 10.1211 11.1314 10.3662ZM12.9649 8.02998H7.04863C6.69941 8.02998 6.41438 7.74657 6.41438 7.39933C6.41438 7.05208 6.69941 6.76867 7.04863 6.76867H12.9649C13.3141 6.76867 13.5991 7.05208 13.5991 7.39933C13.5991 7.74657 13.3141 8.02998 12.9649 8.02998Z"
+            fill="#F2B705" />
+        </svg>
+      </div>
+      <div class="mb-6 flex flex-col items-center justify-center  gap-2 text-white w-265 p-2 rounded-lg bg-dark-grey">
+        <p>Sending data to Pagarme. Please wait... </p>
+        <!--prettier-ignore-->
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            .spinner_5nOS {
+              transform-origin: center;
+              animation: spinner_sEAn .75s infinite linear
+            }
+
+            @keyframes spinner_sEAn {
+              100% {
+                transform: rotate(360deg)
+              }
+            }
+          </style>
+          <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25" />
+          <path
+            d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"
+            class="spinner_5nOS" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+</div>
+
+{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

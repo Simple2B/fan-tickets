@@ -1,32 +1,23 @@
-<div class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
+{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
+submit_message_get
+%}
+
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %}
-
   {% include 'chat/chat_spinner.html' %}
-  <div id="chat-message-container" data-send-message>
-    <div class="chat-message">
-      <div class=" flex text-white justify-start">
-        <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
-      </div>
-      <div class="flex text-black justify-start">
-        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-br-lg bg-secondary">
-          We send verification code to your email. Please input the code below.
-        </p>
-      </div>
-    </div>
 
+  <div id="chat-message-container" data-send-message>
     {% if error_message %}
-    <div class="chat-message">
-      <div class="mb-6 flex text-black justify-start">
-        <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
-          {{ error_message }}: {{ email_input }}
-        </p>
-      </div>
-    </div>
+    {% include 'chat/chat_message_error.html' %}
     {% endif %}
+    {{ bot_message("We sent verification code to your email. Please input the code below.") }}
   </div>
 </div>
 
-{% include 'chat/chat_submit_form.html' %}
+<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+<input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+{{ submit_message_get('chat.email_verification', "[name='room_unique_id'], [name='user_unique_id'],
+[name='user_message']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

@@ -1,43 +1,24 @@
-<div>
+{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
+submit_message_file
+%}
+
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %}
-  <div class="flex text-white justify-end">
-    <small class="pt-1">FanTicket {{ now }}</small>
-  </div>
+  {% include 'chat/chat_spinner.html' %}
 
-  <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 rounded-lg bg-secondary">
-      Please upload your identification document (CPF)
-    </p>
-  </div>
-
-  {% if error_message %}
-  <div class="mb-8 flex text-black justify-end">
-    <p class="w-5/6 p-2 rounded-lg text-white bg-red-600">
-      {{ error_message }}
-    </p>
-  </div>
-  {% endif %}
-
-  <div class="flex justify-end">
-    <div class=" w-5/6 flex flex-col gap-2">
-      <form class="flex flex-col gap-3 justify-around" hx-encoding='multipart/form-data'
-        hx-post='/chat/create_user_identification' hx-target="#chat-body" hx-swap="innerHTML">
-        {{ form.hidden_tag() }}
-        <input name="file" placeholder="Upload cpf" type="file"
-          class="block text-sm text-white border border-grey rounded-lg cursor-pointer bg-transparent dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-          id="chat-auth-identity-input" type="file">
-        <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-        <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-        <button type="submit"
-          class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
-          Upload
-        </button>
-      </form>
-    </div>
+  <div id="chat-message-container" data-send-message>
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% endif %}
+    {{ bot_message("Please upload your identification document (CPF)") }}
   </div>
 </div>
 
-{% include 'chat/chat_submit_form.html' %}
+<input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+
+{{ submit_message_file('create_user_passport', "[name='user_unique_id'], [name='room_unique_id'],
+[name='file']", form=form) }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

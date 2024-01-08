@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired
 from flask_login import current_user
 
 from app import models as m
-from app import db
+from app.database import db
 
 
 class ChatPhoneForm(FlaskForm):
