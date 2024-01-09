@@ -2,7 +2,8 @@ import io
 from enum import Enum
 from PIL import Image
 from flask import request, flash, current_app as app
-from app import models as m, db
+from app import models as m
+from app.database import db
 from app.logger import log
 
 

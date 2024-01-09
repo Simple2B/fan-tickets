@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 from random import randint, choice
 from faker import Faker
-from app import db
+from app.database import db
 from app import models as m
 from app.logger import log
 from app.models.utils import utcnow
@@ -37,6 +37,7 @@ TEST_TICKET_CATEGORIES = [
     m.TicketCategory.STUDENT.value,
     m.TicketCategory.ELDERLY.value,
     m.TicketCategory.SOCIAL.value,
+    m.TicketCategory.OTHER.value,
 ]
 
 
@@ -64,6 +65,7 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             role=role.value,
             # password="pass",
             activated=True,
+            birth_date=utcnow() - timedelta(days=365 * randint(18, 60)),
         ).save(commit=False)
         log(log.INFO, "User generated: [%s]", user)
 

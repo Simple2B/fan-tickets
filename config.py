@@ -50,6 +50,7 @@ class BaseConfig(BaseSettings):
     PAGE_LINKS_NUMBER: int
     EVENTS_PER_PAGE: int
     TICKETS_PER_PAGE: int = 10
+    TICKETS_PER_CHAT: int = 3
 
     # UI config
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
@@ -89,6 +90,8 @@ class BaseConfig(BaseSettings):
     PLATFORM_COMMISSION_RATE: float = 1.08
 
     # pagar.me
+    PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"
+    PAGARME_WEBHOOK_URL: str = "http://localhost:8080/pay/webhook"
     PAGARME_CONNECTION: bool = False
     PAGARME_SECRET_KEY: str | None = None
     PAGARME_CHECKOUT_EXPIRES_IN: int = 30  # minutes

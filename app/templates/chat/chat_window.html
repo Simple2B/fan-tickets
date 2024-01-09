@@ -18,26 +18,15 @@
     <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
       {% if get_chat_room_messages() %}
       {% for message in get_chat_room_messages() %}
-      {% if message.sender_id == 2 %}
-      {% set user_name = 'FanTicket' %}
-      {% set background_color = 'bg-secondary' %}
-      {% set justify = 'justify-start' %}
+      {% if message.sender_id == get_chatbot_id() %}
+      {{ history_message_bot(message.text) }}
       {% else %}
       {% if current_user.is_authenticated %}
-      {% set user_name = current_user.name %}
+      {{ history_message_user(message.text, current_user.name, current_user.picture.base64_src) }}
       {% else %}
-      {% set user_name = 'Guest' %}
+      {{ history_message_user(message.text, "Guest") }}
       {% endif %}
-      {% set background_color = 'bg-white' %}
       {% endif %}
-      <div class="flex text-white {{justify}}">
-        <small class="pt-1">{{ user_name }} {{ cut_seconds(message.created_at) }}</small>
-      </div>
-      <div class="flex text-black {{justify}}">
-        <p class="w-5/6 p-2 mb-2 rounded-t-lg rounded-bl-lg {{background_color}}">
-          {{message.text }}
-        </p>
-      </div>
       {% endfor %}
       {% endif %}
       {% include 'chat/chat_spinner.html' %}
@@ -94,7 +83,7 @@
       <span>Subscriptions</span>
     </button>
     {% if current_user.is_authenticated %}
-    {% set cart_url = url_for('buy.cart', cart_from_navbar=True) %}
+    {# set cart_url = url_for('buy.cart', cart_from_navbar=True) #}
     {% else %}
     {% set cart_url = url_for('chat.login_form', login_from_navbar=True) %}
     {% endif %}

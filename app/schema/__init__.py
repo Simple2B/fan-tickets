@@ -5,22 +5,27 @@ from .token import Token, TokenData, Auth
 from .event import Event, Events, EventsInput, EventFilter
 from .ticket import TicketFilter
 from .pagarme import (
-    PagarmeUserCreate,
-    UserPhones,
-    UserMobilePhone,
-    PagarmeUserInput,
-    PagarmeUserOutput,
-    PagarmeUsers,
-    PagarmeCardInput,
+    PagarmeCustomerCreate,
+    PagarmeCustomerPhones,
+    PagarmeCustomerInput,
+    PagarmeCustomerOutput,
+    PagarmeCustomers,
+    PagarmeError,
     PagarmeCardOutput,
+    PagarmePaginationQuery,
+    PagarmeOrderOut,
+    PagarmeOrderCreateData,
+    PagarCustomerListQuery,
+    PagarCustomerListResponse,
+    PagarmePhoneData,
+    PagarmeBillingAddress,
     PagarmeCardCreate,
+    PagarmeCardInput,
     PagarmeCheckout,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
-    PagarmeBillingAddress,
     PagarmeCreditCardPayment,
-    PagarmeError,
 )
 
 from .chat_auth import (
@@ -33,4 +38,5 @@ from .chat_auth import (
     ChatAuthEmailValidate,
     ChatAuthPhoneValidate,
 )
+from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
 from .room import Room

@@ -34,6 +34,7 @@ TEST_TICKET_CATEGORIES = [
     m.TicketCategory.STUDENT.value,
     m.TicketCategory.ELDERLY.value,
     m.TicketCategory.SOCIAL.value,
+    m.TicketCategory.OTHER.value,
 ]
 
 fake = Faker()

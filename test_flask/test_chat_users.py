@@ -275,6 +275,10 @@ def test_create_user_social_profile(client: FlaskClient):
 
 
 def test_chat_home(client: FlaskClient):
-    response = client.get("/chat/home")
+    room = m.Room(
+        seller_id=None,
+        buyer_id=2,
+    ).save()
+    response = client.get(f"/chat/home?room_unique_id={room.unique_id}")
     assert response.status_code == 200
-    assert "Are you looking for buying or selling tickets" in response.data.decode()
+    assert "Are you looking to buy or sell a ticket?" in response.data.decode()

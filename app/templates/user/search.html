@@ -46,9 +46,13 @@
                 {{ user.phone }}
             </td>
 
-            <td class="flex justify-center items-center">
-                <p>{{ user.activated }}</p>
+            <td class="p-4 text-base text-center font-normal text-gray-900 whitespace-nowrap dark:text-white">
+                {{ user.activated }}
             </td>
+
+            <!-- <td class="h-full flex justify-center items-center">
+                <p>{{ user.activated }}</p>
+            </td> -->
 
             <td class="p-4 space-x-2 whitespace-nowrap">
                 <button data-user-id={{ user.id }} type="button"

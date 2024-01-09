@@ -152,7 +152,7 @@ def get_event(event_unique_id):
 
     if not event:
         log(log.INFO, "Event not found: [%s]", event_unique_id)
-        return redirect(url_for("admin.get_events"))
+        return redirect(url_for("admin.event.get_events"))
 
     form = f.EventForm(category=event.category, location=event.location)
     if request.method == "GET":
@@ -182,7 +182,7 @@ def get_event(event_unique_id):
         event.approved = True if form.approved.data == "True" else False
         event.save()
         log(log.INFO, "Event saved: [%s]", event)
-        return redirect(url_for("admin.get_event", event_unique_id=event_unique_id))
+        return redirect(url_for("admin.event.get_event", event_unique_id=event_unique_id))
 
     else:
         log(log.INFO, "Event form not validated: [%s]", form.errors)
@@ -210,7 +210,7 @@ def add_event():
             approved=True,
         ).save()
         log(log.INFO, "Event saved: [%s]", event)
-        return redirect(url_for("admin.get_event", event_unique_id=event.unique_id))
+        return redirect(url_for("admin.event.get_event", event_unique_id=event.unique_id))
 
     else:
         log(log.INFO, "Event form not validated: [%s]", form.errors)

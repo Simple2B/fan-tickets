@@ -9,10 +9,12 @@ from flask import current_app as app
 
 from werkzeug.security import check_password_hash
 
+from app.database import db
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db
+from app import models as m
+
 
 from app.logger import log
 
@@ -113,22 +115,17 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
     return True
 
 
-def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
+def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, m.User | None]:
     user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
     if not user:
         log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
-        return False
+        return False, user
 
     result = check_password_hash(user.password, form.password.data)
 
-    if result:
-        save_message("Please confirm your password", "Password has been confirmed", room)
-    else:
-        save_message("Please confirm your password", "Password does not match", room)
-
-    return result
+    return result, user
 
 
 def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
@@ -214,3 +211,15 @@ def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, r
         message = "Twitter url added"
 
     save_message("Please add your social profiles", message, room)
+
+
+def get_user_by_email(email: str, room: m.Room) -> m.User | None:
+    user_query = sa.select(m.User).where(m.User.email == email)
+    user = db.session.scalar(user_query)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", email)
+
+    c.save_message("To sign in, please input your email", f"{email}", room)
+
+    return user

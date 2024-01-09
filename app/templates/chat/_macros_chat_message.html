@@ -31,11 +31,13 @@
 		</svg>
 	</div>
 	<div class="max-w-265">
+		{% if message %}
 		<div class="p-4 flex text-white bg-dark-grey rounded-t-lg rounded-br-lg justify-start">
 			<p>
 				{{ message }}
 			</p>
 		</div>
+		{% endif %}
 		{{ html_element }}
 	</div>
 </div>
@@ -103,7 +105,7 @@
 				class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none"
 				placeholder="Write here..." />
 			<button {{ disabled }} type="button" hx-target="#chat-body" hx-get="{{ url_for(route) }}" hx-swap="innerHTML"
-				hx-trigger="click" hx-include="{{ filters }}" hx-indicator="#chat-email-spinner"
+				hx-trigger="click, keyup[keyCode==13] from:body" hx-include="{{ filters }}" hx-indicator="#chat-email-spinner"
 				class="inline-flex justify-center p-2 text-grey hover:text-light-grey-b0 rounded-full cursor-pointer">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<g id="vuesax/linear/send">
@@ -128,7 +130,7 @@
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post='/chat/{{ route }}' hx-target="#chat-body"
-			hx-include="{{ filters }}" hx-swap="innerHTML">
+			hx-include="{{ filters }}" hx-swap="innerHTML" hx-trigger="click, keyup[keyCode==13] from:body">
 			{{ form.hidden_tag() }}
 			<input id="chat-post" rows="1" name="password"
 				class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none"

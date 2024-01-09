@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import click
 from flask import Flask
 import sqlalchemy as sa
@@ -52,21 +53,8 @@ def init(app: Flask):
             role=m.UserRole.admin.value,
             picture_id=picture.id,
             identity_document=document,
-        ).save(False)
-        m.User(
-            username=app.config["CHAT_DEFAULT_BOT_USERNAME"],
-            name=app.config["CHAT_DEFAULT_BOT_USERNAME"],
-            last_name=app.config["CHAT_DEFAULT_BOT_USERNAME"],
-            email=app.config["CHAT_DEFAULT_EMAIL"],
-            phone="+380000000001",
-            card="0000000000000001",
-            password=app.config["ADMIN_PASSWORD"],
-            activated=True,
-            role=m.UserRole.admin.value,
-            picture_id=picture.id,
-            identity_document=document,
-        ).save(False)
-        db.session.commit()
+            birth_date=datetime.now() - timedelta(days=365 * 20),
+        ).save()
         print("admin created")
 
     @app.cli.command("print-users")
