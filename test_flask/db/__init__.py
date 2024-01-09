@@ -63,7 +63,7 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             role=role.value,
             # password="pass",
             activated=True,
-            birth_date=datetime.now() - timedelta(days=365 * randint(18, 60)),
+            birth_date=utcnow() - timedelta(days=365 * randint(18, 60)),
         ).save(commit=False)
         log(log.INFO, "User generated: [%s]", user)
 
