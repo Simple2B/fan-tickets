@@ -76,6 +76,16 @@ const adminConfig = {
   },
 };
 
+const utilsConfig = {
+  entry: {
+    main: './src/utils.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/utils.js', // <--- Will be compiled to this single file
+  },
+};
+
 const configs = [
   baseConfig,
   userConfig,
@@ -83,6 +93,7 @@ const configs = [
   homeConfig,
   chatConfig,
   adminConfig,
+  utilsConfig,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;

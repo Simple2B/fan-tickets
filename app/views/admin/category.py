@@ -20,7 +20,8 @@ def category_index():
 @category_blueprint.route("/categories")
 @login_required
 def get_categories():
-    categories = m.Category.all()
+    categories_query = m.Category.select().order_by(m.Category.created_at.asc())
+    categories = db.session.scalars(categories_query).all()
     log(log.INFO, "Categories: [%s]", categories)
     return render_template("admin/categories.html", categories=categories)
 

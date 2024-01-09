@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 529377dee450
+Revision ID: f6ea161d0001
 Revises: 
-Create Date: 2024-01-09 10:49:39.205133
+Create Date: 2024-01-09 16:52:50.773906
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '529377dee450'
+revision = 'f6ea161d0001'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -89,8 +89,9 @@ def upgrade():
     sa.Column('observations', sa.String(length=512), nullable=True),
     sa.Column('warning', sa.String(), nullable=True),
     sa.Column('date_time', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('category_id', sa.Integer(), nullable=False),
+    sa.Column('approved', sa.Boolean(), nullable=False),
     sa.Column('location_id', sa.Integer(), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('creator_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], name=op.f('fk_events_category_id_categories')),
     sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_events_creator_id_users')),
@@ -153,6 +154,7 @@ def upgrade():
     sa.Column('is_in_cart', sa.Boolean(), nullable=False),
     sa.Column('is_reserved', sa.Boolean(), nullable=False),
     sa.Column('is_sold', sa.Boolean(), nullable=False),
+    sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('seller_id', sa.Integer(), nullable=False),
     sa.Column('buyer_id', sa.Integer(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=False),
@@ -167,18 +169,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], name=op.f('fk_users_events_event_id_events')),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_users_events_user_id_users')),
     sa.PrimaryKeyConstraint('user_id', 'event_id', name=op.f('pk_users_events'))
-    )
-    op.create_table('dispute',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('unique_id', sa.String(length=36), nullable=False),
-    sa.Column('description', sa.String(length=512), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('buyer_id', sa.Integer(), nullable=False),
-    sa.Column('ticket_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_dispute_buyer_id_users')),
-    sa.ForeignKeyConstraint(['ticket_id'], ['tickets.id'], name=op.f('fk_dispute_ticket_id_tickets')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_dispute'))
     )
     op.create_table('payments',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -224,7 +214,6 @@ def downgrade():
     op.drop_table('messages')
     op.drop_table('rooms')
     op.drop_table('payments')
-    op.drop_table('dispute')
     op.drop_table('users_events')
     op.drop_table('tickets')
     op.drop_table('reviews')
