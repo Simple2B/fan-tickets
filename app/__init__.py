@@ -8,6 +8,7 @@ from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
 
+# from flask_sse import sse
 from app.logger import log
 from app.controllers import PagarmeClient
 from .database import db
@@ -32,6 +33,7 @@ def create_app(environment="development") -> Flask:
         chat_sell_blueprint,
         chat_buy_blueprint,
         pay_blueprint,
+        chat_disputes_blueprint,
     )
     from app import models as m
 
@@ -65,6 +67,18 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(chat_sell_blueprint)
     app.register_blueprint(chat_buy_blueprint)
     app.register_blueprint(pay_blueprint)
+    app.register_blueprint(chat_disputes_blueprint)
+
+    # TODO SSE
+    # SSE
+    # @sse.before_request
+    # def check_access():
+    #     if not current_user.is_authenticated:
+    #         abort(403)
+
+    #     # TODO check if user not admin and in room
+
+    # app.register_blueprint(sse, url_prefix="/stream")
 
     # Set up flask login.
     @login_manager.user_loader
@@ -83,6 +97,7 @@ def create_app(environment="development") -> Flask:
 
     # Jinja globals
     from app.controllers.jinja_globals import (
+        today,
         form_hidden_tag,
         date_from_datetime,
         time_delta,
@@ -91,15 +106,20 @@ def create_app(environment="development") -> Flask:
         get_categories,
         get_chat_room_messages,
         get_chatbot_id,
+        round_to_two_places,
+        event_form_date,
     )
 
+    app.jinja_env.globals["today"] = today
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
+    app.jinja_env.globals["event_form_date"] = event_form_date
     app.jinja_env.globals["time_delta"] = time_delta
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
     app.jinja_env.globals["get_categories"] = get_categories
     app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
+    app.jinja_env.globals["round_to_two_places"] = round_to_two_places
 
     return app

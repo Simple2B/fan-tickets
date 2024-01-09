@@ -1,4 +1,5 @@
 from app.models import User, NotificationsConfig
+from app import models as m
 
 TEST_ADMIN_NAME = "bob"
 TEST_ADMIN_EMAIL = "bob@test.com"
@@ -13,8 +14,13 @@ def register(
     password=TEST_ADMIN_PASSWORD,
     phone=TEST_PHONE,
     card=TEST_CARD,
+    role=m.UserRole.admin.value,
 ):
-    user = User(username=username, email=email)
+    user = User(
+        username=username,
+        email=email,
+        role=role,
+    )
     user.phone = phone
     user.card = card
     user.password = password

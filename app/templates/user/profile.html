@@ -120,6 +120,11 @@
                 {{ payment.ticket.event.name }} - {{
                 payment.ticket.event.date_time.strftime('%a, %d %b') }}
               </p>
+              <button class="text-red-700 cursor-pointer"
+                hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}" hx-target="#chat-body"
+                hx-swap="innerHTML" hx-trigger="click">
+                !
+              </button>
             </div>
             {% endfor %}
           </div>

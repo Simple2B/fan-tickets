@@ -111,6 +111,9 @@ function editUser(user: IUser) {
 const imageUploadInput = document.querySelector(
   '#sidebar-image-input',
 ) as HTMLInputElement;
+const eventImageUploadInput = document.querySelector(
+  '#event-image-input',
+) as HTMLInputElement;
 
 if (imageUploadInput) {
   imageUploadInput.addEventListener('change', function (e: Event) {
@@ -118,14 +121,33 @@ if (imageUploadInput) {
     const files = target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      handleImageUpload(file);
+      const instance = 'user';
+      handleImageUpload(file, instance);
     }
   });
 }
 
-function handleImageUpload(file: File) {
+if (eventImageUploadInput) {
+  eventImageUploadInput.addEventListener('change', function (e: Event) {
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const instance = 'event';
+      const uniqueIdInput: HTMLInputElement =
+        document.querySelector('#event-unique-id');
+      handleImageUpload(file, instance, uniqueIdInput.value);
+    }
+  });
+}
+
+function handleImageUpload(file: File, instance: string, uniqueId?: string) {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('instance', instance);
+  if (uniqueId) {
+    formData.append('uniqueId', uniqueId);
+  }
 
   const reader = new FileReader();
   reader.onload = function (e) {
@@ -173,12 +195,20 @@ const emailContainer: HTMLDivElement = document.querySelector(
   '#user-profile-email-container',
 );
 
-subscribeButton.addEventListener('click', () => {
-  openCloseDropdown(subscribeButton, subscribeContainer);
-});
-paymentButton.addEventListener('click', () => {
-  openCloseDropdown(paymentButton, paymentContainer);
-});
-emailButton.addEventListener('click', () => {
-  openCloseDropdown(emailButton, emailContainer);
-});
+if (subscribeButton) {
+  subscribeButton.addEventListener('click', () => {
+    openCloseDropdown(subscribeButton, subscribeContainer);
+  });
+}
+
+if (paymentButton) {
+  paymentButton.addEventListener('click', () => {
+    openCloseDropdown(paymentButton, paymentContainer);
+  });
+}
+
+if (emailButton) {
+  emailButton.addEventListener('click', () => {
+    openCloseDropdown(emailButton, emailContainer);
+  });
+}

@@ -54,4 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     scrollContainer.scrollLeft = (totalModulesWidth - window.innerWidth) / 2;
   });
+
+  // var source = new EventSource(
+  //   "{{ url_for('sse.stream', channel='room_unique_id') }}",
+  // );
+  // source.addEventListener(
+  //   'greeting',
+  //   function (event) {
+  //     var data = JSON.parse(event.data);
+  //     console.log(data);
+  //   },
+  //   false,
+  // );
 });

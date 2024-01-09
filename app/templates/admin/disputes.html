@@ -1,20 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-  <p class="mt-5 mb-2 ml-3 text-3xl dark:text-white">Disputes</p>
+  <div class="mt-3 flex justify-between">
+    <p class="my-6 ml-3 text-3xl dark:text-gray-400">Disputes</p>
+  </div>
+
   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-black dark:bg-secondary">
       <tr>
         <th scope="col" class="px-6 py-3">#</th>
-        <th scope="col" class="px-6 py-3">ticket</th>
-        <th scope="col" class="px-6 py-3">description</th>
-        <th scope="col" class="px-6 py-3">is_active</th>
+        <th scope="col" class="px-6 py-3">event</th>
+        <th scope="col" class="px-6 py-3">seller</th>
         <th scope="col" class="px-6 py-3">buyer</th>
+        <th scope="col" class="px-6 py-3">is open</th>
       </tr>
     </thead>
     <tbody>
       {% for dispute in disputes %}
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+      <tr
+        class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer"
+        hx-get="{{ url_for('disputes.send_message', room_unique_id=dispute.unique_id) }}" hx-target="#chat-body"
+        hx-swap="innerHTML" hx-trigger="click">
         <td class="w-4 p-4">
           <div class="flex items-center">
             {{ loop.index }}
@@ -22,17 +28,17 @@
         </td>
         <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
           <div class="pl-3">
-            <div class="text-base font-semibold">{{ dispute.ticket }}</div>
+            <div class="text-base font-semibold">{{ dispute.ticket.event.name }}</div>
           </div>
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.description[:32] }}
+          {{ dispute.seller }}
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.is_active }}
+          {{ dispute.buyer }}
         </td>
         <td class="p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white">
-          {{ dispute.buyer.username }}
+          {{ dispute.is_open }}
         </td>
       </tr>
       {% endfor %}

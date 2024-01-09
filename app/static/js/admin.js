@@ -1,0 +1,1 @@
+(()=>{console.log("file admin.ts loaded"),console.log("admin.ts loaded 5 row");var e=document.querySelector("#event-dates"),o=document.querySelector("#event-dates-dropdown");e&&o&&e.addEventListener("click",(function(){o.classList.toggle("hidden")}))})();

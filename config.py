@@ -77,6 +77,7 @@ class BaseConfig(BaseSettings):
     # Chat registration default values
     CHAT_DEFAULT_USERNAME: str = "guest"
     CHAT_DEFAULT_BOT_ID: int = 2
+    CHAT_DEFAULT_BOT_USERNAME: str = "FanTicket"
     CHAT_DEFAULT_EMAIL: str = "empty@email.com"
     CHAT_DEFAULT_PHONE: str = "+3800000000000"
     CHAT_DEFAULT_CARD: str = "0000000000000000"
@@ -98,6 +99,9 @@ class BaseConfig(BaseSettings):
     BRASIL_COUNTRY_PHONE_CODE: str = "55"
     BRASIL_COUNTRY_AREA_CODE: str = "11"
 
+    # Redis
+    REDIS_URL: str
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
@@ -110,10 +114,13 @@ class BaseConfig(BaseSettings):
 class DevelopmentConfig(BaseConfig):
     """Development configuration."""
 
-    # DEBUG: bool = True
+    DEBUG: bool = True
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DEVEL_DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
+    )
+    REDIS_URL: str = Field(
+        alias="REDIS_URL_LOCAL",
     )
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
