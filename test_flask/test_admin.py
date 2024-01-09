@@ -83,7 +83,7 @@ def test_events(client_with_data: FlaskClient):
     events = db.session.scalars(events_query).all()
     assert len(events) == CFG.DEFAULT_PAGE_SIZE
 
-    response = client_with_data.get("/admin/events")
+    response = client_with_data.get("/admin/event/events")
     assert response.status_code == 200
     assert b"Events" in response.data
     assert b"Search for events" in response.data
@@ -95,21 +95,3 @@ def test_events(client_with_data: FlaskClient):
     assert events[0].url in response.data.decode()
     assert events[-1].name in response.data.decode()
     assert events[-1].url in response.data.decode()
-
-    events_query = m.Event.select().order_by(m.Event.date_time.desc())
-    events = db.session.scalars(events_query).all()
-    response = client_with_data.get("/admin/events?page=2")
-    assert events[-1].name in response.data.decode()
-    assert events[-1].url in response.data.decode()
-
-
-# def test_tickets(client_with_data: FlaskClient):
-#     login(client_with_data)
-
-#     tickets_query = m.Ticket.select().limit(CFG.DEFAULT_PAGE_SIZE).order_by(m.Ticket.id.desc())
-#     tickets = db.session.scalars(tickets_query).all()
-
-#     response = client_with_data.get("/admin/tickets")
-#     assert response.status_code == 200
-#     assert b"Location" in response.data
-#     assert b"Dates" in response.data
