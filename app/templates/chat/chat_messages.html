@@ -1,6 +1,5 @@
 {% from 'chat/_macros_chat_message.html' import history_message_bot, history_message_user %}
 
-
 {% for message in room.messages %}
 {% if message.sender_id == get_chatbot_id() %}
 {{ history_message_bot(message.text) }}

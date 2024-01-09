@@ -22,6 +22,9 @@
     "ilike",
     "jsonify",
     "motivos",
+    "Pagar",
+    "pagarme",
+    "psycopg",
     "pydantic",
     "pytest",
     "pytz",
@@ -30,6 +33,7 @@
     "swiper",
     "tailwindcss",
     "usuário",
+    "viewonly",
     "werkzeug",
     "wsgi",
     "wtforms"

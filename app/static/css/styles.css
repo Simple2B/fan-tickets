@@ -1265,11 +1265,6 @@ input:checked + .toggle-bg{
   margin-bottom: -4rem;
 }
 
-.mx-1{
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-}
-
 .mx-2{
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -1423,10 +1418,6 @@ input:checked + .toggle-bg{
 
 .ml-6{
   margin-left: 1.5rem;
-}
-
-.ml-8{
-  margin-left: 2rem;
 }
 
 .ml-auto{
@@ -1688,6 +1679,10 @@ input:checked + .toggle-bg{
 
 .w-24{
   width: 6rem;
+}
+
+.w-265{
+  width: 265px;
 }
 
 .w-295{
@@ -2575,9 +2570,9 @@ input:checked + .toggle-bg{
   padding-bottom: 0.25rem;
 }
 
-.py-10{
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
+.py-1\.5{
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
 }
 
 .py-14{
@@ -2727,10 +2722,6 @@ input:checked + .toggle-bg{
   padding-top: 2rem;
 }
 
-.ps-3\.5{
-  padding-inline-start: 0.875rem;
-}
-
 .text-left{
   text-align: left;
 }
@@ -2874,11 +2865,6 @@ input:checked + .toggle-bg{
   color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
-.text-gray-800{
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
-}
-
 .text-gray-900{
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
@@ -3002,6 +2988,12 @@ input:checked + .toggle-bg{
 
 .outline{
   outline-style: solid;
+}
+
+.ring-0{
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
 .blur{
@@ -3646,11 +3638,6 @@ select::-ms-expand {
   background-color: rgb(155 28 28 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-secondary:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(242 183 5 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-stone-900:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(28 25 23 / var(--tw-bg-opacity));
@@ -3708,11 +3695,6 @@ select::-ms-expand {
 .hover\:text-light-grey-b0:hover{
   --tw-text-opacity: 1;
   color: rgb(176 176 176 / var(--tw-text-opacity));
-}
-
-.hover\:text-red-700:hover{
-  --tw-text-opacity: 1;
-  color: rgb(200 30 30 / var(--tw-text-opacity));
 }
 
 .hover\:text-white:hover{
@@ -3825,11 +3807,6 @@ select::-ms-expand {
 .active\:bg-gray-400:active{
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
-}
-
-.active\:bg-secondary:active{
-  --tw-bg-opacity: 1;
-  background-color: rgb(242 183 5 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:text-gray-900{

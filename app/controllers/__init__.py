@@ -23,4 +23,17 @@ from .chat_auth import (
     create_address,
     create_birth_date,
     create_social_profile,
+    get_user_by_email,
+)
+from .chat_buy import (
+    get_events_by_event_name,
+    get_tickets_by_event,
+    get_locations_by_events,
+    get_cheapest_tickets,
+    book_ticket,
+    calculate_total_price,
+    get_tickets_by_event_id,
+    get_events_by_location_event_name,
+    subscribe_event,
+    create_user,
 )
