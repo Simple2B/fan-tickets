@@ -2722,6 +2722,10 @@ input:checked + .toggle-bg{
   padding-top: 2rem;
 }
 
+.ps-3\.5{
+  padding-inline-start: 0.875rem;
+}
+
 .text-left{
   text-align: left;
 }
@@ -2863,6 +2867,11 @@ input:checked + .toggle-bg{
 .text-gray-700{
   --tw-text-opacity: 1;
   color: rgb(55 65 81 / var(--tw-text-opacity));
+}
+
+.text-gray-800{
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
 .text-gray-900{

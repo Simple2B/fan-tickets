@@ -16,7 +16,8 @@ from .user import (
     NotificationsConfigForm,
 )
 from .chat import ChatPhoneForm, ChatAuthIdentityForm, ChatAuthPasswordForm
-from .event import EventForm
+from .event import EventForm, EventUpdateForm
 from .ticket import TicketForm
 from .location import LocationForm
 from .orders import OrderCreateForm
+from .category import CategoryForm
