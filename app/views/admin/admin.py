@@ -36,6 +36,7 @@ def picture_upload():
 @login_required
 def get_tickets():
     buyer_unique_id = request.args.get("buyer_unique_id")
+    seller_unique_id = request.args.get("seller_unique_id")
     location_id = request.args.get("location_id")
     location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
@@ -51,6 +52,10 @@ def get_tickets():
     if buyer_unique_id:
         tickets_query = tickets_query.where(m.Ticket.buyer.has(m.User.unique_id == buyer_unique_id))
         count_query = count_query.where(m.Ticket.buyer.has(m.User.unique_id == buyer_unique_id))
+
+    if seller_unique_id:
+        tickets_query = tickets_query.where(m.Ticket.seller.has(m.User.unique_id == seller_unique_id))
+        count_query = count_query.where(m.Ticket.seller.has(m.User.unique_id == seller_unique_id))
 
     location_unique_id = None
     if location_id:
