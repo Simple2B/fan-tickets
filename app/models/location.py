@@ -27,7 +27,7 @@ class Location(db.Model, ModelMixin):
     )
 
     picture: orm.Mapped["Picture"] = orm.relationship()
-    event: orm.Mapped["Event"] = orm.relationship(viewonly=True)
+    events: orm.Mapped[list["Event"]] = orm.relationship(back_populates="location")
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"

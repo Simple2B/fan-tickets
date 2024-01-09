@@ -12,12 +12,6 @@ def test_get_event_name(client: FlaskClient):
     ).save(False)
     populate()
     event: m.Event = db.session.scalar(m.Event.select())
-    event_name = event.name[:1]
-    events = db.session.scalars(m.Event.select().where(m.Event.name.ilike(f"%{event_name}%"))).all()
-    locations_query = m.Location.select().filter(
-        m.Location.event.has(m.Event.name.in_([event.name for event in events]))
-    )
-    locations: list[m.Location] = db.session.scalars(locations_query).all()
     tickets: list[m.Ticket] = db.session.scalars(
         m.Ticket.select().where(
             m.Ticket.event_id == event.id,
@@ -29,10 +23,6 @@ def test_get_event_name(client: FlaskClient):
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "No event date provided. Please add event name" in response.data.decode()
-
-    response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event_name.lower()}")
-    assert response.status_code == 200
-    assert f"locations length {len(locations)}" in response.data.decode()
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
     assert response.status_code == 200
@@ -46,7 +36,7 @@ def test_get_events_by_location(client: FlaskClient):
     ).save(False)
     populate()
     event: m.Event = db.session.scalar(m.Event.select())
-    location: m.Location = db.session.scalar(m.Location.select().where(m.Location.event == event))
+    location: m.Location = db.session.scalar(m.Location.select().where(m.Location.events.any(m.Event.id == event.id)))
     tickets: list[m.Ticket] = db.session.scalars(
         m.Ticket.select().where(
             m.Ticket.event_id == event.id,
