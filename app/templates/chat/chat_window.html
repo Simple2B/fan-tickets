@@ -1,7 +1,8 @@
 {% if not "/admin" in request.path %}
 {% include 'chat/chat_icon.html' %}
 {% endif %}
-{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get, history_message_bot %}
+{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get, history_message_user,
+history_message_bot %}
 
 
 {% if current_user.is_authenticated %}
