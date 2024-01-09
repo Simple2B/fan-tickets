@@ -8,6 +8,7 @@ from psycopg2 import IntegrityError
 from app import controllers as c
 from app import schema as s
 from app import models as m, db, mail
+from app import forms as f
 from app.logger import log
 from config import config
 
@@ -39,6 +40,7 @@ def get_event_name():
         )
 
     if params.renew_search:
+        c.save_message("Choose action", "Renew search", room)
         log(log.ERROR, "Renew search")
         return render_template(
             "chat/buy/event_name.html",
@@ -54,6 +56,12 @@ def get_event_name():
             room=room,
             now=c.utcnow_chat_format(),
         )
+
+    c.save_message(
+        "Great! To get started, could you please write below name of the event you're looking for?",
+        f"{params.user_message}",
+        room,
+    )
 
     events = c.get_events_by_event_name(params.user_message, room)
 
@@ -116,16 +124,10 @@ def get_event_name():
             now=c.utcnow_chat_format(),
         )
 
-    c.save_message(
-        "Great! To get started, could you please write below name of the event you're looking for?",
-        f"{params.user_message}",
-        room,
-    )
-
     return render_template(
         "chat/buy/location_list.html",
         event_unique_id=first_event.unique_id,
-        locations=locations,
+        events=events,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -253,7 +255,7 @@ def get_tickets():
             now=c.utcnow_chat_format(),
         )
 
-    tickets = c.get_tickets_by_event_id(params.event_unique_id, room)
+    tickets = c.get_tickets_by_event_id(params, room)
 
     if not tickets:
         log(log.ERROR, "Tickets not found: [%s]", params.event_unique_id)
@@ -262,6 +264,28 @@ def get_tickets():
             error_message="Something went wrong. Please add event name",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if params.add_ticket:
+        c.save_message(
+            "Got it! Do you want to buy another one or proceed to purchase?",
+            "Add ticket",
+            room,
+        )
+
+    if params.from_date_template:
+        event_time = tickets[0].event.date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
+        c.save_message(
+            "Sure! When are you planning to attend? Please specify the date and time.",
+            f"{tickets[0].event.name}, {event_time}",
+            room,
+        )
+
+    if params.tickets_show_all:
+        c.save_message(
+            f"Great news! We have found {len(tickets)} available tickets",
+            "All tickets",
+            room,
         )
 
     tickets_cheapest = c.get_cheapest_tickets(
@@ -400,6 +424,7 @@ def payment():
         )
 
     if params.ask_payment:
+        c.save_message("Got it! Do you want to buy another one or proceed to purchase?", "Purchase", room)
         return render_template(
             "chat/buy/ticket_accept_purchase.html",
             room=room,
@@ -407,11 +432,17 @@ def payment():
             total_prices=total_prices,
         )
 
+    c.save_message(
+        f"Awesome! The cost for ticket is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        "Payment",
+        room,
+    )
     return render_template(
         "chat/buy/payment.html",
         room=room,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,
+        form=f.OrderCreateForm(),
     )
 
 

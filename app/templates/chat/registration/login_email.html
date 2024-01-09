@@ -15,7 +15,7 @@
 </div>
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-{{ submit_message_get('chat.create_user_email', "[name='room_unique_id'], [name='user_message']") }}
+{{ submit_message_get('chat.login_email', "[name='room_unique_id'], [name='user_message']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

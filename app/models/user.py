@@ -5,15 +5,14 @@ from flask_login import UserMixin, AnonymousUserMixin
 import sqlalchemy as sa
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
-from .users_events import users_events
-
 
 from enum import Enum
 from app.database import db
-from .utils import ModelMixin, utcnow
 from app.logger import log
 from app import schema as s
 
+from .users_events import users_events
+from .utils import ModelMixin, utcnow
 
 if TYPE_CHECKING:
     from .picture import Picture
@@ -55,6 +54,7 @@ class User(db.Model, UserMixin, ModelMixin):
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     birth_date: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
+    # Improve naming
     facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     twitter: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
