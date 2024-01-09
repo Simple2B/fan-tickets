@@ -3,12 +3,14 @@ from enum import Enum
 from PIL import Image
 from flask import request, flash, current_app as app
 from app import models as m
+from app.database import db
 from app.logger import log
 
 
 class ImageType(Enum):
     LOGO = "logo"
     IDENTIFICATION = "identification"
+    EVENT = "event"
 
 
 def image_upload(user: m.User, image_type: ImageType):
@@ -31,6 +33,17 @@ def image_upload(user: m.User, image_type: ImageType):
     file = request.files["file"]
     assert file
     log(log.INFO, "File uploaded: [%s]", file)
+
+    instance = request.form.get("instance")
+    if instance == "event":
+        image_type = ImageType.EVENT
+        event_unique_id = request.form.get("uniqueId")
+        event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
+        event: m.Event = db.session.scalar(event_query)
+        if not event:
+            log(log.INFO, "Event not found: [%s]", event_unique_id)
+            flash("Event not found", "danger")
+            return {"error": "Event not found"}, 400
 
     IMAGE_MAX_WIDTH = app.config["IMAGE_MAX_WIDTH"]
     img = Image.open(file.stream)
@@ -69,6 +82,12 @@ def image_upload(user: m.User, image_type: ImageType):
             user.identity_document_id = picture.id
             user.save()
             log(log.INFO, "Uploaded identity document for user: [%s]", user.email)
+            return {}, 200
+        if image_type == ImageType.EVENT:
+            log(log.INFO, "Uploaded image for event: [%s]", event)
+            event.picture_id = picture.id
+            event.save()
+            flash("Event image uploaded", "success")
             return {}, 200
     except Exception as e:
         log(log.ERROR, "Error saving image: [%s]", e)

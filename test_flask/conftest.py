@@ -7,7 +7,8 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from app import create_app, db, pagarme_client
+from app import create_app, pagarme_client
+from app.database import db
 from test_flask.utils import register
 from .db import populate
 

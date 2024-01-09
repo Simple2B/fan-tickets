@@ -24,26 +24,33 @@ bp = Blueprint("user", __name__, url_prefix="/user")
 @bp.route("/", methods=["GET"])
 @login_required
 def get_all():
-    q = request.args.get("q", type=str, default=None)
-    query = m.User.select().order_by(m.User.id)
+    search = request.args.get("search")
+    q = request.args.get("search_query")
+    query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
-    if q:
-        query = m.User.select().where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%")).order_by(m.User.id)
+
+    template = "user/users.html"
+    if q or search:
+        query = (
+            m.User.select().where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
+        )
         count_query = (
             sa.select(sa.func.count())
-            .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
+            .where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%"))
             .select_from(m.User)
         )
+        template = "user/search.html"
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     return render_template(
-        "user/users.html",
+        template,
         users=db.session.execute(
             query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
         ).scalars(),
         page=pagination,
         search_query=q,
+        visibility=False,
     )
 
 
@@ -72,26 +79,6 @@ def save():
         log(log.ERROR, "User save errors: [%s]", form.errors)
         flash(f"{form.errors}", "danger")
         return redirect(url_for("user.get_all"))
-
-
-@bp.route("/create", methods=["POST"])
-@login_required
-def create():
-    form = f.NewUserForm()
-    if form.validate_on_submit():
-        user = m.User(
-            username=form.username.data,
-            email=form.email.data,
-            password=form.password.data,
-            activated=form.activated.data,
-        )
-        log(log.INFO, "Form submitted. User: [%s]", user)
-        flash("User added!", "success")
-        user.save()
-        return redirect(url_for("user.get_all"))
-
-
-# TODO: create admins and clients separately (by admin only)
 
 
 @bp.route("/delete/<int:id>", methods=["DELETE"])
@@ -300,3 +287,14 @@ def export():
         max_age=0,
         last_modified=now,
     )
+
+
+@bp.route("/get_activities", methods=["GET"])
+@login_required
+def get_activities():
+    user_unique_id = request.args.get("user_unique_id")
+    close = request.args.get("close")
+    visibility = False if close else True
+    user_query = m.User.select().where(m.User.unique_id == user_unique_id)
+    user: m.User = db.session.scalar(user_query)
+    return render_template("user/activities.html", user=user, visibility=visibility, now=datetime.now())

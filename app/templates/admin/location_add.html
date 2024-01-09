@@ -1,0 +1,71 @@
+{% extends 'base.html' %} {% block links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
+{% endblock %} {% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <form
+    action="{{url_for('admin.location.add_location')}}"
+    method="post"
+    enctype="multipart/form-data">
+    <table
+      class="w-full mt-3 text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead
+        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-secondary dark:text-black">
+        <tr>
+          <th scope="col" class="px-6 py-3">parameter</th>
+          <th scope="col" class="px-6 py-3">value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">Name</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            {{ form.name(class="w-full max-w-2xl bg-black border-0 rounded-lg
+            dark:focus:ring-secondary")}}
+          </td>
+        </tr>
+
+        <tr
+          class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">Picture</div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            {{ form.picture(class="block w-full text-sm text-gray-900 border
+            border-gray-300 rounded-lg cursor-pointer bg-gray-50
+            dark:text-gray-400 focus:outline-none dark:bg-gray-700
+            dark:border-gray-600 dark:placeholder-gray-400", accept="image/*")}}
+          </td>
+        </tr>
+
+        <tr class="bg-white border-b dark:bg-black dark:border-gray-700">
+          <td class="w-4 p-4">
+            <div class="flex items-center"></div>
+          </td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <button
+              type="submit"
+              class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+              Save
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% endblock %} {% block scripts %}
+<script
+  src="{{ url_for('static', filename='js/user.js') }}"
+  type="text/javascript"
+  defer></script>
+{% endblock %}

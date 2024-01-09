@@ -7,13 +7,21 @@ from flask_login import current_user
 from app import models as m, db
 
 
+def today():
+    return datetime.today().strftime("%Y/%m/%d")
+
+
 def form_hidden_tag():
     form = FlaskForm()
     return form.hidden_tag()
 
 
-def date_from_datetime(created_at: datetime):
-    return created_at.date()
+def date_from_datetime(date_time: datetime):
+    return date_time.date()
+
+
+def event_form_date(date_time: datetime):
+    return date_time.strftime("%m/%d/%Y")
 
 
 def time_delta(created_at: datetime) -> int:
@@ -46,3 +54,7 @@ def get_chat_room_messages():
 
 def get_chatbot_id():
     return app.config.get("CHAT_DEFAULT_BOT_ID")
+
+
+def round_to_two_places(number: float) -> float:
+    return round(number, 2)
