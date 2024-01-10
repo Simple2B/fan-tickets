@@ -10,7 +10,9 @@ def index():
     events = db.session.scalars(m.Event.select().limit(8)).all()
     locations = db.session.scalars(m.Location.select()).all()
     return render_template(
-        "landing/home/index.html",
+        # "landing/home/index.html",
+        # TODO: remove when error page is done
+        "error_500.html",
         events=events,
         locations=locations,
     )

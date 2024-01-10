@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>{{ config.APP_NAME }}</title>
+  <!-- meta -->
+  <meta name="description" content="Fan Ticket App" />
+  <meta name="author" content="Simple2B" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+</head>
+
+<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet">
+
+<body class="h-screen flex justify-center items-center bg-black text-secondary font-body ">
+  <div class="max-w-xl flex flex-col gap-6 justify-center items-center">
+    <h1 class="text-9xl text-grey">500</h1>
+    <h2 class="text-2xl">Oops! Internal Server Error</h2>
+    <p class="mb-6 text-center">Don't worry, our development team has been automatically notified of this issue, and
+      they are
+      working on it.
+      Please, try again later</p>
+    <div class="gears">
+      <div class="gear one">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="gear two">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="gear three">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+
+    <a href="{{ url_for('main.index') }}"
+      class="link py-2 px-4  text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">Go
+      to home page</a>
+  </div>
+</body>
+
+
+</html>
