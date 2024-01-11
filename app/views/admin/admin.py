@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, request, jsonify
-from flask_login import current_user, login_required
+from flask_login import current_user
 import sqlalchemy as sa
 from app import models as m, db, forms as f
 from app.controllers import create_pagination
