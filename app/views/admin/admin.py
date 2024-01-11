@@ -12,9 +12,8 @@ admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 @admin_blueprint.before_request
-@login_required
 def check_if_user_is_admin():
-    if isinstance(current_user, m.AnonymousUser) or current_user.role != m.UserRole.admin.value:
+    if current_user.is_anonymous or current_user.role != m.UserRole.admin.value:
         return redirect(url_for("main.index"))
 
 
