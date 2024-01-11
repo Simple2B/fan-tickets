@@ -11,8 +11,8 @@ from flask import (
     url_for,
     flash,
 )
-from flask_login import login_required, current_user
-
+from flask_login import current_user
+from app.controllers import create_pagination
 
 from app import models as m
 from app import forms as f
@@ -23,10 +23,10 @@ event_blueprint = Blueprint("event", __name__, url_prefix="/event")
 
 
 @event_blueprint.route("/events")
-@login_required
 def get_events():
     # Filters
-    # TODO replace by pydantic args
+    q = request.args.get("q")
+    search = request.args.get("search")
     location_id = request.args.get("location_id")
     location_id = None if location_id == "all" else location_id
     date_from_str = request.args.get("date_from")
@@ -38,43 +38,72 @@ def get_events():
 
     # Query for all events
     events_query = m.Event.select().order_by(m.Event.date_time.desc())
+    count_query = sa.select(sa.func.count()).select_from(m.Event)
     locations_query = m.Location.select()
     categories_query = m.Category.select()
 
+    template = "admin/events.html"
+    if q or search:
+        events_query = events_query.where(m.Event.name.ilike(f"%{q}%"))
+        count_query = count_query.where(m.Event.name.ilike(f"%{q}%"))
+        template = "admin/events_list.html"
+
+    location_unique_id = None
     if location_id:
         events_query = events_query.where(m.Event.location_id == int(location_id))
+        count_query = count_query.where(m.Event.location_id == int(location_id))
+        location_unique_id = db.session.scalar(sa.select(m.Location.unique_id).where(m.Location.id == int(location_id)))
 
     if date_from_str:
         date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
         events_query = events_query.where(m.Event.date_time >= date_from)
+        count_query = count_query.where(m.Event.date_time >= date_from)
 
     if date_to_str:
         date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
         events_query = events_query.where(m.Event.date_time <= date_to)
+        count_query = count_query.where(m.Event.date_time <= date_to)
 
+    category_selected = None
     if category_id:
         events_query = events_query.where(m.Event.category_id == int(category_id))
+        count_query = count_query.where(m.Event.category_id == int(category_id))
+        category_selected = db.session.scalar(sa.select(m.Category.name).where(m.Category.id == int(category_id)))
 
     if status == "pending":
         events_query = events_query.where(m.Event.approved.is_(False))
+        count_query = count_query.where(m.Event.approved.is_(False))
     elif status == "users":
         events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
     elif status == "admins":
         events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
 
-    events = db.session.scalars(events_query).all()
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
+
+    pagination = create_pagination(total=db.session.scalar(count_query))
+
+    events_query = events_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
+    events = db.session.execute(
+        events_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
+    ).scalars()
+
     return render_template(
-        "admin/events.html",
+        template,
         events=events,
         locations=locations,
         categories=categories,
+        location_unique_id=location_unique_id,
+        category_selected=category_selected,
+        status_selected=status,
+        page=pagination,
+        q=q,
     )
 
 
 @event_blueprint.route("/event/<event_unique_id>", methods=["GET", "POST"])
-@login_required
 def get_event(event_unique_id):
     event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
     event: m.Event = db.session.scalar(event_query)
@@ -143,7 +172,6 @@ def get_event(event_unique_id):
 
 
 @event_blueprint.route("/add_event", methods=["GET", "POST"])
-@login_required
 def add_event():
     form = f.EventForm()
 

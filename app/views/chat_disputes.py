@@ -54,11 +54,6 @@ def start_dispute():
 @chat_disputes_blueprint.route("/send")
 @login_required
 def send_message():
-    # sse.publish(
-    #     {"message": "Hello!"},
-    #     type="greeting",
-    #     channel="room_unique_id",
-    # )
     room_unique_id = request.args.get("room_unique_id")
     user_message = request.args.get("user_message")
     if room_unique_id:
@@ -70,6 +65,11 @@ def send_message():
             sender_id=current_user.id,
             text=user_message,
         ).save()
+    # sse.publish(
+    #     {"message": "Hello!"},
+    #     type="greeting",
+    #     channel="room_unique_id",
+    # )
     return render_template(
         "admin/messages.html",
         now=utcnow_chat_format(),

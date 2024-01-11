@@ -18,13 +18,14 @@ from app.controllers.payments import (
 )
 
 
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+# @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+@pytest.mark.skipif(not os.environ.get("APP_ENV") == "testing", reason="no pagar.me API secret key")
 def test_pagarme_get_customers(client: FlaskClient):
     response = get_all_pagarme_customers()
     assert response["data"][0]["id"] == "cus_rwLbRMDIjIz5vy6d"
 
 
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+@pytest.mark.skipif(not os.environ.get("APP_ENV") == "testing", reason="no pagar.me API secret key")
 def test_pagarme_get_customer(client: FlaskClient):
     # Fake customer
     TESTING_CUSTOMER_ID = "cus_00000000000000"
@@ -43,35 +44,7 @@ def test_pagarme_get_customer(client: FlaskClient):
         assert response.id == TESTING_CUSTOMER_ID
 
 
-# @pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
-# def test_pagarme_customer(client: FlaskClient):
-#     login(client)
-#     TESTING_BIRTH_DATE = "01/01/2000"
-#     now = datetime.now().strftime("%m-%d-%H-%M-%S")
-#     TESTING_CUSTOMER_NAME = f"TestingCustomer {now}"
-#     TEST_DOCUMENT = "93095135270"
-
-#     created_pagarme_customer = create_pagarme_customer(
-#         customer_name=TESTING_CUSTOMER_NAME,
-#         code=current_user.unique_id,
-#         email=current_user.email,
-#         birthdate=TESTING_BIRTH_DATE,
-#         document=TEST_DOCUMENT,
-#         phone=current_user.phone,
-#     )
-#     assert created_pagarme_customer
-#     assert created_pagarme_customer.name == TESTING_CUSTOMER_NAME
-
-#     TESTING_BIRTH_DATE_UPD = "02/02/2000"
-#     TESTING_NAME_UPD = "UpdatedTestingCustomer"
-#     updated_pagarme_customer = update_pagarme_customer(
-#         created_pagarme_customer.id, TESTING_BIRTH_DATE_UPD, TESTING_NAME_UPD
-#     )
-#     assert updated_pagarme_customer
-#     assert updated_pagarme_customer.name == TESTING_NAME_UPD
-
-
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+@pytest.mark.skipif(not os.environ.get("APP_ENV") == "testing", reason="no pagar.me API secret key")
 def test_pagarme_get_card(client: FlaskClient):
     login(client)
     TEST_CUSTOMER_ID = "cus_rwLbRMDIjIz5vy6d"
@@ -82,7 +55,7 @@ def test_pagarme_get_card(client: FlaskClient):
     assert response.customer.id == TEST_CUSTOMER_ID
 
 
-@pytest.mark.skipif(not os.environ.get("PAGARME_CONNECTION"), reason="no pagar.me API secret key")
+@pytest.mark.skipif(not os.environ.get("APP_ENV") == "testing", reason="no pagar.me API secret key")
 def test_pagarme_ticket_order(client: FlaskClient):
     login(client)
     letters = string.ascii_lowercase

@@ -2,7 +2,6 @@ import filetype
 import sqlalchemy as sa
 
 from flask import Blueprint, redirect, url_for, render_template, request, flash
-from flask_login import login_required
 from app import models as m, db, forms as f
 
 from app.logger import log
@@ -12,21 +11,19 @@ category_blueprint = Blueprint("category", __name__, url_prefix="/category")
 
 
 @category_blueprint.route("/")
-@login_required
 def category_index():
     return redirect(url_for("admin.category.get_categories"))
 
 
 @category_blueprint.route("/categories")
-@login_required
 def get_categories():
-    categories = m.Category.all()
+    categories_query = m.Category.select().order_by(m.Category.created_at.asc())
+    categories = db.session.scalars(categories_query).all()
     log(log.INFO, "Categories: [%s]", categories)
     return render_template("admin/categories.html", categories=categories)
 
 
 @category_blueprint.route("/add_category", methods=["GET", "POST"])
-@login_required
 def add_category():
     form = f.CategoryForm()
 
@@ -71,7 +68,6 @@ def add_category():
 
 
 @category_blueprint.route("/delete_category/<category_id>", methods=["GET"])
-@login_required
 def delete_category(category_id):
     category = db.session.get(m.Category, category_id)
 
@@ -89,7 +85,6 @@ def delete_category(category_id):
 
 
 @category_blueprint.route("/update_category/<category_id>", methods=["GET", "POST"])
-@login_required
 def update_category(category_id: int):
     form = f.CategoryForm()
     category = db.session.get(m.Category, category_id)
