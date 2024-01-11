@@ -89,6 +89,15 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "item_quantity": "2",
         "item_category": "Testing Concert Event",  # ticket.event.category
     }
+
+    data["payment_method"] = "credit_card"
+    response = client.post("/pay/ticket_order", data=data)
+
+    assert response.status_code == 200
+    if isinstance(response.json, dict):
+        assert response.json["status"] == "approved"
+
+    data["payment_method"] = "pix"
     response = client.post("/pay/ticket_order", data=data)
 
     assert response.status_code == 200

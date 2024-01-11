@@ -147,6 +147,25 @@ class PagarmeCheckout(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PagarmeAdditionalInformation(BaseModel):
+    name: str
+    value: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PagarmePix(BaseModel):
+    expires_in: int
+    additional_information: list[PagarmeAdditionalInformation]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PagarmePixPayment(BaseModel):
+    payment_method: str
+    pix: list[PagarmePix]
+
+
 class PagarmeCreateOrderInput(BaseModel):
     """
     {
