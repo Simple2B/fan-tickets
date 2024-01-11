@@ -99,13 +99,9 @@ def init(app: Flask):
         events_query = m.Event.select().limit(3)
         events = db.session.scalars(events_query).all()
 
-        print(user)
-
         user.subscribed_events.extend(events)
         user.password = "pass"
         user.save()
-
-        print(user.subscribed_events)
 
     @app.cli.command("delete-users")
     @click.option("--email", type=str)

@@ -39,9 +39,7 @@ class Room(db.Model, ModelMixin):
     )
 
     ticket_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("tickets.id"))
-
     seller_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
-
     buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
 
     ticket: orm.Mapped["Ticket"] = orm.relationship(

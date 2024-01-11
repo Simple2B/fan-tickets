@@ -2,13 +2,13 @@ import os
 
 import sqlalchemy as sa
 
-from flask import Flask, render_template
-from flask_login import LoginManager
+from flask import Flask, render_template, abort, request
+from flask_login import LoginManager, current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
+from flask_sse import sse
 
-# from flask_sse import sse
 from app.logger import log
 from app.controllers import PagarmeClient
 from .database import db
@@ -69,16 +69,35 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
 
-    # TODO SSE
     # SSE
-    # @sse.before_request
-    # def check_access():
-    #     if not current_user.is_authenticated:
-    #         abort(403)
+    @sse.before_request
+    def check_access():
+        if not current_user.is_authenticated:
+            abort(403)
 
-    #     # TODO check if user not admin and in room
+        channel = request.args.get("channel")
 
-    # app.register_blueprint(sse, url_prefix="/stream")
+        if not channel:
+            abort(403)
+
+        topic, identifier = channel.split(":")
+
+        if topic == "room" and current_user.role != m.UserRole.admin.value:
+            room = db.session.scalar(
+                sa.select(m.Room).where(
+                    sa.and_(
+                        m.Room.unique_id == identifier,
+                        sa.or_(m.Room.seller_id == current_user.id, m.Room.buyer_id == current_user.id),
+                    )
+                )
+            )
+            if not room:
+                abort(403)
+
+        elif topic == "notification" and current_user.uuid != identifier:
+            abort(403)
+
+    app.register_blueprint(sse, url_prefix="/sse")
 
     # Set up flask login.
     @login_manager.user_loader

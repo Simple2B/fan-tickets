@@ -12,7 +12,7 @@ from app.logger import log
 from app import schema as s
 
 from .users_events import users_events
-from .utils import ModelMixin, utcnow
+from .utils import ModelMixin, utcnow, gen_uuid
 
 if TYPE_CHECKING:
     from .picture import Picture
@@ -37,7 +37,7 @@ class User(db.Model, UserMixin, ModelMixin):
     __tablename__ = "users"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-
+    uuid: orm.Mapped[str] = orm.mapped_column(sa.String(36), default=gen_uuid)
     # Foreign keys
     identity_document_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
