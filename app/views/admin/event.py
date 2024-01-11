@@ -11,7 +11,7 @@ from flask import (
     url_for,
     flash,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app.controllers import create_pagination
 
 from app import models as m
@@ -23,7 +23,6 @@ event_blueprint = Blueprint("event", __name__, url_prefix="/event")
 
 
 @event_blueprint.route("/events")
-@login_required
 def get_events():
     # Filters
     q = request.args.get("q")
@@ -105,7 +104,6 @@ def get_events():
 
 
 @event_blueprint.route("/event/<event_unique_id>", methods=["GET", "POST"])
-@login_required
 def get_event(event_unique_id):
     event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
     event: m.Event = db.session.scalar(event_query)
@@ -174,7 +172,6 @@ def get_event(event_unique_id):
 
 
 @event_blueprint.route("/add_event", methods=["GET", "POST"])
-@login_required
 def add_event():
     form = f.EventForm()
 

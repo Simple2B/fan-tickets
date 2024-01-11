@@ -12,20 +12,19 @@ admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 
 @admin_blueprint.before_request
+@login_required
 def check_if_user_is_admin():
-    if current_user.role != m.UserRole.admin.value:
+    if isinstance(current_user, m.AnonymousUser) or current_user.role != m.UserRole.admin.value:
         return redirect(url_for("main.index"))
 
 
 @admin_blueprint.route("/")
-@login_required
 def admin():
     log(log.INFO, "Admin page requested by [%s]", current_user.id)
     return redirect(url_for("user.get_all"))
 
 
 @admin_blueprint.route("/picture-upload", methods=["GET", "POST"])
-@login_required
 def picture_upload():
     user: m.User = current_user
     image_upload(user, ImageType.LOGO)
@@ -33,7 +32,6 @@ def picture_upload():
 
 
 @admin_blueprint.route("/tickets")
-@login_required
 def get_tickets():
     buyer_unique_id = request.args.get("buyer_unique_id")
     seller_unique_id = request.args.get("seller_unique_id")
@@ -107,7 +105,6 @@ def get_tickets():
 
 
 @admin_blueprint.route("/ticket/<ticket_unique_id>", methods=["GET", "POST"])
-@login_required
 def get_ticket(ticket_unique_id):
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
@@ -151,7 +148,6 @@ def get_ticket(ticket_unique_id):
 
 
 @admin_blueprint.route("/disputes")
-@login_required
 def get_disputes():
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
@@ -164,7 +160,6 @@ def get_disputes():
 
 
 @admin_blueprint.route("/notifications")
-@login_required
 def get_notifications():
     notifications = m.Notification.all()
     return render_template("admin/notifications.html", notifications=notifications)
