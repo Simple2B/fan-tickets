@@ -57,7 +57,7 @@ def register():
         )
         mail.send(msg)
 
-        flash("Registration successful. You need to confirm your email. Check your email please", "success")
+        flash("Registration successful. Checkout you email for confirmation!", "success")
         return redirect(url_for("main.index"))
     elif form.is_submitted():
         log(log.WARNING, "Form submitted error: [%s]", form.errors)
