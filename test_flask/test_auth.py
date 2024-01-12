@@ -1,4 +1,3 @@
-import re
 from flask_mail import Message
 from flask import url_for
 
