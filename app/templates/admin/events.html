@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% block links %}
 <link rel="stylesheet" href="" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
 {% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -70,12 +69,12 @@
           <div id="event-dates-dropdown"
             class="hidden absolute bg-black border border-gray-400 rounded-lg text-gray-400">
             <p class="m-2">Date from</p>
-            <input datepicker type="text" name="date_from" autocomplete="off" id="date-from"
+            <input datepicker datepicker-autohide type="text" name="date_from" autocomplete="off" id="date-from"
               class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}">
 
             <p class="m-2">Date to</p>
-            <input datepicker type="text" name="date_to" autocomplete="off" id="date-to"
+            <input datepicker datepicker-autohide type="text" name="date_to" autocomplete="off" id="date-to"
               class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}">
           </div>
@@ -231,5 +230,6 @@
 {% endif %}
 
 {% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
 {% endblock %}
