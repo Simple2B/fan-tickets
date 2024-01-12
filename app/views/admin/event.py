@@ -1,5 +1,6 @@
-from datetime import datetime
-
+from datetime import datetime, UTC
+import io
+import csv
 import filetype
 import sqlalchemy as sa
 
@@ -10,6 +11,7 @@ from flask import (
     redirect,
     url_for,
     flash,
+    send_file,
 )
 from flask_login import current_user
 from app.controllers import create_pagination
@@ -82,6 +84,58 @@ def get_events():
 
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading events table")
+        events = db.session.scalars(events_query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "name",
+                "URL",
+                "Date",
+                "Days from now",
+                "Created by",
+                "Approved",
+                "Observations",
+                "Warning",
+                "Category",
+                "Location",
+                "Tickets",
+            ]
+            writer.writerow(row)
+            for index, event in enumerate(events):
+                row = [
+                    str(index),
+                    event.name,
+                    event.url,
+                    event.date_time,
+                    (event.date_time - datetime.now(UTC)).days,
+                    event.creator.email,
+                    event.approved,
+                    event.observations,
+                    event.warning,
+                    event.category.name,
+                    event.location.name,
+                    str(len(event.tickets)),
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_events_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
+        )
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 

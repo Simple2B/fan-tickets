@@ -1,5 +1,7 @@
-from datetime import datetime
-from flask import Blueprint, redirect, url_for, render_template, request, jsonify
+import io
+import csv
+from datetime import datetime, UTC
+from flask import Blueprint, redirect, url_for, render_template, request, jsonify, send_file
 from flask_login import current_user
 import sqlalchemy as sa
 from app import models as m, db, forms as f
@@ -81,6 +83,67 @@ def get_tickets():
     ticket_types = [x.value for x in m.TicketType]
     ticket_categories = [x.value for x in m.TicketCategory]
     locations = m.Location.all()
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading events table")
+        tickets = db.session.scalars(tickets_query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "name",
+                "URL",
+                "Date",
+                "Days from now",
+                "Type",
+                "Category",
+                "Description",
+                "Warning",
+                "Location",
+                "Seller",
+                "Section",
+                "Queue" "Seat" "Price net",
+                "Price gross",
+                "Is sold" "Buyer",
+            ]
+            writer.writerow(row)
+            for index, ticket in enumerate(tickets):
+                row = [
+                    str(index),
+                    ticket.event.name,
+                    ticket.event.url,
+                    ticket.event.date_time,
+                    (ticket.event.date_time - datetime.now(UTC)).days,
+                    ticket.ticket_type,
+                    ticket.ticket_category,
+                    ticket.description,
+                    ticket.warning,
+                    ticket.event.location.name,
+                    ticket.seller.email,
+                    ticket.section,
+                    ticket.queue,
+                    ticket.seat,
+                    ticket.price_net,
+                    ticket.price_gross,
+                    ticket.is_sold,
+                    ticket.buyer.email,
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_tickets_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
+        )
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 
