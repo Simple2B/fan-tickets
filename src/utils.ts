@@ -37,7 +37,7 @@ export function resizeChat() {
   const headerBottom: number = header.offsetTop + header.offsetHeight;
   const chatWindowTop: number = chatWindow.offsetTop;
   const fixedMinDistance: number = 220;
-  const maxChatWindowHeight: number = 475;
+  const maxChatWindowHeight: number = 650;
   const availableSpace: number = chatWindowTop - headerBottom;
 
   if (availableSpace < fixedMinDistance) {
