@@ -39,9 +39,9 @@ def get_tickets():
     date_from_str = request.args.get("date_from")
     date_to_str = request.args.get("date_to")
     ticket_type = request.args.get("ticket_type")
-    ticket_type = None if ticket_type == "all" else ticket_type
+    ticket_type = None if ticket_type == "all" or ticket_type == "None" else ticket_type
     ticket_category = request.args.get("ticket_category")
-    ticket_category = None if ticket_category == "all" else ticket_category
+    ticket_category = None if ticket_category == "all" or ticket_category == "None" else ticket_category
 
     tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
     count_query = sa.select(sa.func.count()).select_from(m.Ticket)
@@ -100,6 +100,11 @@ def get_tickets():
         ticket_category_selected=ticket_category,
         user_unique_id=buyer_unique_id,
         page=pagination,
+        buyer_unique_id=buyer_unique_id,
+        seller_unique_id=seller_unique_id,
+        date_from=date_from_str,
+        date_to=date_to_str,
+        location_id=location_id,
     )
 
 
