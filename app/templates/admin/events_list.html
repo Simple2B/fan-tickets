@@ -26,7 +26,7 @@
                 </a>
             </td>
             <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white underline">
-                <a href="{{ event.url }}">{{ event.url|truncate(30) }}</a>
+                <a href="{{ event.url }}" target="_blank">{{ event.url|truncate(30) }}</a>
             </td>
             <td class="p-4 space-x-2 whitespace-nowrap">
                 {{ date_from_datetime(event.date_time) }}
