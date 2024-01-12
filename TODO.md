@@ -46,6 +46,7 @@
 
 - add logic to subscribe on event
 - round price on the python side
+- add check if user activated for buy/sell
 
 # Testing database
 

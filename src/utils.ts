@@ -30,3 +30,20 @@ export function handleHideElements(
     }
   });
 }
+
+export function resizeChat() {
+  const header: HTMLElement = document.querySelector('.header');
+  const chatWindow: HTMLElement = document.querySelector('#chat-window');
+  const headerBottom: number = header.offsetTop + header.offsetHeight;
+  const chatWindowTop: number = chatWindow.offsetTop;
+  const fixedMinDistance: number = 200;
+  const maxChatWindowHeight: number = 475;
+  const availableSpace: number = chatWindowTop - headerBottom;
+
+  if (availableSpace < fixedMinDistance) {
+    chatWindow.style.height = `calc(100vh - ${fixedMinDistance}px)`;
+  }
+  if (chatWindow.offsetHeight > maxChatWindowHeight) {
+    chatWindow.style.height = `${maxChatWindowHeight}px`;
+  }
+}
