@@ -1,4 +1,5 @@
 import 'flowbite';
+import {resizeChat} from './utils';
 
 const themeToggleDarkIcons = document.querySelectorAll(
   '#theme-toggle-dark-icon',
@@ -6,6 +7,7 @@ const themeToggleDarkIcons = document.querySelectorAll(
 const themeToggleLightIcons = document.querySelectorAll(
   '#theme-toggle-light-icon',
 );
+const chatWindow = document.querySelector('#chat-window');
 
 // Change the icons inside the button based on previous settings
 // if (
@@ -71,6 +73,10 @@ if (header) {
   window.addEventListener('scroll', () => {
     header.classList.toggle('header-sticky', window.scrollY > 0);
   });
+}
+
+if (window.scrollY > 0) {
+  header.classList.add('header-sticky');
 }
 
 // function to show and hide the scroll to top button
@@ -170,3 +176,53 @@ if (menuMobileDropdowns) {
     });
   });
 }
+
+// register verification modal
+const verificationInputs = document.querySelectorAll(
+  '.auth-register-verification-input',
+) as NodeListOf<HTMLInputElement>;
+const verificationButton = document.querySelector(
+  '#auth-register-verification-button',
+);
+
+verificationInputs.forEach((input: HTMLInputElement, index1) => {
+  input.addEventListener('keyup', event => {
+    const currentInput = input;
+    const nextInput = input.nextElementSibling as HTMLInputElement;
+    const previousInput = input.previousElementSibling as HTMLInputElement;
+
+    if (currentInput.value.length > 1) {
+      currentInput.value = '';
+      return;
+    }
+
+    if (nextInput && nextInput.hasAttribute('disabled') && currentInput.value) {
+      nextInput.removeAttribute('disabled');
+      nextInput.focus();
+    }
+
+    if (event.key === 'Backspace') {
+      verificationInputs.forEach((input, index2) => {
+        if (index1 <= index2 && previousInput) {
+          input.setAttribute('disabled', 'disabled');
+          currentInput.value = '';
+          previousInput.focus();
+        }
+      });
+    }
+
+    if (!verificationInputs[5].disabled && verificationInputs[5].value !== '') {
+      verificationButton.removeAttribute('disabled');
+      verificationButton.classList.remove(
+        'auth-register-verification-button-disabled',
+      );
+      return;
+    }
+    verificationButton.setAttribute('disabled', 'disabled');
+    verificationButton.classList.add(
+      'auth-register-verification-button-disabled',
+    );
+  });
+});
+
+window.addEventListener('resize', resizeChat);

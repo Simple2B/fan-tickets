@@ -49,7 +49,7 @@ def get_filter_events():
 def get_events():
     events = get_filter_events()
     categories = db.session.scalars(m.Category.select())
-    locations = db.session.scalars(m.Location.select())
+    locations = db.session.scalars(m.Location.select()).all()
 
     log(log.INFO, "Render template events/events.html with events: [%s]", events)
     return render_template("events/events.html", events=events, categories=categories, locations=locations)
