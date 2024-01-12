@@ -105,7 +105,9 @@ def update_location(location_id: int):
                 filename=form.picture.data.filename, mimetype=image_type.mime, file=form.picture.data.read()
             )
 
-            if location.picture:
+            if location.picture and not db.session.scalar(
+                sa.select(m.Location).where(m.Location.id != location.id, m.Location.picture_id == location.picture.id)
+            ):
                 db.session.delete(location.picture)
 
             location.picture = picture
