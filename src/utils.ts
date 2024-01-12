@@ -36,7 +36,7 @@ export function resizeChat() {
   const chatWindow: HTMLElement = document.querySelector('#chat-window');
   const headerBottom: number = header.offsetTop + header.offsetHeight;
   const chatWindowTop: number = chatWindow.offsetTop;
-  const fixedMinDistance: number = 200;
+  const fixedMinDistance: number = 220;
   const maxChatWindowHeight: number = 475;
   const availableSpace: number = chatWindowTop - headerBottom;
 

@@ -1,4 +1,5 @@
 import os
+from random import randint
 from flask_mail import Message
 from flask import Blueprint, render_template, url_for, redirect, flash, request, session
 from flask import current_app as app
@@ -20,18 +21,20 @@ def register():
         picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
         picture: m.Picture = db.session.scalar(picture_query)
         picture_id = picture.id if picture else None
+        verification_code = randint(100000, 999999)
         user = m.User(
             username=form.username.data,
             email=form.email.data,
             picture_id=picture_id,
             password=form.password.data,
+            verification_code=verification_code,
         )
         user.save()
         log(log.INFO, "Form submitted. User: [%s]", user)
 
         # create e-mail message
         msg = Message(
-            subject="New password",
+            subject="Verify your e-mail",
             sender=app.config["MAIL_DEFAULT_SENDER"],
             recipients=[user.email],
         )
@@ -39,21 +42,22 @@ def register():
         if os.environ.get("APP_ENV") == "development":
             url = url_for(
                 "auth.activate",
-                reset_password_uid=user.unique_id,
+                user_id=user.unique_id,
+                verification_code=verification_code,
                 _external=True,
             )
         else:
             base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated/{user.unique_id}"
+            url = f"{base_url}activated/user_id={user.unique_id}&verification_code={verification_code}"
 
         msg.html = render_template(
-            "email/confirm.htm",
+            "email/email_confirm_web.htm",
             user=user,
             url=url,
         )
         mail.send(msg)
 
-        flash("Registration successful. Checkout you email for confirmation!.", "success")
+        flash("Registration successful. You need to confirm your email. Check your email please", "success")
         return redirect(url_for("main.index"))
     elif form.is_submitted():
         log(log.WARNING, "Form submitted error: [%s]", form.errors)
@@ -91,42 +95,55 @@ def logout():
     return redirect(url_for("auth.login"))
 
 
-@auth_blueprint.route("/activated/<reset_password_uid>", methods=["GET", "POST"])
-def activate(reset_password_uid):
-    phone_form = f.PhoneRegistrationForm()
-    query = m.User.select().where(m.User.unique_id == reset_password_uid)
+@auth_blueprint.route("/activated", methods=["GET", "POST"])
+def activate():
+    verification_code = request.args.get("verification_code")
+    user_id = request.args.get("user_id")
+    query = m.User.select().where(m.User.unique_id == user_id)
     user: m.User | None = db.session.scalar(query)
 
     if not user:
         log(log.INFO, "User not found")
-        flash("Incorrect reset password link", "danger")
+        flash("Incorrect email confirmation", "danger")
         return redirect(url_for("main.index"))
 
-    if phone_form.validate_on_submit():
-        # twilio credentials
-        # account_sid = app.config["TWILIO_ACCOUNT_SID"]
-        # auth_token = app.config["TWILIO_AUTH_TOKEN"]
-        # sender = app.config["TWILIO_PHONE_NUMBER"]
-        # receiver = phone_form.phone.data
-        # client = Client(account_sid, auth_token)
+    if user.verification_code != verification_code:
+        log(log.INFO, "Incorrect verification code")
+        flash("Incorrect email confirmation", "danger")
+        return redirect(url_for("main.index"))
 
-        # verification via twilio
-        # verification_code = randint(100000, 999999)
-        # message = client.messages.create(from_=sender, body=verification_code, to=receive
+    user.activated = True
+    login_user(user)
+    log(log.INFO, "User activated")
+    flash("Email confirmed", "success")
+    return redirect(url_for("main.index"))
 
-        # TODO: hardcoded verification code while twilio is not working
-        verification_code = "123456"
+    # TODO: phone verification will be added later
+    # if phone_form.validate_on_submit():
+    # twilio credentials
+    # account_sid = app.config["TWILIO_ACCOUNT_SID"]
+    # auth_token = app.config["TWILIO_AUTH_TOKEN"]
+    # sender = app.config["TWILIO_PHONE_NUMBER"]
+    # receiver = phone_form.phone.data
+    # client = Client(account_sid, auth_token)
 
-        user.verification_code = str(verification_code)
-        user.phone = phone_form.phone.data
-        user.save()
-        login_user(user)
+    # verification via twilio
+    # verification_code = randint(100000, 999999)
+    # message = client.messages.create(from_=sender, body=verification_code, to=receive
 
-        log(log.INFO, "Form submitted. Message: [%s]", verification_code)
-        flash("Um código de confirmação foi enviado para o seu telefone.", "success")
-        return redirect(url_for("auth.phone_verification"))
+    # TODO: hardcoded verification code while twilio is not working
+    # verification_code = "123456"
 
-    return render_template("auth/phone.html", reset_password_uid=reset_password_uid, form=phone_form)
+    #     user.verification_code = str(verification_code)
+    #     user.phone = phone_form.phone.data
+    #     user.save()
+    #     login_user(user)
+
+    #     log(log.INFO, "Form submitted. Message: [%s]", verification_code)
+    #     flash("Um código de confirmação foi enviado para o seu telefone.", "success")
+    #     return redirect(url_for("auth.phone_verification"))
+
+    # return render_template("auth/phone.html", reset_password_uid=reset_password_uid, form=phone_form)
 
 
 @auth_blueprint.route("/phone_verification", methods=["GET", "POST"])
