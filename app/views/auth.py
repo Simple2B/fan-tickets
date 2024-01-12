@@ -48,7 +48,7 @@ def register():
             )
         else:
             base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated/user_id={user.unique_id}&verification_code={verification_code}"
+            url = f"{base_url}activated?user_id={user.unique_id}&verification_code={verification_code}"
 
         msg.html = render_template(
             "email/email_confirm_web.htm",
