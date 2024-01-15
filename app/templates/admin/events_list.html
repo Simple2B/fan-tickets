@@ -4,10 +4,10 @@
             <th scope="col" class="px-6 py-3">#</th>
             <th scope="col" class="px-6 py-3">Name</th>
             <th scope="col" class="px-6 py-3">url</th>
-            <th scope="col" class="px-6 py-3">date</th>
-            <th scope="col" class="px-6 py-3">days from now</th>
-            <th scope="col" class="px-6 py-3">created_by</th>
-            <th scope="col" class="px-6 py-3">approved</th>
+            <th scope="col" class="px-6 py-3 text-center">date</th>
+            <th scope="col" class="px-6 py-3 text-center">days from now</th>
+            <th scope="col" class="px-6 py-3 text-center">created_by</th>
+            <th scope="col" class="px-6 py-3 text-center">approved</th>
         </tr>
     </thead>
 
@@ -16,7 +16,7 @@
         <tr class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td class="w-4 p-4">
                 <div class="flex items-center">
-                    {{ loop.index }}
+                    {{ loop.index + page.skip }}
                 </div>
             </td>
             <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
@@ -26,18 +26,18 @@
                 </a>
             </td>
             <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white underline">
-                <a href="{{ event.url }}">{{ event.url|truncate(30) }}</a>
+                <a href="{{ event.url }}" target="_blank">{{ event.url|truncate(30) }}</a>
             </td>
-            <td class="p-4 space-x-2 whitespace-nowrap">
+            <td class="p-4 space-x-2 whitespace-nowrap text-center">
                 {{ date_from_datetime(event.date_time) }}
             </td>
-            <td class="p-4 space-x-2 whitespace-nowrap">
+            <td class="p-4 space-x-2 whitespace-nowrap text-center">
                 {{ time_delta(event.date_time) }}
             </td>
-            <td class="p-4 space-x-2 whitespace-nowrap">
+            <td class="p-4 space-x-2 whitespace-nowrap text-center">
                 {{ event.creator.username }}
             </td>
-            <td class="p-4 space-x-2 whitespace-nowrap">
+            <td class="p-4 space-x-2 whitespace-nowrap text-center">
                 {{ event.approved }}
             </td>
         </tr>

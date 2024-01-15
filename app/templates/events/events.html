@@ -36,23 +36,20 @@
       </svg>
     </button>
     <!-- Dropdown menu -->
-    <div id="events-filter-location-dropdown"
-      class="z-10 w-full hidden absolute inset-x-0 mx-auto mt-2 p-2 text-white bg-middle-grey rounded-lg shadow">
-      <input autocomplete="off" list="browsers"
-        class="w-full h-9 p-1 text-white text-lg bg-middle-grey placeholder-gray-300 border-transparent outline-none focus:border-transparent focus:ring-0"
-        list="events-filter-location-list" id="events-filter-location-input" name="location"
-        placeholder="choose location" />
-      <datalist class="absolute inset-x-0 p-1 max-h-40 overflow-y-auto bg-datalist-location"
-        id="events-filter-location-list">
+    <div id="dropdown-location"
+      class="dropdown-location-content w-full hidden absolute z-60 mt-1 p-2 bg-filter-gradient-grey border border-grey rounded-lg overflow-auto">
+      <input type="text" placeholder="Search.." id="dropdown-location-input"
+        class="button-gradient-grey focus:ring-0 focus:border-transparent block w-full">
+      <div class="w-full flex flex-col items-start  overflow-auto max-h-40">
         {% for location in locations %}
-        <option class="p-1 text-lg cursor-pointer bg-option-location hover:bg-light-grey"
-          hx-param="location={{ location.name }}" hx-trigger="click" hx-swap="innerHTML" hx-target="#events-list"
-          hx-include="{{ all_filters }}" hx-get="{{ url_for('events.search_events', location=location.name) }}"
-          value="{{ location.name }}">
-          {{ location.name }}
-        </option>
+        <button type="button" hx-param="location={{ location.name }}" hx-trigger="click" hx-swap="innerHTML"
+          hx-target="#events-list" hx-include="{{ all_filters }}"
+          hx-get="{{ url_for('events.search_events', location=location.name) }}"
+          class="dropdown-location-name-button p-1 w-full text-xl text-start border border-transparent rounded-lg hover:bg-middle-grey">
+          {{ location.name}}
+        </button>
         {% endfor %}
-      </datalist>
+      </div>
     </div>
   </div>
 
@@ -81,7 +78,7 @@
 
     <!-- Dropdown menu -->
     <div id="events-filter-date-dropdown"
-      class="z-10 w-48 hidden absolute inset-x-0 mx-auto mt-2 p-2 text-white bg-middle-grey rounded-lg shadow">
+      class="z-10 w-48 hidden absolute inset-x-0 mx-auto mt-2 p-2 text-white border border-grey bg-filter-gradient-grey divide-y divide-gray-100 rounded-lg shadow">
       <div datepicker-autohide class="flex flex-col items-center">
         <div class="relative">
           <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -92,11 +89,11 @@
                 d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
             </svg>
           </div>
-          <input datepicker datepicker-autohide name="date_from" type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          <input datepicker datepicker-autohide name="date_from" type="text" autocomplete="off"
+            class="bg-gray-50 border border-gray-300 text-white text-sm  button-gradient-grey focus:ring-0 focus:border-transparent block w-full ps-10 p-2.5 cursor-pointer"
             placeholder="Select start date" />
         </div>
-        <span class="mx-4 text-white">to</span>
+        <span class="mx-4 text-grey">to</span>
         <div class="relative">
           <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
             <!-- prettier-ignore -->
@@ -106,11 +103,12 @@
                 d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
             </svg>
           </div>
-          <input datepicker datepicker-autohide name="date_to" type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          <input datepicker datepicker-autohide name="date_to" type="text" autocomplete="off"
+            class="bg-gray-50 border border-gray-300 text-white text-sm rounded-lg button-gradient-grey focus:ring-0 focus:border-transparent block w-full ps-10 p-2.5 cursor-pointer"
             placeholder="Select end date" />
         </div>
-        <button id="events-filter-date-apply-button" class="w-full mt-2 py-2 border border-grey rounded-2xl"
+        <button id="events-filter-date-apply-button"
+          class="link mt-3 p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200"
           hx-trigger="click" hx-swap="innerHTML" hx-target="#events-list" hx-include="{{ all_filters }}"
           hx-get="{{ url_for('events.search_events') }}">
           Apply
@@ -152,15 +150,15 @@
     </button>
     <!-- Dropdown menu -->
     <div id="events-filter-categories-dropdown"
-      class="z-10 absolute hidden inset-x-0 mt-2 w-full bg-filter-gradient-grey divide-y divide-gray-100 rounded-lg shadow">
-      <ul class="p-3 space-y-3 text-sm text-white" aria-labelledby="events-filter-categories-dropdown">
+      class="z-10 absolute hidden inset-x-0 mt-2 w-full border border-grey bg-filter-gradient-grey divide-y divide-gray-100 rounded-lg shadow">
+      <ul class="p-3 space-y-3 text-sm text-white " aria-labelledby="events-filter-categories-dropdown">
         {% for category in categories %}
         <li>
           <div class="flex items-center">
             <input name="categories" id="events-filter-categories-input-{{ category.id }}" type="checkbox"
               value="{{ category.name }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#events-list"
               hx-include="{{ all_filters }}" hx-get="{{ url_for('events.search_events') }}"
-              class="w-4 h-4 text-grey bg-filter-gradient-grey border-gray-300 rounded focus:ring-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-1 dark:bg-gray-600 dark:border-gray-500" />
+              class="w-4 h-4 text-grey   rounded input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent" />
             <label for="events-filter-categories-input-{{ category.id }}"
               class="ms-2 text-sm font-medium text-white dark:text-gray-300">{{ category.name }}</label>
           </div>
@@ -172,8 +170,12 @@
 </div>
 
 <!-- prettier-ignore -->
-{% if events|length == 0 %} {
-% include "events/no_events_header.html" %}
+{% if events|length == 0 %}
+<div class="self-stretch flex flex-col gap-8">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8" id="events-list">
+    {% include "events/no_events_header.html" %}
+  </div>
+</div>
 {% else %}
 <div class="self-stretch flex flex-col gap-8">
   <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8" id="events-list">
@@ -194,9 +196,8 @@
     <p class="text-xl">Mais eventos</p>
   </a>
 </div>
+
 {% endif %} {% endblock %} {% block scripts %}
-<!-- prettier-ignore -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/datepicker.min.js" defer></script>
-<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
 <script src="{{ url_for('static', filename='js/event.js') }}" type="text/javascript" defer></script>
 {% endblock %}

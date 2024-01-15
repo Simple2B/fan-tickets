@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% block links %}
 <link rel="stylesheet" href="" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
 {% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -35,7 +34,7 @@
           </svg></button>
       </div>
 
-      <a href="{{url_for('admin.event.get_events')}}" class="w-44 mx-3 my-6">
+      <a href="{{url_for('admin.event.add_event')}}" class="w-44 mx-3 my-6">
         <button type="button"
           class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
           Add
@@ -63,23 +62,23 @@
         <div class="relative w-max cursor-pointer">
           <p class="text-gray-400">Dates</p>
           <div id="event-dates"
-            class="admin-select w-40 h-10 flex items-center bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+            class="relative z-20 admin-select w-40 h-10 flex items-center bg-transparent text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
             <p class="ms-3">Choose dates</p>
           </div>
 
           <div id="event-dates-dropdown"
             class="hidden absolute bg-black border border-gray-400 rounded-lg text-gray-400">
             <p class="m-2">Date from</p>
-            <input datepicker type="text" name="date_from" autocomplete="off" id="date-from"
+            <input datepicker datepicker-autohide type="text" name="date_from" autocomplete="off" id="date-from"
               class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}">
 
             <p class="m-2">Date to</p>
-            <input datepicker type="text" name="date_to" autocomplete="off" id="date-to"
+            <input datepicker datepicker-autohide type="text" name="date_to" autocomplete="off" id="date-to"
               class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 dark:bg-black dark:placeholder-white dark:text-white dark:focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}">
           </div>
-          <svg class="absolute right-2 top-1/2 w-5 fill-current" width="24" height="24" viewBox="0 0 24 24"
+          <svg class="z-0 absolute right-2 top-1/2 w-5 fill-current" width="24" height="24" viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
               d="M18.601 8.39897C18.269 8.06702 17.7309 8.06702 17.3989 8.39897L12 13.7979L6.60099 8.39897C6.26904 8.06702 5.73086 8.06702 5.39891 8.39897C5.06696 8.73091 5.06696 9.2691 5.39891 9.60105L11.3989 15.601C11.7309 15.933 12.269 15.933 12.601 15.601L18.601 9.60105C18.9329 9.2691 18.9329 8.73091 18.601 8.39897Z"
@@ -151,7 +150,7 @@
 
   <!-- Pagination -->
   {% if page.pages > 1 %}
-  <div class="container content-center pagination-block-centered w-full mt-3 flex bg-white dark:bg-black">
+  <div class="content-center pagination-block-centered w-full mt-3 flex bg-white dark:bg-black">
     <nav aria-label="Page navigation example" class="mx-auto">
       <ul class="inline-flex items-center -space-x-px">
         <li>
@@ -227,9 +226,19 @@
       </ul>
     </nav>
   </div>
+
+  <div class="mt-5 flex justify-center">
+    <a href="{{ url_for('admin.event.get_events', download=true) }}">
+      <button type="button" id="events-download-button"
+        class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+        Download
+      </button>
+    </a>
+  </div>
 </div>
 {% endif %}
 
 {% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
 {% endblock %}

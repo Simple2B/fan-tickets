@@ -1,8 +1,11 @@
-{% if events|length == 0 %} {% include "events/no_events_header.html" %} {% else
-%}
+{% if events|length == 0 %}
+{% include "events/no_events_header.html" %}
+{% else%}
 <!-- prettier-ignore -->
 <input type="hidden" name="event_per_page" id="events_per_page" value="{{ events|length }}" />
 <!-- prettier-ignore -->
 {% for event in events %}
-  {% include 'events/event_item.html' %}
+{% include 'events/event_item.html' %}
 {% endfor %} {% endif %}
+
+<!-- <script src="{{ url_for('static', filename='js/event.js') }}" type="text/javascript" defer></script> -->

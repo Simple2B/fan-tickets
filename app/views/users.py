@@ -31,13 +31,9 @@ def get_all():
 
     template = "user/users.html"
     if q or search:
-        query = (
-            m.User.select().where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
-        )
-        count_query = (
-            sa.select(sa.func.count())
-            .where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%"))
-            .select_from(m.User)
+        query = query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
+        count_query = count_query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).select_from(
+            m.User
         )
         template = "user/search.html"
 

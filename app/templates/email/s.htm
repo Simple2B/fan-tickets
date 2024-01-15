@@ -232,7 +232,7 @@
                                               </tr>
                                             </tbody>
                                           </table>
-                                          <h5 style="
+                                          <h5 class="text-teal-700" style="
                                                 color: #1c1c1c;
                                                 padding-top: 0;
                                                 padding-bottom: 0;
@@ -306,7 +306,8 @@
                                               If tou don't register on
                                               {{config["APP_NAME"]}} just
                                               ignore this message, in other
-                                              case please copy verification code.
+                                              case please click confirm button
+                                              below.
                                             </p>
                                           </div>
                                           <table class="s-5 w-full" role="presentation" border="0" cellpadding="0"
@@ -367,11 +368,26 @@
                                               <tr>
                                                 <td style="
                                                       line-height: 24px;
-                                                      font-size: 32px;
+                                                      font-size: 16px;
                                                       border-radius: 6px;
                                                       margin: 0;
-                                                    " align="center">
-                                                  <span>{{ verification_code }}</span>
+                                                    " align="center" bgcolor="#f2b705">
+                                                  <a href="{{url}}" target="_blank" style="
+                                                        color: #000;
+                                                        font-size: 16px;
+                                                        font-family: Helvetica,
+                                                          Arial, sans-serif;
+                                                        text-decoration: none;
+                                                        border-radius: 6px;
+                                                        line-height: 20px;
+                                                        display: block;
+                                                        font-weight: normal;
+                                                        white-space: nowrap;
+                                                        background-color: #f2b705;
+                                                        padding: 8px 12px;
+                                                        border: 1px solid
+                                                          #f2b705;
+                                                      ">Confirm registration</a>
                                                 </td>
                                               </tr>
                                             </tbody>
