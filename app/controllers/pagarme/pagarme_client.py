@@ -102,6 +102,20 @@ class PagarmeClient:
             credit_card=card_input,
         )
 
+    def generate_pix_data(self, tickets_number: int = 1):
+        return s.PagarmePixPayment(
+            payment_method="pix",
+            pix=s.PagarmePix(
+                expires_in=self.PAGARME_CHECKOUT_EXPIRES_IN,
+                additional_information=[
+                    s.PagarmeAdditionalInformation(
+                        name="PIX Tickets Payment",
+                        value=str(tickets_number),
+                    ),
+                ],
+            ),
+        )
+
     # Customers
     def get_customers(
         self, customer_list_query: Optional[s.PagarCustomerListQuery] = None

@@ -5,15 +5,17 @@ from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired
 
 
-class OrderCreateForm(FlaskForm):
-    # TODO remove default value for document_identity_number
-    document_identity_number = StringField("Document Identity Number", default="93095135270")
+class OrderForm(FlaskForm):
+    document_identity_number = StringField("Document Identity Number", validators=[DataRequired()])
+    room_unique_id = StringField("Chat Room ID", validators=[DataRequired()])
+
+
+class OrderCreateForm(OrderForm):
     card_number = StringField("Card Number", validators=[DataRequired()])
     expire = StringField("Expire", validators=[DataRequired()])
     exp_month = IntegerField("Expiration Month")
     exp_year = IntegerField("Expiration Year")
     cvv = StringField("CVV code", validators=[DataRequired()])
-    room_unique_id = StringField("Chat Room ID", validators=[DataRequired()])
 
     def validate_expire(self, field):
         exp_values = field.data.split("/")
