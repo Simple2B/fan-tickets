@@ -38,7 +38,11 @@ def get_all_tickets(filter: s.TicketFilter) -> list[m.Ticket]:
             date_to = datetime.strptime(filter.date_to, CFG.DATE_PICKER_FORMAT)
             tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.date_time <= date_to))
 
-    return db.session.scalars(tickets_query.limit(filter.tickets_per_page + CFG.TICKETS_PER_PAGE)).all()
+    limit = filter.tickets_per_page + CFG.TICKETS_PER_PAGE
+    if filter.tickets_number:
+        limit = filter.tickets_number + CFG.TICKETS_PER_PAGE
+
+    return db.session.scalars(tickets_query.limit(limit)).all()
 
 
 @tickets_blueprint.route("/", methods=["GET", "POST"])
@@ -56,6 +60,7 @@ def get_all():
         or filter.date_to
         or filter.categories
         or filter.tickets_per_page
+        or filter.more_tickets
     ):
         template = "tickets/tickets_list.html"
     else:
@@ -64,6 +69,7 @@ def get_all():
     return render_template(
         template,
         tickets=tickets,
+        tickets_number=len(tickets),
         categories=m.Category.all(),
         locations=m.Location.all(),
     )
