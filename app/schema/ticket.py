@@ -17,7 +17,6 @@ class TicketFilter(BaseModel):
     q: str | None = None
     categories: list[str]
     event_id: int | None = None
-    more_tickets: bool | None = False
     tickets_number: int | None = None
 
     model_config = SettingsConfigDict(from_attributes=True)

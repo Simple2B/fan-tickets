@@ -60,7 +60,7 @@ def get_all():
         or filter.date_to
         or filter.categories
         or filter.tickets_per_page
-        or filter.more_tickets
+        or filter.tickets_number
     ):
         template = "tickets/tickets_list.html"
     else:
