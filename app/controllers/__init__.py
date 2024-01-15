@@ -37,3 +37,4 @@ from .chat_buy import (
     create_user,
 )
 from .pagarme import PagarmeClient
+from .notification_client import FlaskSSENotification

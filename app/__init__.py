@@ -10,7 +10,7 @@ from flask_mail import Mail
 from flask_sse import sse
 
 from app.logger import log
-from app.controllers import PagarmeClient
+from app.controllers import PagarmeClient, FlaskSSENotification
 from .database import db
 
 # instantiate extensions
@@ -18,6 +18,7 @@ login_manager = LoginManager()
 migration = Migrate()
 mail = Mail()
 pagarme_client = PagarmeClient()
+flask_sse_notification = FlaskSSENotification()
 
 
 def create_app(environment="development") -> Flask:
@@ -34,6 +35,7 @@ def create_app(environment="development") -> Flask:
         chat_buy_blueprint,
         pay_blueprint,
         chat_disputes_blueprint,
+        notification_blueprint,
     )
     from app import models as m
 
@@ -68,6 +70,18 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(chat_buy_blueprint)
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
+    app.register_blueprint(notification_blueprint)
+
+    @app.route("/scroll")
+    def scroll():
+        return render_template("_scroll.html")
+
+    @app.route("/scrolling")
+    def scrolling():
+        from flask import request
+
+        page = request.args.get("page", 1, type=int)
+        return render_template("_scrolling.html", page=page)
 
     # SSE
     @sse.before_request
@@ -79,6 +93,11 @@ def create_app(environment="development") -> Flask:
 
         if not channel:
             abort(403)
+
+        if channel == "admin":
+            if current_user.role != m.UserRole.admin.value:
+                abort(403)
+            return
 
         topic, identifier = channel.split(":")
 

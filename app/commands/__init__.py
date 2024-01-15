@@ -6,6 +6,8 @@ from sqlalchemy import or_, orm
 from app import models as m
 from app import db, forms
 from app import schema as s
+from app import flask_sse_notification
+from app.controllers.notification_client import NotificationType
 
 
 def init(app: Flask):
@@ -177,3 +179,7 @@ def init(app: Flask):
         """
         db.session.rollback()
         print("rollbacked")
+
+    @app.cli.command("send-admin-notification")
+    def send_admin_notification(text="test text"):
+        flask_sse_notification.notify_admin(text, db.session, NotificationType.NEW_REGISTRATION)

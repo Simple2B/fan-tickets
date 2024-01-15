@@ -12,6 +12,7 @@ from app.logger import log
 from app import schema as s
 
 from .users_events import users_events
+from .user_notification import UserNotification
 from .utils import ModelMixin, utcnow, gen_uuid
 
 if TYPE_CHECKING:
@@ -38,9 +39,11 @@ class User(db.Model, UserMixin, ModelMixin):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     uuid: orm.Mapped[str] = orm.mapped_column(sa.String(36), default=gen_uuid, unique=True, index=True)
+
     # Foreign keys
     identity_document_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+    last_notification_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("notifications.id"))
 
     # Columns
     username: orm.Mapped[str | None] = orm.mapped_column(sa.String(64), nullable=True)
@@ -97,9 +100,10 @@ class User(db.Model, UserMixin, ModelMixin):
         foreign_keys="Ticket.buyer_id",
         back_populates="buyer",
     )
-    notifications: orm.Mapped[list["Notification"]] = orm.relationship(
-        back_populates="user",
+    notifications: orm.WriteOnlyMapped["Notification"] = orm.relationship(
+        back_populates="users", secondary=UserNotification
     )
+    last_notification: orm.Mapped["Notification"] = orm.relationship(foreign_keys=[last_notification_id])
     notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(back_populates="user")
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.reviewer_id",

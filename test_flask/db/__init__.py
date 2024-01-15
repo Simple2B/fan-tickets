@@ -6,7 +6,7 @@ from app.database import db
 from app import models as m
 from app.logger import log
 from app.models.utils import utcnow
-
+from app.controllers.notification_client import NotificationType
 
 faker = Faker()
 
@@ -149,9 +149,8 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 buyer_id=buyer_id,
             ).save(False)
             m.Notification(
-                type_of=m.NotificationType.TICKET_PUBLISHED.value,
-                text=f"Dispute created for ticket {ticket.unique_id} of user {seller_id}",
-                user_id=seller_id,
+                notification_type=NotificationType.TICKET_PUBLISHED.value,
+                payload={"data": f"Dispute created for ticket {ticket.unique_id} of user {seller_id}"},
             ).save(False)
             if is_sold:
                 m.Payment(
@@ -160,15 +159,13 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                     description=faker.text(max_nb_chars=200),
                 ).save(False)
                 m.Notification(
-                    type_of=m.NotificationType.TICKET_SOLD.value,
-                    text=f"Ticket {ticket.unique_id} of user {seller_id} is sold",
-                    user_id=seller_id,
+                    notification_type=NotificationType.TICKET_SOLD.value,
+                    payload={"data": "Ticket {ticket.unique_id} of user {seller_id} is sold"},
                 ).save(False)
             if ticket.is_available:
                 m.Notification(
-                    type_of=m.NotificationType.TICKET_AVAILABLE.value,
-                    text=f"Ticket {ticket.unique_id} is available",
-                    user_id=seller_id,
+                    notification_type=NotificationType.TICKET_AVAILABLE.value,
+                    payload={"data": f"Ticket {ticket.unique_id} is available"},
                 ).save(False)
     db.session.commit()
 
