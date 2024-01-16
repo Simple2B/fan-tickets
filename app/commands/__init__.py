@@ -4,7 +4,7 @@ from flask import Flask
 import sqlalchemy as sa
 from sqlalchemy import or_, orm
 from app import models as m
-from app import db, forms
+from app import db, forms, pagarme_client
 from app import schema as s
 
 
@@ -181,3 +181,15 @@ def init(app: Flask):
         """
         db.session.rollback()
         print("rollbacked")
+
+    @app.cli.command("create-pagarme-order")
+    def create_pagarme_order():
+        """Create test pagarme order"""
+        import json
+
+        with open("test_flask/assets/pagarme/create_order_pix.json") as json_f:
+            data = json.load(json_f)
+        print("Request:", data)
+        resp = pagarme_client.api.post("https://api.pagar.me/core/v5/orders", json=data)
+        print(resp)
+        print(resp.text)
