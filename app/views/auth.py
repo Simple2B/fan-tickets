@@ -113,6 +113,7 @@ def activate():
         return redirect(url_for("main.index"))
 
     user.activated = True
+    user.save()
     login_user(user)
     log(log.INFO, "User activated")
     flash("Email confirmed", "success")

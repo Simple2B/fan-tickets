@@ -1,5 +1,5 @@
-<table id="events_list" class="w-full text-sm text-left text-black dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:text-black dark:bg-secondary">
+<table id="events_list" class="w-full text-sm text-left  text-gray-400">
+    <thead class="text-xs  uppercase  text-black bg-secondary">
         <tr>
             <th scope="col" class="px-6 py-3">#</th>
             <th scope="col" class="px-6 py-3">Name</th>
@@ -13,19 +13,19 @@
 
     <tbody>
         {% for event in events %}
-        <tr class="bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
             <td class="w-4 p-4">
                 <div class="flex items-center">
                     {{ loop.index + page.skip }}
                 </div>
             </td>
-            <td scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
                 <a href="{{ url_for('admin.event.get_event', event_unique_id=event.unique_id) }}" class="pl-3">
                     <div class="text-base font-semibold">{{ event.name }}</div>
                     <p>{{ event.location.name }} <span>{{ event.category.name }}</span></p>
                 </a>
             </td>
-            <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white underline">
+            <td class="p-4 text-sm font-normal  whitespace-nowrap text-white underline">
                 <a href="{{ event.url }}" target="_blank">{{ event.url|truncate(30) }}</a>
             </td>
             <td class="p-4 space-x-2 whitespace-nowrap text-center">
