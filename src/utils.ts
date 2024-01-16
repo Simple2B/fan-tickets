@@ -34,6 +34,9 @@ export function handleHideElements(
 export function resizeChat() {
   const header: HTMLElement = document.querySelector('.header');
   const chatWindow: HTMLElement = document.querySelector('#chat-window');
+
+  if (!header || !chatWindow) return;
+
   const headerBottom: number = header.offsetTop + header.offsetHeight;
   const chatWindowTop: number = chatWindow.offsetTop;
   const fixedMinDistance: number = 220;
