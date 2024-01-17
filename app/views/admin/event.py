@@ -76,11 +76,11 @@ def get_events():
         events_query = events_query.where(m.Event.approved.is_(False))
         count_query = count_query.where(m.Event.approved.is_(False))
     elif status == "users":
-        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
-        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client.value))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client.value))
     elif status == "admins":
-        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
-        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin.value))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin.value))
 
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
@@ -96,6 +96,7 @@ def get_events():
                 "name",
                 "URL",
                 "Date",
+                "Time",
                 "Days from now",
                 "Created by",
                 "Approved",
@@ -107,11 +108,14 @@ def get_events():
             ]
             writer.writerow(row)
             for index, event in enumerate(events):
+                event_date = event.date_time.strftime("%m/%d/%Y")
+                event_time = event.date_time.strftime("%H:%M")
                 row = [
                     str(index),
                     event.name,
                     event.url,
-                    event.date_time,
+                    event_date,
+                    event_time,
                     (event.date_time - datetime.now(UTC)).days,
                     event.creator.email,
                     event.approved,
