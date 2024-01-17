@@ -88,6 +88,17 @@ def get_tickets():
     ticket_categories = [x.value for x in m.TicketCategory]
     locations = m.Location.all()
 
+    if q or search:
+        try:
+            ticket_id = int(q)
+            tickets_query = tickets_query.where(m.Ticket.id == ticket_id)
+            count_query = count_query.where(m.Ticket.id == ticket_id)
+        except Exception:
+            log(log.INFO, "Invalid ticket id: [%s]", q)
+        template = "admin/tickets_list.html"
+    else:
+        template = "admin/tickets.html"
+
     # Download
     if request.args.get("download"):
         log(log.INFO, "Downloading events table")
@@ -155,17 +166,6 @@ def get_tickets():
             last_modified=now,
         )
 
-    if q or search:
-        try:
-            ticket_id = int(q)
-            tickets_query = tickets_query.where(m.Ticket.id == ticket_id)
-            count_query = count_query.where(m.Ticket.id == ticket_id)
-        except Exception:
-            log(log.INFO, "Invalid ticket id: [%s]", q)
-        template = "admin/tickets_list.html"
-    else:
-        template = "admin/tickets.html"
-
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     tickets_query = tickets_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
@@ -189,6 +189,7 @@ def get_tickets():
         date_from=date_from_str,
         date_to=date_to_str,
         location_id=location_id,
+        q=q,
     )
 
 
