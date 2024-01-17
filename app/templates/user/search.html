@@ -76,8 +76,6 @@
     </table>
 
     {% if page.pages > 1 %}
-    <p>page.query: {{ page.query }}</p>
-    <p>search_query: {{ search_query }}</p>
     <div class="content-center pagination-block-centered w-full mt-3 flex  bg-black">
         <nav aria-label="Page navigation example" class="mx-auto">
             <ul class="inline-flex items-center -space-x-px">
@@ -157,7 +155,7 @@
     {% endif %}
 
     <div class="mt-5 flex justify-center">
-        <a href="{{ url_for('user.get_all', download=true, search_query=search_query, search=search) }}">
+        <a href="{{ url_for('user.get_all', download=true, q=q, search=search) }}">
             <button type="button"
                 class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
                 Download

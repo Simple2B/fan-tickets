@@ -25,17 +25,22 @@ bp = Blueprint("user", __name__, url_prefix="/user")
 @login_required
 def get_all():
     search = request.args.get("search")
-    q = request.args.get("search_query")
+    q = request.args.get("q")
+    page = request.args.get("page")
     query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
 
     template = "user/users.html"
+
     if q or search:
         query = query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
         count_query = count_query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).select_from(
             m.User
         )
-        template = "user/search.html"
+        if page and int(page) > 1:
+            template = "user/users.html"
+        else:
+            template = "user/search.html"
 
     # Download
     if request.args.get("download"):
@@ -88,7 +93,6 @@ def get_all():
         ).scalars(),
         page=pagination,
         search_query=q,
-        # visibility=False,
     )
 
 
