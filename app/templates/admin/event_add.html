@@ -2,6 +2,7 @@
 {% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <form action="{{url_for('admin.event.add_event')}}" method="post">
+    {{ form.hidden_tag() }}
     <table class="w-full mt-3 text-sm text-left  text-gray-400">
       <thead class="text-xs  uppercase text-black  bg-secondary ">
         <tr>
