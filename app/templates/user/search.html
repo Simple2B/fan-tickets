@@ -5,6 +5,7 @@
                 <th scope="col" class="px-6 py-3">#</th>
                 <th scope="col" class="px-6 py-3">Name</th>
                 <th scope="col" class="px-6 py-3">Phone</th>
+                <th scope="col" class="px-6 py-3  text-center">Address</th>
                 <th scope="col" class="px-6 py-3 flex justify-center">Is activated</th>
                 <th scope="col" class="px-6 py-3">Actions</th>
             </tr>
@@ -45,6 +46,10 @@
 
                 <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
                     {{ user.phone }}
+                </td>
+
+                <td class="p-4 text-base text-center font-normal  whitespace-nowrap text-white">
+                    {{ user.address }}
                 </td>
 
                 <td class="p-4 text-base text-center font-normal  whitespace-nowrap text-white">

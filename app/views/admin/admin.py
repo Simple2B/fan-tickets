@@ -34,12 +34,16 @@ def picture_upload():
 
 @admin_blueprint.route("/tickets")
 def get_tickets():
+    q = request.args.get("q", "")
+    search = request.args.get("search")
     buyer_unique_id = request.args.get("buyer_unique_id")
     seller_unique_id = request.args.get("seller_unique_id")
     location_id = request.args.get("location_id")
-    location_id = None if location_id == "all" else location_id
+    location_id = None if location_id == "all" or location_id == "None" else location_id
     date_from_str = request.args.get("date_from")
+    date_from_str = None if date_from_str == "all" or date_from_str == "None" else date_from_str
     date_to_str = request.args.get("date_to")
+    date_to_str = None if date_to_str == "all" or date_to_str == "None" else date_to_str
     ticket_type = request.args.get("ticket_type")
     ticket_type = None if ticket_type == "all" or ticket_type == "None" else ticket_type
     ticket_category = request.args.get("ticket_category")
@@ -92,9 +96,11 @@ def get_tickets():
             writer = csv.writer(proxy)
             row = [
                 "#",
+                "ID",
                 "name",
                 "URL",
                 "Date",
+                "Time",
                 "Days from now",
                 "Type",
                 "Category",
@@ -109,11 +115,15 @@ def get_tickets():
             ]
             writer.writerow(row)
             for index, ticket in enumerate(tickets):
+                ticket_date = ticket.event.date_time.strftime("%m/%d/%Y")
+                ticket_time = ticket.event.date_time.strftime("%H:%M")
                 row = [
                     str(index),
+                    str(ticket.id).zfill(8),
                     ticket.event.name,
                     ticket.event.url,
-                    ticket.event.date_time,
+                    ticket_date,
+                    ticket_time,
                     (ticket.event.date_time - datetime.now(UTC)).days,
                     ticket.ticket_type,
                     ticket.ticket_category,
@@ -145,6 +155,17 @@ def get_tickets():
             last_modified=now,
         )
 
+    if q or search:
+        try:
+            ticket_id = int(q)
+            tickets_query = tickets_query.where(m.Ticket.id == ticket_id)
+            count_query = count_query.where(m.Ticket.id == ticket_id)
+        except Exception:
+            log(log.INFO, "Invalid ticket id: [%s]", q)
+        template = "admin/tickets_list.html"
+    else:
+        template = "admin/tickets.html"
+
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     tickets_query = tickets_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
@@ -153,7 +174,7 @@ def get_tickets():
     ).scalars()
 
     return render_template(
-        "admin/tickets.html",
+        template,
         tickets=tickets,
         ticket_types=ticket_types,
         ticket_categories=ticket_categories,

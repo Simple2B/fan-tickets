@@ -37,6 +37,48 @@ def get_all():
         )
         template = "user/search.html"
 
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading users table")
+        users = db.session.scalars(query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "First Name",
+                "Last Name",
+                "Email",
+                "Phone",
+                "Address",
+                "Is activated",
+            ]
+            writer.writerow(row)
+            for index, user in enumerate(users):
+                row = [
+                    str(index),
+                    user.name,
+                    user.last_name,
+                    user.email,
+                    user.phone,
+                    user.address,
+                    user.activated,
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_users_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
+        )
+
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     return render_template(

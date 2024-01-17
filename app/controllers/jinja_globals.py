@@ -58,3 +58,7 @@ def get_chatbot_id():
 
 def round_to_two_places(number: float) -> float:
     return round(number, 2)
+
+
+def get_ticket_subsequential_number(ticket_id: int) -> str:
+    return str(ticket_id).zfill(8)
