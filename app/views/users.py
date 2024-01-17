@@ -26,7 +26,7 @@ bp = Blueprint("user", __name__, url_prefix="/user")
 def get_all():
     search = request.args.get("search")
     q = request.args.get("q")
-    page = request.args.get("page")
+    pg = request.args.get("pg")
     query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
 
@@ -37,7 +37,7 @@ def get_all():
         count_query = count_query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).select_from(
             m.User
         )
-        if page and int(page) > 1:
+        if pg:
             template = "user/users.html"
         else:
             template = "user/search.html"
