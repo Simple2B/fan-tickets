@@ -81,7 +81,7 @@
             <input type="number" min="0" max="24" name="hours" value="{{ event.date_time.strftime('%H') }}"
               class="w-12 p-1.5 text-center bg-transparent rounded-lg focus:outline-none focus:border-gray-400 focus:ring-0 active:ring-0 active:border-transparent">
             <p class="mx-1">:</p>
-            <input type="number" min="0" max="24" name="minutes" value="{{ event.date_time.strftime('%M') }}"
+            <input type="number" min="0" max="59" name="minutes" value="{{ event.date_time.strftime('%M') }}"
               class="w-12 p-1.5 text-center bg-transparent rounded-lg focus:outline-none focus:border-gray-400 focus:ring-0 active:ring-0 active:border-transparent">
           </td>
         </tr>
