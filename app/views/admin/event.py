@@ -160,6 +160,10 @@ def get_events():
         status_selected=status,
         page=pagination,
         q=q,
+        location_id=location_id,
+        date_from=date_from_str,
+        date_to=date_to_str,
+        category_id=category_id,
     )
 
 
