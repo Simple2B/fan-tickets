@@ -129,7 +129,7 @@
 
     <div class="mt-5 flex justify-center">
         <a
-            href="{{ url_for('admin.event.get_events', download=true, location_id=location_id, date_from=date_from, date_to=date_to, category_id=category_id) }}">
+            href="{{ url_for('admin.event.get_events', download=true, location_id=location_id, date_from=date_from, date_to=date_to, category_id=category_id, q=page.query) }}">
             <button type="button" id="events-download-button"
                 class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
                 Download
