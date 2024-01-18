@@ -15,6 +15,7 @@ class EventForm(FlaskForm):
     minutes = IntegerField("Hours", [DataRequired()])
     category = SelectField("Category", choices=[])
     location = SelectField("Location", choices=[])
+    venue = StringField("Venue", [DataRequired(), Length(min=3, max=64)])
     picture = FileField("Picture")
     approved = SelectField(
         "Approved",

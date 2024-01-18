@@ -104,6 +104,7 @@ def get_events():
                 "Warning",
                 "Category",
                 "Location",
+                "Venue",
                 "Tickets",
             ]
             writer.writerow(row)
@@ -123,6 +124,7 @@ def get_events():
                     event.warning,
                     event.category.name,
                     event.location.name,
+                    event.venue,
                     str(len(event.tickets)),
                 ]
                 writer.writerow(row)
@@ -182,6 +184,7 @@ def get_event(event_unique_id):
         form.warning.data = event.warning
         form.category.data = str(event.category_id)
         form.location.data = str(event.location_id)
+        form.venue.data = event.venue
         form.approved.data = event.approved
 
         log(log.INFO, "request.method = GET. Event form populated: [%s]", event)
@@ -202,6 +205,7 @@ def get_event(event_unique_id):
         event.date_time = datetime.combine(form.date_time.data, time(hour=form.hours.data, minute=form.minutes.data))
         event.category_id = int(form.category.data)
         event.location_id = int(form.location.data)
+        event.venue = form.venue.data
         event.approved = form.approved.data
 
         if form.picture.data:
@@ -257,6 +261,7 @@ def add_event():
             date_time=event_date_time,
             category_id=form.category.data,
             location_id=form.location.data,
+            venue=form.venue.data,
             creator_id=current_user.id,
             approved=form.approved.data,
         ).save()

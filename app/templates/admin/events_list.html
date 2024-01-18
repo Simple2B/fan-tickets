@@ -23,7 +23,8 @@
                 <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
                     <a href="{{ url_for('admin.event.get_event', event_unique_id=event.unique_id) }}" class="pl-3">
                         <div class="text-base font-semibold">{{ event.name }}</div>
-                        <p>{{ event.location.name }} <span>{{ event.category.name }}</span></p>
+                        <p>{{ event.location.name }} <span class="text-gray-400">{{ event.category.name }}</span></p>
+                        <p class="text-gray-600">{{ event.venue }}</p>
                     </a>
                 </td>
                 <td class="p-4 text-sm font-normal  whitespace-nowrap text-white underline">

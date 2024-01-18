@@ -118,11 +118,15 @@ def get_tickets():
                 "Description",
                 "Warning",
                 "Location",
+                "Venue",
                 "Seller",
                 "Section",
-                "Queue" "Seat" "Price net",
+                "Queue",
+                "Seat",
+                "Price net",
                 "Price gross",
-                "Is sold" "Buyer",
+                "Is sold",
+                "Buyer",
             ]
             writer.writerow(row)
             for index, ticket in enumerate(tickets):
@@ -141,6 +145,7 @@ def get_tickets():
                     ticket.description,
                     ticket.warning,
                     ticket.event.location.name,
+                    ticket.event.venue,
                     ticket.seller.email,
                     ticket.section,
                     ticket.queue,

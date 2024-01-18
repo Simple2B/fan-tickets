@@ -33,26 +33,6 @@
 
         <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
           <td class="w-4 p-4">
-            <div class="flex items-center">{{ form.observations.label() }}</div>
-          </td>
-          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
-            {{ form.observations(class="w-full max-w-2xl bg-black border-0
-            rounded-lg focus:ring-secondary") }}
-          </td>
-        </tr>
-
-        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
-          <td class="w-4 p-4">
-            <div class="flex items-center">{{ form.warning.label() }}</div>
-          </td>
-          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
-            {{ form.warning(class="w-full max-w-2xl bg-black border-0 rounded-lg
-            focus:ring-secondary")}}
-          </td>
-        </tr>
-
-        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
-          <td class="w-4 p-4">
             <div class="flex items-center">{{ form.date_time.label() }}</div>
           </td>
           <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
@@ -111,6 +91,41 @@
             form.errors.location %}
             <small class="text-danger">{{error}}</small>
             {% endfor %}
+          </td>
+        </tr>
+
+        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">venue</div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            {{form.venue( class="max-w-2xl border-0
+            placeholder: text-sm rounded-lg block
+            w-full p-2 bg-black placeholder-white text-white
+            focus:ring-secondary cursor-pointer" ) }} {% for error in
+            form.errors.venue %}
+            <small class="text-danger">{{error}}</small>
+            {% endfor %}
+          </td>
+        </tr>
+
+        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">{{ form.observations.label() }}</div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            {{ form.observations(class="w-full max-w-2xl bg-black border-0
+            rounded-lg focus:ring-secondary") }}
+          </td>
+        </tr>
+
+        <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">{{ form.warning.label() }}</div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            {{ form.warning(class="w-full max-w-2xl bg-black border-0 rounded-lg
+            focus:ring-secondary")}}
           </td>
         </tr>
 
