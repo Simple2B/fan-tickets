@@ -12,7 +12,7 @@ class EventForm(FlaskForm):
     warning = StringField("Warning", [DataRequired(), Length(min=3, max=64)])
     date_time = DateField("Datetime", [DataRequired()], "%m/%d/%Y")
     hours = IntegerField("Hours", [DataRequired()])
-    minutes = IntegerField("Hours", [DataRequired()])
+    minutes = IntegerField("Hours")
     category = SelectField("Category", choices=[])
     location = SelectField("Location", choices=[])
     venue = StringField("Venue", [DataRequired(), Length(min=3, max=64)])
