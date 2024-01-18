@@ -2,13 +2,13 @@
   "items": [
     {
       "amount": 1000,
-      "code": "bd60c1e9-97f3-4e1d-84e6-234851e26050",
+      "code": "bd60c1e9-97f3-4e1d-84e6-234851e260",
       "description": "Testing Concert Ticket",
       "quantity": 2,
       "category": "Testing Concert Event"
     }
   ],
-  "customer_id": "cus_0rbko7gC9dF7o5WQ",
+  "customer_id": "cus_0rbko7gC9dF7o5W",
   "code": "bd60c1e9-97f3-4e1d-84e6-234851e26050",
   "payments": [
     {

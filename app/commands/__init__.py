@@ -185,11 +185,10 @@ def init(app: Flask):
     @app.cli.command("create-pagarme-order")
     def create_pagarme_order():
         """Create test pagarme order"""
-        import json
 
         with open("test_flask/assets/pagarme/create_order_pix.json") as json_f:
-            data = json.load(json_f)
-        print("Request:", data)
-        resp = pagarme_client.api.post("https://api.pagar.me/core/v5/orders", json=data)
+            json_data = json_f.read()
+            data = s.PagarmeCreateOrderPix.model_validate_json(json_data)
+
+        resp = pagarme_client.create_order_pix(data)
         print(resp)
-        print(resp.text)

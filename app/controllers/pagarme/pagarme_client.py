@@ -2,13 +2,18 @@ from typing import Optional
 from urllib.parse import urljoin
 from http import HTTPStatus
 import requests
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app import schema as s
 from app.logger import log
 
 from config import BaseConfig
-from .exceptions import APIGetCustomerError, WrongUrlError
+from .exceptions import (
+    APIGetCustomerError,
+    WrongUrlError,
+    APIConnectionError,
+    APICreateOrderError,
+)
 
 
 class PagarmeClient:
@@ -102,19 +107,17 @@ class PagarmeClient:
             credit_card=card_input,
         )
 
-    def generate_pix_data(self, tickets_number: int = 1):
-        return s.PagarmePixPayment(
-            payment_method="pix",
-            pix=s.PagarmePix(
-                expires_in=self.PAGARME_CHECKOUT_EXPIRES_IN,
-                additional_information=[
-                    s.PagarmeAdditionalInformation(
-                        name="PIX Tickets Payment",
-                        value=str(tickets_number),
-                    ),
-                ],
-            ),
-        )
+    def create_order_pix(self, create_order_data: s.PagarmeCreateOrderPix):
+        response = self.api.post(self.__generate_url__("orders"), json=create_order_data.model_dump(exclude_none=True))
+        if response.status_code == HTTPStatus.FORBIDDEN:
+            raise APIConnectionError
+        try:
+            response_data = s.PagarmeCreateOrderResponsePix.model_validate(response.json())
+        except ValidationError:
+            log(log.ERROR, "create_order response: [%s]", response.text)
+            raise APICreateOrderError(response.text)
+
+        return response_data
 
     # Customers
     def get_customers(
