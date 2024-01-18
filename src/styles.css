@@ -522,3 +522,9 @@ select::-ms-expand {
   height: 5px;
   width: 5px;
 }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

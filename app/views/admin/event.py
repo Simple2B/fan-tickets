@@ -1,5 +1,5 @@
-from datetime import datetime, UTC
 import io
+from datetime import datetime, time, UTC
 import csv
 import filetype
 import sqlalchemy as sa
@@ -199,7 +199,7 @@ def get_event(event_unique_id):
         event.observations = form.observations.data
         event.warning = form.warning.data
 
-        event.date_time = form.date_time.data
+        event.date_time = datetime.combine(form.date_time.data, time(hour=form.hours.data, minute=form.minutes.data))
         event.category_id = int(form.category.data)
         event.location_id = int(form.location.data)
         event.approved = form.approved.data
@@ -248,12 +248,13 @@ def add_event():
             flash(f"Event already exists: {form.name.data}", "danger")
             return render_template("admin/event_add.html", form=form)
 
+        event_date_time = datetime.combine(form.date_time.data, time(hour=form.hours.data, minute=form.minutes.data))
         event = m.Event(
             name=form.name.data,
             url=form.url.data,
             observations=form.observations.data,
             warning=form.warning.data,
-            date_time=form.date_time.data,
+            date_time=event_date_time,
             category_id=form.category.data,
             location_id=form.location.data,
             creator_id=current_user.id,

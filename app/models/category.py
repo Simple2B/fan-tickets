@@ -8,6 +8,7 @@ from .utils import ModelMixin, gen_uuid, utcnow
 
 if TYPE_CHECKING:
     from .picture import Picture
+    from .event import Event
 
 
 class Category(db.Model, ModelMixin):
@@ -24,6 +25,7 @@ class Category(db.Model, ModelMixin):
     created_at: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True), default=utcnow)
 
     picture: orm.Mapped["Picture"] = orm.relationship()
+    events: orm.Mapped[list["Event"]] = orm.relationship("Event", back_populates="category")
 
     def __repr__(self):
         return f"<{self.id}: {self.name}>"
