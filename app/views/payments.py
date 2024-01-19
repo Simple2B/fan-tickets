@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, request
 from flask_login import login_required, current_user
 
 from app.logger import log
@@ -32,6 +32,7 @@ pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 @login_required
 def ticket_order():
     cu: m.User = current_user
+    payment_method = request.args.get("payment_method", "pix")
 
     if not cu.phone:
         return render_template(
@@ -40,7 +41,10 @@ def ticket_order():
             now=utcnow_chat_format(),
         )
 
-    card_form = f.OrderCreateForm()
+    if payment_method == "pix":
+        card_form = f.OrderForm()
+    elif payment_method == "credit_card":
+        card_form = f.OrderCreateForm()
     room = get_room(card_form.room_unique_id.data)
 
     if not room:
@@ -111,41 +115,47 @@ def ticket_order():
 
     assert pagarme_customer
 
-    if user.card_id:
-        card_details = pagarme_client.get_customer_card(
-            customer_id=pagarme_customer.id,
-            card_id=user.card_id,
-        )
-    else:
-        card_data = s.PagarmeCardCreate(
-            customer_id=pagarme_customer.id,
-            holder_name=pagarme_customer.name,
-            number=card_form.card_number.data,
-            exp_month=card_form.exp_month.data,
-            exp_year=card_form.exp_year.data,
-            cvv=card_form.cvv.data,
-            billing_address=billing_address,
-        )
+    if payment_method == "credit_card":
+        if user.card_id:
+            card_details = pagarme_client.get_customer_card(
+                customer_id=pagarme_customer.id,
+                card_id=user.card_id,
+            )
+        else:
+            card_data = s.PagarmeCardCreate(
+                customer_id=pagarme_customer.id,
+                holder_name=pagarme_customer.name,
+                number=card_form.card_number.data,
+                exp_month=card_form.exp_month.data,
+                exp_year=card_form.exp_year.data,
+                cvv=card_form.cvv.data,
+                billing_address=billing_address,
+            )
 
         card_details = pagarme_client.create_customer_card(card_data)
 
-    card_input = s.PagarmeCardInput(
-        card_id=card_details.id,
-        first_six_digits=card_details.first_six_digits,
-        last_four_digits=card_details.last_four_digits,
-        brand=card_details.brand,
-        holder_name=card_details.holder_name,
-        exp_month=card_details.exp_month,
-        exp_year=card_details.exp_year,
-        billing_address=billing_address,
-        status=card_details.status,
-        type=card_details.type,
-        customer=pagarme_customer,
-    )
+        card_input = s.PagarmeCardInput(
+            card_id=card_details.id,
+            first_six_digits=card_details.first_six_digits,
+            last_four_digits=card_details.last_four_digits,
+            brand=card_details.brand,
+            holder_name=card_details.holder_name,
+            exp_month=card_details.exp_month,
+            exp_year=card_details.exp_year,
+            billing_address=billing_address,
+            status=card_details.status,
+            type=card_details.type,
+            customer=pagarme_customer,
+        )
 
-    checkout = [
-        pagarme_client.generate_checkout_data(card_input),
-    ]
+        checkout = [
+            pagarme_client.generate_checkout_data(card_input),
+        ]
+
+    elif payment_method == "pix":
+        checkout = [
+            pagarme_client.generate_pix_data(tickets_number=len(tickets)),
+        ]
 
     order_items = []
     for ticket in tickets:

@@ -25,21 +25,64 @@ bp = Blueprint("user", __name__, url_prefix="/user")
 @login_required
 def get_all():
     search = request.args.get("search")
-    q = request.args.get("search_query")
+    q = request.args.get("q")
+    pg = request.args.get("pg")
     query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
 
     template = "user/users.html"
+
     if q or search:
-        query = (
-            m.User.select().where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
+        query = query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
+        count_query = count_query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).select_from(
+            m.User
         )
-        count_query = (
-            sa.select(sa.func.count())
-            .where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%"))
-            .select_from(m.User)
+        if pg:
+            template = "user/users.html"
+        else:
+            template = "user/search.html"
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading users table")
+        users = db.session.scalars(query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "First Name",
+                "Last Name",
+                "Email",
+                "Phone",
+                "Address",
+                "Is activated",
+            ]
+            writer.writerow(row)
+            for index, user in enumerate(users):
+                row = [
+                    str(index),
+                    user.name,
+                    user.last_name,
+                    user.email,
+                    user.phone,
+                    user.address,
+                    user.activated,
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_users_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
         )
-        template = "user/search.html"
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 
@@ -50,7 +93,6 @@ def get_all():
         ).scalars(),
         page=pagination,
         search_query=q,
-        # visibility=False,
     )
 
 

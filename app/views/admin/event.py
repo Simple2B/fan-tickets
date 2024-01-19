@@ -1,5 +1,6 @@
-from datetime import datetime
-
+import io
+from datetime import datetime, time, UTC
+import csv
 import filetype
 import sqlalchemy as sa
 
@@ -10,8 +11,9 @@ from flask import (
     redirect,
     url_for,
     flash,
+    send_file,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app.controllers import create_pagination
 
 from app import models as m
@@ -23,7 +25,6 @@ event_blueprint = Blueprint("event", __name__, url_prefix="/event")
 
 
 @event_blueprint.route("/events")
-@login_required
 def get_events():
     # Filters
     q = request.args.get("q")
@@ -75,14 +76,72 @@ def get_events():
         events_query = events_query.where(m.Event.approved.is_(False))
         count_query = count_query.where(m.Event.approved.is_(False))
     elif status == "users":
-        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
-        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client))
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.client.value))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.client.value))
     elif status == "admins":
-        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
-        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin))
+        events_query = events_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin.value))
+        count_query = count_query.where(m.Event.creator.has(m.User.role == m.UserRole.admin.value))
 
     locations = db.session.scalars(locations_query).all()
     categories = db.session.scalars(categories_query).all()
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading events table")
+        events = db.session.scalars(events_query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "name",
+                "URL",
+                "Date",
+                "Time",
+                "Days from now",
+                "Created by",
+                "Approved",
+                "Observations",
+                "Warning",
+                "Category",
+                "Location",
+                "Venue",
+                "Tickets",
+            ]
+            writer.writerow(row)
+            for index, event in enumerate(events):
+                event_date = event.date_time.strftime("%m/%d/%Y")
+                event_time = event.date_time.strftime("%H:%M")
+                row = [
+                    str(index),
+                    event.name,
+                    event.url,
+                    event_date,
+                    event_time,
+                    (event.date_time - datetime.now(UTC)).days,
+                    event.creator.email,
+                    event.approved,
+                    event.observations,
+                    event.warning,
+                    event.category.name,
+                    event.location.name,
+                    event.venue,
+                    str(len(event.tickets)),
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_events_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
+        )
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 
@@ -101,11 +160,14 @@ def get_events():
         status_selected=status,
         page=pagination,
         q=q,
+        location_id=location_id,
+        date_from=date_from_str,
+        date_to=date_to_str,
+        category_id=category_id,
     )
 
 
 @event_blueprint.route("/event/<event_unique_id>", methods=["GET", "POST"])
-@login_required
 def get_event(event_unique_id):
     event_query = m.Event.select().where(m.Event.unique_id == event_unique_id)
     event: m.Event = db.session.scalar(event_query)
@@ -126,6 +188,7 @@ def get_event(event_unique_id):
         form.warning.data = event.warning
         form.category.data = str(event.category_id)
         form.location.data = str(event.location_id)
+        form.venue.data = event.venue
         form.approved.data = event.approved
 
         log(log.INFO, "request.method = GET. Event form populated: [%s]", event)
@@ -143,9 +206,10 @@ def get_event(event_unique_id):
         event.observations = form.observations.data
         event.warning = form.warning.data
 
-        event.date_time = form.date_time.data
+        event.date_time = datetime.combine(form.date_time.data, time(hour=form.hours.data, minute=form.minutes.data))
         event.category_id = int(form.category.data)
         event.location_id = int(form.location.data)
+        event.venue = form.venue.data
         event.approved = form.approved.data
 
         if form.picture.data:
@@ -174,7 +238,6 @@ def get_event(event_unique_id):
 
 
 @event_blueprint.route("/add_event", methods=["GET", "POST"])
-@login_required
 def add_event():
     form = f.EventForm()
 
@@ -193,14 +256,16 @@ def add_event():
             flash(f"Event already exists: {form.name.data}", "danger")
             return render_template("admin/event_add.html", form=form)
 
+        event_date_time = datetime.combine(form.date_time.data, time(hour=form.hours.data, minute=form.minutes.data))
         event = m.Event(
             name=form.name.data,
             url=form.url.data,
             observations=form.observations.data,
             warning=form.warning.data,
-            date_time=form.date_time.data,
+            date_time=event_date_time,
             category_id=form.category.data,
             location_id=form.location.data,
+            venue=form.venue.data,
             creator_id=current_user.id,
             approved=form.approved.data,
         ).save()

@@ -176,6 +176,41 @@
     linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
   border-radius: 16px;
   border: 1px solid transparent;
+  color: #fff;
+}
+
+.button-gradient-grey:-webkit-autofill,
+.button-gradient-grey:-webkit-autofill:hover,
+.button-gradient-grey:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px #1c1c1c inset !important;
+  box-shadow: 0 0 0 30px #1c1c1c inset !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.button-gradient-grey:-moz-placeholder {
+  color: #fff !important;
+}
+
+.input-gradient-black {
+  background: linear-gradient(#1c1c1c, #1c1c1c) padding-box,
+    linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
+  border: 1px solid transparent;
+}
+
+input:-webkit-autofill {
+  background: linear-gradient(#1c1c1c, #1c1c1c) padding-box,
+    linear-gradient(180deg, #828282 0%, #323232 100%) border-box;
+  background-color: #1c1c1c;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus input:-webkit-autofill {
+  border: 1px solid transparent;
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+  background-color: #000;
 }
 
 /* header */
@@ -486,4 +521,10 @@ select::-ms-expand {
 ::-webkit-scrollbar {
   height: 5px;
   width: 5px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

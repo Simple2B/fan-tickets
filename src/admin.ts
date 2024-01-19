@@ -16,3 +16,14 @@ datesButton.addEventListener('click', () => {
 
   handleHideElements(datesDropdown, datePickerArray);
 });
+
+const searchInput: HTMLInputElement = document.querySelector(
+  '#table-search-events',
+);
+const searchInputButton = document.querySelector('#table-search-events-button');
+if (searchInputButton && searchInput) {
+  searchInputButton.addEventListener('click', () => {
+    searchInput.value = '';
+    searchInput.click();
+  });
+}

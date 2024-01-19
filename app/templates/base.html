@@ -11,6 +11,13 @@
     {% block meta %}{% endblock %}
 
     <!-- styles -->
+  {% block meta %}{% endblock %}
+  <style type="text/css">
+    body {
+      background: #1c1c1c;
+      margin: 0
+    }
+  </style>
 
     <link
       href="{{ url_for('static', filename='css/styles.css') }}"
@@ -28,6 +35,8 @@
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %} {% for category, message in messages %}
     <!-- Flash message markup -->
+<body class="bg-black text-white font-body">
+  <!-- Header -->
 
     <div
       id="toast-{{category}}"
@@ -55,6 +64,9 @@
         </svg>
       </button>
     </div>
+  <div id="toast-{{category}}"
+    class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary{% endif %} bg-black border border-grey rounded-lg shadow "
+    role="alert">
 
     {% endfor %} {% endif %} {% endwith %} {% block body %} {% include
     'chat/chat_window.html' %}

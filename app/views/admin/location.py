@@ -2,7 +2,6 @@ import filetype
 import sqlalchemy as sa
 
 from flask import Blueprint, redirect, url_for, render_template, request, flash
-from flask_login import login_required
 from app import models as m, db, forms as f
 from app.logger import log
 
@@ -11,13 +10,11 @@ location_blueprint = Blueprint("location", __name__, url_prefix="/location")
 
 
 @location_blueprint.route("/")
-@login_required
 def location_index():
     return redirect(url_for("location.get_locations"))
 
 
 @location_blueprint.route("/locations")
-@login_required
 def get_locations():
     locations = m.Location.all()
     log(log.INFO, "Locations: [%s]", locations)
@@ -25,7 +22,6 @@ def get_locations():
 
 
 @location_blueprint.route("/add_location", methods=["GET", "POST"])
-@login_required
 def add_location():
     form = f.LocationForm()
     if request.method == "GET":
@@ -67,7 +63,6 @@ def add_location():
 
 
 @location_blueprint.route("/location_delete/<location_id>", methods=["GET"])
-@login_required
 def location_delete(location_id):
     location = db.session.get(m.Location, location_id)
 
@@ -85,7 +80,6 @@ def location_delete(location_id):
 
 
 @location_blueprint.route("/update_location/<location_id>", methods=["GET", "POST"])
-@login_required
 def update_location(location_id: int):
     form = f.LocationForm()
     location = db.session.get(m.Location, location_id)
@@ -111,7 +105,9 @@ def update_location(location_id: int):
                 filename=form.picture.data.filename, mimetype=image_type.mime, file=form.picture.data.read()
             )
 
-            if location.picture:
+            if location.picture and not db.session.scalar(
+                sa.select(m.Location).where(m.Location.id != location.id, m.Location.picture_id == location.picture.id)
+            ):
                 db.session.delete(location.picture)
 
             location.picture = picture

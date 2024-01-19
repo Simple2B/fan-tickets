@@ -204,6 +204,8 @@
                                               width: 100%;
                                               margin: 0;
                                               padding: 20px;
+                                              background: linear-gradient(314deg, #393939 -43.03%, #1C1C1C 70.15%);
+                                              color: #fff;
                                             " align="left">
                                           <h1 class="h3" style="
                                                 padding-top: 0;
@@ -233,7 +235,7 @@
                                             </tbody>
                                           </table>
                                           <h5 style="
-                                                color: #1c1c1c;
+                                                color: #fff;
                                                 padding-top: 0;
                                                 padding-bottom: 0;
                                                 font-weight: 500;
@@ -296,17 +298,17 @@
                                             </tbody>
                                           </table>
                                           <div class="space-y-3">
-                                            <p class="text-gray-700" style="
+                                            <p style="
                                                   line-height: 24px;
                                                   font-size: 16px;
-                                                  color: #4a5568;
+                                                  color: #fff;
                                                   width: 100%;
                                                   margin: 0;
                                                 " align="left">
                                               If tou don't register on
                                               {{config["APP_NAME"]}} just
                                               ignore this message, in other
-                                              case please copy verification code.
+                                              case please press "Confirm registration" button.
                                             </p>
                                           </div>
                                           <table class="s-5 w-full" role="presentation" border="0" cellpadding="0"
@@ -358,7 +360,7 @@
                                               </tr>
                                             </tbody>
                                           </table>
-                                          <table class="btn btn-primary" role="presentation" border="0" cellpadding="0"
+                                          <!-- <table class="btn btn-primary" role="presentation" border="0" cellpadding="0"
                                             cellspacing="0" style="
                                                 border-radius: 6px;
                                                 border-collapse: separate !important;
@@ -375,8 +377,40 @@
                                                 </td>
                                               </tr>
                                             </tbody>
-                                          </table>
-                                        </td>
+                                          </table> -->
+                                          <table class="btn btn-primary" role="presentation" border="0" cellpadding="0"
+                                            cellspacing="0" style="
+                                                border-radius: 6px;
+                                                border-collapse: separate !important;
+                                              ">
+                                            <tbody>
+                                              <tr>
+                                                <td style="
+                                                      line-height: 24px;
+                                                      font-size: 16px;
+                                                      border-radius: 6px;
+                                                      margin: 0;
+                                                    " align="center" bgcolor="#f2b705">
+                                                  <a href="{{url}}" target="_blank" style="
+                                                        color: #000;
+                                                        font-size: 16px;
+                                                        font-family: Helvetica,
+                                                          Arial, sans-serif;
+                                                        text-decoration: none;
+                                                        border-radius: 6px;
+                                                        line-height: 20px;
+                                                        display: block;
+                                                        font-weight: normal;
+                                                        white-space: nowrap;
+                                                        background-color: #f2b705;
+                                                        padding: 8px 12px;
+                                                        border: 1px solid
+                                                          #f2b705;
+                                                      ">Confirm registration</a>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table </td>
                                       </tr>
                                     </tbody>
                                   </table>

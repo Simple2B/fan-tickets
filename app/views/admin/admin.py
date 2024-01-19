@@ -1,6 +1,8 @@
-from datetime import datetime
-from flask import Blueprint, redirect, url_for, render_template, request, jsonify
-from flask_login import current_user, login_required
+import io
+import csv
+from datetime import datetime, UTC
+from flask import Blueprint, redirect, url_for, render_template, request, jsonify, send_file
+from flask_login import current_user
 import sqlalchemy as sa
 from app import models as m, db, forms as f
 from app.controllers import create_pagination
@@ -13,19 +15,17 @@ admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_blueprint.before_request
 def check_if_user_is_admin():
-    if current_user.role != m.UserRole.admin.value:
+    if current_user.is_anonymous or current_user.role != m.UserRole.admin.value:
         return redirect(url_for("main.index"))
 
 
 @admin_blueprint.route("/")
-@login_required
 def admin():
     log(log.INFO, "Admin page requested by [%s]", current_user.id)
     return redirect(url_for("user.get_all"))
 
 
 @admin_blueprint.route("/picture-upload", methods=["GET", "POST"])
-@login_required
 def picture_upload():
     user: m.User = current_user
     image_upload(user, ImageType.LOGO)
@@ -33,18 +33,21 @@ def picture_upload():
 
 
 @admin_blueprint.route("/tickets")
-@login_required
 def get_tickets():
+    q = request.args.get("q", "")
+    search = request.args.get("search")
     buyer_unique_id = request.args.get("buyer_unique_id")
     seller_unique_id = request.args.get("seller_unique_id")
     location_id = request.args.get("location_id")
-    location_id = None if location_id == "all" else location_id
+    location_id = None if location_id == "all" or location_id == "None" else location_id
     date_from_str = request.args.get("date_from")
+    date_from_str = None if date_from_str == "all" or date_from_str == "None" else date_from_str
     date_to_str = request.args.get("date_to")
+    date_to_str = None if date_to_str == "all" or date_to_str == "None" else date_to_str
     ticket_type = request.args.get("ticket_type")
-    ticket_type = None if ticket_type == "all" else ticket_type
+    ticket_type = None if ticket_type == "all" or ticket_type == "None" else ticket_type
     ticket_category = request.args.get("ticket_category")
-    ticket_category = None if ticket_category == "all" else ticket_category
+    ticket_category = None if ticket_category == "all" or ticket_category == "None" else ticket_category
 
     tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
     count_query = sa.select(sa.func.count()).select_from(m.Ticket)
@@ -85,6 +88,89 @@ def get_tickets():
     ticket_categories = [x.value for x in m.TicketCategory]
     locations = m.Location.all()
 
+    if q or search:
+        try:
+            ticket_id = int(q)
+            tickets_query = tickets_query.where(m.Ticket.id == ticket_id)
+            count_query = count_query.where(m.Ticket.id == ticket_id)
+        except Exception:
+            log(log.INFO, "Invalid ticket id: [%s]", q)
+        template = "admin/tickets_list.html"
+    else:
+        template = "admin/tickets.html"
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading events table")
+        tickets = db.session.scalars(tickets_query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "ID",
+                "name",
+                "URL",
+                "Date",
+                "Time",
+                "Days from now",
+                "Type",
+                "Category",
+                "Description",
+                "Warning",
+                "Location",
+                "Venue",
+                "Seller",
+                "Section",
+                "Queue",
+                "Seat",
+                "Price net",
+                "Price gross",
+                "Is sold",
+                "Buyer",
+            ]
+            writer.writerow(row)
+            for index, ticket in enumerate(tickets):
+                ticket_date = ticket.event.date_time.strftime("%m/%d/%Y")
+                ticket_time = ticket.event.date_time.strftime("%H:%M")
+                row = [
+                    str(index),
+                    str(ticket.id).zfill(8),
+                    ticket.event.name,
+                    ticket.event.url,
+                    ticket_date,
+                    ticket_time,
+                    (ticket.event.date_time - datetime.now(UTC)).days,
+                    ticket.ticket_type,
+                    ticket.ticket_category,
+                    ticket.description,
+                    ticket.warning,
+                    ticket.event.location.name,
+                    ticket.event.venue,
+                    ticket.seller.email,
+                    ticket.section,
+                    ticket.queue,
+                    ticket.seat,
+                    ticket.price_net,
+                    ticket.price_gross,
+                    ticket.is_sold,
+                    ticket.buyer.email,
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_tickets_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
+        )
+
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     tickets_query = tickets_query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
@@ -93,7 +179,7 @@ def get_tickets():
     ).scalars()
 
     return render_template(
-        "admin/tickets.html",
+        template,
         tickets=tickets,
         ticket_types=ticket_types,
         ticket_categories=ticket_categories,
@@ -103,11 +189,16 @@ def get_tickets():
         ticket_category_selected=ticket_category,
         user_unique_id=buyer_unique_id,
         page=pagination,
+        buyer_unique_id=buyer_unique_id,
+        seller_unique_id=seller_unique_id,
+        date_from=date_from_str,
+        date_to=date_to_str,
+        location_id=location_id,
+        q=q,
     )
 
 
 @admin_blueprint.route("/ticket/<ticket_unique_id>", methods=["GET", "POST"])
-@login_required
 def get_ticket(ticket_unique_id):
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
@@ -151,7 +242,6 @@ def get_ticket(ticket_unique_id):
 
 
 @admin_blueprint.route("/disputes")
-@login_required
 def get_disputes():
     ticket_unique_id = request.args.get("ticket_unique_id")
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
@@ -164,7 +254,6 @@ def get_disputes():
 
 
 @admin_blueprint.route("/notifications")
-@login_required
 def get_notifications():
     notifications = m.Notification.all()
     return render_template("admin/notifications.html", notifications=notifications)
