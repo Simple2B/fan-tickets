@@ -1,10 +1,11 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 from random import randint, choice
 from faker import Faker
 from app.database import db
 from app import models as m
 from app.logger import log
+from app.models.utils import utcnow
 
 
 faker = Faker()
@@ -27,14 +28,16 @@ TEST_CATEGORIES = [
 ]
 NUM_TEST_EVENTS = 12
 TEST_TICKET_TYPES = [
+    m.TicketType.GENERAL.value,
     m.TicketType.TRACK.value,
     m.TicketType.BOX.value,
     m.TicketType.BACK_STAGE.value,
 ]
 TEST_TICKET_CATEGORIES = [
-    m.TicketCategory.LOT.value,
-    m.TicketCategory.SOCIAL_ENTRY.value,
-    m.TicketCategory.ENTIRE.value,
+    m.TicketCategory.STUDENT.value,
+    m.TicketCategory.ELDERLY.value,
+    m.TicketCategory.SOCIAL.value,
+    m.TicketCategory.OTHER.value,
 ]
 
 
@@ -51,8 +54,7 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
         company = fake.company().split()[0].strip(",")
         dns_org = fake.random_choices(elements=DOMAINS, length=1)[0]
         email = f"{first_name.lower()}.{last_name.lower()}@{company.lower()}.{dns_org}"
-        role = m.UserRole.admin if i < 3 else m.UserRole.client
-        # activated = True if i - num_objects == 3 else False
+        role = m.UserRole.client
         user = m.User(
             username=f"{first_name}{last_name}{randint(10, 99)}",
             name=first_name,
@@ -63,10 +65,8 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
             role=role.value,
             # password="pass",
             activated=True,
-            birth_date=datetime.now() - timedelta(days=365 * randint(18, 60)),
+            birth_date=utcnow() - timedelta(days=365 * randint(18, 60)),
         ).save(commit=False)
-        # db.session.add(user)
-        # db.session.flush()
         log(log.INFO, "User generated: [%s]", user)
 
         # notification_config = m.NotificationsConfig(user_id=user.id)
@@ -75,26 +75,6 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
     db.session.commit()
     users_number = m.User.count()
     log(log.INFO, "[%d] users generated", users_number)
-
-    # for i in range(users_number):
-    #     review_given = m.Review(
-    #         rate=randint(1, 5),
-    #         text=faker.text(max_nb_chars=200),
-    #         reviewer_id=i + 1,
-    #         receiver_id=randint(1, users_number),
-    #     )
-    #     db.session.add(review_given)
-    #     log(log.INFO, "Review generated: [%s]", review_given)
-
-    #     review_got = m.Review(
-    #         rate=randint(1, 5),
-    #         text=faker.text(max_nb_chars=200),
-    #         reviewer_id=randint(1, users_number),
-    #         receiver_id=i + 1,
-    #     )
-    #     db.session.add(review_got)
-    #     log(log.INFO, "Review generated: [%s]", review_given)
-    # db.session.commit()
 
 
 def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
@@ -130,16 +110,21 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
         location_name = test_locations[location_id - 1].name
         category_id = randint(1, len(TEST_CATEGORIES))
         category_name = test_categories[category_id - 1].name
-        seller_id = randint(1, NUM_TEST_USERS)
+        # seller_id = randint(1, NUM_TEST_USERS)
+        # buyer_id = randint(1, NUM_TEST_USERS)
+        seller_id = 3
+        buyer_id = 4
         event = m.Event(
             name=f"{location_name} {category_name} {i}",
             url=f"https://{location_name.lower().replace(' ', '-')}-{category_name.lower().replace(' ', '-')}-{i}.com",
             observations=faker.text(max_nb_chars=200),
             warning="don't forget to bring your ID",
             location_id=location_id,
+            venue=f"{location_name} venue {i}",
             category_id=category_id,
             creator_id=seller_id,
-            date_time=datetime.now() + timedelta(days=randint(-10, 100)),
+            date_time=utcnow() + timedelta(days=randint(-10, 100)),
+            approved=True,
         ).save(False)
         for j in range(12):
             price_net = randint(10, 1000)
@@ -147,7 +132,6 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             is_in_cart = True if j <= 1 else False
             is_reserved = True if 2 <= j <= 4 else False
             is_sold = True if 5 <= j <= 7 else False
-            buyer_id = randint(1, NUM_TEST_USERS)
             ticket = m.Ticket(
                 event=event,
                 description=faker.text(max_nb_chars=200),
@@ -188,34 +172,6 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                     text=f"Ticket {ticket.unique_id} is available",
                     user_id=seller_id,
                 ).save(False)
-            # for k in range(4):
-            #     type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
-            #     if type_of == m.RoomType.DISPUTE.value:
-            #         m.Dispute(
-            #             description=faker.text(max_nb_chars=200),
-            #             is_active=True,
-            #             buyer_id=buyer_id,
-            #             ticket_id=ticket.id,
-            #         ).save()
-            #         m.Notification(
-            #             type_of=m.NotificationType.DISPUTE_CREATED.value,
-            #             text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
-            #             user_id=seller_id,
-            #         ).save()
-            #     is_open = False if k == 1 else True
-            #     room = m.Room(
-            #         type_of=type_of,
-            #         ticket_id=ticket.id,
-            #         is_open=is_open,
-            #         seller_id=seller_id,
-            #         buyer_id=randint(1, NUM_TEST_USERS),
-            #     ).save()
-            #     for _ in range(5):
-            #         m.Message(
-            #             room_id=room.id,
-            #             sender_id=randint(1, NUM_TEST_USERS),
-            #             text=faker.text(max_nb_chars=200),
-            #         ).save()
     db.session.commit()
 
 

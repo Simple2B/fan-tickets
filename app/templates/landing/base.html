@@ -10,6 +10,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   {% block meta %}{% endblock %}
+  <style type="text/css">
+    body {
+      background: #1c1c1c;
+      margin: 0
+    }
+  </style>
 
   <!-- styles -->
   <!-- prettier-ignore -->
@@ -49,7 +55,7 @@
   <!-- Flash message markup -->
   <!-- prettier-ignore -->
   <div id="toast-{{category}}"
-    class="toast absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-green-400 {% endif %} bg-black border border-grey rounded-lg shadow "
+    class="toast absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary {% endif %} bg-black border border-grey rounded-lg shadow "
     role="alert">
     <!-- prettier-ignore -->
     <div class="ml-3 text-sm font-normal">{{message}}</div>

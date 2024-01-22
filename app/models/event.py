@@ -39,9 +39,11 @@ class Event(db.Model, ModelMixin):
     observations: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
     warning: orm.Mapped[str | None] = orm.mapped_column()
     date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
+    approved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
+    venue: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
 
     # Relationships
-    location: orm.Mapped["Location"] = orm.relationship()
+    location: orm.Mapped["Location"] = orm.relationship(back_populates="events")
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()
     tickets: orm.Mapped[list["Ticket"]] = orm.relationship(back_populates="event")

@@ -1,7 +1,9 @@
 import {easepick} from '@easepick/bundle';
+import {resizeChat} from './utils';
 
 const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
 const timeTyping = 1500;
+const animationDuration = 200;
 
 function scrollDown(element: HTMLDivElement) {
   element.scrollTo({
@@ -15,7 +17,7 @@ function scrollDownSmooth(element: HTMLDivElement) {
       top: element.scrollHeight,
       behavior: 'smooth',
     });
-  }, 200);
+  }, animationDuration);
 }
 
 function toggleChatWindow() {
@@ -31,45 +33,60 @@ function closeChatWindow() {
 document.addEventListener('DOMContentLoaded', () => {
   const chatIcon = document.querySelector('#chat-icon');
   const chatMain: HTMLDivElement = document.querySelector('#chat-main');
-  const openIcon = chatIcon.querySelector('.chat-icon-open');
-  const closeIcon = chatIcon.querySelector('.chat-icon-close');
+  // const openIcon = chatIcon.querySelector('.chat-icon-open');
+  // const closeIcon = chatIcon.querySelector('.chat-icon-close');
   const chatCloseButton = document.querySelector('#chat-close-button');
 
-  chatCloseButton.addEventListener('click', () => {
-    closeChatWindow();
-  });
+  if (chatCloseButton) {
+    chatCloseButton.addEventListener('click', () => {
+      closeChatWindow();
+    });
+  }
 
-  chatIcon.addEventListener('click', () => {
-    toggleChatWindow();
-    if (chatWindow.classList.contains('chat-window-open')) {
-      showMessage();
-      scrollDown(chatMain);
-    } else {
-      const chatMessages =
-        chatMessageContainer.querySelectorAll('.chat-message');
-      chatMessages.forEach(message => {
-        message.classList.remove('chat-message-active');
-      });
-    }
-
-    const observer = new MutationObserver(mutations => {
-      const locationButton = document.querySelector(
-        '#chat-sell-location-button',
-      );
-      if (locationButton) {
-        locationButton.addEventListener('click', () => {});
+  if (chatIcon) {
+    chatIcon.addEventListener('click', () => {
+      setTimeout(() => {
+        resizeChat();
+      }, animationDuration);
+      toggleChatWindow();
+      if (chatWindow.classList.contains('chat-window-open')) {
+        showMessage();
+        scrollDown(chatMain);
+      } else {
+        const chatMessages =
+          chatMessageContainer.querySelectorAll('.chat-message');
+        chatMessages.forEach(message => {
+          message.classList.remove('chat-message-active');
+        });
       }
 
-      mutations.forEach(mutation => {
-        if (mutation.type === 'childList') {
-          scrollDown(chatMain);
+      const observer = new MutationObserver(mutations => {
+        const locationButton = document.querySelector(
+          '#chat-sell-location-button',
+        );
+        if (locationButton) {
+          locationButton.addEventListener('click', () => {});
         }
-      });
-    });
 
-    observer.observe(chatMain, {childList: true});
-  });
+        mutations.forEach(mutation => {
+          if (mutation.type === 'childList') {
+            scrollDown(chatMain);
+          }
+        });
+      });
+
+      observer.observe(chatMain, {childList: true});
+    });
+  }
 });
+
+const startDisputeButton: HTMLButtonElement =
+  document.querySelector('#start-dispute');
+
+if (startDisputeButton) {
+  chatWindow.classList.add('chat-window-open');
+  chatWindow.classList.remove('chat-window-close');
+}
 
 const locationButton = document.querySelector('.chat-filter-location-button');
 const dropdownFilterDate: HTMLDivElement = document.querySelector(

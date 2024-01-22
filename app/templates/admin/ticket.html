@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <form action="{{url_for('admin.get_ticket', ticket_unique_id=ticket.unique_id)}}" method="post">
+        {{ form.hidden_tag() }}
+        <table class="w-full mt-3 text-sm text-left  text-gray-400">
+            <thead class="text-xs  uppercase  bg-secondary text-black">
+                <tr>
+                    <th scope="col" class="px-6 py-3">parameter</th>
+                    <th scope="col" class="px-6 py-3">value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            event name
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="name" value="{{ ticket.event.name }}" readonly
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            price net
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="price_net" value="{{ ticket.price_net }}" readonly
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            price gross
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="price_gross" value="{{ round_to_two_places(ticket.price_gross) }}"
+                            readonly class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            type {{ ticket.ticket_type }}
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        {{form.ticket_type(
+                        class="max-w-2xl border-0 text-sm rounded-lg
+                        block w-full p-2
+                        bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
+                        )
+                        }}
+                        {% for error in form.errors.ticket_type %}
+                        <small class="text-danger">{{error}}</small>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            category {{ ticket.ticket_category }}
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        {{form.ticket_category(
+                        class="max-w-2xl border-0 text-sm rounded-lg
+                        block w-full p-2
+                        bg-black placeholder:text-white text-white focus:ring-secondary cursor-pointer"
+                        )
+                        }}
+                        {% for error in form.errors.ticket_category %}
+                        <small class="text-danger">{{error}}</small>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            description
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="description" value="{{ ticket.description }}"
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            warning
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="warning" value="{{ ticket.warning }}"
+                            class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            section
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="section" value="{{ ticket.section }}"
+                            class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            queue
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="queue" value="{{ ticket.queue }}"
+                            class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            seat
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="seat" value="{{ ticket.seat }}"
+                            class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            date_time
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="date_time" autocomplete="off" id="paid_until" readonly disabled
+                            class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
+                            value="{{ event_form_date(ticket.event.date_time) }}">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            location
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="location" value="{{ ticket.event.location.name }}" readonly disabled
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            seller
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="seller" value="{{ ticket.seller.username }}" readonly disabled
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            buyer
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="buyer" value="{{ ticket.buyer.username }}" readonly disabled
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            is sold
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="is_sold" value="{{ ticket.is_sold }}" readonly
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            is reserved
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="is_reserved" value="{{ ticket.is_reserved }}" readonly
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            is available
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <input type="text" name="is_available" value="{{ ticket.is_available }}" readonly
+                            class="w-full max-w-2xl  bg-black border-0 rounded-lg focus:ring-secondary">
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            deleted
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        {{form.deleted(
+                        class="max-w-2xl border-0 text-sm rounded-lg
+                        block w-full p-2
+                        bg-black placeholder:text-white text-white focus:ring-secondary cursor-pointer"
+                        )
+                        }}
+                        {% for error in form.errors.deleted %}
+                        <small class="text-danger">{{error}}</small>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+                            ticket image
+                        </div>
+                    </td>
+
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <div class="relative self-center border border-secondary rounded-md" id="event_image">
+                            {% if ticket.picture %}
+                            <div class="flex justify-center items-center p-3">
+                                <img class="w-48 h-48" src="{{ ticket.picture.base64_src }}" alt="avatar" />
+                            </div>
+                            {% else %}
+                            <div class="w-48 h-48 flex items-center justify-center bg-secondary text-black">
+                                <p>No image</p>
+                            </div>
+                            {% endif %}
+                            <input type="hidden" id="ticket-unique-id" name="ticket_unique_id"
+                                value="{{ticket.unique_id}}">
+                            <!-- <input id="ticket-image-input" accept=".png, .jpg" type="file" class=" rounded-b-lg" /> -->
+                        </div>
+
+                    </td>
+                </tr>
+
+                <tr class=" border-b bg-black border-gray-700">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">
+
+                        </div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+                        <button type="submit"
+                            class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+                            Save
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+{% endblock %}

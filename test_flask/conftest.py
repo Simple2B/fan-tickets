@@ -7,7 +7,8 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from app import create_app, db, pagarme_client
+from app import create_app, pagarme_client
+from app.database import db
 from test_flask.utils import register
 from .db import populate
 
@@ -28,6 +29,7 @@ def app(requests_mock):
     )
     os.environ["APP_ENV"] = "testing"
     os.environ["_BARD_API_KEY"] = "some_bard_key."
+    print('os.environ.get("PAGARME_CONNECTION")', os.environ.get("PAGARME_CONNECTION"))
 
     # mock requests
     ## pagarme

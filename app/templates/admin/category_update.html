@@ -1,0 +1,56 @@
+{% extends 'base.html' %} {% block links %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
+{% endblock %} {% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <form action="{{url_for('admin.category.update_category', category_id=category.id)}}" method="post"
+    enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <table class="w-full mt-3 text-sm text-left  text-gray-400">
+      <thead class="text-xs uppercase bg-secondary text-black">
+        <tr>
+          <th scope="col" class="px-6 py-3">parameter</th>
+          <th scope="col" class="px-6 py-3">value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">{{ form.name.label() }}</div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            {{ form.name(class="w-full max-w-2xl bg-black border-0 rounded-lg
+            focus:ring-secondary", value=category.name)}}
+          </td>
+        </tr>
+
+        <tr class=" border-b bg-black border-gray-700  hover:bg-gray-600">
+          <td class="w-4 p-4">
+            <div class="flex items-center">{{ form.picture.label() }}</div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            {{ form.picture(class="block w-full text-sm border
+            rounded-lg cursor-pointer
+            text-gray-400 focus:outline-none bg-gray-700
+            border-gray-600 placeholder-gray-400", accept="image/*")}}
+          </td>
+        </tr>
+
+        <tr class=" border-b bg-black border-gray-700">
+          <td class="w-4 p-4">
+            <div class="flex items-center"></div>
+          </td>
+          <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+            <button type="submit"
+              class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+              update
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+{% endblock %}

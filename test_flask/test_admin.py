@@ -3,8 +3,12 @@ from io import BytesIO
 from PIL import Image
 from flask.testing import FlaskClient
 from werkzeug.datastructures import FileStorage
-from app import models as m
+from app import models as m, db
+from config import config
 from test_flask.utils import login
+
+
+CFG = config()
 
 
 def test_picture_upload(client: FlaskClient):
@@ -18,11 +22,13 @@ def test_picture_upload(client: FlaskClient):
 
     login(client)
     response = client.post(
-        "/admin/picture-upload", content_type="multipart/form-data", data={"file": (img_byte_arr, "test.png")}
+        "/admin/picture-upload",
+        content_type="multipart/form-data",
+        data={"file": (img_byte_arr, "test.png")},
+        follow_redirects=True,
     )
 
     assert response.status_code == 200
-    assert response.json == {}
     assert m.Picture.count() == previous_images_number + 1
 
     previous_images_number = m.Picture.count()
@@ -31,7 +37,12 @@ def test_picture_upload(client: FlaskClient):
         data = {"file": FileStorage(img_file, "fan_ticket_logo.jpg")}
 
         login(client)
-        response = client.post("/admin/picture-upload", content_type="multipart/form-data", data=data)
+        response = client.post(
+            "/admin/picture-upload",
+            content_type="multipart/form-data",
+            data=data,
+            follow_redirects=True,
+        )
 
         assert response.status_code == 200
         assert response.json == {}
@@ -63,3 +74,24 @@ def test_location_images(client: FlaskClient):
             ).save()
             pictures += 1
     assert m.Picture.count() == previous_images_number + pictures
+
+
+def test_events(client_with_data: FlaskClient):
+    login(client_with_data)
+
+    events_query = m.Event.select().limit(CFG.DEFAULT_PAGE_SIZE).order_by(m.Event.date_time.desc())
+    events = db.session.scalars(events_query).all()
+    assert len(events) == CFG.DEFAULT_PAGE_SIZE
+
+    response = client_with_data.get("/admin/event/events")
+    assert response.status_code == 200
+    assert b"Events" in response.data
+    assert b"Search for events" in response.data
+    assert b"Location" in response.data
+    assert b"Dates" in response.data
+    assert b"Category" in response.data
+    assert b"Status" in response.data
+    assert events[0].name in response.data.decode()
+    assert events[0].url in response.data.decode()
+    assert events[-1].name in response.data.decode()
+    assert events[-1].url in response.data.decode()

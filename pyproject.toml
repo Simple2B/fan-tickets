@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flask.app"
-version = "0.2.9"
+version = "0.2.44"
 description = ""
 authors = ["denys <denysburimov@gmail.com>"]
 
@@ -29,6 +29,8 @@ bardapi = "^0.1.38"
 pillow = "^10.1.0"
 twilio = "^8.10.3"
 types-requests = "^2.31.0.10"
+flask-sse = "^1.0.0"
+filetype = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.1"

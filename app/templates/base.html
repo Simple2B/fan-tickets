@@ -10,50 +10,44 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   {% block meta %}{% endblock %}
+  <style type="text/css">
+    body {
+      background: #1c1c1c;
+      margin: 0
+    }
+  </style>
 
   <!-- styles -->
-  <!-- prettier-ignore -->
+
   <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-  <!-- prettier-ignore -->
-  <script>
-    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-    if (
-      localStorage.getItem("color-theme") === "dark" ||
-      (!("color-theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  </script>
-  <!-- prettier-ignore -->
+
+
   {% block links %}
   {% endblock %}
 </head>
 
-<body class="bg-white dark:bg-gray-800">
+<body class="bg-black text-white font-body">
   <!-- Header -->
-  <!-- prettier-ignore -->
+
   {% include 'header.html' %}
   <!-- Flash Messages -->
-  <!-- prettier-ignore -->
+
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   {% for category, message in messages %}
   <!-- Flash message markup -->
-  <!-- prettier-ignore -->
+
   <div id="toast-{{category}}"
-    class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-green-400 {% endif %} bg-black border border-grey rounded-lg shadow "
+    class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary{% endif %} bg-black border border-grey rounded-lg shadow "
     role="alert">
-    <!-- prettier-ignore -->
+
     <div class="ml-3 text-sm font-normal">{{message}}</div>
-    <!-- prettier-ignore -->
+
     <button type="button"
       class="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5  inline-flex h-8 w-8 "
       data-dismiss-target="#toast-{{category}}" aria-label="Close">
       <span class="sr-only">Close</span>
-      <!-- prettier-ignore -->
+
       <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd"
@@ -62,26 +56,28 @@
       </svg>
     </button>
   </div>
-  <!-- prettier-ignore -->
+
   {% endfor %}
   {% endif %}
   {% endwith %}
 
   {% block body %}
+  {% include 'chat/chat_window.html' %}
 
   <!-- SideBar -->
-  <!-- prettier-ignore -->
+
   {% include 'sidebar.html' %}
 
-  <div class="sm:ml-64 mt-14 h-full overflow-x-scroll">
+  <div class="sm:ml-64 mt-14 h-full">
     <!-- Main Content -->
     {% block content %}{% endblock %}
   </div>
   {% endblock %}
   <!-- scripts -->
 
-  <!-- prettier-ignore -->
+
   <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
   <script src="https://unpkg.com/htmx.org@1.9.5"></script>
 
   {% block scripts %} {% endblock %}

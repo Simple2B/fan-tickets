@@ -188,6 +188,17 @@ test = ["anyio[trio]", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (<0.22)"]
 
 [[package]]
+name = "async-timeout"
+version = "4.0.3"
+description = "Timeout context manager for asyncio programs"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "async-timeout-4.0.3.tar.gz", hash = "sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f"},
+    {file = "async_timeout-4.0.3-py3-none-any.whl", hash = "sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028"},
+]
+
+[[package]]
 name = "attrs"
 version = "23.1.0"
 description = "Classes Without Boilerplate"
@@ -523,6 +534,17 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "filetype"
+version = "1.2.0"
+description = "Infer file type and MIME type of any file/buffer. No external dependencies."
+optional = false
+python-versions = "*"
+files = [
+    {file = "filetype-1.2.0-py2.py3-none-any.whl", hash = "sha256:7ce71b6880181241cf7ac8697a2f1eb6a8bd9b429f7ad6d27b8db9ba5f1c2d25"},
+    {file = "filetype-1.2.0.tar.gz", hash = "sha256:66b56cd6474bf41d8c54660347d37afcc3f7d1970648de365c102ef77548aadb"},
+]
+
+[[package]]
 name = "flask"
 version = "2.3.3"
 description = "A simple framework for building complex web applications."
@@ -603,6 +625,22 @@ files = [
 [package.dependencies]
 flask = ">=2.2.5"
 sqlalchemy = ">=2.0.16"
+
+[[package]]
+name = "flask-sse"
+version = "1.0.0"
+description = "Server-Sent Events for Flask"
+optional = false
+python-versions = "*"
+files = [
+    {file = "Flask-SSE-1.0.0.tar.gz", hash = "sha256:4f84714c2549a45e4f17bfc5f68ee8a9f298b22740a6844404d1c74551f2090d"},
+    {file = "Flask_SSE-1.0.0-py2.py3-none-any.whl", hash = "sha256:f86d7ecff0607333755c444130c395e7a133fb7ae6cf76fbd29b1da36d34776b"},
+]
+
+[package.dependencies]
+flask = ">=0.9"
+redis = "*"
+six = "*"
 
 [[package]]
 name = "flask-wtf"
@@ -1934,6 +1972,24 @@ files = [
 ]
 
 [[package]]
+name = "redis"
+version = "5.0.1"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "redis-5.0.1-py3-none-any.whl", hash = "sha256:ed4802971884ae19d640775ba3b03aa2e7bd5e8fb8dfaed2decce4d0fc48391f"},
+    {file = "redis-5.0.1.tar.gz", hash = "sha256:0dab495cd5753069d3bc650a0dde8a8f9edde16fc5691b689a566eda58100d0f"},
+]
+
+[package.dependencies]
+async-timeout = {version = ">=4.0.2", markers = "python_full_version <= \"3.11.2\""}
+
+[package.extras]
+hiredis = ["hiredis (>=1.0.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -2377,4 +2433,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9f8b36a23b8dff9026e3246ec21f560f509f6b49323dd4626f86711cfda156d9"
+content-hash = "ee153fe736fef711b1955f8737c1074439ce2477536dba972eac6f02faa6554b"

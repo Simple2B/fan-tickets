@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div class="mt-3 flex justify-between">
+    <p class="my-6 ml-3 text-3xl text-gray-400">Disputes</p>
+  </div>
+
+  <table class="w-full text-sm text-left  text-gray-400">
+    <thead class="text-xs  uppercase  text-black bg-secondary">
+      <tr>
+        <th scope="col" class="px-6 py-3">#</th>
+        <th scope="col" class="px-6 py-3">event</th>
+        <th scope="col" class="px-6 py-3">seller</th>
+        <th scope="col" class="px-6 py-3">buyer</th>
+        <th scope="col" class="px-6 py-3">is open</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dispute in disputes %}
+      <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600 cursor-pointer"
+        hx-get="{{ url_for('disputes.send_message', room_unique_id=dispute.unique_id) }}" hx-target="#chat-body"
+        hx-swap="innerHTML" hx-trigger="click">
+        <td class="w-4 p-4">
+          <div class="flex items-center">
+            {{ loop.index }}
+          </div>
+        </td>
+        <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
+          <div class="pl-3">
+            <div class="text-base font-semibold">{{ dispute.ticket.event.name }}</div>
+          </div>
+        </td>
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          {{ dispute.seller.email }}
+        </td>
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          {{ dispute.buyer.email }}
+        </td>
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          {{ dispute.is_open }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}

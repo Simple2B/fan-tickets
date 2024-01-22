@@ -66,12 +66,34 @@ const chatConfig = {
   },
 };
 
+const adminConfig = {
+  entry: {
+    main: './src/admin.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/admin.js', // <--- Will be compiled to this single file
+  },
+};
+
+const utilsConfig = {
+  entry: {
+    main: './src/utils.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/utils.js', // <--- Will be compiled to this single file
+  },
+};
+
 const configs = [
   baseConfig,
   userConfig,
   eventConfig,
   homeConfig,
   chatConfig,
+  adminConfig,
+  utilsConfig,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;

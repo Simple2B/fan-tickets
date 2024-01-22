@@ -21,24 +21,73 @@ from app.logger import log
 bp = Blueprint("user", __name__, url_prefix="/user")
 
 
-@bp.route("/", methods=["GET"])
+@bp.route("/admin", methods=["GET"])
 @login_required
 def get_all():
-    q = request.args.get("q", type=str, default=None)
-    query = m.User.select().order_by(m.User.id)
+    search = request.args.get("search")
+    q = request.args.get("q")
+    pg = request.args.get("pg")
+    query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
     count_query = sa.select(sa.func.count()).select_from(m.User)
-    if q:
-        query = m.User.select().where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%")).order_by(m.User.id)
-        count_query = (
-            sa.select(sa.func.count())
-            .where(m.User.username.like(f"{q}%") | m.User.email.like(f"{q}%"))
-            .select_from(m.User)
+
+    template = "user/users.html"
+
+    if q or search:
+        query = query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).order_by(m.User.id)
+        count_query = count_query.where(m.User.username.ilike(f"%{q}%") | m.User.email.ilike(f"%{q}%")).select_from(
+            m.User
+        )
+        if pg:
+            template = "user/users.html"
+        else:
+            template = "user/search.html"
+
+    # Download
+    if request.args.get("download"):
+        log(log.INFO, "Downloading users table")
+        users = db.session.scalars(query).all()
+        with io.StringIO() as proxy:
+            writer = csv.writer(proxy)
+            row = [
+                "#",
+                "First Name",
+                "Last Name",
+                "Email",
+                "Phone",
+                "Address",
+                "Is activated",
+            ]
+            writer.writerow(row)
+            for index, user in enumerate(users):
+                row = [
+                    str(index),
+                    user.name,
+                    user.last_name,
+                    user.email,
+                    user.phone,
+                    user.address,
+                    user.activated,
+                ]
+                writer.writerow(row)
+
+            mem = io.BytesIO()
+            mem.write(proxy.getvalue().encode("utf-8"))
+            mem.seek(0)
+
+        now = datetime.now()
+        return send_file(
+            mem,
+            as_attachment=True,
+            download_name=f"fan_ticket_users_{now.strftime('%Y-%m-%d-%H-%M-%S')}.csv",
+            mimetype="text/csv",
+            max_age=0,
+            last_modified=now,
         )
 
     pagination = create_pagination(total=db.session.scalar(count_query))
 
     return render_template(
-        "user/users.html",
+        template,
         users=db.session.execute(
             query.offset((pagination.page - 1) * pagination.per_page).limit(pagination.per_page)
         ).scalars(),
@@ -72,26 +121,6 @@ def save():
         log(log.ERROR, "User save errors: [%s]", form.errors)
         flash(f"{form.errors}", "danger")
         return redirect(url_for("user.get_all"))
-
-
-@bp.route("/create", methods=["POST"])
-@login_required
-def create():
-    form = f.NewUserForm()
-    if form.validate_on_submit():
-        user = m.User(
-            username=form.username.data,
-            email=form.email.data,
-            password=form.password.data,
-            activated=form.activated.data,
-        )
-        log(log.INFO, "Form submitted. User: [%s]", user)
-        flash("User added!", "success")
-        user.save()
-        return redirect(url_for("user.get_all"))
-
-
-# TODO: create admins and clients separately (by admin only)
 
 
 @bp.route("/delete/<int:id>", methods=["DELETE"])

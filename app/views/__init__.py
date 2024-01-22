@@ -9,3 +9,4 @@ from .chat_auth import chat_auth_blueprint
 from .chat_sell import chat_sell_blueprint
 from .chat_buy import chat_buy_blueprint
 from .payments import pay_blueprint
+from .chat_disputes import chat_disputes_blueprint

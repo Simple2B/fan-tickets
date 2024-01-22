@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% block content %}
+{% set all_filters = "[name='q'], [name='location_id'], [name='date_from'], [name='date_to'], [name='ticket_type'],
+[name='ticket_category']" %}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div class="mt-3 flex justify-between">
+    <p class="my-6 ml-3 text-3xl text-gray-400">Tickets</p>
+
+    <div class="flex items-center justify-center  bg-black">
+      <label for="table-search" class="sr-only">Search</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-5 h-5  text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </div>
+
+        <input {% if q %}value={{ q }}{% endif %} id="table-search-events"
+          hx-get="{{url_for('admin.get_tickets', search=True)}}" hx-swap="outerHTML" hx-target="#tickets_list"
+          hx-trigger="click, keyup changed delay:1000ms" hx-include="{{all_filters}}" name="q" autocomplete="off"
+          class="block p-2 pl-10 text-sm  border  rounded-lg w-80   input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent"
+          placeholder="Search by ticket ID" />
+      </div>
+
+      <button type="button" id="table-search-events-button"
+        class="px-3 py-2 text-xs text-gray-600 border border-gray-600  hover:text-white hover:border-white  focus:outline-none  ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 hover:bg-middle-grey focus:ring-0">
+        <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" height="16" width="18"
+          viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+          <path
+            d="M566.6 54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192-34.7-34.7c-4.2-4.2-10-6.6-16-6.6c-12.5 0-22.6 10.1-22.6 22.6v29.1L364.3 320h29.1c12.5 0 22.6-10.1 22.6-22.6c0-6-2.4-11.8-6.6-16l-34.7-34.7 192-192zM341.1 353.4L222.6 234.9c-42.7-3.7-85.2 11.7-115.8 42.3l-8 8C76.5 307.5 64 337.7 64 369.2c0 6.8 7.1 11.2 13.2 8.2l51.1-25.5c5-2.5 9.5 4.1 5.4 7.9L7.3 473.4C2.7 477.6 0 483.6 0 489.9C0 502.1 9.9 512 22.1 512l173.3 0c38.8 0 75.9-15.4 103.4-42.8c30.6-30.6 45.9-73.1 42.3-115.8z" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="w-24"></div>
+  </div>
+
+  <form action="{{url_for('admin.get_tickets')}}" class="m-3">
+    <div class="flex justify-between">
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Location</p>
+        <select name="location_id"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          {% for location in locations %}
+          {% if location.unique_id == location_unique_id %}
+          <option value="{{ location.id }}" selected>{{ location.name }}</option>
+          {% else %}
+          <option value="{{ location.id }}">{{ location.name }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="relative w-max cursor-pointer">
+        <p class="text-gray-400">Dates</p>
+        <div id="event-dates"
+          class="relative z-20 admin-select w-40 h-10 flex items-center bg-transparent text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <p class="ms-3">Choose dates</p>
+        </div>
+
+        <div id="event-dates-dropdown" class="hidden absolute bg-black border border-gray-400 rounded-lg text-gray-400">
+          <p class="m-2">Date from</p>
+          <input datepicker datepicker-autohide type="text" name="date_from" autocomplete="off" id="date-from"
+            class="max-w-2xl border-0   text-sm rounded-lg  block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
+            placeholder="{{ today() }}">
+
+          <p class="m-2">Date to</p>
+          <input datepicker datepicker-autohide type="text" name="date_to" autocomplete="off" id="date-to"
+            class="max-w-2xl border-0  text-sm rounded-lg block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
+            placeholder="{{ today() }}">
+        </div>
+        <svg class="z-0 absolute right-2 top-1/2 w-5 fill-current" width="24" height="24" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M18.601 8.39897C18.269 8.06702 17.7309 8.06702 17.3989 8.39897L12 13.7979L6.60099 8.39897C6.26904 8.06702 5.73086 8.06702 5.39891 8.39897C5.06696 8.73091 5.06696 9.2691 5.39891 9.60105L11.3989 15.601C11.7309 15.933 12.269 15.933 12.601 15.601L18.601 9.60105C18.9329 9.2691 18.9329 8.73091 18.601 8.39897Z"
+            fill="rgb(120 120 120)"></path>
+        </svg>
+      </div>
+
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Ticket type</p>
+        <select name="ticket_type"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          {% for ticket_type in ticket_types %}
+          {% if ticket_type == ticket_type_selected %}
+          <option value="{{ ticket_type }}" selected>{{ ticket_type }}</option>
+          {% else %}
+          <option value="{{ ticket_type }}">{{ ticket_type }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="cursor-pointer">
+        <p class="text-gray-400">Ticket category</p>
+        <select name="ticket_category"
+          class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
+          <option value="all">All</option>
+          {% for ticket_category in ticket_categories %}
+          {% if ticket_category == ticket_category_selected %}
+          <option value="{{ ticket_category }}" selected>{{ ticket_category }}</option>
+          {% else %}
+          <option value="{{ ticket_category }}">{{ ticket_category }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="my-5 flex justify-center">
+      <div>
+        <button type="submit"
+          class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
+          Apply
+        </button>
+      </div>
+
+      <a href="{{url_for('admin.get_tickets', locatoin_id=all, ticket_type=all)}}">
+        <button type="button"
+          class="link mx-2 p-2 w-44 text-center text-gray-400 border border-gray-400 rounded-xl transition-colors duration-200">
+          reset
+        </button>
+      </a>
+    </div>
+  </form>
+
+  {% include 'admin/tickets_list.html' %}
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
+{% endblock %}

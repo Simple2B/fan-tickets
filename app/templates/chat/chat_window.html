@@ -1,6 +1,8 @@
+{% if not "/admin" in request.path %}
 {% include 'chat/chat_icon.html' %}
-{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get, history_message_bot,
-history_message_user %}
+{% endif %}
+{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get, history_message_user,
+history_message_bot %}
 
 
 {% if current_user.is_authenticated %}
@@ -14,7 +16,7 @@ history_message_user %}
   {% include 'chat/chat_header.html' %}
 
   <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
-    <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+    <div id="chat-main" class="py-3 px-4 max-h-96 flex-col justify-start items-stretch overflow-y-scroll">
       {% if get_chat_room_messages() %}
       {% for message in get_chat_room_messages() %}
       {% if message.sender_id == get_chatbot_id() %}
