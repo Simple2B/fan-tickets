@@ -23,7 +23,7 @@ class Event(db.Model, ModelMixin):
 
     # ForeignKeys
     category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
-    location_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("locations.id"))
+    location_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("locations.id"))
     creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
 
@@ -38,7 +38,7 @@ class Event(db.Model, ModelMixin):
     )
     observations: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
     warning: orm.Mapped[str | None] = orm.mapped_column()
-    date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
+    date_time: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))
     approved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     venue: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
 

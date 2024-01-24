@@ -1,8 +1,8 @@
 """init
 
-Revision ID: f6ea161d0001
+Revision ID: dbf3c66a774d
 Revises: 
-Create Date: 2024-01-09 16:52:50.773906
+Create Date: 2024-01-23 10:09:58.022254
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f6ea161d0001'
+revision = 'dbf3c66a774d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -82,17 +82,18 @@ def upgrade():
     )
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=False),
+    sa.Column('location_id', sa.Integer(), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('picture_id', sa.Integer(), nullable=True),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
-    sa.Column('picture_id', sa.Integer(), nullable=True),
     sa.Column('url', sa.String(length=256), nullable=True),
     sa.Column('observations', sa.String(length=512), nullable=True),
     sa.Column('warning', sa.String(), nullable=True),
     sa.Column('date_time', sa.DateTime(timezone=True), nullable=False),
     sa.Column('approved', sa.Boolean(), nullable=False),
-    sa.Column('location_id', sa.Integer(), nullable=False),
-    sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('venue', sa.String(length=64), nullable=True),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], name=op.f('fk_events_category_id_categories')),
     sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_events_creator_id_users')),
     sa.ForeignKeyConstraint(['location_id'], ['locations.id'], name=op.f('fk_events_location_id_locations')),
@@ -137,6 +138,9 @@ def upgrade():
     )
     op.create_table('tickets',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('seller_id', sa.Integer(), nullable=False),
+    sa.Column('buyer_id', sa.Integer(), nullable=True),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
     sa.Column('description', sa.String(length=512), nullable=True),
     sa.Column('ticket_type', sa.String(length=32), nullable=False),
@@ -145,19 +149,16 @@ def upgrade():
     sa.Column('wallet_qr_code', sa.String(length=512), nullable=True),
     sa.Column('warning', sa.String(length=512), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('section', sa.String(length=16), nullable=False),
-    sa.Column('queue', sa.String(length=16), nullable=False),
-    sa.Column('seat', sa.String(length=16), nullable=False),
-    sa.Column('price_net', sa.Float(), nullable=False),
-    sa.Column('price_gross', sa.Float(), nullable=False),
+    sa.Column('section', sa.String(length=16), nullable=True),
+    sa.Column('queue', sa.String(length=16), nullable=True),
+    sa.Column('seat', sa.String(length=16), nullable=True),
+    sa.Column('price_net', sa.Float(), nullable=True),
+    sa.Column('price_gross', sa.Float(), nullable=True),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('is_in_cart', sa.Boolean(), nullable=False),
     sa.Column('is_reserved', sa.Boolean(), nullable=False),
     sa.Column('is_sold', sa.Boolean(), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
-    sa.Column('seller_id', sa.Integer(), nullable=False),
-    sa.Column('buyer_id', sa.Integer(), nullable=True),
-    sa.Column('event_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_tickets_buyer_id_users')),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], name=op.f('fk_tickets_event_id_events')),
     sa.ForeignKeyConstraint(['seller_id'], ['users.id'], name=op.f('fk_tickets_seller_id_users')),

@@ -99,39 +99,31 @@ def login():
 
 @chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
-
-    question = "Are you looking for buying or selling tickets?"
-
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
         seller_id=seller_id,
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text=question,
-    ).save(False)
-    m.Message(
-        sender_id=seller_id,
-        room_id=room.id,
-        text="Selling",
-    ).save(False)
-    db.session.commit()
 
+    c.save_message(
+        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+        "Sell",
+        room,
+    )
+
+    categories = []
     if current_user.is_authenticated:
-        template = "chat/sell/01_event_name.html"
+        template = "chat/sell/event_category.html"
+        categories = m.Category.all()
     else:
         template = "chat/chat_auth.html"
 
     return render_template(
         template,
         locations=m.Location.all(),
-        now=now_str,
+        categories=categories,
+        now=c.utcnow_chat_format(),
         room=room,
-        user=current_user,
     )
 
 
@@ -140,16 +132,11 @@ def buy():
     room = m.Room(
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text="Buy",
-    ).save(False)
-    db.session.commit()
+    c.save_message(
+        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+        "Buy",
+        room,
+    )
 
     return render_template(
         "chat/buy/event_name.html",

@@ -53,6 +53,7 @@ class BaseConfig(BaseSettings):
     TICKETS_PER_CHAT: int = 3
 
     # UI config
+    CHAT_USER_FORMAT: str = "%d/%m/%Y"
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"

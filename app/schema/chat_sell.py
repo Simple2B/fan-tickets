@@ -14,11 +14,9 @@ class ChatSellRequiredParams(BaseModel):
 class ChatSellEventParams(ChatSellRequiredParams):
     user_message: str | None = None
     event_name: str | None = None
-    event_location: str | None = None
-    event_date: str | None = None
-    event_time: str | None = None
-    event_category: str | None = None
+    event_category_id: str | None = None
     event_unique_id: str | None = None
+    create_event: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 
@@ -36,5 +34,6 @@ class ChatSellTicketParams(ChatSellRequiredParams):
     ticket_seat: str | None = None
     ticket_notes: str | None = None
     ticket_price: int | None = None
+    ticket_paired: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)

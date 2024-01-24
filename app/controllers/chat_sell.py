@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 
 from flask import current_app as app
 
@@ -16,42 +16,94 @@ from config import config
 CFG = config()
 
 
-def create_event(params: s.ChatSellEventParams, room: m.Room) -> m.Event:
-    location_query = sa.select(m.Location).where(m.Location.name == params.event_location)
-    location = db.session.scalar(location_query)
+def get_event_by_name_bard(event_name: str) -> m.Event:
+    # TODO: add Bard check here
+    event_query = sa.select(m.Event).where(m.Event.name.ilike(event_name))
+    event = db.session.scalar(event_query)
+    if not event:
+        log(log.INFO, "Event not found: [%s]", event_name)
+    return event
 
-    if not location:
-        log(log.INFO, "Location not found: [%s]", params.event_location)
-        location = m.Location(name=params.event_location).save(False)
 
-    category_query = sa.select(m.Category).where(m.Category.name == params.event_category)
+def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m.Event:
+    category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
     category = db.session.scalar(category_query)
 
     if not category:
-        log(log.INFO, "Event category not found: [%s]", params.event_category)
-        category = m.Category(name=params.event_category).save(False)
+        log(log.INFO, "Event category not found: [%s]", params.event_category_id)
+        category = m.Category(name=params.event_category_id).save(False)
 
-    event_date = datetime.strptime(f"{params.event_date} {params.event_time}", app.config["DATE_CHAT_HISTORY_FORMAT"])
-    event_query = sa.select(m.Event).where(
-        m.Event.name == params.event_name,
-        m.Event.location == location,
-        m.Event.category == category,
-        m.Event.date_time == event_date,
-    )
+    event = m.Event(
+        name=params.event_name,
+        category=category,
+        creator_id=user.id,
+        url=params.user_message,
+    ).save()
+
+    log(log.INFO, "Event created: [%s]", event)
+    return event
+
+
+def add_event_location(params: s.ChatSellEventParams) -> bool:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id)
     event = db.session.scalar(event_query)
 
     if not event:
-        log(log.INFO, "Event not found and was created a new one: [%s]", params.event_name)
-        event = m.Event(
-            name=params.event_name,
-            location=location,
-            category=category,
-            date_time=event_date,
-        ).save(False)
+        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
+        return False
 
-    c.save_message("Please, input event time", f"Event time: {params.event_category}", room)
+    location_query = sa.select(m.Location).where(m.Location.name == params.user_message)
+    location = db.session.scalar(location_query)
 
-    return event
+    if not location:
+        location = m.Location(name=params.user_message).save(False)
+
+    event.location = location
+    event.save()
+
+    return True
+
+
+def add_event_venue(params: s.ChatSellEventParams) -> bool:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id)
+    event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
+        return False
+
+    event.venue = params.user_message
+    event.save()
+
+    return True
+
+
+def add_event_date(params: s.ChatSellEventParams, event_date: datetime) -> bool:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id)
+    event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
+        return False
+
+    event.date_time = event_date
+    event.save()
+
+    return True
+
+
+def add_event_time(params: s.ChatSellEventParams, event_time: time) -> bool:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id)
+    event = db.session.scalar(event_query)
+
+    if not event:
+        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
+        return False
+
+    event.date_time = event.date_time.replace(hour=event_time.hour, minute=event_time.minute)
+    event.save()
+
+    return True
 
 
 def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:

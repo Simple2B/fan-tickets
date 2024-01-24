@@ -22,8 +22,6 @@ TEST_LOCATIONS = [
 TEST_CATEGORIES = [
     "Shows",
     "Festivais",
-    "Teatro",
-    "Cinema",
     "Esportes",
 ]
 NUM_TEST_EVENTS = 12
