@@ -1,9 +1,9 @@
+import os
+import re
+from bardapi import Bard
 from datetime import datetime, time
-
 from flask import current_app as app
-
 import sqlalchemy as sa
-
 from app.database import db
 from app import controllers as c
 from app import schema as s
@@ -16,13 +16,49 @@ from config import config
 CFG = config()
 
 
-def get_event_by_name_bard(event_name: str) -> m.Event:
-    # TODO: add Bard check here
+def get_event_by_name_bard(event_name: str) -> list[m.Event]:
     event_query = sa.select(m.Event).where(m.Event.name.ilike(event_name))
-    event = db.session.scalar(event_query)
-    if not event:
-        log(log.INFO, "Event not found: [%s]", event_name)
-    return event
+    events = db.session.scalars(event_query).all()
+    if not events:
+        log(log.INFO, "Event not found in database: [%s]", event_name)
+
+        try:
+            bard = Bard(token=os.environ.get("_BARD_API_KEY"))
+
+            question = f'Could you please tell me if there is an event with name "{event_name}" and if yes give me a json with event details. For example:'
+
+            json_example = """
+                {
+                "event_name": "official event name",
+                "official_url": "https://someoficcialurl.com",
+                "location": "Sao Paolo",
+                "venue": "Sao Paolo Stadium",
+                "date": "2024/01/01",
+                "time": "20:00"
+                }
+            """
+
+            message = f"{question}\n{json_example}"
+
+            bard_response = bard.get_answer(message).get("content")
+            if "not able to help" in bard_response or "not able to assist" in bard_response:
+                return s.EventValidation(events=events, bard_response=bard_response)
+            # bard_response = 'Yes, there is actually an event named "Afterlife São Paulo 2024" taking place! Here are the details in JSON format:\n\n```json\n{\n  "event_name": "Afterlife São Paulo 2024",\n  "official_url": "https://jp.ra.co/events/1819014",\n  "location": "São Paulo, Brazil",\n  "venue": "Autódromo de Interlagos (TBA)",\n  "date": "2024-02-24",\n  "time": "16:00 - 23:59"\n}\n```\n\nPlease note that the specific location within the Autódromo de Interlagos is still to be announced (TBA).\n\nHere are some additional details about the event you might find helpful:\n\n* This is a music festival focused on electronic music, hosted by the Afterlife record label.\n* The headliners are Tale Of Us, with supporting sets from Omnya, Binaryh, ANNA, MRAK, Cassian B2B Kevin de Vries, Anyma, and more.\n* Tickets are available for purchase through Live Nation and Ticketmaster Brasil.\n\nI hope this information is helpful! Enjoy the event!\n'
+            json_str = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL).group(1)
+            bard_response = s.BardResponse.model_validate_json(json_str)
+
+            event = m.Event(
+                name=bard_response.event_name,
+                url=bard_response.official_url,
+                location=m.Location(name=bard_response.location),
+                venue=bard_response.venue,
+                date_time=datetime.strptime(bard_response.date_time, CFG.DATE_PICKER_FORMAT),
+            ).save()
+            events.append(event)
+        except Exception as e:
+            log(log.ERROR, "Bard error: [%s]", e)
+
+    return events
 
 
 def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m.Event:

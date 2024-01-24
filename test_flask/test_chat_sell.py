@@ -1,29 +1,35 @@
+import pytest
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
 from test_flask.utils import login
+from app.controllers import get_event_by_name_bard
 
 
-def test_chat_sell_get_events(client_with_data: FlaskClient):
+@pytest.mark.skipif(True, reason="no Bard API key provided")
+def test_bard_get_event_by_name(client_with_data: FlaskClient):
+    # response = get_event_by_name_bard("afterlife sao paulo 2024")
+    # response = get_event_by_name_bard("metallica rio de janeiro 2024")
+    response = get_event_by_name_bard("Turnstile latin america 2024")
+    assert response
+
+
+def test_get_event_name(client_with_data: FlaskClient):
     login(client_with_data)
-    response = client_with_data.get("/sell/")
-    assert response.status_code == 200
-    assert "No event location provided" in response.data.decode()
 
-    event = db.session.scalar(m.Event.select())
-    response = client_with_data.get(f"/sell/?event_location={event.location.name}")
-    assert response.status_code == 200
-    assert "No event date provided" in response.data.decode()
+    # TEST_EVENT_NAME = "Turnstile latin america 2024"
+    TEST_EVENT_NAME = "Turnstile latin america sao paolo 2024"
 
-    event_date = event.date_time.strftime(app.config["DATE_PICKER_FORMAT"])
-    response = client_with_data.get(f"/sell/?event_location=left_location&event_date={event_date}")
+    room = m.Room(
+        seller_id=current_user.id,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    response = client_with_data.get(
+        f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Esportes&user_message={TEST_EVENT_NAME}"
+    )
     assert response.status_code == 200
-    assert "There is no such events in our database" in response.data.decode()
-
-    response = client_with_data.get(f"/sell/?event_location={event.location.name}&event_date={event_date}")
-    assert response.status_code == 200
-    assert "Choose an event from the list." in response.data.decode()
+    assert response
 
 
 def test_chat_sell_event_form(client_with_data: FlaskClient):

@@ -103,6 +103,9 @@ class BaseConfig(BaseSettings):
     # Redis
     REDIS_URL: str
 
+    # Bard
+    BARD_API_KEY: str | None = None
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.

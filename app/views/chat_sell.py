@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from psycopg2 import IntegrityError
@@ -12,93 +12,6 @@ from config import config
 CFG = config()
 
 chat_sell_blueprint = Blueprint("sell", __name__, url_prefix="/sell")
-
-
-@chat_sell_blueprint.route("/", methods=["GET", "POST"])
-@login_required
-def get_events():
-    # TODO: add timezone
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
-
-    location_input = request.args.get("event_location")
-    date_input = request.args.get("event_date")
-
-    room = m.Room(
-        seller_id=current_user.id,
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-    ).save()
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="What event are you selling tickets for?",
-    ).save(False)
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Please, input location and date.",
-    ).save(False)
-
-    error_message = ""
-
-    if not location_input:
-        log(log.ERROR, "No event location provided: [%s]", location_input)
-        error_message += "No event location provided \n"
-
-    if not date_input:
-        log(log.ERROR, "No event date provided: [%s]", date_input)
-        error_message += "No event date provided \n"
-
-    if error_message:
-        return render_template(
-            "chat/sell/00_event_init.html",
-            locations=m.Location.all(),
-            error_message=error_message,
-            room=room,
-            now=now_str,
-            user=current_user,
-        )
-
-    m.Message(
-        sender_id=current_user.id,
-        room_id=room.id,
-        text=f"location: {location_input}\ndate: {date_input}",
-    ).save(False)
-
-    location = db.session.scalar(m.Location.select().where(m.Location.name == location_input))
-    # TODO: add logic that creates a new location in case there is no such location in the database
-
-    event_start_date = datetime.strptime(str(date_input), app.config["DATE_PICKER_FORMAT"])
-    event_end_date = event_start_date + timedelta(days=1)
-    events_query = m.Event.select().where(
-        m.Event.location == location,
-        m.Event.date_time >= event_start_date,
-        m.Event.date_time <= event_end_date,
-    )
-    events = db.session.scalars(events_query).all()
-
-    if not events:
-        log(log.INFO, "No events found: [%s]", events)
-        return render_template(
-            "chat/sell/02_event_create.html",
-            error_message="There is no such events in our database. Let's create a new one!",
-            event_location=location_input,
-            event_date=date_input,
-            room=room,
-            now=now_str,
-            user=current_user,
-        )
-
-    db.session.commit()
-
-    return render_template(
-        "chat/sell/02_events_list.html",
-        now=now_str,
-        room=room,
-        events=events,
-        event_location=location_input,
-        event_date=date_input,
-    )
 
 
 @chat_sell_blueprint.route("/get_event_category")
@@ -194,9 +107,18 @@ def get_event_name():
         room,
     )
 
-    event = c.get_event_by_name_bard(params.user_message)
+    bard_event_validation = c.get_event_by_name_bard(params.user_message)
 
-    if not event:
+    if bard_event_validation.events:
+        return render_template(
+            "chat/sell/event_approve.html",
+            events=bard_event_validation.events,
+            event_category_id=params.event_category_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    else:
         return render_template(
             "chat/sell/event_url.html",
             event_name=params.user_message,
@@ -204,14 +126,6 @@ def get_event_name():
             room=room,
             now=c.utcnow_chat_format(),
         )
-
-    return render_template(
-        "chat/sell/event_approve.html",
-        event=event,
-        event_category_id=params.event_category_id,
-        room=room,
-        now=c.utcnow_chat_format(),
-    )
 
 
 @chat_sell_blueprint.route("/get_event_url")

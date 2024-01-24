@@ -26,11 +26,11 @@ def test_get_all_tickets(client_with_data: FlaskClient):
     # get tickets by categories
     categories = m.Category.all()
     assert categories
-    res = client.get(f"/tickets/?categories={categories[2].name}&categories={categories[3].name}")
+    res = client.get(f"/tickets/?categories={categories[1].name}&categories={categories[2].name}")
     assert res.status_code == 200
     stmt = (
         m.Ticket.select()
-        .filter(m.Ticket.event.has(m.Event.category.has(m.Category.name.in_((categories[2].name, categories[3].name)))))
+        .filter(m.Ticket.event.has(m.Event.category.has(m.Category.name.in_((categories[1].name, categories[2].name)))))
         .limit(CFG.TICKETS_PER_PAGE)
     )
     for t in m.all(stmt):
