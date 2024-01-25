@@ -37,7 +37,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             "official_url": "https://someofficialurl.com",
             "location": "City name",
             "venue": "Sao Paolo Stadium",
-            "date": "2024/01/01",
+            "date": "2024-02-24",
             "time": "20:00"
             }
         """
@@ -74,17 +74,30 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             event_name = bard_response.event_name
 
         try:
-            event_date = datetime.strptime(bard_response.date, CFG.DATE_PICKER_FORMAT)
-            if bard_response.time:
-                event_time_str = bard_response.time.split(":")
-                hours = int(event_time_str[0])
-                minutes = int(event_time_str[1][:2])
-                event_date_time = event_date.replace(hour=hours, minute=minutes)
+            match = re.search(r"\d{4}[-/]\d{2}[-/]\d{2}", bard_response.date)
+            if match:
+                first_date_str = match.group(0)
+                first_date_str = first_date_str.replace("/", "-")
+                event_date = datetime.strptime(first_date_str, CFG.BARD_DATE_FORMAT)
         except Exception as e:
             event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
-            event_date_time = event_date.replace(hour=hours, minute=minutes)
-            log(log.ERROR, "Date_time converting error: [%s]", e)
-            log(log.ERROR, "Setting default date: [%s]", event_date)
+            log(log.ERROR, "Date converting error: [%s]", e)
+            log(log.ERROR, "Setting default date: [%s]", event_date_time)
+
+        try:
+            match = re.search(r"\d{2}:\d{2}", bard_response.time)
+            if match:
+                event_time_str = match.group(0)
+                hours = int(event_time_str[:2])
+                minutes = int(event_time_str[3:])
+                event_date_time = event_date.replace(hour=hours, minute=minutes)
+        except Exception as e:
+            event_date_time = event_date_time.replace(
+                hour=CFG.DEFAULT_EVENT_TIME_HOURS,
+                minute=CFG.DEFAULT_EVENT_TIME_MINUTES,
+            )
+            log(log.ERROR, "Time converting error: [%s]", e)
+            log(log.ERROR, "Setting default time: [%s]", event_date_time)
 
         location_id = None
         if bard_response.location:
@@ -98,8 +111,10 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             name=event_name,
             url=bard_response.official_url,
             location_id=location_id,
+            category_id=CFG.DEFAULT_EVENT_CATEGORY_ID,
             venue=bard_response.venue,
             date_time=event_date_time,
+            creator_id=current_user.id,
         ).save()
         events.append(event)
         log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)

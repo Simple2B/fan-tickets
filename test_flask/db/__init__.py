@@ -23,6 +23,7 @@ TEST_CATEGORIES = [
     "Shows",
     "Festivais",
     "Esportes",
+    "Other",
 ]
 NUM_TEST_EVENTS = 12
 TEST_TICKET_TYPES = [

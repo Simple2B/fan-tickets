@@ -16,6 +16,7 @@ def test_bard_get_event_by_name(client_with_data: FlaskClient):
     assert response
 
 
+@pytest.mark.skipif(True, reason="no Bard API key provided")
 def test_get_event_name(client_with_data: FlaskClient):
     login(client_with_data)
 
@@ -30,7 +31,8 @@ def test_get_event_name(client_with_data: FlaskClient):
         "Twice Brasil 2024",
     ]
 
-    TEST_EVENT_NAME = random.choice(TESTING_EVENTS)
+    # TEST_EVENT_NAME = random.choice(TESTING_EVENTS)
+    TEST_EVENT_NAME = TESTING_EVENTS[5]
 
     room = m.Room(
         seller_id=current_user.id,
@@ -40,7 +42,7 @@ def test_get_event_name(client_with_data: FlaskClient):
         f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
     )
     assert response.status_code == 200
-    assert response
+    assert "Please provide us with a link of even" in response.text
 
 
 def test_chat_sell_event_form(client_with_data: FlaskClient):
