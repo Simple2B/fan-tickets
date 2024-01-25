@@ -107,12 +107,12 @@ def get_event_name():
         room,
     )
 
-    bard_event_validation = c.get_event_by_name_bard(params.user_message)
+    events = c.get_event_by_name_bard(params.user_message)
 
-    if bard_event_validation.events:
+    if events:
         return render_template(
             "chat/sell/event_approve.html",
-            events=bard_event_validation.events,
+            events=events,
             event_category_id=params.event_category_id,
             room=room,
             now=c.utcnow_chat_format(),

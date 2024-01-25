@@ -106,6 +106,9 @@ class BaseConfig(BaseSettings):
     # Bard
     BARD_API_KEY: str | None = None
 
+    # Events posting
+    DAYS_TO_EVENT_MINIMUM: int = 3
+
     @staticmethod
     def configure(app: Flask):
         # Implement this method to do further configuration on your app.
