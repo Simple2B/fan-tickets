@@ -1,4 +1,5 @@
 import pytest
+import random
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
@@ -18,15 +19,25 @@ def test_bard_get_event_by_name(client_with_data: FlaskClient):
 def test_get_event_name(client_with_data: FlaskClient):
     login(client_with_data)
 
-    # TEST_EVENT_NAME = "Turnstile latin america 2024"
-    TEST_EVENT_NAME = "Turnstile latin america sao paolo 2024"
+    TESTING_EVENTS = [
+        "afterlife sao paulo 2024",
+        "Coldplay Brasil 2024",
+        "Queen Brasil 2024",
+        "Justin Bieber Brasil 2024",
+        "Dua Lipa Brasil 2024",
+        "Lollapalooza Brasil 2024",
+        "Gorillaz Brasil 2024",
+        "Twice Brasil 2024",
+    ]
+
+    TEST_EVENT_NAME = random.choice(TESTING_EVENTS)
 
     room = m.Room(
         seller_id=current_user.id,
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     response = client_with_data.get(
-        f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Esportes&user_message={TEST_EVENT_NAME}"
+        f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
     )
     assert response.status_code == 200
     assert response

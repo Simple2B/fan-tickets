@@ -25,61 +25,84 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
 
         try:
             bard = Bard(token=os.environ.get("_BARD_API_KEY"))
+        except Exception as e:
+            log(log.ERROR, "Bard connection error: [%s]", e)
+            return events
 
-            question = f'Could you please tell me if there is an event with name "{event_name}" and if yes give me a json with event details. For example:'
+        question = f'Could you please tell me if there is an event with name "{event_name}" in Brasil and if yes give me a json with event details. For example:'
 
-            json_example = """
-                {
-                "event_name": "official event name",
-                "official_url": "https://someoficcialurl.com",
-                "location": "City name",
-                "venue": "Sao Paolo Stadium",
-                "date": "2024/01/01",
-                "time": "20:00"
-                }
-            """
+        json_example = """
+            {
+            "event_name": "official event name",
+            "official_url": "https://someofficialurl.com",
+            "location": "City name",
+            "venue": "Sao Paolo Stadium",
+            "date": "2024/01/01",
+            "time": "20:00"
+            }
+        """
 
-            message = f"{question}\n{json_example}"
+        message = f"{question}\n{json_example}"
 
+        try:
             bard_response = bard.get_answer(message).get("content")
-            if (
-                "not able to help" in bard_response
-                or "not able to assist" in bard_response
-                or "unable to assist" in bard_response
-            ):
-                return events
-            # bard_response = 'Yes, there is actually an event named "Afterlife São Paulo 2024" taking place! Here are the details in JSON format:\n\n```json\n{\n  "event_name": "Afterlife São Paulo 2024",\n  "official_url": "https://jp.ra.co/events/1819014",\n  "location": "São Paulo, Brazil",\n  "venue": "Autódromo de Interlagos (TBA)",\n  "date": "2024-02-24",\n  "time": "16:00 - 23:59"\n}\n```\n\nPlease note that the specific location within the Autódromo de Interlagos is still to be announced (TBA).\n\nHere are some additional details about the event you might find helpful:\n\n* This is a music festival focused on electronic music, hosted by the Afterlife record label.\n* The headliners are Tale Of Us, with supporting sets from Omnya, Binaryh, ANNA, MRAK, Cassian B2B Kevin de Vries, Anyma, and more.\n* Tickets are available for purchase through Live Nation and Ticketmaster Brasil.\n\nI hope this information is helpful! Enjoy the event!\n'
+            log(log.INFO, "Bard response: [%s]", bard_response)
+        except Exception as e:
+            log(log.ERROR, "Bard get answer error: [%s]", e)
+            return events
+
+        if (
+            "not able to help" in bard_response
+            or "not able to assist" in bard_response
+            or "unable to assist" in bard_response
+            or "can't help you" in bard_response
+            or "not programmed to assist with that" in bard_response
+            or "nfortunately" in bard_response
+        ):
+            log(log.ERROR, "Bard response error: [%s]", bard_response)
+            return events
+        # bard_response = 'Yes, there is actually an event named "Afterlife São Paulo 2024" taking place! Here are the details in JSON format:\n\n```json\n{\n  "event_name": "Afterlife São Paulo 2024",\n  "official_url": "https://jp.ra.co/events/1819014",\n  "location": "São Paulo, Brazil",\n  "venue": "Autódromo de Interlagos (TBA)",\n  "date": "2024-02-24",\n  "time": "16:00 - 23:59"\n}\n```\n\nPlease note that the specific location within the Autódromo de Interlagos is still to be announced (TBA).\n\nHere are some additional details about the event you might find helpful:\n\n* This is a music festival focused on electronic music, hosted by the Afterlife record label.\n* The headliners are Tale Of Us, with supporting sets from Omnya, Binaryh, ANNA, MRAK, Cassian B2B Kevin de Vries, Anyma, and more.\n* Tickets are available for purchase through Live Nation and Ticketmaster Brasil.\n\nI hope this information is helpful! Enjoy the event!\n'
+        try:
             json_str = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL).group(1)
             bard_response = s.BardResponse.model_validate_json(json_str)
-
-            if bard_response.event_name:
-                event_name = bard_response.event_name
-
-            try:
-                event_date_time = datetime.strptime(bard_response.date, CFG.DATE_PICKER_FORMAT)
-            except Exception as e:
-                log(log.ERROR, "Bard error: [%s]", e)
-                event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
-
-            location_id = None
-            if bard_response.location:
-                location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
-                location = db.session.scalar(location_query)
-                if not location:
-                    location = m.Location(name=bard_response.location).save()
-                location_id = location.id
-
-            event = m.Event(
-                name=event_name,
-                url=bard_response.official_url,
-                location_id=location_id,
-                venue=bard_response.venue,
-                date_time=event_date_time,
-            ).save()
-            events.append(event)
-            log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
+            log(log.INFO, "Bard response json: [%s]", bard_response)
         except Exception as e:
-            log(log.ERROR, "Bard error: [%s]", e)
+            log(log.ERROR, "Bard response parse json error: [%s]", e)
+            return events
+
+        if bard_response.event_name:
+            event_name = bard_response.event_name
+
+        try:
+            event_date = datetime.strptime(bard_response.date, CFG.DATE_PICKER_FORMAT)
+            if bard_response.time:
+                event_time_str = bard_response.time.split(":")
+                hours = int(event_time_str[0])
+                minutes = int(event_time_str[1][:2])
+                event_date_time = event_date.replace(hour=hours, minute=minutes)
+        except Exception as e:
+            event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
+            event_date_time = event_date.replace(hour=hours, minute=minutes)
+            log(log.ERROR, "Date_time converting error: [%s]", e)
+            log(log.ERROR, "Setting default date: [%s]", event_date)
+
+        location_id = None
+        if bard_response.location:
+            location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
+            location = db.session.scalar(location_query)
+            if not location:
+                location = m.Location(name=bard_response.location).save()
+            location_id = location.id
+
+        event = m.Event(
+            name=event_name,
+            url=bard_response.official_url,
+            location_id=location_id,
+            venue=bard_response.venue,
+            date_time=event_date_time,
+        ).save()
+        events.append(event)
+        log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
 
     return events
 
