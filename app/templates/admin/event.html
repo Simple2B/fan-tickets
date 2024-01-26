@@ -189,7 +189,8 @@
             <div class="flex items-center"></div>
           </td>
           <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
-            <a href="{{url_for('admin.event.delete_event', event_id=event.id)}}">
+            <a href="{{url_for('admin.event.delete_event', event_id=event.id)}}"
+              onclick="return confirm('Are you sure?');">
               <button type="button" class="p-2 w-60 text-center text-red-700
               border border-red-700 hover:bg-red-700 hover:text-white rounded-xl transition-colors duration-200">
                 Delete event

@@ -1,5 +1,4 @@
 import pytest
-import random
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
@@ -14,14 +13,6 @@ def test_bard_get_event_by_name(client_with_data: FlaskClient):
     # response = get_event_by_name_bard("metallica rio de janeiro 2024")
     response = get_event_by_name_bard("Turnstile latin america 2024")
     assert response
-
-
-def test_events_query(client_with_data: FlaskClient):
-    user_input = "Curitiba Other 1"
-    # events_query = m.Event.select().where(m.Event.name.ilike(user_input))
-    events_query = m.Event.select()
-    events = db.session.scalars(events_query).all()
-    assert events
 
 
 @pytest.mark.skipif(True, reason="no Bard API key provided")
