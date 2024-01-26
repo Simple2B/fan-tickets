@@ -50,10 +50,14 @@ class Ticket(db.Model, ModelMixin):
 
     ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.ELDERLY.value)
 
-    # The ticket file could be a PDF or a stringed QR code
-    # TODO: add relation to many tickets (one to many relationship)
+    # Pair ticket
+    is_paired: orm.Mapped[bool] = orm.mapped_column(default=False)
+    pair_unique_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
+    separate_selling_allowed: orm.Mapped[bool] = orm.mapped_column(default=False)
+
+    # The ticket file could be a PDF or a stringed wallet id
     file: orm.Mapped[bytes | None] = orm.mapped_column(sa.LargeBinary)
-    wallet_qr_code: orm.Mapped[bytes | None] = orm.mapped_column(sa.String(512))
+    wallet_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
     warning: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
@@ -67,13 +71,14 @@ class Ticket(db.Model, ModelMixin):
 
     seat: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
 
-    price_net: orm.Mapped[float | None] = orm.mapped_column(sa.Float)
-    price_gross: orm.Mapped[float | None] = orm.mapped_column(sa.Float)
+    price_net: orm.Mapped[int | None] = orm.mapped_column(sa.Integer)
+    price_gross: orm.Mapped[int | None] = orm.mapped_column(sa.Integer)
 
     quantity: orm.Mapped[int] = orm.mapped_column(default=1)
 
     is_in_cart: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_reserved: orm.Mapped[bool] = orm.mapped_column(default=False)
+    last_reservation_time: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(default=False, server_default=sa.false())
 
@@ -103,5 +108,7 @@ class Ticket(db.Model, ModelMixin):
         if self.is_deleted:
             return False
         if self.is_sold:
+            return False
+        if self.is_reserved:
             return False
         return True
