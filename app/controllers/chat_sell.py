@@ -18,12 +18,26 @@ CFG = config()
 
 
 def get_event_by_name_bard(event_name: str) -> list[m.Event]:
-    event_query = sa.select(m.Event).where(m.Event.name.ilike(event_name))
-    events = db.session.scalars(event_query).all()
+    # Firstly try to find event in database by exact match
+    event_query = sa.select(m.Event).where(m.Event.name == event_name)
+    event: m.Event = db.session.scalar(event_query)
+    if event:
+        return [event]
+
+    # Secondly try to find event in database by partial match
+    search_key_words = event_name.split(" ")
+    events = []
+    for word in search_key_words:
+        event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
+        events_search = db.session.scalars(event_query).all()
+        events.extend(events_search)
+
+    # If no events found in database, try to get event from Bard
     if not events:
         log(log.INFO, "Event not found in database: [%s]", event_name)
 
         try:
+            # Establishing connection with Bard
             bard = Bard(token=os.environ.get("_BARD_API_KEY"))
         except Exception as e:
             log(log.ERROR, "Bard connection error: [%s]", e)
@@ -60,8 +74,10 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             or "nfortunately" in bard_response
         ):
             log(log.ERROR, "Bard response error: [%s]", bard_response)
+            # Returning empty list if all three ways to find event failed
             return events
-        # bard_response = 'Yes, there is actually an event named "Afterlife São Paulo 2024" taking place! Here are the details in JSON format:\n\n```json\n{\n  "event_name": "Afterlife São Paulo 2024",\n  "official_url": "https://jp.ra.co/events/1819014",\n  "location": "São Paulo, Brazil",\n  "venue": "Autódromo de Interlagos (TBA)",\n  "date": "2024-02-24",\n  "time": "16:00 - 23:59"\n}\n```\n\nPlease note that the specific location within the Autódromo de Interlagos is still to be announced (TBA).\n\nHere are some additional details about the event you might find helpful:\n\n* This is a music festival focused on electronic music, hosted by the Afterlife record label.\n* The headliners are Tale Of Us, with supporting sets from Omnya, Binaryh, ANNA, MRAK, Cassian B2B Kevin de Vries, Anyma, and more.\n* Tickets are available for purchase through Live Nation and Ticketmaster Brasil.\n\nI hope this information is helpful! Enjoy the event!\n'
+
+        # If Bard response is not an error, try to parse it
         try:
             json_str = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL).group(1)
             bard_response = s.BardResponse.model_validate_json(json_str)
@@ -73,6 +89,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
         if bard_response.event_name:
             event_name = bard_response.event_name
 
+        # Parsing date from Bard response
         try:
             match = re.search(r"\d{4}[-/]\d{2}[-/]\d{2}", bard_response.date)
             if match:
@@ -84,6 +101,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             log(log.ERROR, "Date converting error: [%s]", e)
             log(log.ERROR, "Setting default date: [%s]", event_date_time)
 
+        # Parsing time from Bard response
         try:
             match = re.search(r"\d{2}:\d{2}", bard_response.time)
             if match:
@@ -99,6 +117,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             log(log.ERROR, "Time converting error: [%s]", e)
             log(log.ERROR, "Setting default time: [%s]", event_date_time)
 
+        # Parsing location from Bard response
         location_id = None
         if bard_response.location:
             location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
@@ -107,6 +126,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
                 location = m.Location(name=bard_response.location).save()
             location_id = location.id
 
+        # Creating a new event in database if we have at least minimal data
         event = m.Event(
             name=event_name,
             url=bard_response.official_url,
