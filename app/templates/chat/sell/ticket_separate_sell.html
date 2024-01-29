@@ -11,17 +11,15 @@ submit_message_get
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
   <div class="mt-2 w-265 flex justify-stretch gap-2">
-    <button type="button" id="chat-window-buy"
-      hx-get="{{ url_for('sell.get_ticket_quantity', tickets_quantity_answer=1, event_unique_id=event_unique_id) }}"
-      hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
+    <button type="button" id="chat-window-buy" hx-get="{{ url_for('sell.get_ticket_quantity') }}" hx-target="#chat-body"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      1
+      Yes
     </button>
-    <button type="button" id="chat-window-events"
-      hx-get="{{ url_for('sell.get_ticket_quantity', event_unique_id=event_unique_id, tickets_quantity_answer=2, ticket_paired=True) }}"
+    <button type="button" id="chat-window-events" hx-get="{{ url_for('sell.get_ticket_quantity', ticket_paired=True) }}"
       hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      2
+      Now
     </button>
   </div>
   {% endset %}
@@ -30,7 +28,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Got it! How many tickets do you want to sell? Choose or write below the number.") }}
+    {{ bot_message("Do you allow selling tickets separately?") }}
     {{ bot_message_without_date(html_element=html_element) }}
   </div>
 </div>

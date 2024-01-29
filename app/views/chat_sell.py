@@ -524,6 +524,45 @@ def get_ticket_quantity():
             now=c.utcnow_chat_format(),
         )
 
+    if params.tickets_quantity_answer:
+        log(log.INFO, "Tickets quantity answer: [%s]", params.tickets_quantity_answer)
+        c.save_message(
+            "Got it! How many tickets do you want to sell? Choose or write below the number",
+            params.tickets_quantity_answer,
+            room,
+        )
+        event_query = m.Event.select().where(m.Event.unique_id == params.event_unique_id)
+        event: m.Event = db.session.scalar(event_query)
+
+        if not event:
+            log(log.ERROR, "Event not found: [%s]", params.event_unique_id)
+            return render_template(
+                "chat/sell/ticket_quantity.html",
+                error_message="Event identifier is not valid",
+                now=c.utcnow_chat_format(),
+            )
+
+        ticket = m.Ticket(
+            seller_id=current_user.id,
+            event=event,
+        ).save()
+        log(log.INFO, "Ticket created: [%s]. Redirecting to ticket type input.", ticket.unique_id)
+
+        return render_template(
+            "chat/sell/ticket_type.html",
+            ticket_unique_id=ticket.unique_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+            event_unique_id=params.event_unique_id,
+        )
+
+    return render_template(
+        "chat/sell/ticket_quantity.html",
+        room=room,
+        event_unique_id=params.event_unique_id,
+        now=c.utcnow_chat_format(),
+    )
+
 
 @chat_sell_blueprint.route("/get_ticket_type")
 @login_required

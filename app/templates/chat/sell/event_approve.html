@@ -7,18 +7,21 @@ submit_message_get
   {% include 'chat/chat_spinner.html' %}
 
   {% set html_element %}
+
   {% set all_filters = "[name='room_unique_id'], [name='renew_search'],
   [name='event_unique_id'],[name='event_category_id'],[name='event_name']" %}
-  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-  <input type="hidden" name="event_category_id" value="{{ event_category_id }}" />
 
   {% for event in events %}
+
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+  <input type="hidden" name="event_category_id" value="{{ event_category_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event.unique_id }}" />
   <input type="hidden" name="event_name" value="{{ event.name }}" />
 
   <div class="w-265 flex flex-col ">
-    <button type="button" hx-get="{{ url_for('sell.get_ticket_quantity') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
+    <button type="button"
+      hx-get="{{ url_for('sell.get_ticket_quantity', room_unique_id=room.unique_id, event_unique_id=event.unique_id) }}"
+      hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
       class="link my-1 p-2 w-full text-center text-secondary hover:text-black border border-secondary rounded-2xl transition-colors duration-200">
       <p>{{ event.name }}</p>
       <p class="text-grey">{{ event.date_time.strftime('%d/%m/%Y, %H:%M') }}, <br> {{ event.location.name }}</p>

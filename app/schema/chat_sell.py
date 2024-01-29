@@ -25,6 +25,7 @@ class ChatSellTicketParams(ChatSellRequiredParams):
     event_unique_id: str | None = None
     ticket_unique_id: str | None = None
     user_message: str | None = None
+    tickets_quantity_answer: str | None = None
     ticket_type: str | None = None
     ticket_category: str | None = None
     ticket_has_section: bool = True
