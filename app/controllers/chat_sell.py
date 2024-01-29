@@ -230,11 +230,16 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | No
         return None
 
     ticket = m.Ticket(
-        m.Ticket.event == event,
-        m.Ticket.ticket_type == params.ticket_type,
+        event=event,
+        ticket_type=params.ticket_type,
+        seller_id=current_user.id,
     ).save(False)
 
-    c.save_message("Please, add ticket type", f"Ticket type: {params.ticket_type}", room)
+    c.save_message(
+        "Got it! How many tickets do you want to sell? Choose or write below the number",
+        params.tickets_quantity_answer,
+        room,
+    )
 
     log(log.INFO, "Ticket created: [%s]", ticket.unique_id)
     return ticket

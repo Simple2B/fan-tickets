@@ -101,13 +101,14 @@ def get_event_name():
             event_category_id=params.event_category_id,
         )
 
+    events = c.get_event_by_name_bard(params.user_message)
+
+    # TODO: move the message from the user with the chosen event to the plase where the event is chosen
     c.save_message(
         "Please, input official event name (matching the official website)",
         f"{params.user_message}",
         room,
     )
-
-    events = c.get_event_by_name_bard(params.user_message)
 
     if events:
         return render_template(
@@ -526,11 +527,7 @@ def get_ticket_quantity():
 
     if params.tickets_quantity_answer:
         log(log.INFO, "Tickets quantity answer: [%s]", params.tickets_quantity_answer)
-        c.save_message(
-            "Got it! How many tickets do you want to sell? Choose or write below the number",
-            params.tickets_quantity_answer,
-            room,
-        )
+
         event_query = m.Event.select().where(m.Event.unique_id == params.event_unique_id)
         event: m.Event = db.session.scalar(event_query)
 
@@ -542,12 +539,8 @@ def get_ticket_quantity():
                 now=c.utcnow_chat_format(),
             )
 
-        ticket = m.Ticket(
-            seller_id=current_user.id,
-            event=event,
-        ).save()
-        log(log.INFO, "Ticket created: [%s]. Redirecting to ticket type input.", ticket.unique_id)
-        # TODO: make different template for 2 or 1 ticket selected
+        ticket = c.create_ticket(params, room)
+
         if params.tickets_quantity_answer == "2":
             return render_template(
                 "chat/sell/ticket_separate_sell.html",
@@ -628,7 +621,7 @@ def get_ticket_separate_sell():
         ticket.is_paired = params.ticket_paired
         ticket.save()
         log(log.INFO, "Ticket changed: [%s]. Redirecting to ticket type input.", ticket.unique_id)
-        types = m.TicketType.all()
+        types = [t.value.replace("_", " ").title() for t in m.TicketType]
         return render_template(
             "chat/sell/ticket_type.html",
             ticket_unique_id=ticket.unique_id,
@@ -688,7 +681,8 @@ def get_ticket_type():
             event_unique_id=params.event_unique_id,
         )
 
-    ticket = c.create_ticket(params, room)
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
 
     if not ticket:
         log(log.ERROR, "Event not found: [%s]", params.event_unique_id)
@@ -700,8 +694,9 @@ def get_ticket_type():
         )
 
     try:
-        log(log.INFO, "Ticket created: [%s]", ticket.unique_id)
+        ticket.ticket_type = params.ticket_type.replace(" ", "_").lower()
         db.session.commit()
+        log(log.INFO, "Ticket type added: [%s]", ticket.unique_id)
     except IntegrityError as e:
         db.session.rollback()
         log(log.ERROR, "Error commit: [%s]", e)
