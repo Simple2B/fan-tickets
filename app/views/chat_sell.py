@@ -547,17 +547,99 @@ def get_ticket_quantity():
             event=event,
         ).save()
         log(log.INFO, "Ticket created: [%s]. Redirecting to ticket type input.", ticket.unique_id)
-
+        # TODO: make different template for 2 or 1 ticket selected
+        if params.tickets_quantity_answer == "2":
+            return render_template(
+                "chat/sell/ticket_separate_sell.html",
+                ticket_unique_id=ticket.unique_id,
+                room=room,
+                now=c.utcnow_chat_format(),
+                event_unique_id=params.event_unique_id,
+            )
+        types = [t.value.replace("_", " ").title() for t in m.TicketType]
         return render_template(
             "chat/sell/ticket_type.html",
             ticket_unique_id=ticket.unique_id,
             room=room,
+            types=types,
             now=c.utcnow_chat_format(),
             event_unique_id=params.event_unique_id,
         )
 
     return render_template(
         "chat/sell/ticket_quantity.html",
+        room=room,
+        event_unique_id=params.event_unique_id,
+        now=c.utcnow_chat_format(),
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_separate_sell")
+@login_required
+def get_ticket_separate_sell():
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/sell/ticket_separate_sell.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/sell/ticket_separate_sell.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.event_unique_id:
+        log(log.ERROR, "Not found event_unique_id: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/ticket_ticket_separate_sell.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.ticket_paired is not None:
+        log(log.INFO, "Tickets paired answer: [%s]", params.ticket_paired)
+        user_message = "Yes" if params.ticket_paired else "No"
+        c.save_message(
+            "Got it! Do you allow sell tickets separately? Choose or write below the answer",
+            user_message,
+            room,
+        )
+        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+        ticket: m.Ticket = db.session.scalar(ticket_query)
+
+        if not ticket:
+            log(log.ERROR, "Ticket not found: [%s]", params.ticket_unique_id)
+            return render_template(
+                "chat/sell/ticket_separate_sell.html",
+                error_message="Event identifier is not valid",
+                now=c.utcnow_chat_format(),
+            )
+
+        ticket.is_paired = params.ticket_paired
+        ticket.save()
+        log(log.INFO, "Ticket changed: [%s]. Redirecting to ticket type input.", ticket.unique_id)
+        types = m.TicketType.all()
+        return render_template(
+            "chat/sell/ticket_type.html",
+            ticket_unique_id=ticket.unique_id,
+            room=room,
+            types=types,
+            now=c.utcnow_chat_format(),
+            event_unique_id=params.event_unique_id,
+        )
+
+    return render_template(
+        "chat/sell/ticket_separate_sell.html",
         room=room,
         event_unique_id=params.event_unique_id,
         now=c.utcnow_chat_format(),
