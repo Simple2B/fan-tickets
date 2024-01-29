@@ -251,7 +251,7 @@ def add_ticket_category(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticke
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.ticket_category = params.ticket_category
+    ticket.ticket_category = params.ticket_category.replace(" ", "_").lower()
     ticket.save(False)
 
     c.save_message("Please, add ticket category", f"Ticket category: {params.ticket_category}", room)

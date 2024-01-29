@@ -697,6 +697,11 @@ def get_ticket_type():
         ticket.ticket_type = params.ticket_type.replace(" ", "_").lower()
         db.session.commit()
         log(log.INFO, "Ticket type added: [%s]", ticket.unique_id)
+        c.save_message(
+            "Got it! What is the category of ticket are you selling?",
+            f"{params.ticket_type}",
+            room,
+        )
     except IntegrityError as e:
         db.session.rollback()
         log(log.ERROR, "Error commit: [%s]", e)
@@ -708,10 +713,12 @@ def get_ticket_type():
             event_unique_id=params.event_unique_id,
         )
 
+    ticket_categories = [t.value.replace("_", " ").title() for t in m.TicketCategory]
     return render_template(
         "chat/sell/ticket_category.html",
-        ticket_unique_id=ticket.unique_id,
         room=room,
+        ticket_unique_id=ticket.unique_id,
+        ticket_categories=ticket_categories,
         now=c.utcnow_chat_format(),
     )
 
@@ -785,8 +792,9 @@ def get_ticket_category():
 
     return render_template(
         "chat/sell/ticket_section.html",
-        ticket_unique_id=ticket.unique_id,
         room=room,
+        event_unique_id=params.event_unique_id,
+        ticket_unique_id=ticket.unique_id,
         now=c.utcnow_chat_format(),
     )
 

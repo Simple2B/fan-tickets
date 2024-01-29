@@ -27,7 +27,7 @@ bot_message_without_date, user_message, submit_message_get %}
 
   <div id="chat-message-container" data-send-message>
     {% if error_message %} {% include 'chat/chat_message_error.html' %} {% endif
-    %} {{ bot_message("Please provide type of 1st tickets you are selling") }}
+    %} {{ bot_message("Please provide the ticket type") }}
     {{ bot_message_without_date(html_element=html_element) }}
   </div>
 </div>

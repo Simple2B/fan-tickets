@@ -22,6 +22,7 @@ class TicketType(Enum):
 
 
 class TicketCategory(Enum):
+    REGULAR = "regular"
     STUDENT = "student"
     ELDERLY = "elderly"
     SOCIAL = "social"
