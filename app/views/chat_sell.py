@@ -495,7 +495,34 @@ def get_event_time():
 @chat_sell_blueprint.route("/get_ticket_quantity")
 @login_required
 def get_ticket_quantity():
-    ...
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/sell/ticket_quantity.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/sell/ticket_quantity.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.event_unique_id:
+        log(log.ERROR, "Not found event_unique_id: [%s]", params.event_unique_id)
+        return render_template(
+            "chat/sell/ticket_quantity.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
 
 @chat_sell_blueprint.route("/get_ticket_type")
