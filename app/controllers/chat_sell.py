@@ -266,7 +266,7 @@ def add_ticket_section(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.section = params.ticket_section
+    ticket.section = params.user_message
     ticket.save(False)
 
     c.save_message("Please, add ticket section", f"Ticket section: {params.ticket_section}", room)

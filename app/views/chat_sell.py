@@ -621,6 +621,7 @@ def get_ticket_separate_sell():
         ticket.is_paired = params.ticket_paired
         ticket.save()
         log(log.INFO, "Ticket changed: [%s]. Redirecting to ticket type input.", ticket.unique_id)
+
         types = [t.value.replace("_", " ").title() for t in m.TicketType]
         return render_template(
             "chat/sell/ticket_type.html",
@@ -698,7 +699,7 @@ def get_ticket_type():
         db.session.commit()
         log(log.INFO, "Ticket type added: [%s]", ticket.unique_id)
         c.save_message(
-            "Got it! What is the category of ticket are you selling?",
+            "Got it! What is the type of ticket are you selling?",
             f"{params.ticket_type}",
             room,
         )
@@ -791,7 +792,7 @@ def get_ticket_category():
         )
 
     return render_template(
-        "chat/sell/ticket_section.html",
+        "chat/sell/ticket_has_section.html",
         room=room,
         event_unique_id=params.event_unique_id,
         ticket_unique_id=ticket.unique_id,
@@ -799,9 +800,9 @@ def get_ticket_category():
     )
 
 
-@chat_sell_blueprint.route("/get_ticket_section")
+@chat_sell_blueprint.route("/has_ticket_section")
 @login_required
-def get_ticket_section():
+def has_ticket_section():
     try:
         params = s.ChatSellTicketParams.model_validate(dict(request.args))
     except Exception as e:
@@ -841,17 +842,128 @@ def get_ticket_section():
             ticket_unique_id=params.ticket_unique_id,
         )
 
-    if not params.ticket_section:
-        log(log.ERROR, "No ticket section provided: [%s]", params.ticket_section)
+    return render_template(
+        "chat/sell/ticket_get_section.html",
+        room=room,
+        event_unique_id=params.event_unique_id,
+        ticket_unique_id=params.ticket_unique_id,
+        now=c.utcnow_chat_format(),
+    )
+
+
+@chat_sell_blueprint.route("/get_ticket_section")
+@login_required
+def get_ticket_section():
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
-            "chat/sell/ticket_section.html",
-            error_message="No ticket section provided, please, add ticket section or choose 'No section'",
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.user_message:
+        ticket = c.add_ticket_section(params, room)
+        log(log.INFO, "Tickets section answer: [%s]", params.ticket_section)
+
+        if not ticket:
+            log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+            return render_template(
+                "chat/sell/event_name.html",
+                error_message="Something went wrong, please, add event name",
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+
+        return render_template(
+            "chat/sell/ticket_has_queue.html",
+            ticket_unique_id=params.ticket_unique_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    return render_template(
+        "chat/sell/ticket_get_section.html",
+        ticket_unique_id=params.ticket_unique_id,
+        room=room,
+        now=c.utcnow_chat_format(),
+    )
+
+
+@chat_sell_blueprint.route("/has_ticket_queue")
+@login_required
+def has_ticket_queue():
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/event_name.html",
+            error_message="Something went wrong, please, add event name",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.ticket_has_queue:
+        c.save_message("Does this ticket have a queue?", "Ticket does not have a queue", room)
+        log(log.ERROR, "Ticket has no queue: [%s]", params.ticket_has_queue)
+        return render_template(
+            "chat/sell/ticket_seat.html",
             room=room,
             now=c.utcnow_chat_format(),
             ticket_unique_id=params.ticket_unique_id,
         )
 
-    ticket = c.add_ticket_section(params, room)
+    if not params.ticket_queue:
+        log(log.ERROR, "No ticket queue provided: [%s]", params.ticket_queue)
+        return render_template(
+            "chat/sell/ticket_queue.html",
+            error_message="No ticket queue provided, please, add ticket queue or choose 'No queue'",
+            room=room,
+            now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
+        )
+
+    ticket = c.add_ticket_queue(params, room)
 
     if not ticket:
         log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
@@ -864,20 +976,20 @@ def get_ticket_section():
 
     try:
         db.session.commit()
-        log(log.INFO, "Ticket section added: [%s]", ticket.unique_id)
+        log(log.INFO, "Ticket queue added: [%s]", ticket.unique_id)
     except IntegrityError as e:
         db.session.rollback()
         log(log.ERROR, "Error commit: [%s]", e)
         return render_template(
-            "chat/sell/ticket_section.html",
-            error_message="Form submitting error. Please add your ticket section again",
+            "chat/sell/ticket_queue.html",
+            error_message="Form submitting error. Please add your ticket queue again",
             room=room,
             now=c.utcnow_chat_format(),
             ticket_unique_id=params.ticket_unique_id,
         )
 
     return render_template(
-        "chat/sell/ticket_queue.html",
+        "chat/sell/ticket_seat.html",
         ticket_unique_id=ticket.unique_id,
         room=room,
         now=c.utcnow_chat_format(),
