@@ -312,7 +312,7 @@ def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
         return None
 
     ticket.description = params.ticket_notes
-    ticket.save(False)
+    ticket.save()
     log(log.INFO, "Ticket notes added: [%s]", params.ticket_notes)
 
     c.save_message("Please, input ticket notes", f"Ticket notes: {params.ticket_section}", room)
@@ -331,19 +331,18 @@ def add_ticket_document(form: f.ChatTicketDocumentForm, room: m.Room, user: m.Us
     return ""
 
 
-def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket | None:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
     if not ticket:
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    assert params.ticket_price
-    price_gross = float(params.ticket_price) * app.config["PLATFORM_COMMISSION_RATE"]
+    price_gross = int(round(price * app.config["PLATFORM_COMMISSION_RATE"]))
     ticket.price_net = params.ticket_price
     ticket.price_gross = price_gross
     ticket.save()
     log(log.INFO, "Ticket price added: [%s], price_gross: [%s]", params.ticket_notes, price_gross)
 
-    c.save_message("Please, input ticket price", f"Ticket price: {params.ticket_section}", room)
+    c.save_message("Please, input ticket price", f"Ticket price: {price_gross}", room)
 
     return ticket

@@ -12,11 +12,16 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("Any notes on this ticket that buyer must know?") }}
+
+    {% if ticket_paired %}
+    {{ bot_message("How much do you want for two tickets?") }}
+    {% else %}
+    {{ bot_message("How much do you want for the ticket?") }}
+    {% endif %}
   </div>
 </div>
 
-{{ submit_message_get('sell.get_ticket_notes', "[name='room_unique_id'], [name='user_message'],
+{{ submit_message_get('sell.get_ticket_price', "[name='room_unique_id'], [name='user_message'],
 [name='event_unique_id'], [name='ticket_unique_id']", disabled='disabled')
 }}
 
