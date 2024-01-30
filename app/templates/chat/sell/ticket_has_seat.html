@@ -1,26 +1,23 @@
-{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
-submit_message_get %}
+{% from 'chat/_macros_chat_message.html' import bot_message,
+bot_message_without_date, user_message, submit_message_get %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
-  {% include 'chat/chat_messages.html' %}
-  {% include 'chat/chat_spinner.html' %}
-
+  {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
   {% set html_element %}
-  {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='event_unique_id']" %}
+  {% set all_filters = "[name='room_unique_id'],[name='event_unique_id'], [name='ticket_unique_id']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
+  <input type="hidden" name="ticket_unique_id" value="{{ ticket_unique_id }}" />
   <div class="mt-2 w-265 flex justify-stretch gap-2">
-    <button type="button" id="chat-window-buy"
-      hx-get="{{ url_for('sell.get_ticket_quantity', tickets_quantity_answer=1, event_unique_id=event_unique_id) }}"
+    <button type="button" id="chat-window-buy" hx-get="{{ url_for('sell.has_ticket_seat', ticket_has_seat=True) }}"
       hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      1
+      Yes
     </button>
-    <button type="button" id="chat-window-events"
-      hx-get="{{ url_for('sell.get_ticket_quantity', event_unique_id=event_unique_id, tickets_quantity_answer=2, ticket_paired=True) }}"
+    <button type="button" id="chat-window-events" hx-get="{{ url_for('sell.has_ticket_seat', ticket_has_seat=False) }}"
       hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      2
+      No
     </button>
   </div>
   {% endset %}
@@ -28,15 +25,14 @@ submit_message_get %}
   <div id="chat-message-container" data-send-message>
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
-    {% endif %}
-    {{ bot_message("Got it! How many tickets do you want to sell?") }}
-    {{ bot_message_without_date(html_element=html_element) }}
+    {% endif%}
+    {{ bot_message("Does the ticket have a seat?") }}
+    {{bot_message_without_date(html_element=html_element) }}
   </div>
 </div>
 
-{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
-
-{% block scripts %}
+{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'],
+[name='user_message']", disabled='disabled') }} {% block scripts %}
 <!-- prettier-ignore -->
 <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
 {% endblock %}

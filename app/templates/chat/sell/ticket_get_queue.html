@@ -12,11 +12,11 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("Please enter ticket's section") }}
+    {{ bot_message("Please enter ticket's queue") }}
   </div>
 </div>
 
-{{ submit_message_get('sell.get_ticket_section', "[name='room_unique_id'], [name='user_message'],
+{{ submit_message_get('sell.get_ticket_queue', "[name='room_unique_id'], [name='user_message'],
 [name='event_unique_id'], [name='ticket_unique_id']", disabled='disabled')
 }}
 

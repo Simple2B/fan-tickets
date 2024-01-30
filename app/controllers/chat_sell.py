@@ -236,7 +236,7 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | No
     ).save(False)
 
     c.save_message(
-        "Got it! How many tickets do you want to sell? Choose or write below the number",
+        "Got it! How many tickets do you want to sell?",
         params.tickets_quantity_answer,
         room,
     )
@@ -267,9 +267,9 @@ def add_ticket_section(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket
         return None
 
     ticket.section = params.user_message
-    ticket.save(False)
+    ticket.save()
 
-    c.save_message("Please, add ticket section", f"Ticket section: {params.ticket_section}", room)
+    c.save_message("Please, add ticket section", f"Ticket section: {params.user_message}", room)
 
     log(log.INFO, "Ticket section added: [%s]", params.ticket_section)
     return ticket
@@ -278,15 +278,15 @@ def add_ticket_section(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket
 def add_ticket_queue(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
     if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
+        log(log.INFO, "Ticket not found: [%s]", ticket.section)
         return None
 
-    ticket.queue = params.ticket_queue
-    ticket.save(False)
+    ticket.queue = params.user_message
+    ticket.save()
 
-    c.save_message("Please, add ticket queue", f"Ticket queue: {params.ticket_section}", room)
+    c.save_message("Please, add ticket queue", f"Ticket queue: {params.user_message}", room)
 
-    log(log.INFO, "Ticket queue added: [%s]", params.ticket_section)
+    log(log.INFO, "Ticket queue added: [%s]", ticket.queue)
     return ticket
 
 
@@ -296,11 +296,11 @@ def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | 
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.seat = params.ticket_seat
-    ticket.save(False)
-    log(log.INFO, "Ticket seat added: [%s]", params.ticket_section)
+    ticket.seat = params.user_message
+    ticket.save()
+    log(log.INFO, "Ticket seat added: [%s]", ticket.seat)
 
-    c.save_message("Please, add ticket seat", f"Ticket seat: {params.ticket_section}", room)
+    c.save_message("Please, add ticket seat", f"Ticket seat: {ticket.seat}", room)
 
     return ticket
 
