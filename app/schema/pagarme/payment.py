@@ -119,7 +119,7 @@ class PagarmeItem(BaseModel):
     """
 
     amount: int
-    code: str
+    code: str | None = None
     description: str
     quantity: int = 1
     category: str | None = None
@@ -142,7 +142,6 @@ class PagarmeCheckout(BaseModel):
     customer_editable: bool
     accepted_payment_methods: list[str]
     success_url: str
-    credit_card: PagarmeCardInput
 
     model_config = ConfigDict(from_attributes=True)
 

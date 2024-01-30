@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-from .payment import PagarmeItem, PagarmePaymentPix, PagarmeCharge
+from .payment import PagarmeItem, PagarmePaymentPix
 
 
 class PagarmeCreateOrderPix(BaseModel):
     items: list[PagarmeItem]
     customer_id: str
-    code: str
+    code: str | None = None
     payments: list[PagarmePaymentPix]
 
 
@@ -19,4 +19,6 @@ class PagarmeOrderChargeOutPix(BaseModel):
 
 class PagarmeCreateOrderResponsePix(BaseModel):
     status: str
+    code: str
+    id: str
     charges: list[PagarmeOrderChargeOutPix]

@@ -24,6 +24,7 @@ from .pagarme import (
     PagarmeCheckout,
     PagarmeAdditionalInformation,
     PagarmePix,
+    PagarmePixData,
     PagarmePaymentPix,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,

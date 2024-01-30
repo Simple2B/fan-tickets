@@ -13,7 +13,7 @@ def init(app: Flask):
     @app.shell_context_processor
     def get_context():
         """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm)
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
 
     @app.cli.command()
     @click.option("--count", default=100, type=int)
