@@ -9,7 +9,9 @@ submit_message_get
   {% set html_element %}
   {% set all_filters = "[name='room_unique_id'], [name='renew_search']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-  <div><img class="w-full h-full" src="data:image/png;base64,{{ qr }}" alt="qr_code"></div>
+  <div>
+    <a href={{qr_url}}>
+    <img class="w-full h-full" src="data:image/png;base64,{{ qr }}" alt="qr_code"></a></div>
   {% endset %}
 
   <div id="chat-message-container" data-send-message>
