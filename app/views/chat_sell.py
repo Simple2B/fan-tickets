@@ -1156,7 +1156,7 @@ def get_ticket_notes():
         log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
         return render_template(
             "chat/sell/event_name.html",
-            error_message="Something went wrong, please, input ticket notes again",
+            error_message="Something went wrong, please, input ticket details again",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -1169,7 +1169,7 @@ def get_ticket_notes():
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",
-                error_message="Something went wrong, please, input ticket notes again",
+                error_message="Something went wrong, please, input ticket details again",
                 room=room,
                 now=c.utcnow_chat_format(),
             )
@@ -1211,7 +1211,7 @@ def get_ticket_price():
         log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
         return render_template(
             "chat/sell/event_name.html",
-            error_message="Something went wrong, please, input ticket notes again",
+            error_message="Something went wrong, please, input ticket details again",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -1235,14 +1235,17 @@ def get_ticket_price():
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",
-                error_message="Something went wrong, please, input ticket notes again",
+                error_message="Something went wrong, please, input ticket details again",
                 room=room,
                 now=c.utcnow_chat_format(),
             )
 
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
     return render_template(
         "chat/sell/ticket_details.html",
         ticket_unique_id=ticket.unique_id,
+        ticket=ticket,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -1275,14 +1278,17 @@ def get_ticket_details():
         log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
         return render_template(
             "chat/sell/event_name.html",
-            error_message="Something went wrong, please, input ticket notes again",
+            error_message="Something went wrong, please, input ticket details again",
             room=room,
             now=c.utcnow_chat_format(),
         )
 
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
     return render_template(
         "chat/sell/ticket_details.html",
         ticket_unique_id=params.ticket_unique_id,
+        ticket=ticket,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -1290,7 +1296,7 @@ def get_ticket_details():
 
 @chat_sell_blueprint.route("/ticket_file_type")
 @login_required
-def ticket_file_type():
+def get_ticket_file_type():
     try:
         params = s.ChatSellTicketParams.model_validate(dict(request.args))
     except Exception as e:
@@ -1315,14 +1321,77 @@ def ticket_file_type():
         log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
         return render_template(
             "chat/sell/event_name.html",
-            error_message="Something went wrong, please, input ticket notes again",
+            error_message="Something went wrong, please, input ticket details again",
             room=room,
             now=c.utcnow_chat_format(),
         )
 
     return render_template(
-        "chat/sell/ticket_details.html",
+        "chat/sell/ticket_file_type.html",
         ticket_unique_id=params.ticket_unique_id,
+        room=room,
+        now=c.utcnow_chat_format(),
+    )
+
+
+@chat_sell_blueprint.route("/get_wallet_code")
+@login_required
+def get_wallet_code():
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
+        return render_template(
+            "chat/sell/event_name.html",
+            error_message="Something went wrong, please, input ticket details again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.user_message:
+        ticket = c.add_ticket_wallet_id(params, room)
+        log(log.INFO, "Tickets wallet id added: [%s]", ticket.wallet_id)
+
+        if not ticket:
+            log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+            return render_template(
+                "chat/sell/event_name.html",
+                error_message="Something went wrong, please, input ticket details again",
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+
+        return render_template(
+            "chat/sell/ticket_posted.html",
+            ticket_unique_id=params.ticket_unique_id,
+            event_unique_id=params.event_unique_id,
+            ticket_paired=params.ticket_paired,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+    return render_template(
+        "chat/sell/ticket_wallet_code.html",
+        ticket_unique_id=params.ticket_unique_id,
+        event_unique_id=params.event_unique_id,
+        ticket_paired=params.ticket_paired,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -1331,52 +1400,62 @@ def ticket_file_type():
 @chat_sell_blueprint.route("/get_ticket_document")
 @login_required
 def get_ticket_document():
-    form: f.ChatTicketDocumentForm = f.ChatTicketDocumentForm()
+    try:
+        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
 
-    now = datetime.now()
-    now_str = now.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
-
-    room_query = m.Room.select().where(m.Room.unique_id == form.room_unique_id.data)
-    room: m.Room = db.session.scalar(room_query)
+    room = c.get_room(params.room_unique_id)
 
     if not room:
-        log(log.ERROR, "Room not found: [%s]", form.room_unique_id.data)
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.ticket_unique_id:
+        log(log.ERROR, "Not found ticket_unique_id: [%s]", params.ticket_unique_id)
         return render_template(
             "chat/sell/event_name.html",
-            error_message="Form submitting error",
+            error_message="Something went wrong, please, input ticket details again",
             room=room,
-            now=now_str,
+            now=c.utcnow_chat_format(),
         )
 
-    if not form.validate_on_submit():
-        log(
-            log.ERROR,
-            "Form submitting error: [%s]",
-            form.errors,
-        )
+    if params.user_message:
+        ticket = c.add_ticket_document(params, room)
+        log(log.INFO, "Tickets wallet id added: [%s]", ticket.wallet_id)
+
+        if not ticket:
+            log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
+            return render_template(
+                "chat/sell/event_name.html",
+                error_message="Something went wrong, please, input ticket details again",
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+
         return render_template(
-            "chat/sell/12_ticket_document.html",
-            error_message="Form submitting error",
+            "chat/sell/ticket_posted.html",
+            ticket_unique_id=params.ticket_unique_id,
+            event_unique_id=params.event_unique_id,
+            ticket_paired=params.ticket_paired,
             room=room,
-            now=now_str,
-            ticket_unique_id=form.ticket_unique_id.data,
-        )
-
-    error_message = c.add_ticket_document(form, room, current_user)
-
-    if error_message:
-        log(log.ERROR, "Not valid ticket document: [%s]", form.file.data)
-        return render_template(
-            "chat/sell/12_ticket_document.html",
-            error_message=error_message,
-            room=room,
-            now=now_str,
-            ticket_unique_id=form.ticket_unique_id.data,
+            now=c.utcnow_chat_format(),
         )
 
     return render_template(
-        "chat/sell/13_name.html",
+        "chat/sell/ticket_wallet_code.html",
+        ticket_unique_id=params.ticket_unique_id,
+        event_unique_id=params.event_unique_id,
+        ticket_paired=params.ticket_paired,
         room=room,
-        now=now_str,
-        ticket_unique_id=form.ticket_unique_id.data,
+        now=c.utcnow_chat_format(),
     )

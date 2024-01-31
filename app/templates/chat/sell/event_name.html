@@ -9,6 +9,7 @@ submit_message_get
   <div id="chat-message-container" data-send-message>
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
+    {{ bot_message("Please provide official event name👇") }}
     {% else %}
     {{ bot_message("Great! Please provide official event name👇") }}
     {% endif %}

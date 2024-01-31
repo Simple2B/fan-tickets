@@ -22,6 +22,7 @@ from .chat_sell import (
     add_ticket_queue,
     add_ticket_seat,
     add_ticket_notes,
+    add_ticket_wallet_id,
     add_ticket_document,
     add_ticket_price,
 )

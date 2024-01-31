@@ -311,11 +311,26 @@ def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.description = params.ticket_notes
+    ticket.description = params.user_message
     ticket.save()
-    log(log.INFO, "Ticket notes added: [%s]", params.ticket_notes)
+    log(log.INFO, "Ticket notes added: [%s]", ticket.description)
 
-    c.save_message("Please, input ticket notes", f"Ticket notes: {params.ticket_section}", room)
+    c.save_message("Please, input ticket notes", f"Ticket notes: {ticket.description}", room)
+
+    return ticket
+
+
+def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+    ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
+    if not ticket:
+        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
+        return None
+
+    ticket.wallet_id = params.user_message
+    ticket.save()
+    log(log.INFO, "Ticket notes added: [%s]", ticket.wallet_id)
+
+    c.save_message("Please, input ticket notes", f"Ticket wallet_id: {ticket.wallet_id}", room)
 
     return ticket
 
