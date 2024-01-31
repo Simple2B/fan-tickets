@@ -17,6 +17,7 @@ from .chat_sell import (
     add_event_time,
     create_event,
     create_ticket,
+    create_paired_ticket,
     add_ticket_category,
     add_ticket_section,
     add_ticket_queue,

@@ -249,6 +249,28 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | No
     return ticket
 
 
+def create_paired_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+    first_ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
+    first_ticket: m.Ticket = db.session.scalar(first_ticket_query)
+
+    first_ticket.is_paired = True
+
+    second_ticket = m.Ticket(
+        event=first_ticket.event,
+        ticket_type=first_ticket.ticket_type,
+        ticket_category=first_ticket.ticket_category,
+        seller_id=current_user.id,
+        is_paired=True,
+        pair_unique_id=first_ticket.unique_id,
+    ).save(False)
+    first_ticket.pair_unique_id = second_ticket.unique_id
+    first_ticket.save()
+
+    log(log.INFO, "Paired tickets created: [%s], [%s]", first_ticket.unique_id, second_ticket.unique_id)
+
+    return first_ticket
+
+
 def add_ticket_category(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
     if not ticket:
@@ -300,11 +322,27 @@ def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | 
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.seat = params.user_message
-    ticket.save()
-    log(log.INFO, "Ticket seat added: [%s]", ticket.seat)
-
-    c.save_message("Please, add ticket seat", f"Ticket seat: {ticket.seat}", room)
+    if ticket.is_paired and "," in params.user_message:
+        seat1, seat2 = params.user_message.split(",")
+        seat1 = seat1.strip()
+        seat2 = seat2.strip()
+        ticket.seat = seat1
+        ticket.save(False)
+        ticket2_query = sa.select(m.Ticket).where(m.Ticket.pair_unique_id == ticket.unique_id)
+        ticket2: m.Ticket = db.session.scalar(ticket2_query)
+        ticket2.seat = seat2
+        ticket2.save()
+        log(log.INFO, "Paired tickets seat added: [%s], [%s]", ticket.seat, ticket2.seat)
+        c.save_message(
+            "Please enter seats for both tickets separating them with comma. For example: 23,24",
+            f"Tickets' seats: {ticket.seat}, {ticket2.seat}",
+            room,
+        )
+    else:
+        ticket.seat = params.user_message
+        ticket.save()
+        log(log.INFO, "Ticket seat added: [%s]", ticket.seat)
+        c.save_message("Please, add ticket seat", f"Ticket seat: {ticket.seat}", room)
 
     return ticket
 
@@ -345,6 +383,7 @@ def add_ticket_document(
     file,
     room: m.Room,
 ) -> m.Ticket | None:
+    # TODO: add logic that handles paired tickets
     ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
     if not ticket or not file:
@@ -366,11 +405,16 @@ def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -
         return None
 
     price_gross = int(round(price * app.config["PLATFORM_COMMISSION_RATE"]))
-    ticket.price_net = params.ticket_price
-    ticket.price_gross = price_gross
+    if not ticket.is_paired:
+        ticket.price_net = price
+        ticket.price_gross = price_gross
+        c.save_message("Please, input ticket price", f"Ticket price: {price_gross}", room)
+    else:
+        ticket.price_net = int(round(price / 2))
+        ticket.price_gross = int(round(ticket.price_net * app.config["PLATFORM_COMMISSION_RATE"]))
+        c.save_message("Please, input the price for two tickets", f"Ticket price: {price_gross}", room)
+
     ticket.save()
     log(log.INFO, "Ticket price added: [%s], price_gross: [%s]", params.ticket_notes, price_gross)
-
-    c.save_message("Please, input ticket price", f"Ticket price: {price_gross}", room)
 
     return ticket

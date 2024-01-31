@@ -42,11 +42,16 @@ bot_message_without_date, user_message, submit_message_get %}
           <p>{{ ticket.event.location.name }}</p>
           <p>{{ ticket.event.venue }}</p>
           <p>{{ cut_seconds(ticket.event.date_time) }}</p>
-          <p class="text-secondary">R$ {{ ticket.price_gross }}</p>
+          <p class="text-secondary">
+            R$ {{ ticket.price_gross }}
+            {% if ticket.is_paired %}(R$ {{ 2 * ticket.price_gross}} for 2 tickets) {% endif %}
+          </p>
           <p class="text-xs text-gray-500">
             Section {{ ticket.section }} - Queue {{ ticket.price_gross }} - Seat {{ ticket.price_gross}}
           </p>
+          {% if ticket.description %}
           <p><span class="text-secondary">Note:</span> {{ ticket.description }}</p>
+          {% endif %}
         </div>
       </div>
     </div>

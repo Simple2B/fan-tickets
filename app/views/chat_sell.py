@@ -6,6 +6,7 @@ from app import controllers as c
 from app import schema as s
 from app import forms as f
 from app import models as m, db
+from app.controllers.jinja_globals import cut_seconds
 from app.logger import log
 from config import config
 
@@ -607,8 +608,8 @@ def get_ticket_separate_sell():
             user_message,
             room,
         )
-        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
-        ticket: m.Ticket = db.session.scalar(ticket_query)
+
+        ticket = c.create_paired_ticket(params, room)
 
         if not ticket:
             log(log.ERROR, "Ticket not found: [%s]", params.ticket_unique_id)
@@ -617,10 +618,6 @@ def get_ticket_separate_sell():
                 error_message="Event identifier is not valid",
                 now=c.utcnow_chat_format(),
             )
-
-        ticket.is_paired = params.ticket_paired
-        ticket.save()
-        log(log.INFO, "Ticket changed: [%s]. Redirecting to ticket type input.", ticket.unique_id)
 
         types = [t.value.replace("_", " ").title() for t in m.TicketType]
         return render_template(
@@ -635,7 +632,6 @@ def get_ticket_separate_sell():
     return render_template(
         "chat/sell/ticket_separate_sell.html",
         room=room,
-        event_unique_id=params.event_unique_id,
         now=c.utcnow_chat_format(),
     )
 
@@ -836,7 +832,7 @@ def has_ticket_section():
         c.save_message("Does this ticket have a section?", "Ticket does not have a section", room)
         log(log.ERROR, "Ticket has no section: [%s]", params.ticket_has_section)
         return render_template(
-            "chat/sell/ticket_queue.html",
+            "chat/sell/ticket_has_queue.html",
             room=room,
             now=c.utcnow_chat_format(),
             ticket_unique_id=params.ticket_unique_id,
@@ -951,7 +947,7 @@ def has_ticket_queue():
         c.save_message("Does this ticket have a queue?", "Ticket does not have a queue", room)
         log(log.ERROR, "Ticket has no queue: [%s]", params.ticket_has_queue)
         return render_template(
-            "chat/sell/ticket_seat.html",
+            "chat/sell/ticket_has_seat.html",
             room=room,
             now=c.utcnow_chat_format(),
             ticket_unique_id=params.ticket_unique_id,
@@ -1058,7 +1054,7 @@ def has_ticket_seat():
         c.save_message("Does this ticket have a seat?", "Ticket does not have a seat", room)
         log(log.ERROR, "Ticket has no seat: [%s]", params.ticket_has_seat)
         return render_template(
-            "chat/sell/ticket_seat.html",
+            "chat/sell/ticket_notes.html",
             room=room,
             now=c.utcnow_chat_format(),
             ticket_unique_id=params.ticket_unique_id,
@@ -1066,9 +1062,13 @@ def has_ticket_seat():
 
     c.save_message("Does this ticket have a seat?", "Ticket has a seat", room)
     log(log.INFO, "Ticket has a seat: [%s]", params.ticket_has_seat)
+
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
     return render_template(
         "chat/sell/ticket_get_seat.html",
         ticket_unique_id=params.ticket_unique_id,
+        ticket_paired=ticket.is_paired,
         event_unique_id=params.event_unique_id,
         room=room,
         now=c.utcnow_chat_format(),
@@ -1174,11 +1174,13 @@ def get_ticket_notes():
                 now=c.utcnow_chat_format(),
             )
 
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
     return render_template(
         "chat/sell/ticket_price.html",
         ticket_unique_id=params.ticket_unique_id,
         event_unique_id=params.event_unique_id,
-        ticket_paired=params.ticket_paired,
+        ticket_paired=ticket.is_paired,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -1285,6 +1287,20 @@ def get_ticket_details():
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    ticket_details = (
+        f"Event: {ticket.event.name}\n"
+        f"Location: {ticket.event.location.name}\n"
+        f"Venue: {ticket.event.venue}\n"
+        f"Date time: {cut_seconds(ticket.event.date_time)}\n"
+        f"Ticket type: {ticket.ticket_type}\n"
+        f"Ticket category: {ticket.ticket_category}\n"
+        f"Ticket section: {ticket.section}\n"
+        f"Ticket price net: {ticket.price_net}\n"
+        f"Ticket price gross: {ticket.price_gross}\n"
+        f"Ticket description: {ticket.description}"
+    )
+    c.save_message(ticket_details, "Got it", room)
     return render_template(
         "chat/sell/ticket_details.html",
         ticket_unique_id=params.ticket_unique_id,
@@ -1322,6 +1338,25 @@ def get_ticket_file_type():
         return render_template(
             "chat/sell/event_name.html",
             error_message="Something went wrong, please, input ticket details again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
+    if params.user_message == "PDF":
+        log(log.INFO, "User choose PDF file type: [%s]", params.user_message)
+        c.save_message("What version of ticket do you have?", "PDF", room)
+        return render_template(
+            "chat/sell/ticket_document.html",
+            ticket_unique_id=params.ticket_unique_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+    elif params.user_message == "wallet_id":
+        log(log.INFO, "User choose wallet id file type: [%s]", params.user_message)
+        c.save_message("What version of ticket do you have?", "Wallet id", room)
+        return render_template(
+            "chat/sell/ticket_wallet_id.html",
+            ticket_unique_id=params.ticket_unique_id,
             room=room,
             now=c.utcnow_chat_format(),
         )

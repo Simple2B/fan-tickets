@@ -10,13 +10,13 @@ bot_message_without_date, user_message, submit_message_get %}
   <input type="hidden" name="ticket_unique_id" value="{{ ticket_unique_id }}" />
   <div class="mt-2 w-265 flex justify-stretch gap-2">
     <button type="button" id="chat-window-buy"
-      hx-get="{{ url_for('sell.get_ticket_separate_sell', ticket_has_section=True) }}" hx-target="#chat-body"
+      hx-get="{{ url_for('sell.get_ticket_separate_sell', ticket_paired=False) }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Yes, this ticket can be sold separately
     </button>
     <button type="button" id="chat-window-events"
-      hx-get="{{ url_for('sell.get_ticket_separate_sell', ticket_has_section=False) }}" hx-target="#chat-body"
+      hx-get="{{ url_for('sell.get_ticket_separate_sell', ticket_paired=True) }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       No, this ticket has to be sold with the pair

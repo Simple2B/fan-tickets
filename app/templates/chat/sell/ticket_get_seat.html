@@ -12,7 +12,12 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
+
+    {% if ticket_paired %}
+    {{ bot_message("Please enter seats for both tickets separating them with comma. For example: 23,24") }}
+    {% else %}
     {{ bot_message("Please enter ticket's seat") }}
+    {% endif %}
   </div>
 </div>
 

@@ -194,7 +194,7 @@
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-encoding="multipart/form-data"
 			hx-post='/sell/{{ route }}' hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML">
 			{{ form.hidden_tag() }}
-			<input name="file" placeholder="Upload ticket's PDF" type="file"
+			<input name="file" placeholder="Upload ticket's PDF" type="file" multiple
 				class="block text-sm text-grey rounded-lg cursor-pointer bg-transparent dark:text-secondary focus:outline-none dark:bg-black dark:border-gray-600 dark:placeholder-black"
 				id="chat-auth-identity-input" type="file">
 			<button {{ disabled }} type="submit"
