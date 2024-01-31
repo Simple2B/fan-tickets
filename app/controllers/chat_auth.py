@@ -98,7 +98,7 @@ def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, 
     return result, user
 
 
-def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
+def add_identity_document(form: f.ChatFileUploadForm, room: m.Room) -> str:
     user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 

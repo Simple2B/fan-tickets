@@ -101,9 +101,9 @@ def get_event_name():
             event_category_id=params.event_category_id,
         )
 
-    events = c.get_event_by_name_bard(params.user_message)
+    events = c.get_event_by_name_bard(params)
 
-    # TODO: move the message from the user with the chosen event to the plase where the event is chosen
+    # TODO: move the message from the user with the chosen event to the place where the event is chosen
     c.save_message(
         "Please, input official event name (matching the official website)",
         f"{params.user_message}",
@@ -193,7 +193,7 @@ def get_event_url():
     event = c.create_event(params, room, current_user)
 
     c.save_message(
-        "Please provide us with a link of even👇",
+        "Please provide us with a link of event👇",
         f"{params.user_message[8:25]}...",
         room,
     )
@@ -1397,11 +1397,16 @@ def get_wallet_code():
     )
 
 
-@chat_sell_blueprint.route("/get_ticket_document")
+@chat_sell_blueprint.route("/get_ticket_document", methods=["GET", "POST"])
 @login_required
 def get_ticket_document():
+    if request.method == "GET":
+        params_input = request.args
+    else:
+        params_input = request.values
+
     try:
-        params = s.ChatSellTicketParams.model_validate(dict(request.args))
+        params = s.ChatSellTicketParams.model_validate(dict(params_input))
     except Exception as e:
         log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
@@ -1429,9 +1434,11 @@ def get_ticket_document():
             now=c.utcnow_chat_format(),
         )
 
-    if params.user_message:
-        ticket = c.add_ticket_document(params, room)
-        log(log.INFO, "Tickets wallet id added: [%s]", ticket.wallet_id)
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
+    if form.validate_on_submit():
+        file = request.files.get("file")
+        ticket = c.add_ticket_document(form, params, file, room)
+        log(log.INFO, "Tickets PDF document is added: [%s]", ticket.file)
 
         if not ticket:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
@@ -1452,10 +1459,11 @@ def get_ticket_document():
         )
 
     return render_template(
-        "chat/sell/ticket_wallet_code.html",
+        "chat/sell/ticket_document.html",
         ticket_unique_id=params.ticket_unique_id,
         event_unique_id=params.event_unique_id,
         ticket_paired=params.ticket_paired,
         room=room,
+        form=form,
         now=c.utcnow_chat_format(),
     )

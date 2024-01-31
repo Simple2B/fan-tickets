@@ -17,15 +17,15 @@ from config import config
 CFG = config()
 
 
-def get_event_by_name_bard(event_name: str) -> list[m.Event]:
+def get_event_by_name_bard(params: s.ChatSellEventParams) -> list[m.Event]:
     # Firstly try to find event in database by exact match
-    event_query = sa.select(m.Event).where(m.Event.name == event_name)
+    event_query = sa.select(m.Event).where(m.Event.name == params.user_message)
     event: m.Event = db.session.scalar(event_query)
     if event:
         return [event]
 
     # Secondly try to find event in database by partial match
-    search_key_words = event_name.split(" ")
+    search_key_words = params.user_message.split(" ")
     events = []
     for word in search_key_words:
         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
@@ -34,7 +34,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
 
     # If no events found in database, try to get event from Bard
     if not events:
-        log(log.INFO, "Event not found in database: [%s]", event_name)
+        log(log.INFO, "Event not found in database: [%s]", params.user_message)
 
         try:
             # Establishing connection with Bard
@@ -43,7 +43,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
             log(log.ERROR, "Bard connection error: [%s]", e)
             return events
 
-        question = f'Could you please tell me if there is an event with name "{event_name}" in Brasil and if yes give me a json with event details. For example:'
+        question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
 
         json_example = """
             {
@@ -126,12 +126,16 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
                 location = m.Location(name=bard_response.location).save()
             location_id = location.id
 
+        # Getting the category by unique id
+        category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
+        category: m.Category = db.session.scalar(category_query)
+
         # Creating a new event in database if we have at least minimal data
         event = m.Event(
             name=event_name,
             url=bard_response.official_url,
             location_id=location_id,
-            category_id=CFG.DEFAULT_EVENT_CATEGORY_ID,
+            category_id=category.id,
             venue=bard_response.venue,
             date_time=event_date_time,
             creator_id=current_user.id,
@@ -143,7 +147,7 @@ def get_event_by_name_bard(event_name: str) -> list[m.Event]:
 
 
 def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m.Event:
-    category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
+    category_query = sa.select(m.Category).where(m.Category.unique_id == params.event_category_id)
     category = db.session.scalar(category_query)
 
     if not category:
@@ -335,15 +339,24 @@ def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Tick
     return ticket
 
 
-def add_ticket_document(form: f.ChatTicketDocumentForm, room: m.Room, user: m.User) -> str:
-    response = c.image_upload(user, c.ImageType.IDENTIFICATION)
+def add_ticket_document(
+    form: f.ChatFileUploadForm,
+    params: s.ChatSellTicketParams,
+    file,
+    room: m.Room,
+) -> m.Ticket | None:
+    ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+    if not ticket or not file:
+        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
+        return None
 
-    if 200 not in response:
-        return "Not valid type of ticket document, please upload your ticket document with right format"
+    ticket.file = file.read()
+    ticket.save()
 
-    c.save_message("Please upload your ticket document", "Ticket document has been uploaded", room)
-
-    return ""
+    c.save_message("Please, input ticket PDF document", f"Ticket document: {file.filename}", room)
+    log(log.INFO, "Ticket document added: [%s]", ticket.file)
+    return ticket
 
 
 def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket | None:

@@ -495,7 +495,7 @@ def create_user_password():
 @chat_auth_blueprint.route("/confirm_user_password", methods=["POST"])
 def confirm_user_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
-    form_file = f.ChatAuthIdentityForm()
+    form_file = f.ChatFileUploadForm()
 
     room = c.get_room(form.room_unique_id.data)
 
@@ -548,7 +548,7 @@ def confirm_user_password():
 
 @chat_auth_blueprint.route("/create_user_passport", methods=["GET", "POST"])
 def create_user_passport():
-    form: f.ChatAuthIdentityForm = f.ChatAuthIdentityForm()
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
 
     room = c.get_room(form.room_unique_id.data)
 

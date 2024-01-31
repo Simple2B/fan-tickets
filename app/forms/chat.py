@@ -28,14 +28,7 @@ class ChatPhoneForm(FlaskForm):
             raise ValidationError("This phone is already registered.")
 
 
-class ChatTicketDocumentForm(FlaskForm):
-    room_unique_id = StringField("room_unique_id", [DataRequired()])
-    ticket_unique_id = StringField("ticket_unique_id", [DataRequired()])
-    file = FileField("file", [DataRequired()])
-    submit = SubmitField("Send verification code")
-
-
-class ChatAuthIdentityForm(FlaskForm):
+class ChatFileUploadForm(FlaskForm):
     room_unique_id = StringField("room_unique_id", [DataRequired()])
     user_unique_id = StringField("user_unique_id", [DataRequired()])
     file = FileField("file", [DataRequired()])
