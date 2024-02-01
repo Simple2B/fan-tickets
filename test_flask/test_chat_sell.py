@@ -2,16 +2,22 @@ import pytest
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
-from app import models as m, db
+from app import models as m, schema as s
 from test_flask.utils import login
 from app.controllers import get_event_by_name_bard
 
 
 @pytest.mark.skipif(True, reason="no Bard API key provided")
 def test_bard_get_event_by_name(client_with_data: FlaskClient):
+    room = m.Room(
+        seller_id=current_user.id,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    params = s.ChatSellEventParams(event_name="afterlife sao paulo 2024", room_unique_id=room.unique_id)
     # response = get_event_by_name_bard("afterlife sao paulo 2024")
     # response = get_event_by_name_bard("metallica rio de janeiro 2024")
-    response = get_event_by_name_bard("Turnstile latin america 2024")
+    # response = get_event_by_name_bard("Turnstile latin america 2024")
+    response = get_event_by_name_bard(params, room)
     assert response
 
 

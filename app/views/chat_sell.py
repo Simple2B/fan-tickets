@@ -1118,10 +1118,10 @@ def get_ticket_seat():
                 now=c.utcnow_chat_format(),
             )
 
-        ticket = c.add_ticket_seat(params, room)
-        log(log.INFO, "Ticket seat added: [%s]", ticket.seat)
+        ticket_modified = c.add_ticket_seat(params, room)
+        log(log.INFO, "Ticket seat added: [%s]", ticket_modified.seat)
 
-        if not ticket:
+        if not ticket_modified:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",
@@ -1172,10 +1172,10 @@ def get_ticket_notes():
         )
 
     if params.user_message:
-        ticket = c.add_ticket_notes(params, room)
-        log(log.INFO, "Ticket notes added: [%s]", ticket.description)
+        ticket_modified = c.add_ticket_notes(params, room)
+        log(log.INFO, "Ticket notes added: [%s]", ticket_modified.description)
 
-        if not ticket:
+        if not ticket_modified:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",
@@ -1186,11 +1186,12 @@ def get_ticket_notes():
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
+    is_paired = ticket.is_paired if ticket else False
     return render_template(
         "chat/sell/ticket_price.html",
         ticket_unique_id=params.ticket_unique_id,
         event_unique_id=params.event_unique_id,
-        ticket_paired=ticket.is_paired,
+        ticket_paired=is_paired,
         room=room,
         now=c.utcnow_chat_format(),
     )
@@ -1240,10 +1241,10 @@ def get_ticket_price():
                 now=c.utcnow_chat_format(),
                 ticket_unique_id=params.ticket_unique_id,
             )
-        ticket = c.add_ticket_price(params, room, users_price)
-        log(log.INFO, "Ticket's price is set: [%s]", ticket.price_gross)
+        ticket_modified = c.add_ticket_price(params, room, users_price)
+        log(log.INFO, "Ticket's price is set: [%s]", ticket_modified.price_gross)
 
-        if not ticket:
+        if not ticket_modified:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",
@@ -1254,9 +1255,10 @@ def get_ticket_price():
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
+    ticket_unique_id = ticket.unique_id if ticket else params.ticket_unique_id
     return render_template(
         "chat/sell/ticket_details.html",
-        ticket_unique_id=ticket.unique_id,
+        ticket_unique_id=ticket_unique_id,
         ticket=ticket,
         room=room,
         now=c.utcnow_chat_format(),
@@ -1298,11 +1300,12 @@ def get_ticket_details():
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
 
+    date_time = cut_seconds(ticket.event.date_time) if ticket.event.date_time else ""
     ticket_details = (
         f"Event: {ticket.event.name}\n"
         f"Location: {ticket.event.location.name}\n"
         f"Venue: {ticket.event.venue}\n"
-        f"Date time: {cut_seconds(ticket.event.date_time)}\n"
+        f"Date time: {date_time}\n"
         f"Ticket type: {ticket.ticket_type}\n"
         f"Ticket category: {ticket.ticket_category}\n"
         f"Ticket section: {ticket.section}\n"
@@ -1511,10 +1514,10 @@ def get_ticket_document():
                 now=c.utcnow_chat_format(),
             )
 
-        ticket = c.add_ticket_document(params, files, ticket, room)
+        ticket_modified = c.add_ticket_document(params, files, ticket, room)
         log(log.INFO, "Tickets PDF document is added: [%s]", files)
 
-        if not ticket:
+        if not ticket_modified:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
             return render_template(
                 "chat/sell/event_name.html",

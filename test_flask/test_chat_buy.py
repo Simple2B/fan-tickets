@@ -55,9 +55,12 @@ def test_get_events_by_location(client: FlaskClient):
     assert response.status_code == 200
     assert f"We have found {len(tickets)} available tickets" in response.data.decode()
 
+    if event.date_time:
+        date_time = event.date_time + timedelta(hours=2)
+
     m.Event(
         name=event.name,
-        date_time=event.date_time + timedelta(hours=2),
+        date_time=date_time,
         location_id=event.location_id,
         category_id=event.category_id,
         creator_id=event.creator_id,

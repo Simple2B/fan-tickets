@@ -180,11 +180,12 @@ def get_event(event_unique_id):
     form.category.choices = [(category.id, category.name) for category in db.session.scalars(m.Category.select())]
     form.location.choices = [(location.id, location.name) for location in db.session.scalars(m.Location.select())]
 
+    event_date_time = event.date_time if event.date_time else datetime.now()
     if request.method == "GET":
         form.name.data = event.name
         form.url.data = event.url
         form.observations.data = event.observations
-        form.date_time.data = event.date_time.date()
+        form.date_time.data = event_date_time.date()
         form.warning.data = event.warning
         form.category.data = str(event.category_id)
         form.location.data = str(event.location_id)

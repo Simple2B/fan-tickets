@@ -231,12 +231,8 @@ def add_event_time(params: s.ChatSellEventParams, event_time: time) -> bool:
     return True
 
 
-def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     event = db.session.scalar(sa.select(m.Event).where(m.Event.unique_id == params.event_unique_id))
-    if not event:
-        log(log.INFO, "Event not found: [%s]", params.event_unique_id)
-        return None
-
     ticket = m.Ticket(
         event=event,
         ticket_type=params.ticket_type,
@@ -308,12 +304,8 @@ def add_ticket_section(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket
     return ticket
 
 
-def add_ticket_queue(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def add_ticket_queue(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", ticket.section)
-        return None
-
     ticket.queue = params.user_message
     ticket.save()
 
@@ -323,12 +315,8 @@ def add_ticket_queue(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
     return ticket
 
 
-def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
-        return None
-
     if ticket.is_paired and "," in params.user_message:
         seat1, seat2 = params.user_message.split(",")
         seat1 = seat1.strip()
@@ -354,12 +342,8 @@ def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | 
     return ticket
 
 
-def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
-        return None
-
     ticket.description = params.user_message
     ticket.save()
     log(log.INFO, "Ticket notes added: [%s]", ticket.description)
@@ -398,11 +382,9 @@ def check_paired_ticket_fields(ticket: m.Ticket) -> None:
     return
 
 
-def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
-    ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
-        return None
+def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
+    ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
 
     if ticket.is_paired:
         ticket2_query = m.Ticket.select().where(m.Ticket.unique_id == ticket.pair_unique_id)
@@ -440,7 +422,12 @@ def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Tick
     return ticket, False
 
 
-def add_ticket_document(params: s.ChatSellTicketParams, files, ticket: m.Ticket, room: m.Room) -> m.Ticket | None:
+def add_ticket_document(
+    params: s.ChatSellTicketParams,
+    files,
+    ticket: m.Ticket,
+    room: m.Room,
+) -> m.Ticket | None:
     if not ticket or not files:
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
@@ -465,12 +452,8 @@ def add_ticket_document(params: s.ChatSellTicketParams, files, ticket: m.Ticket,
     return ticket
 
 
-def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket | None:
+def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if not ticket:
-        log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
-        return None
-
     price_gross = int(round(price * app.config["PLATFORM_COMMISSION_RATE"]))
     if not ticket.is_paired:
         ticket.price_net = price
