@@ -12,7 +12,12 @@ bot_message_without_date, user_message, submit_ticket_pdf %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
+
+    {% if ticket_paired %}
+    {{ bot_message("Please upload two PDF files") }}
+    {% else %}
     {{ bot_message("Please upload ticket's PDF document") }}
+    {% endif %}
   </div>
 </div>
 

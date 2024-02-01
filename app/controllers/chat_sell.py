@@ -8,7 +8,6 @@ import sqlalchemy as sa
 from app.database import db
 from app import controllers as c
 from app import schema as s
-from app import forms as f
 from app import models as m
 
 from app.logger import log
@@ -17,7 +16,12 @@ from config import config
 CFG = config()
 
 
-def get_event_by_name_bard(params: s.ChatSellEventParams) -> list[m.Event]:
+def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]:
+    c.save_message(
+        "Please, input official event name (matching the official website)",
+        f"{params.user_message}",
+        room,
+    )
     # Firstly try to find event in database by exact match
     event_query = sa.select(m.Event).where(m.Event.name == params.user_message)
     event: m.Event = db.session.scalar(event_query)
@@ -237,6 +241,7 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | No
         event=event,
         ticket_type=params.ticket_type,
         seller_id=current_user.id,
+        is_deleted=True,
     ).save(False)
 
     c.save_message(
@@ -262,9 +267,11 @@ def create_paired_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Tick
         seller_id=current_user.id,
         is_paired=True,
         pair_unique_id=first_ticket.unique_id,
-    ).save(False)
+    )
+    db.session.add(second_ticket)
+    db.session.flush()
     first_ticket.pair_unique_id = second_ticket.unique_id
-    first_ticket.save()
+    db.session.commit()
 
     log(log.INFO, "Paired tickets created: [%s], [%s]", first_ticket.unique_id, second_ticket.unique_id)
 
@@ -362,39 +369,99 @@ def add_ticket_notes(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket |
     return ticket
 
 
+def check_paired_ticket_fields(ticket: m.Ticket) -> None:
+    if not ticket.is_paired:
+        return
+
+    ticket2_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket.pair_unique_id)
+    ticket2: m.Ticket = db.session.scalar(ticket2_query)
+    if not ticket.section and ticket2.section:
+        ticket.section = ticket2.section
+        log(log.INFO, "Paired ticket section added: [%s]", ticket.section)
+    if not ticket.queue and ticket2.queue:
+        ticket.queue = ticket2.queue
+        log(log.INFO, "Paired ticket queue added: [%s]", ticket.queue)
+    if not ticket.seat and ticket2.seat:
+        ticket.seat = ticket2.seat
+        log(log.INFO, "Paired ticket seat added: [%s]", ticket.seat)
+    if not ticket.description and ticket2.description:
+        ticket.description = ticket2.description
+        log(log.INFO, "Paired ticket notes added: [%s]", ticket.description)
+    if not ticket.price_net and ticket2.price_net:
+        ticket.price_net = ticket2.price_net
+        log(log.INFO, "Paired ticket price_net added: [%s]", ticket.price_net)
+    if not ticket.price_gross and ticket2.price_gross:
+        ticket.price_gross = ticket2.price_gross
+        log(log.INFO, "Paired ticket price_gross added: [%s]", ticket.price_gross)
+    ticket.save()
+
+    return
+
+
 def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
     if not ticket:
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.wallet_id = params.user_message
-    ticket.save()
-    log(log.INFO, "Ticket notes added: [%s]", ticket.wallet_id)
+    if ticket.is_paired:
+        ticket2_query = m.Ticket.select().where(m.Ticket.unique_id == ticket.pair_unique_id)
+        ticket2: m.Ticket = db.session.scalar(ticket2_query)
 
-    c.save_message("Please, input ticket notes", f"Ticket wallet_id: {ticket.wallet_id}", room)
+        if not ticket.wallet_id:
+            ticket.wallet_id = params.user_message
+            check_paired_ticket_fields(ticket)
+            ticket.is_deleted = False
+            ticket.save()
+            log(log.INFO, "Ticket wallet id added: [%s]", ticket.wallet_id)
+            c.save_message("Please, input ticket wallet id", f"Ticket wallet_id: {ticket.wallet_id}", room)
 
-    return ticket
+            if ticket.wallet_id and ticket2.wallet_id:
+                is_second_wallet_id_input = False
+            else:
+                is_second_wallet_id_input = True
+            return ticket, is_second_wallet_id_input
+
+        elif not ticket2.wallet_id:
+            ticket2.wallet_id = params.user_message
+            check_paired_ticket_fields(ticket2)
+            ticket2.is_deleted = False
+            ticket2.save()
+            log(log.INFO, "Second ticket wallet id added: [%s]", ticket.wallet_id)
+            c.save_message("Please, input second ticket wallet id", f"Ticket wallet_id: {ticket.wallet_id}", room)
+
+    else:
+        ticket.wallet_id = params.user_message
+        ticket.is_deleted = False
+        ticket.save()
+        log(log.INFO, "Ticket wallet id added: [%s]", ticket.wallet_id)
+        c.save_message("Please, input ticket wallet id", f"Ticket wallet_id: {ticket.wallet_id}", room)
+
+    return ticket, False
 
 
-def add_ticket_document(
-    form: f.ChatFileUploadForm,
-    params: s.ChatSellTicketParams,
-    file,
-    room: m.Room,
-) -> m.Ticket | None:
-    # TODO: add logic that handles paired tickets
-    ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
-    ticket: m.Ticket = db.session.scalar(ticket_query)
-    if not ticket or not file:
+def add_ticket_document(params: s.ChatSellTicketParams, files, ticket: m.Ticket, room: m.Room) -> m.Ticket | None:
+    if not ticket or not files:
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.file = file.read()
+    ticket.file = files[0].read()
+    check_paired_ticket_fields(ticket)
+    ticket.is_deleted = False
     ticket.save()
 
-    c.save_message("Please, input ticket PDF document", f"Ticket document: {file.filename}", room)
-    log(log.INFO, "Ticket document added: [%s]", ticket.file)
+    c.save_message("Please, input ticket PDF document", f"Ticket document: {files[0].filename}", room)
+    log(log.INFO, "Ticket document added: [%s]", files[0].filename)
+
+    if len(files) > 1:
+        ticket2_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket.pair_unique_id)
+        ticket2: m.Ticket = db.session.scalar(ticket2_query)
+        ticket2.file = files[1].read()
+        check_paired_ticket_fields(ticket2)
+        ticket2.is_deleted = False
+        ticket2.save()
+        log(log.INFO, "Paired ticket document added: [%s]", files[1].filename)
+
     return ticket
 
 

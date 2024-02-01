@@ -16,7 +16,7 @@
         {% if user.tickets_bought %}
         <p>Tickets bought:</p>
         {% for ticket in user.tickets_bought %}
-        <p>{{ date_from_datetime(ticket.event.date_time) }} - {{ round_to_two_places(ticket.price_gross) }}</p>
+        <p>{{ date_from_datetime(ticket.event.date_time) }} - {{ ticket.price_gross }}</p>
         {% endfor %}
         {% endif %}
     </td>
@@ -24,7 +24,7 @@
         {% if user.tickets_for_sale %}
         <p>Tickets for sale:</p>
         {% for ticket in user.tickets_for_sale %}
-        <p>{{ date_from_datetime(ticket.event.date_time) }} - {{ round_to_two_places(ticket.price_gross) }}</p>
+        <p>{{ date_from_datetime(ticket.event.date_time) }} - {{ ticket.price_gross }}</p>
         {% endfor %}
         {% endif %}
     </td>

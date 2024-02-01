@@ -35,7 +35,7 @@
                     {{ date_from_datetime(ticket.event.date_time) }}
                 </td>
                 <td class="p-4 space-x-2 whitespace-nowrap">
-                    {{ round_to_two_places(ticket.price_gross) }}
+                    {{ ticket.price_gross }}
                 </td>
                 <td class="p-4 space-x-2 whitespace-nowrap">
                     {{ ticket.seller.username }}

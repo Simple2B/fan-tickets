@@ -102,14 +102,7 @@ def get_event_name():
             event_category_id=params.event_category_id,
         )
 
-    events = c.get_event_by_name_bard(params)
-
-    # TODO: move the message from the user with the chosen event to the place where the event is chosen
-    c.save_message(
-        "Please, input official event name (matching the official website)",
-        f"{params.user_message}",
-        room,
-    )
+    events = c.get_event_by_name_bard(params, room)
 
     if events:
         return render_template(
@@ -120,14 +113,13 @@ def get_event_name():
             now=c.utcnow_chat_format(),
         )
 
-    else:
-        return render_template(
-            "chat/sell/event_url.html",
-            event_name=params.user_message,
-            event_category_id=params.event_category_id,
-            room=room,
-            now=c.utcnow_chat_format(),
-        )
+    return render_template(
+        "chat/sell/event_url.html",
+        event_name=params.user_message,
+        event_category_id=params.event_category_id,
+        room=room,
+        now=c.utcnow_chat_format(),
+    )
 
 
 @chat_sell_blueprint.route("/get_event_url")
@@ -602,7 +594,11 @@ def get_ticket_separate_sell():
 
     if params.ticket_paired is not None:
         log(log.INFO, "Tickets paired answer: [%s]", params.ticket_paired)
-        user_message = "Yes" if params.ticket_paired else "No"
+        user_message = (
+            "No, this ticket has to be sold with the pair"
+            if params.ticket_paired
+            else "Yes, this ticket can be sold separately"
+        )
         c.save_message(
             "Got it! Do you allow sell tickets separately? Choose or write below the answer",
             user_message,
@@ -1108,6 +1104,20 @@ def get_ticket_seat():
         )
 
     if params.user_message:
+        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+        ticket: m.Ticket = db.session.scalar(ticket_query)
+
+        if ticket.is_paired and "," not in params.user_message:
+            return render_template(
+                "chat/sell/ticket_get_seat.html",
+                error_message="Please enter seats for both tickets separating them with comma",
+                ticket_unique_id=params.ticket_unique_id,
+                ticket_paired=ticket.is_paired,
+                event_unique_id=params.event_unique_id,
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
+
         ticket = c.add_ticket_seat(params, room)
         log(log.INFO, "Ticket seat added: [%s]", ticket.seat)
 
@@ -1342,13 +1352,18 @@ def get_ticket_file_type():
             now=c.utcnow_chat_format(),
         )
 
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
     if params.user_message == "PDF":
         log(log.INFO, "User choose PDF file type: [%s]", params.user_message)
         c.save_message("What version of ticket do you have?", "PDF", room)
+        form: f.ChatFileUploadForm = f.ChatFileUploadForm()
         return render_template(
             "chat/sell/ticket_document.html",
             ticket_unique_id=params.ticket_unique_id,
+            ticket_paired=ticket.is_paired,
             room=room,
+            form=form,
             now=c.utcnow_chat_format(),
         )
     elif params.user_message == "wallet_id":
@@ -1357,6 +1372,7 @@ def get_ticket_file_type():
         return render_template(
             "chat/sell/ticket_wallet_id.html",
             ticket_unique_id=params.ticket_unique_id,
+            ticket_paired=ticket.is_paired,
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -1402,8 +1418,17 @@ def get_wallet_code():
         )
 
     if params.user_message:
-        ticket = c.add_ticket_wallet_id(params, room)
+        ticket, is_second_wallet_id_input = c.add_ticket_wallet_id(params, room)
         log(log.INFO, "Tickets wallet id added: [%s]", ticket.wallet_id)
+
+        if is_second_wallet_id_input:
+            return render_template(
+                "chat/sell/ticket_wallet_id.html",
+                ticket_unique_id=ticket.pair_unique_id,
+                ticket_paired=params.ticket_paired,
+                room=room,
+                now=c.utcnow_chat_format(),
+            )
 
         if not ticket:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
@@ -1423,7 +1448,7 @@ def get_wallet_code():
             now=c.utcnow_chat_format(),
         )
     return render_template(
-        "chat/sell/ticket_wallet_code.html",
+        "chat/sell/ticket_wallet_id.html",
         ticket_unique_id=params.ticket_unique_id,
         event_unique_id=params.event_unique_id,
         ticket_paired=params.ticket_paired,
@@ -1471,9 +1496,23 @@ def get_ticket_document():
 
     form: f.ChatFileUploadForm = f.ChatFileUploadForm()
     if form.validate_on_submit():
-        file = request.files.get("file")
-        ticket = c.add_ticket_document(form, params, file, room)
-        log(log.INFO, "Tickets PDF document is added: [%s]", ticket.file)
+        files = request.files.getlist("file")
+        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
+        ticket: m.Ticket = db.session.scalar(ticket_query)
+
+        if ticket.is_paired and len(files) != 2:
+            return render_template(
+                "chat/sell/ticket_document.html",
+                error_message="Please upload TWO files",
+                ticket_unique_id=params.ticket_unique_id,
+                ticket_paired=ticket.is_paired,
+                room=room,
+                form=form,
+                now=c.utcnow_chat_format(),
+            )
+
+        ticket = c.add_ticket_document(params, files, ticket, room)
+        log(log.INFO, "Tickets PDF document is added: [%s]", files)
 
         if not ticket:
             log(log.ERROR, "Ticket not found: [%s]", params.event_unique_id)
