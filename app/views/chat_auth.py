@@ -211,7 +211,7 @@ def login_email():
     )
 
 
-@chat_auth_blueprint.route("/login_password")
+@chat_auth_blueprint.route("/login_password", methods=["GET", "POST"])
 def login_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
 
@@ -410,7 +410,7 @@ def email_verification():
     if user.verification_code != params.user_message:
         log(log.ERROR, "Wrong verification code: [%s]", params.user_message)
         return render_template(
-            "chat/registration/email.confirm.html",
+            "chat/registration/email_confirm.html",
             error_message="Wrong verification code, please confirm your email",
             room=room,
             now=c.utcnow_chat_format(),
