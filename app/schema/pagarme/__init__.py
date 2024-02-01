@@ -21,9 +21,11 @@ from .payment import (
     PagarmeCheckout,
     PagarmeAdditionalInformation,
     PagarmePix,
-    PagarmePixPayment,
+    PagarmePixData,
+    PagarmePaymentPix,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
 )
+from .order import PagarmeCreateOrderPix, PagarmeCreateOrderResponsePix

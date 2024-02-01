@@ -1,4 +1,7 @@
 from datetime import datetime
+import requests
+import base64
+import json
 import os
 from flask import request, Blueprint, render_template, current_app as app, url_for
 from flask_login import current_user, login_required
@@ -9,6 +12,7 @@ from app import controllers as c
 from app import schema as s
 from app import models as m, db, mail
 from app import forms as f
+from app import pagarme_client
 from app.logger import log
 from config import config
 
@@ -437,9 +441,68 @@ def payment():
         "Payment",
         room,
     )
+    # TODO: collect info for json
+    # data = {
+    #     "items": [
+    #         {
+    #             "amount": {total_prices.total},
+    #             "description": "Concert Ticket",
+    #             "quantity": {total_prices.count},
+    #             "category": "Concert Event",
+    #         }
+    #     ],
+    #     "customer_id": {current_user.pagarme_id},
+    #     "payments": [
+    #         {
+    #             "expires_in": 30,
+    #             "payment_method": "pix",
+    #             "billing_address_editable": False,
+    #             "customer_editable": False,
+    #             "accepted_payment_methods": ["pix"],
+    #             "success_url": "https://fan-ticket.simple2b.org//pay/webhook",
+    #             "Pix": {"expires_in": 2147483647},
+    #         }
+    #     ],
+    # }
+    data = s.PagarmeCreateOrderPix(
+        items=[
+            s.PagarmeItem(
+                amount=int(total_prices.total),
+                description=total_prices.unique_ids,
+                category="Concert Event",
+            )
+        ],
+        customer_id="cus_0rbko7gC9dF7o5WQ",
+        payments=[
+            s.PagarmePaymentPix(
+                expires_in=30,
+                payment_method="pix",
+                billing_address_editable=False,
+                customer_editable=False,
+                accepted_payment_methods=["pix"],
+                success_url="https://fan-ticket.simple2b.org/pay/webhook",
+                Pix=s.PagarmePixData(
+                    expires_in=2147483647,
+                ),
+            )
+        ],
+    )
+    resp = pagarme_client.create_order_pix(data)
+    response_dict = json.loads(resp.json())
+    qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
+    qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
+    response = requests.get(qr_code_url)
+    assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
+    qr = response.content
+    qr_url = response.url
+    qr_base64 = base64.b64encode(qr).decode()
+
     return render_template(
         "chat/buy/payment.html",
         room=room,
+        qr=qr_base64,
+        qr_to_copy=qr_to_copy,
+        qr_url=qr_url,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,
         form=f.OrderCreateForm(),

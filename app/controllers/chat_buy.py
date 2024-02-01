@@ -121,6 +121,7 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
     price_total = 0
     price_service = 0
     price_net = 0
+    unique_ids = ""
     for ticket in tickets:
         ticket_price_gross = ticket.price_net * app.config["PLATFORM_COMMISSION_RATE"]
         ticket.price_gross = ticket_price_gross
@@ -128,12 +129,13 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         price_total += ticket_price_gross
         price_service += ticket_price_gross - ticket.price_net
         price_net += ticket.price_net
-
+        unique_ids += f"{ticket.unique_id}, "
     # TODO: Do we need to round the total price here?
     return s.ChatBuyTicketTotalPrice(
         service=round(price_service, 2),
         total=round(price_total, 2),
         net=round(price_net, 2),
+        unique_ids=unique_ids,
     )
 
 

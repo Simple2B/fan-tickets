@@ -24,11 +24,14 @@ from .pagarme import (
     PagarmeCheckout,
     PagarmeAdditionalInformation,
     PagarmePix,
-    PagarmePixPayment,
+    PagarmePixData,
+    PagarmePaymentPix,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
+    PagarmeCreateOrderPix,
+    PagarmeCreateOrderResponsePix,
 )
 
 from .chat_auth import (

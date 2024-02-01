@@ -4,7 +4,7 @@ from flask import Flask
 import sqlalchemy as sa
 from sqlalchemy import or_, orm
 from app import models as m
-from app import db, forms
+from app import db, forms, pagarme_client
 from app import schema as s
 
 
@@ -13,7 +13,7 @@ def init(app: Flask):
     @app.shell_context_processor
     def get_context():
         """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm)
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
 
     @app.cli.command()
     @click.option("--count", default=100, type=int)
@@ -181,3 +181,14 @@ def init(app: Flask):
         """
         db.session.rollback()
         print("rollbacked")
+
+    @app.cli.command("create-pagarme-order")
+    def create_pagarme_order():
+        """Create test pagarme order"""
+
+        with open("test_flask/assets/pagarme/create_order_pix.json") as json_f:
+            json_data = json_f.read()
+            data = s.PagarmeCreateOrderPix.model_validate_json(json_data)
+
+        resp = pagarme_client.create_order_pix(data)
+        print(resp)

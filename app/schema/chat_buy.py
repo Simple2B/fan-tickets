@@ -39,5 +39,6 @@ class ChatBuyTicketTotalPrice(BaseModel):
     total: float
     service: float
     net: float
+    unique_ids: str
 
     model_config = SettingsConfigDict(from_attributes=True)
