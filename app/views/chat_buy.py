@@ -472,7 +472,7 @@ def payment():
                 category="Concert Event",
             )
         ],
-        customer_id=current_user.pagarme_id,
+        customer_id="cus_0rbko7gC9dF7o5WQ",
         payments=[
             s.PagarmePaymentPix(
                 expires_in=30,
@@ -480,7 +480,7 @@ def payment():
                 billing_address_editable=False,
                 customer_editable=False,
                 accepted_payment_methods=["pix"],
-                success_url="https://fan-ticket.simple2b.org//pay/webhook",
+                success_url="https://fan-ticket.simple2b.org/pay/webhook",
                 Pix=s.PagarmePixData(
                     expires_in=2147483647,
                 ),
