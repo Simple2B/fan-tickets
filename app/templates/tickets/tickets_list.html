@@ -44,7 +44,8 @@
   </div>
   <!-- <p>{{ all_filters }}</p> -->
   <a class="flex gap-4 justify-center items-center cursor-pointer" hx-trigger="click" hx-swap="innerHTML"
-    hx-target="#tickets-list" hx-include="{{ all_filters }}" hx-get="{{ url_for('tickets.get_all') }}">
+    hx-target="#tickets-list" hx-include="{{ all_filters }}"
+    hx-get="{{ url_for('tickets.get_all', more_tickets=true, tickets_number=tickets_number) }}">
     <!-- prettier-ignore -->
     <svg xmlns="http://www.w3.org/2000/svg" width="41" height="40" viewBox="0 0 41 40" fill="none">
       <circle cx="20.5" cy="20" r="19" stroke="#F2B705" stroke-width="2" />

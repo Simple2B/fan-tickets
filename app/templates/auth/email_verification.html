@@ -1,0 +1,59 @@
+{% extends "landing/base.html" %}
+<!-- prettier-ignore -->
+{% block main_content %}
+
+<!-- component -->
+<div class="w-500 py-4 flex flex-col border rounded-3xl bg-modal-auth-gradient">
+  <div class="pb-5 px-6 border-b border-light-grey-b0">
+    <h2 class="text-3xl">Cadastro</h2>
+  </div>
+  <div class="px-6 flex flex-col">
+    <form role="form" action="#" method="post" class="py-9 flex flex-col">
+      <p class="mb-4">Código de verificação</p>
+      <div class="mb-2 flex gap-3">
+        <div class="absolute top-1 left-1/2 -translate-x-1/2">
+        </div>
+        <!-- TODO: hardcoded verification code while twilio is not working -->
+        <!-- TODO: disabled inputs when twilio will be work -->
+        <input name="digit_1"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+        <input name="digit_2"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+        <input name="digit_3"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+        <input name="digit_4"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+        <input name="digit_5"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+        <input name="digit_6"
+          class="auth-register-verification-input flex-1 min-w-0 py-4 px-4 rounded-2xl outline-none button-gradient-grey focus:border-transparent focus:ring-0"
+          type="text" placeholder="" />
+      </div>
+      <p class="mb-6 text-grey">Insira seu código de 6 dígitos aqui</p>
+      <div class="mb-12 flex items-center gap-4">
+        <input name="email-notification"
+          class="w-4 h-4 text-grey bg-filter-gradient-grey border-grey rounded focus:ring-gray-700 focus:ring-0"
+          type="checkbox" />
+        <p class="text-white">
+          Eu gostaria de receber recomendações e conteúdos sobre o evento
+          através do e-mail.
+        </p>
+      </div>
+      <!-- TODO: enabled button while twilio is not working -->
+      <!-- TODO:auth-register-verification-button-disabled - add this class to the button to disable it -->
+      <button type="submit" id="auth-register-verification-button"
+        class="py-4 flex gap-2 justify-center items-center rounded-2xl bg-secondary transition-all duration-300 ">
+        <span class="text-black text-lg">Criar conta</span>
+      </button>
+    </form>
+  </div>
+  {% endblock %}
+  <!-- prettier-ignore -->
+  {% block scripts %}
+  {% endblock %}
+</div>

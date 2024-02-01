@@ -41,8 +41,8 @@ class TicketForm(FlaskForm):
         for item in ticket_category_choices:
             self.ticket_category.choices.append(item)
 
-    description = StringField("Description", [DataRequired(), Length(min=3, max=256)])
-    warning = StringField("Warning", [DataRequired(), Length(min=3, max=64)])
+    description = StringField("Description", [DataRequired(), Length(min=0, max=256)])
+    warning = StringField("Warning", [DataRequired(), Length(min=0, max=256)])
     ticket_type = SelectField("Category", choices=[])
     ticket_category = SelectField("Category", choices=[])
     deleted = SelectField("Deleted", choices=[("True", "Deleted"), ("False", "Active")])

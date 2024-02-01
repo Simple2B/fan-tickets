@@ -120,9 +120,11 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             observations=faker.text(max_nb_chars=200),
             warning="don't forget to bring your ID",
             location_id=location_id,
+            venue=f"{location_name} venue {i}",
             category_id=category_id,
             creator_id=seller_id,
             date_time=utcnow() + timedelta(days=randint(-10, 100)),
+            approved=True,
         ).save(False)
         for j in range(12):
             price_net = randint(10, 1000)

@@ -108,6 +108,7 @@ def create_app(environment="development") -> Flask:
         get_chatbot_id,
         round_to_two_places,
         event_form_date,
+        get_ticket_subsequential_number,
     )
 
     app.jinja_env.globals["today"] = today
@@ -121,5 +122,6 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
+    app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
 
     return app

@@ -1,7 +1,9 @@
 import {easepick} from '@easepick/bundle';
+import {resizeChat} from './utils';
 
 const chatWindow: HTMLDivElement = document.querySelector('#chat-window');
 const timeTyping = 1500;
+const animationDuration = 200;
 
 function scrollDown(element: HTMLDivElement) {
   element.scrollTo({
@@ -15,7 +17,7 @@ function scrollDownSmooth(element: HTMLDivElement) {
       top: element.scrollHeight,
       behavior: 'smooth',
     });
-  }, 200);
+  }, animationDuration);
 }
 
 function toggleChatWindow() {
@@ -43,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (chatIcon) {
     chatIcon.addEventListener('click', () => {
+      setTimeout(() => {
+        resizeChat();
+      }, animationDuration);
       toggleChatWindow();
       if (chatWindow.classList.contains('chat-window-open')) {
         showMessage();

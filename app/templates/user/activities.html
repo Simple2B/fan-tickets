@@ -3,8 +3,7 @@
 {% elif visibility == True %}
 {% set is_visible = "" %}
 {% endif %}
-<tr id="row_{{user.unique_id}}"
-    class="{{is_visible}} bg-white border-b dark:bg-black dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+<tr id="row_{{user.unique_id}}" class="{{is_visible}}  border-b bg-black border-gray-700  hover:bg-gray-600">
     <td hx-get="{{url_for('user.get_activities', close=True, user_unique_id=user.unique_id)}}"
         hx-target="#row_{{user.unique_id}}" hx-swap="outerHTML" hx-trigger="click" class="text-gray-500 cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
