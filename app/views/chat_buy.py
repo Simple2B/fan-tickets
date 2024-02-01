@@ -472,7 +472,7 @@ def payment():
                 category="Concert Event",
             )
         ],
-        customer_id="cus_0rbko7gC9dF7o5WQ",
+        customer_id=current_user.pagarme_id,
         payments=[
             s.PagarmePaymentPix(
                 expires_in=30,
