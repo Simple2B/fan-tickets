@@ -120,6 +120,7 @@ class PagarmeItem(BaseModel):
 
     amount: int
     code: str | None = None
+    unique_id: str | None = None
     description: str
     quantity: int = 1
     category: str | None = None

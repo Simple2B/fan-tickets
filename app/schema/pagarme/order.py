@@ -10,7 +10,9 @@ class PagarmeCreateOrderPix(BaseModel):
 
 
 class PagarmeChargeTransactionPix(BaseModel):
+    qr_code: str
     qr_code_url: str
+    success: bool
 
 
 class PagarmeOrderChargeOutPix(BaseModel):

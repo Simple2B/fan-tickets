@@ -468,7 +468,7 @@ def payment():
         items=[
             s.PagarmeItem(
                 amount=int(total_prices.total),
-                description="Concert Ticket",
+                description=total_prices.unique_ids,
                 category="Concert Event",
             )
         ],
@@ -490,6 +490,7 @@ def payment():
     resp = pagarme_client.create_order_pix(data)
     response_dict = json.loads(resp.json())
     qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
+    qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
     response = requests.get(qr_code_url)
     assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
     qr = response.content
@@ -500,6 +501,7 @@ def payment():
         "chat/buy/payment.html",
         room=room,
         qr=qr_base64,
+        qr_to_copy=qr_to_copy,
         qr_url=qr_url,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,

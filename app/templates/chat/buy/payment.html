@@ -12,6 +12,16 @@ submit_message_get
   <div>
     <a href={{qr_url}}>
     <img class="w-full h-full" src="data:image/png;base64,{{ qr }}" alt="qr_code"></a></div>
+    <div class="mt-2 w-265 flex flex-col gap-3">
+    <div class="flex flex-col gap-2">
+      <button type="button" onclick="copyToClipboard('{{qr_to_copy}}')"
+        class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+        <div class="flex flex-col gap-1 justify-center items-center">
+          <span>Copy code to clipboard</span>
+        </div>
+      </button>
+    </div>
+  </div>
   {% endset %}
 
   <div id="chat-message-container" data-send-message>
@@ -64,4 +74,14 @@ submit_message_get
 {% block scripts %}
 <!-- prettier-ignore -->
 <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+<script>
+  function copyToClipboard(string) {
+    var input = document.createElement('input');
+    input.value = string;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+  }
+</script>
 {% endblock %}
