@@ -81,7 +81,7 @@ def get_cheapest_tickets(
     limit_ticket: bool,
     add_ticket: bool,
 ) -> list[m.Ticket]:
-    tickets.sort(key=lambda ticket: ticket.price_gross)
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_gross if ticket.price_gross else 0)
 
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]

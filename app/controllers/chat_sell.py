@@ -29,7 +29,7 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
         return [event]
 
     # Secondly try to find event in database by partial match
-    search_key_words = params.user_message.split(" ")
+    search_key_words = params.user_message.split(" ") if params.user_message else []
     events = []
     for word in search_key_words:
         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
@@ -83,7 +83,8 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
 
         # If Bard response is not an error, try to parse it
         try:
-            json_str = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL).group(1)
+            parsed_response = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL)
+            json_str = parsed_response.group(1) if parsed_response else ""
             bard_response = s.BardResponse.model_validate_json(json_str)
             log(log.INFO, "Bard response json: [%s]", bard_response)
         except Exception as e:
@@ -240,9 +241,10 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
         is_deleted=True,
     ).save(False)
 
+    tickets_quantity_answer = params.tickets_quantity_answer if params.tickets_quantity_answer else "1"
     c.save_message(
         "Got it! How many tickets do you want to sell?",
-        params.tickets_quantity_answer,
+        tickets_quantity_answer,
         room,
     )
 
@@ -280,7 +282,8 @@ def add_ticket_category(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticke
         log(log.INFO, "Ticket not found: [%s]", params.ticket_unique_id)
         return None
 
-    ticket.ticket_category = params.ticket_category.replace(" ", "_").lower()
+    if params.ticket_category:
+        ticket.ticket_category = params.ticket_category.replace(" ", "_").lower()
     ticket.save(False)
 
     c.save_message("Please, add ticket category", f"Ticket category: {params.ticket_category}", room)
@@ -317,7 +320,7 @@ def add_ticket_queue(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
 
 def add_ticket_seat(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    if ticket.is_paired and "," in params.user_message:
+    if ticket.is_paired and params.user_message and "," in params.user_message:
         seat1, seat2 = params.user_message.split(",")
         seat1 = seat1.strip()
         seat2 = seat2.strip()
@@ -382,7 +385,7 @@ def check_paired_ticket_fields(ticket: m.Ticket) -> None:
     return
 
 
-def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
+def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> tuple[m.Ticket, bool]:
     ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
 
