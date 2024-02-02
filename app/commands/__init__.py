@@ -192,3 +192,12 @@ def init(app: Flask):
 
         resp = pagarme_client.create_order_pix(data)
         print(resp)
+
+    @app.cli.command("get-tickets")
+    def get_tickets():
+        """Get all tickets"""
+        tickets_query = m.Ticket.select().where(m.Ticket.event.has(m.Event.location.has(m.Location.name == "Curitiba")))
+        tickets = db.session.scalars(tickets_query).all()
+
+        tickets = [ticket for ticket in tickets if ticket.is_deleted]
+        print(tickets)

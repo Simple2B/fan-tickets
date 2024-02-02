@@ -850,6 +850,7 @@ def get_wallet_code():
                 "chat/sell/ticket_wallet_id.html",
                 ticket_unique_id=ticket.pair_unique_id,
                 ticket_paired=params.ticket_paired,
+                is_second_wallet_id_input=is_second_wallet_id_input,
                 room=room,
                 now=c.utcnow_chat_format(),
             )
