@@ -110,6 +110,6 @@ class Ticket(db.Model, ModelMixin):
             return False
         if self.is_sold:
             return False
-        if self.is_reserved:
+        if self.is_sold:
             return False
         return True

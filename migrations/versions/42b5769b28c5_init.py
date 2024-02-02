@@ -1,8 +1,8 @@
 """init
 
-Revision ID: dbf3c66a774d
+Revision ID: 42b5769b28c5
 Revises: 
-Create Date: 2024-01-23 10:09:58.022254
+Create Date: 2024-02-02 12:20:52.064176
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dbf3c66a774d'
+revision = '42b5769b28c5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -83,7 +83,7 @@ def upgrade():
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.Column('location_id', sa.Integer(), nullable=False),
+    sa.Column('location_id', sa.Integer(), nullable=True),
     sa.Column('creator_id', sa.Integer(), nullable=False),
     sa.Column('picture_id', sa.Integer(), nullable=True),
     sa.Column('unique_id', sa.String(length=36), nullable=False),
@@ -91,7 +91,7 @@ def upgrade():
     sa.Column('url', sa.String(length=256), nullable=True),
     sa.Column('observations', sa.String(length=512), nullable=True),
     sa.Column('warning', sa.String(), nullable=True),
-    sa.Column('date_time', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('date_time', sa.DateTime(timezone=True), nullable=True),
     sa.Column('approved', sa.Boolean(), nullable=False),
     sa.Column('venue', sa.String(length=64), nullable=True),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], name=op.f('fk_events_category_id_categories')),
@@ -145,18 +145,22 @@ def upgrade():
     sa.Column('description', sa.String(length=512), nullable=True),
     sa.Column('ticket_type', sa.String(length=32), nullable=False),
     sa.Column('ticket_category', sa.String(length=32), nullable=False),
+    sa.Column('is_paired', sa.Boolean(), nullable=False),
+    sa.Column('pair_unique_id', sa.String(length=64), nullable=True),
+    sa.Column('separate_selling_allowed', sa.Boolean(), nullable=False),
     sa.Column('file', sa.LargeBinary(), nullable=True),
-    sa.Column('wallet_qr_code', sa.String(length=512), nullable=True),
+    sa.Column('wallet_id', sa.String(length=512), nullable=True),
     sa.Column('warning', sa.String(length=512), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('section', sa.String(length=16), nullable=True),
     sa.Column('queue', sa.String(length=16), nullable=True),
     sa.Column('seat', sa.String(length=16), nullable=True),
-    sa.Column('price_net', sa.Float(), nullable=True),
-    sa.Column('price_gross', sa.Float(), nullable=True),
+    sa.Column('price_net', sa.Integer(), nullable=True),
+    sa.Column('price_gross', sa.Integer(), nullable=True),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('is_in_cart', sa.Boolean(), nullable=False),
     sa.Column('is_reserved', sa.Boolean(), nullable=False),
+    sa.Column('last_reservation_time', sa.DateTime(), nullable=True),
     sa.Column('is_sold', sa.Boolean(), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_tickets_buyer_id_users')),

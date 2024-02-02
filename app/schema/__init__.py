@@ -4,7 +4,6 @@ from .user import User
 from .token import Token, TokenData, Auth
 from .event import Event, Events, EventsInput, EventFilter
 from .ticket import TicketFilter
-from .chat_sell import ChatSellEventParams, ChatSellTicketParams
 from .pagarme import (
     PagarmeCustomerCreate,
     PagarmeCustomerPhones,
@@ -25,11 +24,14 @@ from .pagarme import (
     PagarmeCheckout,
     PagarmeAdditionalInformation,
     PagarmePix,
-    PagarmePixPayment,
+    PagarmePixData,
+    PagarmePaymentPix,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
+    PagarmeCreateOrderPix,
+    PagarmeCreateOrderResponsePix,
 )
 
 from .chat_auth import (
@@ -43,5 +45,6 @@ from .chat_auth import (
     ChatAuthPhoneValidate,
 )
 from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
+from .chat_sell import ChatSellEventParams, ChatSellTicketParams
 from .room import Room
 from .bard_response import BardResponse

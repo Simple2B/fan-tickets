@@ -6,3 +6,13 @@ class WrongUrlError(Exception):
 class APIGetCustomerError(Exception):
     def __init__(self):
         super().__init__("API error on getting customers from pagarme.")
+
+
+class APIConnectionError(Exception):
+    def __init__(self):
+        super().__init__("API connection error. Most cases it's because of wrong IP (Brazil).")
+
+
+class APICreateOrderError(Exception):
+    def __init__(self, error_msg: str):
+        super().__init__(f"Create order error. {error_msg}")

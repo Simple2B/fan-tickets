@@ -3,7 +3,6 @@ from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 from psycopg2 import IntegrityError
 from app import controllers as c
-from app import schema as s
 from app import forms as f
 from app import models as m, db
 from app.controllers.jinja_globals import cut_seconds
