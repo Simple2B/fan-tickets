@@ -8,7 +8,7 @@ from .payments import (
 )
 from .utils import utcnow_chat_format
 from .image_upload import image_upload, ImageType
-from .chat import get_room, save_message
+from .chat import validate_event_params, validate_ticket_params, get_room, save_message
 from .chat_sell import (
     get_event_by_name_bard,
     add_event_location,
