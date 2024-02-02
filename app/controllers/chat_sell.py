@@ -226,8 +226,12 @@ def add_event_time(params: s.ChatSellEventParams, event_time: time) -> bool:
         log(log.INFO, "Event not found: [%s]", params.event_unique_id)
         return False
 
-    event.date_time = event.date_time.replace(hour=event_time.hour, minute=event_time.minute)
-    event.save()
+    try:
+        event.date_time = event.date_time.replace(hour=event_time.hour, minute=event_time.minute)
+        event.save()
+    except Exception as e:
+        log(log.ERROR, "Event time adding error: [%s]", e)
+        return False
 
     return True
 
@@ -252,7 +256,7 @@ def create_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     return ticket
 
 
-def create_paired_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket | None:
+def create_paired_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticket:
     first_ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id)
     first_ticket: m.Ticket = db.session.scalar(first_ticket_query)
 
@@ -284,7 +288,7 @@ def add_ticket_category(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticke
 
     if params.ticket_category:
         ticket.ticket_category = params.ticket_category.replace(" ", "_").lower()
-    ticket.save(False)
+    ticket.save()
 
     c.save_message("Please, add ticket category", f"Ticket category: {params.ticket_category}", room)
 
