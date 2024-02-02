@@ -3,6 +3,7 @@ from flask.testing import FlaskClient
 from test_flask.utils import login
 from app import models as m, db
 from .db import populate
+from app.controllers.chat_buy import get_cheapest_tickets
 
 
 def test_get_event_name(client: FlaskClient):
@@ -55,9 +56,12 @@ def test_get_events_by_location(client: FlaskClient):
     assert response.status_code == 200
     assert f"We have found {len(tickets)} available tickets" in response.data.decode()
 
+    if event.date_time:
+        date_time = event.date_time + timedelta(hours=2)
+
     m.Event(
         name=event.name,
-        date_time=event.date_time + timedelta(hours=2),
+        date_time=date_time,
         location_id=event.location_id,
         category_id=event.category_id,
         creator_id=event.creator_id,
@@ -122,3 +126,14 @@ def test_booking_ticket(client: FlaskClient):
     assert response.status_code == 200
     assert "Do you want to buy another one or proceed to purchase?" in response.data.decode()
     assert f"{ticket.unique_id}" in response.data.decode()
+
+
+def test_get_cheapest_ticket(client_with_data: FlaskClient):
+    tickets_query = m.Ticket.select().limit(5)
+    tickets = db.session.scalars(tickets_query).all()
+    room = m.Room(
+        seller_id=None,
+        buyer_id=2,
+    ).save()
+    tickets = get_cheapest_tickets(tickets, room, True, True)
+    assert tickets

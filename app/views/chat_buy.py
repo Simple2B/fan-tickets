@@ -278,7 +278,8 @@ def get_tickets():
         )
 
     if params.from_date_template:
-        event_time = tickets[0].event.date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
+        event_date_time = tickets[0].event.date_time if tickets[0].event.date_time else datetime.now()
+        event_time = event_date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
         c.save_message(
             "Sure! When are you planning to attend? Please specify the date and time.",
             f"{tickets[0].event.name}, {event_time}",
@@ -632,8 +633,8 @@ def subscribe_on_event():
     )
 
 
-def compute_total_price(cart_tickets: list[m.Ticket]) -> float:
-    return sum([ticket.price_gross for ticket in cart_tickets])
+def compute_total_price(cart_tickets: list[m.Ticket]) -> int:
+    return sum([ticket.price_gross for ticket in cart_tickets if ticket.price_gross])
 
 
 def clear_message_history(room: m.Room) -> None:

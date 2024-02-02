@@ -20,28 +20,29 @@ class Event(db.Model, ModelMixin):
     __tablename__ = "events"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+
+    # ForeignKeys
+    category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
+    location_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("locations.id"))
+    creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
+
+    # Columns
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
     )
     name: orm.Mapped[str] = orm.mapped_column(sa.String(64))
-
-    picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
-
     url: orm.Mapped[str | None] = orm.mapped_column(
         sa.String(256),
     )
-
     observations: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
     warning: orm.Mapped[str | None] = orm.mapped_column()
-    date_time: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True))
+    date_time: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))
     approved: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-
     venue: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
-    location_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("locations.id"))
-    category_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("categories.id"))
-    creator_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
+    # Relationships
     location: orm.Mapped["Location"] = orm.relationship(back_populates="events")
     category: orm.Mapped["Category"] = orm.relationship()
     creator: orm.Mapped["User"] = orm.relationship()

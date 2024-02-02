@@ -5,8 +5,6 @@ import re
 import sqlalchemy as sa
 
 from flask import current_app as app
-
-
 from werkzeug.security import check_password_hash
 
 from app.database import db
@@ -19,16 +17,6 @@ from app import models as m
 from app.logger import log
 
 
-def get_room(room_unique_id: str) -> m.Room | None:
-    room_query = sa.select(m.Room).where(m.Room.unique_id == room_unique_id)
-    room = db.session.scalar(room_query)
-
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", room_unique_id)
-
-    return room
-
-
 def get_user(user_unique_id: str) -> m.User | None:
     user_query = sa.select(m.User).where(m.User.unique_id == user_unique_id)
     user = db.session.scalar(user_query)
@@ -37,24 +25,6 @@ def get_user(user_unique_id: str) -> m.User | None:
         log(log.ERROR, "User not found: [%s]", user_unique_id)
 
     return user
-
-
-def save_message(bot_message: str, user_message: str, room: m.Room):
-    """
-    The function to save message for history in chat.
-    It is save message from chat-bot and user.
-    """
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text=bot_message,
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text=user_message,
-    ).save()
-
-    log(log.INFO, "Messages for history saved. Bot: [%s], user: [%s]", bot_message, user_message)
 
 
 def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.User | None]:
@@ -94,7 +64,7 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
     db.session.flush()
     room.seller_id = user.id
 
-    save_message("Please input your email", f"Email: {email}", room)
+    c.save_message("Please input your email", f"Email: {email}", room)
 
     return s.ChatAuthEmailValidate(email=email, verification_code=verification_code), user
 
@@ -110,7 +80,7 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
     user.password = form.password.data
     user.save(False)
 
-    save_message("Please input your password", "Password has been added", room)
+    c.save_message("Please input your password", "Password has been added", room)
 
     return True
 
@@ -128,7 +98,7 @@ def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, 
     return result, user
 
 
-def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
+def add_identity_document(form: f.ChatFileUploadForm, room: m.Room) -> str:
     user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
@@ -141,7 +111,7 @@ def add_identity_document(form: f.ChatAuthIdentityForm, room: m.Room) -> str:
     if 200 not in response:
         return "Not valid type of verification document, please upload your identification document with right format"
 
-    save_message("Please upload your identification document", "Identification document has been uploaded", room)
+    c.save_message("Please upload your identification document", "Identification document has been uploaded", room)
 
     return ""
 
@@ -150,14 +120,14 @@ def create_user_name(name: str, user: m.User, room: m.Room):
     user.name = name
     user.save(False)
 
-    save_message("Please input your name", f"Name: {name}", room)
+    c.save_message("Please input your name", f"Name: {name}", room)
 
 
 def create_user_last_name(last_name: str, user: m.User, room: m.Room):
     user.last_name = last_name
     user.save(False)
 
-    save_message("Please input your last name", f"Last name: {last_name}", room)
+    c.save_message("Please input your last name", f"Last name: {last_name}", room)
 
 
 def create_phone(phone: str, user: m.User, room: m.Room) -> str:
@@ -175,7 +145,7 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
     user.phone = phone
     user.save(False)
 
-    save_message("Please input your phone", f"Phone: {phone}", room)
+    c.save_message("Please input your phone", f"Phone: {phone}", room)
 
     return ""
 
@@ -186,7 +156,7 @@ def create_address(address: str, user: m.User, room: m.Room):
     user.activated = True
     user.save(False)
 
-    save_message("Please input your address", f"Address: {address}", room)
+    c.save_message("Please input your address", f"Address: {address}", room)
 
 
 def create_birth_date(birth_date: str, user: m.User, room: m.Room):
@@ -194,7 +164,7 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room):
     user.activated = True
     user.save(False)
 
-    save_message("Please input your birth date", f"Birth date: {birth_date}", room)
+    c.save_message("Please input your birth date", f"Birth date: {birth_date}", room)
 
 
 def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
@@ -210,7 +180,7 @@ def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, r
         user.twitter = params.user_message
         message = "Twitter url added"
 
-    save_message("Please add your social profiles", message, room)
+    c.save_message("Please add your social profiles", message, room)
 
 
 def get_user_by_email(email: str, room: m.Room) -> m.User | None:

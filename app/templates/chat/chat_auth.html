@@ -4,12 +4,14 @@
   {% include 'chat/chat_messages.html' %}
   {% include 'chat/chat_spinner.html' %}
 
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+  <input type="hidden" name="from_sign_up" value="True" />
   {% set all_filters = "[name='from_sign_up'], [name='room_unique_id'], [name='user_unique_id']" %}
 
   {% set html_element %}
   <div class="mt-2 flex gap-2">
-    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click"
+    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.login_email') }}" hx-target="#chat-body"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Log in
     </button>
@@ -30,8 +32,6 @@
   </div>
 </div>
 
-<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-<input type="hidden" name="from_sign_up" value="True" />
 {{ submit_message_get('chat.sell', disabled='disabled') }}
 
 {% block scripts %}

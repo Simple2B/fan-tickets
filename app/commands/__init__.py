@@ -107,7 +107,7 @@ def init(app: Flask):
 
         print(user.subscribed_events)
 
-    @app.cli.command("delete-users")
+    @app.cli.command("delete-user")
     @click.option("--email", type=str)
     def delete_user(email: str):
         user_query = m.User.select().where(m.User.email == email)

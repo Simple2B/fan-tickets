@@ -53,6 +53,7 @@ class BaseConfig(BaseSettings):
     TICKETS_PER_CHAT: int = 3
 
     # UI config
+    CHAT_USER_FORMAT: str = "%d/%m/%Y"
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
@@ -101,6 +102,16 @@ class BaseConfig(BaseSettings):
 
     # Redis
     REDIS_URL: str
+
+    # Bard
+    BARD_API_KEY: str | None = None
+
+    # Events posting
+    BARD_DATE_FORMAT: str = "%Y-%m-%d"
+    DAYS_TO_EVENT_MINIMUM: int = 3
+    DEFAULT_EVENT_TIME_HOURS: int = 20
+    DEFAULT_EVENT_TIME_MINUTES: int = 0
+    DEFAULT_EVENT_CATEGORY_ID: int = 1
 
     @staticmethod
     def configure(app: Flask):

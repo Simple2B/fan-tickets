@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 from urllib.parse import urlparse
 
@@ -99,39 +98,31 @@ def login():
 
 @chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M")
-
-    question = "Are you looking for buying or selling tickets?"
-
     seller_id = current_user.id if current_user.is_authenticated else None
     room = m.Room(
         seller_id=seller_id,
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text=question,
-    ).save(False)
-    m.Message(
-        sender_id=seller_id,
-        room_id=room.id,
-        text="Selling",
-    ).save(False)
-    db.session.commit()
 
+    c.save_message(
+        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+        "Sell",
+        room,
+    )
+
+    categories = []
     if current_user.is_authenticated:
-        template = "chat/sell/01_event_name.html"
+        template = "chat/sell/event_category.html"
+        categories = m.Category.all()
     else:
         template = "chat/chat_auth.html"
 
     return render_template(
         template,
         locations=m.Location.all(),
-        now=now_str,
+        categories=categories,
+        now=c.utcnow_chat_format(),
         room=room,
-        user=current_user,
     )
 
 
@@ -140,16 +131,11 @@ def buy():
     room = m.Room(
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text="Buy",
-    ).save(False)
-    db.session.commit()
+    c.save_message(
+        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+        "Buy",
+        room,
+    )
 
     return render_template(
         "chat/buy/event_name.html",
@@ -225,7 +211,7 @@ def login_email():
     )
 
 
-@chat_auth_blueprint.route("/login_password")
+@chat_auth_blueprint.route("/login_password", methods=["GET", "POST"])
 def login_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
 
@@ -424,7 +410,7 @@ def email_verification():
     if user.verification_code != params.user_message:
         log(log.ERROR, "Wrong verification code: [%s]", params.user_message)
         return render_template(
-            "chat/registration/email.confirm.html",
+            "chat/registration/email_confirm.html",
             error_message="Wrong verification code, please confirm your email",
             room=room,
             now=c.utcnow_chat_format(),
@@ -509,7 +495,7 @@ def create_user_password():
 @chat_auth_blueprint.route("/confirm_user_password", methods=["POST"])
 def confirm_user_password():
     form: f.ChatAuthPasswordForm = f.ChatAuthPasswordForm()
-    form_file = f.ChatAuthIdentityForm()
+    form_file = f.ChatFileUploadForm()
 
     room = c.get_room(form.room_unique_id.data)
 
@@ -562,7 +548,7 @@ def confirm_user_password():
 
 @chat_auth_blueprint.route("/create_user_passport", methods=["GET", "POST"])
 def create_user_passport():
-    form: f.ChatAuthIdentityForm = f.ChatAuthIdentityForm()
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
 
     room = c.get_room(form.room_unique_id.data)
 
