@@ -173,7 +173,7 @@ def init(app: Flask):
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
         for user in users:
-            print(user.id, user.email, user.role, user.tickets_bought)
+            print(user.id, user.email, user.role, user.username, user.name, user.last_name)
 
     @app.cli.command("reassign-events")
     @click.option("--username", type=str)
