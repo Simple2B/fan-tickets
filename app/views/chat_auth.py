@@ -590,6 +590,23 @@ def create_user_passport():
             form=form,
         )
 
+    user = c.get_user(form.user_unique_id.data)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", form.user_unique_id.data)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+    if user.identity_document:
+        return render_template(
+            "chat/registration/passport_identity_number.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
     error_message = c.add_identity_document(form, room)
 
     if error_message:
@@ -604,11 +621,78 @@ def create_user_passport():
         )
 
     return render_template(
-        "chat/registration/name.html",
+        "chat/registration/passport_identity_number.html",
         room=room,
         now=c.utcnow_chat_format(),
         user_unique_id=form.user_unique_id.data,
         form=form,
+    )
+
+
+@chat_auth_blueprint.route("/create_passport_identity_number")
+def create_passport_identity_number():
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request.args))
+    except Exception as e:
+        log(log.ERROR, "Form submitting error: [%s]", e)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if not params.user_message:
+        log(log.ERROR, "No identity number provided: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/passport_identity_number.html",
+            error_message="Please, add your identity number",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
+        )
+
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        log(log.ERROR, "User not found: [%s]", params.user_unique_id)
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if user.document_identity_number:
+        return render_template(
+            "chat/registration/phone.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
+    c.add_identity_document_number(params.user_message, user, room)
+
+    if current_user.is_authenticated:
+        return render_template(
+            "chat/registration/phone.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
+    return render_template(
+        "chat/registration/name.html",
+        room=room,
+        now=c.utcnow_chat_format(),
+        user_unique_id=user.unique_id,
     )
 
 
@@ -710,6 +794,21 @@ def create_user_last_name():
     user = c.get_user(params.user_unique_id)
 
     if not user:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    if user.last_name:
+        return render_template(
+            "chat/registration/phone.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
+    if not user:
         log(log.ERROR, "User not found: [%s]", params.user_unique_id)
         return render_template(
             "chat/chat_error.html",
@@ -781,6 +880,14 @@ def create_user_phone():
             now=c.utcnow_chat_format(),
         )
 
+    if user.phone:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
     error_message = c.create_phone(params.user_message, user, room)
 
     if error_message:
@@ -805,6 +912,14 @@ def create_user_phone():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if current_user.is_authenticated:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
         )
 
     # parse url and get the domain name
@@ -929,6 +1044,10 @@ def create_user_birth_date():
             now=c.utcnow_chat_format(),
         )
 
+    if user.birth_date:
+        user.activated = True
+        db.session.commit()
+
     c.create_birth_date(params.user_message, user, room)
 
     try:
@@ -942,6 +1061,14 @@ def create_user_birth_date():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if current_user.is_authenticated:
+        return render_template(
+            "chat/buy/event_name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
         )
 
     return render_template(

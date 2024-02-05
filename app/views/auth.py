@@ -112,7 +112,8 @@ def activate():
         flash("Incorrect email confirmation", "danger")
         return redirect(url_for("main.index"))
 
-    user.activated = True
+    # TODO: remove after testing registration flow
+    # user.activated = True
     user.save()
     login_user(user)
     log(log.INFO, "User activated")
