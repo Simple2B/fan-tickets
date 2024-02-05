@@ -47,5 +47,8 @@ services:
       - "traefik.http.routers.fan_ticket_api.tls=true"
       - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
 
+  backup:
+    image: simple2b/pg-backup:1.0
+
 volumes:
   db_data:

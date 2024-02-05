@@ -897,6 +897,17 @@ def get_ticket_document():
     form: f.ChatFileUploadForm = f.ChatFileUploadForm()
     if form.validate_on_submit():
         files = request.files.getlist("file")
+        if not c.check_file_type(files):
+            return render_template(
+                "chat/sell/ticket_document.html",
+                error_message="Invalid file type. Please upload a PDF file",
+                ticket_unique_id=params.ticket_unique_id,
+                ticket_paired=params.ticket_paired,
+                room=room,
+                form=form,
+                now=c.utcnow_chat_format(),
+            )
+
         ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
         ticket: m.Ticket = db.session.scalar(ticket_query)
 

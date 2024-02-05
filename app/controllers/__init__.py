@@ -26,6 +26,7 @@ from .chat_sell import (
     add_ticket_wallet_id,
     add_ticket_document,
     add_ticket_price,
+    check_file_type,
 )
 from .chat_auth import (
     get_user,
