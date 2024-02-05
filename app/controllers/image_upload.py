@@ -73,7 +73,7 @@ def image_upload(user: m.User, image_type: ImageType):
             file=img_bytes,
         ).save()
         if image_type == ImageType.LOGO:
-            user.logo_id = picture.id
+            user.picture_id = picture.id
             user.save()
             log(log.INFO, "Uploaded image for user: [%s]", user)
             flash("Logo uploaded", "success")

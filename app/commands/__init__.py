@@ -115,6 +115,21 @@ def init(app: Flask):
         if not user:
             print(f"User with e-mail: [{email}] not found")
             return
+
+        tickets_bought_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
+        tickets_bought = db.session.scalars(tickets_bought_query).all()
+
+        if tickets_bought:
+            for ticket in tickets_bought:
+                db.session.delete(ticket)
+
+        tickets_sold_query = m.Ticket.select().where(m.Ticket.seller_id == user.id)
+        tickets_sold = db.session.scalars(tickets_sold_query).all()
+
+        if tickets_sold:
+            for ticket in tickets_sold:
+                db.session.delete(ticket)
+
         rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
         rooms: m.Room = db.session.scalars(rooms_query).all()
         messages_query = (
