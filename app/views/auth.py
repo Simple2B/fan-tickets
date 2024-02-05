@@ -112,7 +112,8 @@ def activate():
         flash("Incorrect email confirmation", "danger")
         return redirect(url_for("main.index"))
 
-    user.activated = True
+    # TODO: remove after testing registration flow
+    # user.activated = True
     user.save()
     login_user(user)
     log(log.INFO, "User activated")
@@ -224,7 +225,6 @@ def password_recovery(reset_password_uid):
 
     if form.validate_on_submit():
         user.password = form.password.data
-        user.activated = True
         user.unique_id = m.gen_password_reset_id()
         user.save()
         login_user(user)

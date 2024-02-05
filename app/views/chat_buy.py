@@ -325,6 +325,7 @@ def booking_ticket():
         )
 
     room = c.get_room(params.room_unique_id)
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
@@ -347,6 +348,16 @@ def booking_ticket():
             "chat/registration/login_form.html",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if not current_user.activated:
+        log(log.ERROR, "User not activated: [%s]", current_user)
+        return render_template(
+            "chat/registration/passport.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+            form=form,
         )
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room)

@@ -54,6 +54,7 @@ class User(db.Model, UserMixin, ModelMixin):
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     birth_date: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
+    document_identity_number: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     # Improve naming
     facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
@@ -163,6 +164,10 @@ class User(db.Model, UserMixin, ModelMixin):
     def json(self):
         u = s.User.model_validate(self)
         return u.model_dump_json()
+
+    @property
+    def birth_date_string(self):
+        return self.birth_date.strftime("%m/%d/%Y") if self.birth_date else None
 
 
 class AnonymousUser(AnonymousUserMixin):
