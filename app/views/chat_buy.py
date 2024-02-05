@@ -465,7 +465,6 @@ def payment():
     #         }
     #     ],
     # }
-    # TODO: if current_user dont have pagarme_id create customer with pagarme and save pagarme_id to current_user
 
     if not current_user.pagarme_id:
         phone_data = pagarme_client.generate_customer_phone(current_user.phone)
