@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -113,3 +114,13 @@ class Ticket(db.Model, ModelMixin):
         if self.is_reserved:
             return False
         return True
+
+    @property
+    def base64_src(self) -> str:
+        """
+        Returns the base64 representation of the picture.
+        """
+        if self.file:
+            base64_img = base64.b64encode(self.file).decode("utf-8")
+            return f"data:application/pdf;base64,{ base64_img }"
+        return ""
