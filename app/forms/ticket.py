@@ -41,11 +41,23 @@ class TicketForm(FlaskForm):
         for item in ticket_category_choices:
             self.ticket_category.choices.append(item)
 
+        deleted_choices = [("True", "Deleted"), ("False", "Active")]
+
+        if "ticket_deleted" in kwargs.keys():
+            deleted = kwargs["ticket_deleted"]
+            for item in deleted_choices:
+                if item[0] == str(deleted):
+                    deleted_choices.remove(item)
+                    self.deleted.choices.append(item)
+
+        for item in deleted_choices:
+            self.deleted.choices.append(item)
+
     description = StringField("Description", [DataRequired(), Length(min=0, max=256)])
     warning = StringField("Warning", [DataRequired(), Length(min=0, max=256)])
     ticket_type = SelectField("Category", choices=[])
     ticket_category = SelectField("Category", choices=[])
-    deleted = SelectField("Deleted", choices=[("True", "Deleted"), ("False", "Active")])
+    deleted = SelectField("Deleted", choices=[])
     section = StringField("Section", [DataRequired(), Length(min=3, max=16)])
     queue = StringField("Queue", [DataRequired(), Length(min=3, max=16)])
     seat = StringField("Seat", [DataRequired(), Length(min=3, max=16)])
