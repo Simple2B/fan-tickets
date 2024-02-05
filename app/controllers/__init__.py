@@ -35,6 +35,7 @@ from .chat_auth import (
     create_password,
     confirm_password,
     add_identity_document,
+    add_identity_document_number,
     create_phone,
     create_address,
     create_birth_date,
