@@ -465,6 +465,30 @@ def payment():
     #         }
     #     ],
     # }
+    # TODO: if current_user dont have pagarme_id create customer with pagarme and save pagarme_id to current_user
+
+    if not current_user.pagarme_id:
+        phone_data = pagarme_client.generate_customer_phone(current_user.phone)
+        phones_data = s.PagarmeCustomerPhones(
+            mobile_phone=phone_data,
+        )
+
+        customer_data = s.PagarmeCustomerCreate(
+            name=current_user.name,
+            birthdate=current_user.birth_date_string,
+            code=current_user.unique_id,
+            email=current_user.email,
+            document=current_user.document_identity_number,
+            phones=phones_data,
+        )
+
+        pagarme_customer = pagarme_client.create_customer(customer_data)
+
+        assert pagarme_customer
+
+        current_user.pagarme_id = pagarme_customer.id
+        current_user.save()
+
     data = s.PagarmeCreateOrderPix(
         items=[
             s.PagarmeItem(
