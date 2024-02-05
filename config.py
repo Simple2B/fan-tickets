@@ -114,7 +114,7 @@ class BaseConfig(BaseSettings):
     DEFAULT_EVENT_TIME_MINUTES: int = 0
     DEFAULT_EVENT_CATEGORY_ID: int = 1
 
-    SERVER_TYPE: str
+    SERVER_TYPE: str = "development"
 
     @staticmethod
     def configure(app: Flask):
