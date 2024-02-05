@@ -48,7 +48,10 @@ def register():
                 _external=True,
             )
         else:
-            base_url = app.config["STAGING_BASE_URL"]
+            if os.environ.get("SERVER_TYPE") == "production":
+                base_url = app.config["PRODUCTION_BASE_URL"]
+            else:
+                base_url = app.config["STAGING_BASE_URL"]
             url = f"{base_url}activated?user_id={user.unique_id}&verification_code={verification_code}"
 
         msg.html = render_template(

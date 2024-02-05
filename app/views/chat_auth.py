@@ -928,7 +928,10 @@ def create_user_phone():
         parsed_url = urlparse(request.base_url)
         profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
     else:
-        base_url = app.config["STAGING_BASE_URL"]
+        if os.environ.get("SERVER_TYPE") == "production":
+            base_url = app.config["PRODUCTION_BASE_URL"]
+        else:
+            base_url = app.config["STAGING_BASE_URL"]
         profile_url = f"{base_url}user/profile"
 
     return render_template(

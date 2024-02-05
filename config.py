@@ -86,6 +86,7 @@ class BaseConfig(BaseSettings):
     # dev base url
     DEV_BASE_URL: str = "127.0.0.1:5000/"
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
+    PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
     # platform commission rate
     PLATFORM_COMMISSION_RATE: float = 1.08
@@ -112,6 +113,8 @@ class BaseConfig(BaseSettings):
     DEFAULT_EVENT_TIME_HOURS: int = 20
     DEFAULT_EVENT_TIME_MINUTES: int = 0
     DEFAULT_EVENT_CATEGORY_ID: int = 1
+
+    SERVER_TYPE: str
 
     @staticmethod
     def configure(app: Flask):
