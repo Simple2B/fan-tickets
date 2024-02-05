@@ -48,7 +48,10 @@ def register():
                 _external=True,
             )
         else:
-            base_url = app.config["STAGING_BASE_URL"]
+            if os.environ.get("SERVER_TYPE") == "production":
+                base_url = app.config["PRODUCTION_BASE_URL"]
+            else:
+                base_url = app.config["STAGING_BASE_URL"]
             url = f"{base_url}activated?user_id={user.unique_id}&verification_code={verification_code}"
 
         msg.html = render_template(
@@ -105,12 +108,15 @@ def activate():
 
     if not user:
         log(log.INFO, "User not found")
-        flash("Incorrect email confirmation", "danger")
+        flash("Activation for this user is failed", "danger")
         return redirect(url_for("main.index"))
 
     if user.verification_code != verification_code:
         log(log.INFO, "Incorrect verification code")
-        flash("Incorrect email confirmation", "danger")
+        flash(
+            f"Incorrect email confirmation user-code -{user.verification_code}, verification - {verification_code}",
+            "danger",
+        )
         return redirect(url_for("main.index"))
 
     # TODO: remove after testing registration flow
