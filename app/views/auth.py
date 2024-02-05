@@ -225,7 +225,6 @@ def password_recovery(reset_password_uid):
 
     if form.validate_on_submit():
         user.password = form.password.data
-        user.activated = True
         user.unique_id = m.gen_password_reset_id()
         user.save()
         login_user(user)
