@@ -325,6 +325,7 @@ def booking_ticket():
         )
 
     room = c.get_room(params.room_unique_id)
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
@@ -347,6 +348,16 @@ def booking_ticket():
             "chat/registration/login_form.html",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if not current_user.activated:
+        log(log.ERROR, "User not activated: [%s]", current_user)
+        return render_template(
+            "chat/registration/passport.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+            form=form,
         )
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room)
@@ -465,6 +476,29 @@ def payment():
     #         }
     #     ],
     # }
+
+    if not current_user.pagarme_id:
+        phone_data = pagarme_client.generate_customer_phone(current_user.phone)
+        phones_data = s.PagarmeCustomerPhones(
+            mobile_phone=phone_data,
+        )
+
+        customer_data = s.PagarmeCustomerCreate(
+            name=current_user.name,
+            birthdate=current_user.birth_date_string,
+            code=current_user.unique_id,
+            email=current_user.email,
+            document=current_user.document_identity_number,
+            phones=phones_data,
+        )
+
+        pagarme_customer = pagarme_client.create_customer(customer_data)
+
+        assert pagarme_customer
+
+        current_user.pagarme_id = pagarme_customer.id
+        current_user.save()
+
     data = s.PagarmeCreateOrderPix(
         items=[
             s.PagarmeItem(

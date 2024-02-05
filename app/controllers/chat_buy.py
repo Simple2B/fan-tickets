@@ -101,7 +101,7 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
     ticket.buyer_id = user.id
 
     # TODO: create string with ticket info
-    c.save_message("We have found tickets. What ticket do you want?", f"ticket seat: {ticket.seat}", room)
+    c.save_message("We have found tickets. What ticket do you want?", f"Ticket seat: {ticket.seat}", room)
 
     return ticket
 
