@@ -160,6 +160,7 @@ def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m
         category = m.Category(name=params.event_category_id).save(False)
 
     event = m.Event(
+        date_time=datetime.now(),
         name=params.event_name,
         category=category,
         creator_id=user.id,
