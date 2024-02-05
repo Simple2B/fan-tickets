@@ -105,12 +105,15 @@ def activate():
 
     if not user:
         log(log.INFO, "User not found")
-        flash("Incorrect email confirmation", "danger")
+        flash("Activation for this user is failed", "danger")
         return redirect(url_for("main.index"))
 
     if user.verification_code != verification_code:
         log(log.INFO, "Incorrect verification code")
-        flash("Incorrect email confirmation", "danger")
+        flash(
+            f"Incorrect email confirmation user-code -{user.verification_code}, verification - {verification_code}",
+            "danger",
+        )
         return redirect(url_for("main.index"))
 
     # TODO: remove after testing registration flow
