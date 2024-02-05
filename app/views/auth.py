@@ -24,6 +24,7 @@ def register():
         verification_code = randint(100000, 999999)
         user = m.User(
             username=form.username.data,
+            name=form.username.data,
             email=form.email.data,
             picture_id=picture_id,
             password=form.password.data,
