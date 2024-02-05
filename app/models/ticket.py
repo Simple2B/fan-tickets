@@ -104,7 +104,7 @@ class Ticket(db.Model, ModelMixin):
 
     @property
     def is_available(self):
-        if self.event.date_time > utcnow():
+        if self.event.date_time < utcnow():
             return False
         if self.is_deleted:
             return False
