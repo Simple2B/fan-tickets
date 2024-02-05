@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flask.app"
-version = "0.2.53"
+version = "0.2.54"
 description = ""
 authors = ["denys <denysburimov@gmail.com>"]
 
