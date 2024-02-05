@@ -6,6 +6,10 @@ from sqlalchemy import or_, orm
 from app import models as m
 from app import db, forms, pagarme_client
 from app import schema as s
+from config import config
+
+
+CFG = config()
 
 
 def init(app: Flask):
@@ -208,11 +212,44 @@ def init(app: Flask):
         resp = pagarme_client.create_order_pix(data)
         print(resp)
 
-    @app.cli.command("get-tickets")
-    def get_tickets():
-        """Get all tickets"""
-        tickets_query = m.Ticket.select().where(m.Ticket.event.has(m.Event.location.has(m.Location.name == "Curitiba")))
+    @app.cli.command("reserve")
+    def reserve():
+        """Reserve tickets for testing"""
+        tickets_query = m.Ticket.select()
         tickets = db.session.scalars(tickets_query).all()
 
-        tickets = [ticket for ticket in tickets if ticket.is_deleted]
-        print(tickets)
+        reserved_tickets = []
+        for i, ticket in enumerate(tickets):
+            if i % 3 == 0:
+                ticket.is_reserved = True
+                ticket.last_reservation_time = datetime.now()
+                ticket.save(False)
+                reserved_tickets.append(ticket)
+        db.session.commit()
+
+        print(reserved_tickets)
+
+    @app.cli.command("unreserve")
+    def unreserve():
+        """Unreserve all tickets"""
+        tickets_query = (
+            m.Ticket.select().where(m.Ticket.is_reserved.is_(True))
+            # .where(m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike("%Rio%"))))
+        )
+        tickets = db.session.scalars(tickets_query).all()
+
+        for ticket in tickets:
+            if ticket.is_reserved and ticket.last_reservation_time < datetime.now() - timedelta(
+                minutes=CFG.TICKETS_IN_CART_EXPIRES_IN
+            ):
+                ticket.is_reserved = False
+                ticket.last_reservation_time = datetime.now()
+                print(ticket, "unreserved")
+                ticket.save()
+            elif ticket.is_reserved:
+                print(f"Ticket {ticket.id} is still reserved")
+
+        if tickets:
+            print("Unreserved all tickets with expired reservation")
+        else:
+            print("No tickets to unreserve")

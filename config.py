@@ -112,6 +112,8 @@ class BaseConfig(BaseSettings):
     DEFAULT_EVENT_TIME_HOURS: int = 20
     DEFAULT_EVENT_TIME_MINUTES: int = 0
     DEFAULT_EVENT_CATEGORY_ID: int = 1
+    TICKETS_IN_CART_EXPIRES_IN: int = 30  # minutes
+    TICKETS_IN_CART_CLEAN_IN: int = 10  # minutes
 
     @staticmethod
     def configure(app: Flask):
@@ -153,6 +155,9 @@ class ProductionConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
+    )
+    REDIS_URL: str = Field(
+        alias="REDIS_URL",
     )
     WTF_CSRF_ENABLED: bool = True
 
