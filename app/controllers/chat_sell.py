@@ -4,6 +4,7 @@ from bardapi import Bard
 from datetime import datetime, time, timedelta
 from flask import current_app as app
 from flask_login import current_user
+from werkzeug.datastructures.file_storage import FileStorage
 import sqlalchemy as sa
 from app.database import db
 from app import controllers as c
@@ -427,6 +428,15 @@ def add_ticket_wallet_id(params: s.ChatSellTicketParams, room: m.Room) -> tuple[
         c.save_message("Please, input ticket wallet id", f"Ticket wallet_id: {ticket.wallet_id}", room)
 
     return ticket, False
+
+
+def check_file_type(files: list[FileStorage]) -> bool:
+    for file in files:
+        if not isinstance(file, FileStorage):
+            return False
+        if file.mimetype != "application/pdf":
+            return False
+    return True
 
 
 def add_ticket_document(

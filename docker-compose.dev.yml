@@ -13,24 +13,28 @@ services:
       PGDATABASE: db
       PGPASSWORD: ${POSTGRES_PASSWORD:-passwd}
       PGUSER: ${POSTGRES_USER:-postgres}
-    ports:
-      - 127.0.0.1:${LOCAL_DB_PORT:-15432}:5432
 
   app:
-    build: .
-    # restart: always
+    image: simple2b/fan_ticket
+    restart: always
     command: sh ./start_web.sh
     environment:
       APP_ENV: production
-      ALCHEMICAL_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-passwd}@db:5432/db
+      SERVER_TYPE: development
     depends_on:
       - db
+    env_file:
+      - .env
     ports:
-      - 127.0.0.1:${LOCAL_WEB_PORT:-8080}:8000
+    - "127.0.0.1:8007:8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
+      - "traefik.http.routers.fan_ticket.tls=true"
+      - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
 
   api:
-    # image: simple2b/flask-app:0.1
-    build: .
+    image: simple2b/fan_ticket
     restart: always
     command: sh ./start_api.sh
     environment:
@@ -39,23 +43,11 @@ services:
       ALCHEMICAL_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-passwd}@db:5432/db
     depends_on:
       - db
-    ports:
-      - 127.0.0.1:${LOCAL_API_PORT:-8002}:8000
-
-  redis:
-    image: redis:7
-    restart: always
-    ports:
-      - "127.0.0.1:${REDIS_LOCAL_PORT:-6379}:6379"
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redis_password}
-
-  worker:
-    build: .
-    command: sh ./start_worker.sh
-    environment:
-      APP_ENV: production
-    depends_on:
-      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fan_ticket_api.rule=Host(`api.fan-ticket.simple2b.net`)"
+      - "traefik.http.routers.fan_ticket_api.tls=true"
+      - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
 
   backup:
     image: simple2b/pg-backup:1.0
