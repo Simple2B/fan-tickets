@@ -24,10 +24,10 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
         room,
     )
     # Firstly try to find event in database by exact match
-    event_query = sa.select(m.Event).where(m.Event.name == params.user_message)
-    event: m.Event = db.session.scalar(event_query)
-    if event:
-        return [event]
+    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{params.user_message}%"))
+    events: m.Event = db.session.scalars(event_query).all()
+    if events:
+        return events
 
     # Secondly try to find event in database by partial match
     search_key_words = params.user_message.split(" ") if params.user_message else []

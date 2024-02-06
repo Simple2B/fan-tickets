@@ -1,8 +1,20 @@
 import sqlalchemy as sa
-from flask import current_app as app
+from flask import current_app as app, render_template
 from app.database import db
-from app import models as m, schema as s
+from app import models as m, schema as s, controllers as c
 from app.logger import log
+
+
+def get_home(user_message: str, room: m.Room) -> str:
+    """
+    The function to get chat home page.
+    """
+    log(log.INFO, "Chat home page")
+    return render_template(
+        "chat/chat_home.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+    )
 
 
 def get_room(room_unique_id: str) -> m.Room:
@@ -15,7 +27,7 @@ def get_room(room_unique_id: str) -> m.Room:
     return room
 
 
-def validate_event_params(request_args) -> s.ChatSellEventParams:
+def validate_event_sell_params(request_args) -> s.ChatSellEventParams:
     """
     The function to validate chat input params.
     """
@@ -27,12 +39,36 @@ def validate_event_params(request_args) -> s.ChatSellEventParams:
     return params
 
 
-def validate_ticket_params(request_args) -> s.ChatSellTicketParams:
+def validate_event_buy_params(request_args) -> s.ChatBuyEventParams:
+    """
+    The function to validate chat input params.
+    """
+    try:
+        params = s.ChatBuyEventParams.model_validate(dict(request_args))
+    except Exception as e:
+        raise ValueError(f"Invalid event params: {e}")
+
+    return params
+
+
+def validate_cell_ticket_params(request_args) -> s.ChatSellTicketParams:
     """
     The function to validate chat input params.
     """
     try:
         params = s.ChatSellTicketParams.model_validate(dict(request_args))
+    except Exception as e:
+        raise ValueError(f"Invalid ticket params: {e}")
+
+    return params
+
+
+def validate_buy_ticket_params(request_args) -> s.ChatBuyTicketParams:
+    """
+    The function to validate chat input params.
+    """
+    try:
+        params = s.ChatBuyTicketParams.model_validate(dict(request_args))
     except Exception as e:
         raise ValueError(f"Invalid ticket params: {e}")
 

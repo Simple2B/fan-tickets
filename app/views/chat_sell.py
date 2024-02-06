@@ -17,7 +17,7 @@ chat_sell_blueprint = Blueprint("sell", __name__, url_prefix="/sell")
 @chat_sell_blueprint.route("/get_event_category")
 @login_required
 def get_event_category():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -46,7 +46,7 @@ def get_event_category():
 @chat_sell_blueprint.route("/get_event_name")
 @login_required
 def get_event_name():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -83,7 +83,7 @@ def get_event_name():
 @chat_sell_blueprint.route("/get_event_url")
 @login_required
 def get_event_url():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -136,7 +136,7 @@ def get_event_url():
 @chat_sell_blueprint.route("/get_event_location")
 @login_required
 def get_event_location():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -178,7 +178,7 @@ def get_event_location():
 @chat_sell_blueprint.route("/get_event_venue")
 @login_required
 def get_event_venue():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -220,7 +220,7 @@ def get_event_venue():
 @chat_sell_blueprint.route("/get_event_date")
 @login_required
 def get_event_date():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -274,7 +274,7 @@ def get_event_date():
 @chat_sell_blueprint.route("/get_event_time")
 @login_required
 def get_event_time():
-    params = c.validate_event_params(request.args)
+    params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -322,7 +322,7 @@ def get_event_time():
 @chat_sell_blueprint.route("/get_ticket_quantity")
 @login_required
 def get_ticket_quantity():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -359,7 +359,7 @@ def get_ticket_quantity():
 @chat_sell_blueprint.route("/get_ticket_separate_sell")
 @login_required
 def get_ticket_separate_sell():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -398,7 +398,7 @@ def get_ticket_separate_sell():
 @chat_sell_blueprint.route("/get_ticket_type")
 @login_required
 def get_ticket_type():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -457,7 +457,7 @@ def get_ticket_type():
 @chat_sell_blueprint.route("/get_ticket_category")
 @login_required
 def get_ticket_category():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -494,7 +494,7 @@ def get_ticket_category():
 @chat_sell_blueprint.route("/has_ticket_section")
 @login_required
 def has_ticket_section():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -521,7 +521,7 @@ def has_ticket_section():
 @chat_sell_blueprint.route("/get_ticket_section")
 @login_required
 def get_ticket_section():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -557,7 +557,7 @@ def get_ticket_section():
 @chat_sell_blueprint.route("/has_ticket_queue")
 @login_required
 def has_ticket_queue():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -585,7 +585,7 @@ def has_ticket_queue():
 @chat_sell_blueprint.route("/get_ticket_queue")
 @login_required
 def get_ticket_queue():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -614,7 +614,7 @@ def get_ticket_queue():
 @chat_sell_blueprint.route("/has_ticket_seat")
 @login_required
 def has_ticket_seat():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -645,7 +645,7 @@ def has_ticket_seat():
 @chat_sell_blueprint.route("/get_ticket_seat")
 @login_required
 def get_ticket_seat():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -688,7 +688,7 @@ def get_ticket_seat():
 @chat_sell_blueprint.route("/get_ticket_notes")
 @login_required
 def get_ticket_notes():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -721,7 +721,7 @@ def get_ticket_notes():
 @chat_sell_blueprint.route("/get_ticket_price")
 @login_required
 def get_ticket_price():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -764,7 +764,7 @@ def get_ticket_price():
 @chat_sell_blueprint.route("/get_ticket_details")
 @login_required
 def get_ticket_details():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -797,7 +797,7 @@ def get_ticket_details():
 @chat_sell_blueprint.route("/ticket_file_type")
 @login_required
 def get_ticket_file_type():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -837,7 +837,7 @@ def get_ticket_file_type():
 @chat_sell_blueprint.route("/get_wallet_code")
 @login_required
 def get_wallet_code():
-    params = c.validate_ticket_params(request.args)
+    params = c.validate_cell_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
@@ -890,7 +890,7 @@ def get_ticket_document():
     else:
         params_input = request.values
 
-    params = c.validate_ticket_params(params_input)
+    params = c.validate_cell_ticket_params(params_input)
 
     room = c.get_room(params.room_unique_id)
 
