@@ -178,8 +178,31 @@ def init(app: Flask):
         Command for rollbacking all changes
         """
         db.session.rollback()
-        print("rollbacked")
 
     @app.cli.command("send-admin-notification")
-    def send_admin_notification(text="test text"):
-        flask_sse_notification.notify_admin(text, db.session, NotificationType.NEW_REGISTRATION)
+    def send_admin_notification():
+        flask_sse_notification.notify_admin({"username": "aa"}, db.session, NotificationType.NEW_REGISTRATION)
+
+    @app.cli.command("set-test-notifications")
+    @click.option("--login")
+    def set_test_notifications(login):
+        if not login:
+            user = db.session.scalar(sa.select(m.User).where(m.User.role == m.UserRole.admin.value))
+        else:
+            user = db.session.scalar(sa.select(m.User).where(m.User.username == login))
+
+        if not user:
+            print("User not found")
+            return
+
+        print(f"Setting user notifications [{user}]")
+        notifications = db.session.scalars(user.notifications.select().order_by(m.Notification.created_at.desc()))
+
+        for i, notification in enumerate(notifications):
+            notification.payload = {"test": f"test_{i}"}
+
+        db.session.commit()
+        notifications_count = db.session.scalar(
+            sa.select(sa.func.count(m.Notification.id)).where(m.Notification.users.any(m.User.id == user.id))
+        )
+        print(f"Notifications set: {notifications_count}")

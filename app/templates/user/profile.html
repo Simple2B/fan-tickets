@@ -1,7 +1,9 @@
 {% extends 'landing/base.html' %} {% block main_content %}
 <div class="mt-16 flex flex-col gap-8">
   <div class="relative self-center" id="profile_image">
-    <button class="bottom-0 right-0 absolute" data-modal-toggle="user-upload-image-modal">
+    <button
+      class="bottom-0 right-0 absolute"
+      data-modal-toggle="user-upload-image-modal">
       <!-- prettier-ignore -->
       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
         <circle cx="24" cy="24" r="24" fill="#5D4B15" />
@@ -11,7 +13,10 @@
       </svg>
       <span class="sr-only">Upload image</span>
     </button>
-    <img class="w-48 h-48 rounded-50%" src="{{ user.picture.base64_src }}" alt="avatar" />
+    <img
+      class="w-48 h-48 rounded-50%"
+      src="{{ user.picture.base64_src }}"
+      alt="avatar" />
   </div>
 
   <h1 class="self-center text-6xl">{{ current_user.name }}</h1>
@@ -24,16 +29,16 @@
       <div class="">
         <div class="pb-8 border-b border-grey">
           <p class="font-medium text-3xl">Endereço de Email</p>
-          <form method="post" id="profile_email" hx-post="{{ url_for('user.save_email') }}" hx-target="#profile_email"
-            hx-swap="innerHTML">
+          <!-- prettier-ignore -->
+          <form method="post" id="profile_email" hx-post="{{ url_for('admin.user.save_email') }}" hx-target="#profile_email" hx-swap="innerHTML">
             {{ email_form.hidden_tag() }} {% include 'user/email_save.html' %}
           </form>
         </div>
 
         <div class="py-8 border-b border-grey">
           <p class="font-medium text-3xl">Phone</p>
-          <form method="post" id="profile_phone" hx-post="{{ url_for('user.save_phone') }}" hx-target="#profile_phone"
-            hx-swap="innerHTML">
+          <!-- prettier-ignore -->
+          <form method="post" id="profile_phone" hx-post="{{ url_for('admin.user.save_phone') }}" hx-target="#profile_phone" hx-swap="innerHTML">
             {{ phone_form.hidden_tag() }} {% include 'user/phone_save.html' %}
           </form>
         </div>
@@ -49,7 +54,9 @@
           <p class="mb-4 text-grey">
             Uma visão geral de tudo o que você segue na FanTicket
           </p>
-          <div id="user-profile-subscribe-container" class="dropdown-close mb-4 flex flex-col gap-3">
+          <div
+            id="user-profile-subscribe-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
             {% for subscribe in user.subscribed_events %}
             <div class="flex gap-6">
               <!-- prettier-ignore -->
@@ -65,7 +72,9 @@
             </div>
             {% endfor %}
           </div>
-          <button class="text-secondary underline" id="user-profile-subscribe-btn">
+          <button
+            class="text-secondary underline"
+            id="user-profile-subscribe-btn">
             Mostrar
           </button>
         </div>
@@ -108,7 +117,9 @@
           <p class="mb-4 text-grey">
             Uma visão geral de todos os seus pagamentos
           </p>
-          <div id="user-profile-payment-container" class="dropdown-close mb-4 flex flex-col gap-3">
+          <div
+            id="user-profile-payment-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
             {% for payment in payments %}
             <div class="flex gap-12">
               <!-- prettier-ignore -->
@@ -125,22 +136,26 @@
               </div>
               <button
                 class="px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200"
-                hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}" hx-target="#chat-body"
-                hx-swap="innerHTML" hx-trigger="click">
+                hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}"
+                hx-target="#chat-body"
+                hx-swap="innerHTML"
+                hx-trigger="click">
                 Start dispute
               </button>
             </div>
             {% endfor %}
           </div>
-          <button class="text-secondary underline" id="user-profile-payment-btn">
+          <button
+            class="text-secondary underline"
+            id="user-profile-payment-btn">
             Mostrar
           </button>
         </div>
 
         <div class="py-8 border-b border-grey">
           <p class="mb-3 font-medium text-3xl">Dados bancários</p>
-          <form method="post" id="profile_card" hx-post="{{ url_for('user.save_card') }}" hx-target="#profile_card"
-            hx-swap="innerHTML">
+          <!-- prettier-ignore -->
+          <form method="post" id="profile_card" hx-post="{{ url_for('admin.user.save_card') }}" hx-target="#profile_card" hx-swap="innerHTML">
             {{ card_form.hidden_tag() }} {% include 'user/card_save.html' %}
           </form>
         </div>
@@ -156,7 +171,9 @@
             Controle quais e-mails você deseja receber
           </p>
 
-          <div id="user-profile-email-container" class="dropdown-close mb-4 flex flex-col gap-3">
+          <div
+            id="user-profile-email-container"
+            class="dropdown-close mb-4 flex flex-col gap-3">
             {% include 'user/notifications_save.html' %}
           </div>
           <button class="text-secondary underline" id="user-profile-email-btn">
@@ -171,10 +188,14 @@
       </div>
     </div>
     <div class="flex gap-8 justify-center">
-      <a class="p-2 text-lg text-secondary underline cursor-pointer" href="{{url_for('user.export')}}">
+      <a
+        class="p-2 text-lg text-secondary underline cursor-pointer"
+        href="{{url_for('user.export')}}">
         Exportar meus dados
       </a>
-      <a class="p-2 text-lg text-danger underline cursor-pointer" href="{{url_for('user.deactivate')}}">
+      <a
+        class="p-2 text-lg text-danger underline cursor-pointer"
+        href="{{url_for('user.deactivate')}}">
         Remover minha conta
       </a>
     </div>
@@ -182,5 +203,8 @@
 </section>
 
 {% include 'user/upload_image.html' %} {% endblock %} {% block scripts %}
-<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+<script
+  src="{{ url_for('static', filename='js/user.js') }}"
+  type="text/javascript"
+  defer></script>
 {% endblock %}

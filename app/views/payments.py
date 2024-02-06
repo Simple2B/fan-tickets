@@ -68,7 +68,7 @@ def ticket_order():
             form=card_form,
         )
 
-    user_query = m.User.select().where(m.User.unique_id == cu.unique_id)
+    user_query = m.User.select().where(m.User.uuid == cu.uuid)
     user: m.User = db.session.scalar(user_query)
 
     tickets = db.session.scalars(

@@ -1,8 +1,9 @@
 from typing import Any
+from uuid import uuid4
 from datetime import datetime, UTC
 import sqlalchemy as sa
+
 from app.database import db
-from uuid import uuid4
 
 
 class ModelMixin(object):
@@ -54,6 +55,10 @@ def all(stmt: sa.sql.selectable.Select) -> list[Any]:
 def first(stmt: sa.sql.selectable.Select) -> Any | None:
     # Return first record of query.
     return db.session.scalar(stmt)
+
+
+def generate_paginate_query(stmt: sa.sql.selectable.Select, page: int, per_page: int):
+    return stmt.offset((page - 1) * per_page).limit(per_page)
 
 
 def paginate(stmt: sa.sql.selectable.Select, page: int, per_page: int) -> list[Any] | None:

@@ -1,8 +1,8 @@
-"""event_venue
+"""Event venue
 
-Revision ID: 46a46d6d714e
-Revises: f6ea161d0001
-Create Date: 2024-01-18 10:20:56.062587
+Revision ID: 75be7da6af01
+Revises: aa90da3ad25a
+Create Date: 2024-01-19 17:19:51.577938
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '46a46d6d714e'
-down_revision = 'f6ea161d0001'
+revision = '75be7da6af01'
+down_revision = 'aa90da3ad25a'
 branch_labels = None
 depends_on = None
 

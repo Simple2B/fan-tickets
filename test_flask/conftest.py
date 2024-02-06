@@ -19,9 +19,8 @@ PRAGMA_GET_DATA_MOCK_MAP = {
 
 
 @pytest.fixture()
-def app(requests_mock):
+def app(requests_mock, mocker):
     app = create_app("testing")
-    # pagarme_client.self.__generate_url__("customers", customer_list_query)
     app.config.update(
         {
             "TESTING": True,
@@ -37,6 +36,9 @@ def app(requests_mock):
         with open(Path("test_flask") / "assets" / "pagarme" / json_file, "r") as json_f:
             data_mocked = json.load(json_f)
         requests_mock.get(re.compile(pagarme_client.__generate_url__(endpoint)), json=data_mocked)
+
+    # Mock sse
+    mocker.patch("flask_sse.sse.publish", return_value="mocked value")
 
     yield app
 

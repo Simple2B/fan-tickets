@@ -76,10 +76,10 @@ def test_pagarme_ticket_order(client: FlaskClient):
 
     data = {
         "room_unique_id": room.unique_id,
-        "user_unique_id": current_user.unique_id,
+        "user_unique_id": current_user.uuid,
         "username": TESTING_USERNAME,
         "birthdate": TESTING_BIRTHDATE,
-        "code": current_user.unique_id,
+        "code": current_user.uuid,
         "email": current_user.email,
         "document_identity_number": "93095135270",
         "expire": "01/25",
@@ -89,7 +89,7 @@ def test_pagarme_ticket_order(client: FlaskClient):
         "exp_year": "2025",
         "cvv": "123",
         "item_amount": "1000",
-        "item_code": current_user.unique_id,  # replace by ticket's unique_id
+        "item_code": current_user.uuid,  # replace by ticket's unique_id
         "item_description": "Testing Concert Ticket",
         "item_quantity": "2",
         "item_category": "Testing Concert Event",  # ticket.event.category

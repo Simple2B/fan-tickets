@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 from typing import TYPE_CHECKING
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -32,6 +31,8 @@ class Notification(db.Model, ModelMixin):
     users: orm.WriteOnlyMapped["User"] = orm.relationship(
         back_populates="notifications",
         secondary=UserNotification,
+        passive_deletes=True,
+        cascade="all, delete",
     )
 
     def __repr__(self):

@@ -1,9 +1,13 @@
 from flask_sse import sse
 
 
-from .notification import NotificationClient, NotificationType
+from .notification import NotificationClient
 
 
 class FlaskSSENotification(NotificationClient):
-    def send_notification(self, data: dict, channel: str, notification_type: NotificationType):
-        sse.publish(data, notification_type.value, channel=channel)
+    def send_notification(
+        self,
+        data: dict,
+        channel: str,
+    ):
+        sse.publish(data, channel=channel)

@@ -15,15 +15,26 @@
       {{ error_message }}
     </p>
   </div>
-  {% endif %}
-  {% set all_filters = "[name='event_name'], [name='room_unique_id'], [name='user_unique_id']" %}
+  {% endif %} {% set all_filters = "[name='event_name'],
+  [name='room_unique_id'], [name='user_unique_id']" %}
   <div class="mt-2 flex justify-around">
     <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-    <input type="hidden" name="user_unique_id" value="{{ current_user.unique_id }}" />
-    <input type="text" name="event_name" class="border border-white bg-transparent rounded-lg"
+    <input
+      type="hidden"
+      name="user_unique_id"
+      value="{{ current_user.uuid }}" />
+    <input
+      type="text"
+      name="event_name"
+      class="border border-white bg-transparent rounded-lg"
       placeholder="Input event name" />
-    <button type="button" hx-get="{{ url_for('sell.get_events') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
+    <button
+      type="button"
+      hx-get="{{ url_for('sell.get_events') }}"
+      hx-target="#chat-body"
+      hx-swap="innerHTML"
+      hx-trigger="click"
+      hx-include="{{ all_filters }}"
       class="p-2 text-center text-grey border border-r-grey rounded-xl hover:bg-gray-200 hover:text-black active:bg-gray-400">
       Submit
     </button>

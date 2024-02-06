@@ -532,12 +532,12 @@ def subscribe_on_event():
         if os.environ.get("APP_ENV") == "development":
             url = url_for(
                 "auth.activate",
-                reset_password_uid=user.unique_id,
+                reset_password_uid=user.uuid,
                 _external=True,
             )
         else:
             base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated/{user.unique_id}"
+            url = f"{base_url}activated/{user.uuid}"
 
         msg.html = render_template(
             "email/confirm.htm",

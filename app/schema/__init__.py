@@ -43,3 +43,4 @@ from .chat_auth import (
 )
 from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
 from .room import Room
+from .notification import NotificationNewUserRegistered, NotificationUserActivated

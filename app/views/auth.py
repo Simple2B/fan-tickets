@@ -5,9 +5,12 @@ from flask import Blueprint, render_template, url_for, redirect, flash, request,
 from flask import current_app as app
 from flask_login import login_user, logout_user, login_required, current_user
 
+from app.controllers.notification_client import NotificationType
 from app import models as m
 from app import forms as f
+from app import schema as s
 from app import mail, db
+from app import flask_sse_notification
 from app.logger import log
 
 
@@ -42,13 +45,13 @@ def register():
         if os.environ.get("APP_ENV") == "development":
             url = url_for(
                 "auth.activate",
-                user_id=user.unique_id,
+                user_id=user.uuid,
                 verification_code=verification_code,
                 _external=True,
             )
         else:
             base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated?user_id={user.unique_id}&verification_code={verification_code}"
+            url = f"{base_url}activated?user_id={user.uuid}&verification_code={verification_code}"
 
         msg.html = render_template(
             "email/email_confirm_web.htm",
@@ -56,6 +59,13 @@ def register():
             url=url,
         )
         mail.send(msg)
+        # send sse notification
+        notification_payload = s.NotificationNewUserRegistered(username=user.username)
+        flask_sse_notification.notify_admin(
+            notification_payload.model_dump(),
+            db.session,
+            NotificationType.NEW_REGISTRATION,
+        )
 
         flash("Registration successful. Checkout you email for confirmation!", "success")
         return redirect(url_for("main.index"))
@@ -99,7 +109,7 @@ def logout():
 def activate():
     verification_code = request.args.get("verification_code")
     user_id = request.args.get("user_id")
-    query = m.User.select().where(m.User.unique_id == user_id)
+    query = m.User.select().where(m.User.uuid == user_id)
     user: m.User | None = db.session.scalar(query)
 
     if not user:
@@ -114,6 +124,11 @@ def activate():
 
     user.activated = True
     user.save()
+
+    flask_sse_notification.notify_admin(
+        s.NotificationUserActivated(email=user.email).model_dump(), db.session, NotificationType.ACCOUNT_VERIFIED
+    )
+
     login_user(user)
     log(log.INFO, "User activated")
     flash("Email confirmed", "success")
@@ -163,7 +178,7 @@ def phone_verification():
         if user.verification_code == full_code:
             log(log.INFO, "Verification code is correct: [%s]", full_code)
             flash("Código de verificação correto.", "success")
-            return redirect(url_for("user.profile"))
+            return redirect(url_for("admin.user.profile"))
         else:
             log(log.INFO, "Verification code is incorrect: [%s]", full_code)
             flash("Código de verificação inválido!", "danger")
@@ -188,7 +203,7 @@ def forgot_pass():
         )
         url = url_for(
             "auth.password_recovery",
-            reset_password_uid=user.unique_id,
+            reset_password_uid=user.uuid,
             _external=True,
         )
         msg.html = render_template(
@@ -213,7 +228,7 @@ def password_recovery(reset_password_uid):
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
 
-    query = m.User.select().where(m.User.unique_id == reset_password_uid)
+    query = m.User.select().where(m.User.uuid == reset_password_uid)
     user: m.User = db.session.scalar(query)
 
     if not user:
@@ -225,7 +240,7 @@ def password_recovery(reset_password_uid):
     if form.validate_on_submit():
         user.password = form.password.data
         user.activated = True
-        user.unique_id = m.gen_password_reset_id()
+        user.uuid = m.gen_password_reset_id()
         user.save()
         login_user(user)
         flash("Login successful.", "success")

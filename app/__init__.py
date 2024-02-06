@@ -11,6 +11,8 @@ from flask_sse import sse
 
 from app.logger import log
 from app.controllers import PagarmeClient, FlaskSSENotification
+from app.models.utils import generate_paginate_query
+
 from .database import db
 
 # instantiate extensions
@@ -26,7 +28,6 @@ def create_app(environment="development") -> Flask:
     from app.views import (
         main_blueprint,
         auth_blueprint,
-        user_blueprint,
         events_blueprint,
         tickets_blueprint,
         admin_blueprint,
@@ -61,7 +62,6 @@ def create_app(environment="development") -> Flask:
     # Register blueprints.
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
-    app.register_blueprint(user_blueprint)
     app.register_blueprint(events_blueprint)
     app.register_blueprint(tickets_blueprint)
     app.register_blueprint(admin_blueprint)
@@ -71,17 +71,6 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
     app.register_blueprint(notification_blueprint)
-
-    @app.route("/scroll")
-    def scroll():
-        return render_template("_scroll.html")
-
-    @app.route("/scrolling")
-    def scrolling():
-        from flask import request
-
-        page = request.args.get("page", 1, type=int)
-        return render_template("_scrolling.html", page=page)
 
     # SSE
     @sse.before_request
@@ -149,6 +138,14 @@ def create_app(environment="development") -> Flask:
         get_ticket_subsequential_number,
     )
 
+    def get_current_user_notifications():
+        if not current_user.is_authenticated:
+            return ()
+        query = generate_paginate_query(current_user.notifications.select(), 1, 6).order_by(
+            m.Notification.created_at.desc()
+        )
+        return db.session.scalars(query)
+
     app.jinja_env.globals["today"] = today
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
@@ -161,5 +158,6 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
+    app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
 
     return app
