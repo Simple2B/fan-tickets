@@ -47,7 +47,7 @@ bot_message_without_date, user_message, submit_message_get %}
             {% if ticket.is_paired %}(R$ {{ 2 * ticket.price_gross}} for 2 tickets) {% endif %}
           </p>
           <p class="text-xs text-gray-500">
-            Section {{ ticket.section }} - Queue {{ ticket.price_gross }} - Seat {{ ticket.price_gross}}
+            Section {{ ticket.section }} - Queue {{ ticket.queue }} - Seat {{ ticket.seat}}
           </p>
           {% if ticket.description %}
           <p><span class="text-secondary">Note:</span> {{ ticket.description }}</p>

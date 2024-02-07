@@ -17,7 +17,7 @@ from config import config
 CFG = config()
 
 
-def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]:
+def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room) -> list[m.Event]:
     c.save_message(
         "Please, input official event name (matching the official website)",
         f"{params.user_message}",
@@ -25,7 +25,7 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
     )
     # Firstly try to find event in database by exact match
     event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{params.user_message}%"))
-    events: m.Event = db.session.scalars(event_query).all()
+    events = db.session.scalars(event_query).all()
     if events:
         return events
 
@@ -133,8 +133,9 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
             location_id = location.id
 
         # Getting the category by unique id
-        category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
-        category: m.Category = db.session.scalar(category_query)
+        if isinstance(params, s.ChatSellEventParams) and params.event_category_id:
+            category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
+            category: m.Category = db.session.scalar(category_query)
 
         # Creating a new event in database if we have at least minimal data
         event = m.Event(

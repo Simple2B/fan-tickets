@@ -150,13 +150,13 @@ def get_locations_by_events(events: list[m.Event], room: m.Room) -> list[m.Locat
     return locations
 
 
-def subscribe_event(event_unique_id: str, user: m.User) -> bool:
+def subscribe_event(event_unique_id: str, user: m.User) -> m.Event:
     event_query = sa.select(m.Event).where(m.Event.unique_id == event_unique_id)
     event = db.session.scalar(event_query)
 
     if not event:
         log(log.INFO, "Event not found: [%s]", event_unique_id)
-        return False
+        return event
 
     if user not in event.subscribers:
         event.subscribers.append(user)
@@ -165,7 +165,7 @@ def subscribe_event(event_unique_id: str, user: m.User) -> bool:
         user.subscribed_events.append(event)
         user.save()
 
-    return True
+    return event
 
 
 def create_user(email: str) -> m.User:

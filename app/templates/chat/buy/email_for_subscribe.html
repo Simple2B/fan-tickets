@@ -30,7 +30,8 @@ submit_message_get
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
 <input type="hidden" name="has_email" value="True" />
-{{ submit_message_get('buy.subscribe_on_event', "[name='room_unique_id'], [name='user_message'], [name='has_email']") }}
+{{ submit_message_get('buy.subscribe_on_event', "[name='room_unique_id'], [name='event_unique_id'],
+[name='user_message'], [name='has_email']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

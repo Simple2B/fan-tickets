@@ -244,10 +244,10 @@ def get_tickets():
     if not tickets:
         log(log.ERROR, "Tickets not found: [%s]", params.event_unique_id)
         return render_template(
-            "chat/buy/event_name.html",
-            error_message="Something went wrong. Please add event name",
+            "chat/buy/ticket_not_found.html",
             room=room,
             now=c.utcnow_chat_format(),
+            event_unique_id=params.event_unique_id,
         )
 
     if params.add_ticket:
@@ -530,6 +530,14 @@ def subscribe_on_event():
 
     room = c.get_room(params.room_unique_id)
 
+    if not params.event_unique_id:
+        return render_template(
+            "chat/buy/event_name.html",
+            error_message="Something went wrong, please choose event again",
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+
     if not current_user.is_authenticated and not params.has_email:
         log(log.INFO, "User unauthorized without email: [%s]", params.has_email)
         return render_template(
@@ -549,9 +557,7 @@ def subscribe_on_event():
             event_unique_id=params.event_unique_id,
         )
 
-    if current_user.is_authenticated:
-        subscribe = c.subscribe_event(params.event_unique_id, current_user)
-    else:
+    if not current_user.is_authenticated:
         if not params.user_message:
             log(log.INFO, "User unauthorized. Email is not provided: [%s]", params.user_message)
             return render_template(
@@ -576,41 +582,42 @@ def subscribe_on_event():
                 now=c.utcnow_chat_format(),
             )
 
-        msg = Message(
-            subject="Congratulations! You have successfully register on {CFG.APP_NAME}",
-            sender=app.config["MAIL_DEFAULT_SENDER"],
-            recipients=[user.email],
-        )
-        if os.environ.get("APP_ENV") == "development":
-            url = url_for(
-                "auth.activate",
-                reset_password_uid=user.unique_id,
-                _external=True,
-            )
-        else:
-            if os.environ.get("SERVER_TYPE") == "production":
-                base_url = app.config["PRODUCTION_BASE_URL"]
-            else:
-                base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated/{user.unique_id}"
+    event = c.subscribe_event(params.event_unique_id, user)
 
-        msg.html = render_template(
-            "email/confirm.htm",
-            user=user,
-            url=url,
-        )
-        mail.send(msg)
-
-        subscribe = c.subscribe_event(params.event_unique_id, user)
-
-    if not subscribe:
-        log(log.ERROR, "Subscribe not found: [%s]", subscribe)
+    if not event:
+        log(log.ERROR, "Subscribe not found: [%s]", event)
         return render_template(
             "chat/buy/event_name.html",
             error_message="Something went wrong, please choose event again",
             room=room,
             now=c.utcnow_chat_format(),
         )
+
+    msg = Message(
+        subject=f"Subscription to {CFG.APP_NAME}",
+        sender=app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[user.email],
+    )
+    if os.environ.get("APP_ENV") == "development":
+        url = url_for(
+            "auth.activate",
+            reset_password_uid=user.unique_id,
+            _external=True,
+        )
+    else:
+        if os.environ.get("SERVER_TYPE") == "production":
+            base_url = app.config["PRODUCTION_BASE_URL"]
+        else:
+            base_url = app.config["STAGING_BASE_URL"]
+        url = f"{base_url}activated/{user.unique_id}"
+
+    msg.html = render_template(
+        "email/email_confirm_subscribe.htm",
+        user=user,
+        event_name=event.name,
+        url=url,
+    )
+    mail.send(msg)
 
     return render_template(
         "chat/buy/subscribe_success.html",

@@ -538,7 +538,7 @@ def confirm_user_password():
     c.save_message("Please confirm your password", "Password has been confirmed", room)
 
     return render_template(
-        "chat/registration/passport.html",
+        "chat/registration/passport_identity_number.html",
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=form.user_unique_id.data,

@@ -692,7 +692,7 @@ def get_ticket_notes():
 
     room = c.get_room(params.room_unique_id)
 
-    if params.user_message:
+    if params.user_message == "" or params.user_message:
         ticket_modified = c.add_ticket_notes(params, room)
         log(log.INFO, "Ticket notes added: [%s]", ticket_modified.description)
 
@@ -774,15 +774,15 @@ def get_ticket_details():
     date_time = cut_seconds(ticket.event.date_time) if ticket.event.date_time else ""
     ticket_details = (
         f"Event: {ticket.event.name}\n"
-        f"Location: {ticket.event.location.name}\n"
-        f"Venue: {ticket.event.venue}\n"
-        f"Date time: {date_time}\n"
-        f"Ticket type: {ticket.ticket_type}\n"
-        f"Ticket category: {ticket.ticket_category}\n"
-        f"Ticket section: {ticket.section}\n"
-        f"Ticket price net: {ticket.price_net}\n"
-        f"Ticket price gross: {ticket.price_gross}\n"
-        f"Ticket description: {ticket.description}"
+        + f"Location: {ticket.event.location.name}\n"
+        + f"Venue: {ticket.event.venue}\n"
+        + f"Date time: {date_time}\n"
+        + f"Ticket type: {ticket.ticket_type}\n"
+        + f"Ticket category: {ticket.ticket_category}\n"
+        + f"Ticket section: {ticket.section}\n"
+        + f"Ticket price net: {ticket.price_net}\n"
+        + f"Ticket price gross: {ticket.price_gross}\n"
+        + f"Ticket description: {ticket.description}"
     )
     c.save_message(ticket_details, "Got it", room)
     return render_template(
