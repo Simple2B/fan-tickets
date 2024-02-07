@@ -5,7 +5,6 @@ from psycopg2 import IntegrityError
 from app import controllers as c
 from app import forms as f
 from app import models as m, db
-from app.controllers.jinja_globals import cut_seconds
 from app.logger import log
 from config import config
 
