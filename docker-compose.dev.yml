@@ -57,7 +57,7 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redis_password}
 
   worker:
-    build: .
+    image: simple2b/fan_ticket
     command: sh ./start_worker.sh
     environment:
       APP_ENV: production

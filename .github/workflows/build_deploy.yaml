@@ -115,7 +115,7 @@ jobs:
           username: ${{ env.DEPLOY_USER_NAME }}
           key: ${{ env.DEPLOY_SSH_KEY }}
           port: ${{ env.DEPLOY_SSH_PORT }}
-          source: docker-compose.dev.yml
+          source: docker-compose.prod.yml
           target: ~/fan_ticket
       - name: deploy
         uses: appleboy/ssh-action@v0.1.10
@@ -126,7 +126,7 @@ jobs:
           port: ${{ env.DEPLOY_SSH_PORT }}
           script: |
             cd ~/fan_ticket &&
-            mv docker-compose.dev.yml docker-compose.yaml &&
+            mv docker-compose.prod.yml docker-compose.yaml &&
             docker compose pull &&
             docker compose up -d &&
             docker system prune -f
