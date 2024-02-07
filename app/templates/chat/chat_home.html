@@ -4,16 +4,17 @@
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %}
   {% include 'chat/chat_spinner.html' %}
+  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 
   {% set html_element %}
   <div class="mt-2 flex justify-stretch gap-2">
     <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="[name='room_unique_id']"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Selling
     </button>
     <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="[name='room_unique_id']"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Buying
     </button>
@@ -25,7 +26,7 @@
   </div>
 </div>
 
-<input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
+
 {{ submit_message_get('chat.sell', disabled='disabled') }}
 
 {% block scripts %}

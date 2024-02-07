@@ -31,6 +31,7 @@ class Message(db.Model, ModelMixin):
     )
     viewed: orm.Mapped[bool] = orm.mapped_column(default=False)
     text: orm.Mapped[str] = orm.mapped_column(sa.Text)
+    details: orm.Mapped[bool] = orm.mapped_column(default=False, server_default=sa.text("false"))
 
     sender: orm.Mapped["User"] = orm.relationship()
     room: orm.Mapped["Room"] = orm.relationship(back_populates="messages")

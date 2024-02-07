@@ -8,7 +8,7 @@ bot_message_without_date, user_message, submit_message_get %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
   <input type="hidden" name="ticket_unique_id" value="{{ ticket_unique_id }}" />
-  <div class="mt-2 w-265 flex justify-stretch gap-2">
+  <div class="mt-2 w-265 flex flex-col gap-2">
     <button type="button" id="chat-window-buy"
       hx-get="{{ url_for('sell.get_ticket_separate_sell', ticket_paired=False) }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"

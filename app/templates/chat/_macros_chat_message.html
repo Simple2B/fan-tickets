@@ -65,16 +65,31 @@
 </div>
 {% endmacro %}
 
-{% macro history_message_user(message, username, logo) -%}
+{% macro history_message_user(message, username, logo, room) -%}
 <div class="mb-2 flex gap-2 justify-end test_user_message">
 	<div class="max-w-265">
 		<div class="flex text-grey justify-end">
 			<small class="pt-1">{{ username }} {{ cut_seconds() }}</small>
 		</div>
-		<div class="p-4 flex justify-center text-grey bg-dark-grey rounded-t-lg rounded-bl-lg">
+		<div class="p-4 flex flex-col justify-center text-grey bg-dark-grey rounded-t-lg rounded-bl-lg">
+			{% if message.details %}
+			<p>{{ message.text }}</p>
 			<p>
-				{{ message }}
+				Event name: {{ room.ticket.event.name}} <br>
+				Location: {{ room.ticket.event.location.name }} <br>
+				Venue: {{ room.ticket.event.venue.name }} <br>
+				Date: {{ cut_seconds(room.ticket.event.date_time) }} <br>
+				Price: {{ room.ticket.price_gross }} <br>
+				Section: {{ room.ticket.section }} <br>
+				Queue: {{ room.ticket.queue }} <br>
+				Seat: {{ room.ticket.seat }} <br>
+				Notes: {{ room.ticket.description }} <br>
 			</p>
+			{% else %}
+			<p class="overflow-x-hidden">
+				{{ message.text }}
+			</p>
+			{% endif %}
 		</div>
 	</div>
 	{% if logo %}
@@ -104,9 +119,8 @@
 			<input id="chat-get" rows="1" name="user_message"
 				class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none"
 				placeholder="Write here..." />
-			<button {{ disabled }} type="button" hx-target="#chat-body" hx-get="{{ url_for(route) }}"
-				hx-swap="innerHTML" hx-trigger="click, keyup[keyCode==13] from:body" hx-include="{{ filters }}"
-				hx-indicator="#chat-email-spinner"
+			<button {{ disabled }} type="button" hx-target="#chat-body" hx-get="{{ url_for(route) }}" hx-swap="innerHTML"
+				hx-trigger="click, keyup[keyCode==13] from:body" hx-include="{{ filters }}" hx-indicator="#chat-email-spinner"
 				class="inline-flex justify-center p-2 text-grey hover:text-light-grey-b0 rounded-full cursor-pointer">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<g id="vuesax/linear/send">
@@ -114,8 +128,8 @@
 							<path id="Vector"
 								d="M9.51 4.23001L18.07 8.51001C21.91 10.43 21.91 13.57 18.07 15.49L9.51 19.77C3.75 22.65 1.4 20.29 4.28 14.54L5.15 12.81C5.37 12.37 5.37 11.64 5.15 11.2L4.28 9.46001C1.4 3.71001 3.76 1.35001 9.51 4.23001Z"
 								stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2"
-								stroke-linecap="round" stroke-linejoin="round" />
+							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" />
 						</g>
 					</g>
 				</svg>
@@ -131,9 +145,9 @@
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post='/chat/{{ route }}' hx-target="#chat-body"
-			hx-include="{{ filters }}" hx-swap="innerHTML" hx-trigger="click, keyup[keyCode==13] from:body">
+			hx-include="{{ filters }}" hx-swap="innerHTML">
 			{{ form.hidden_tag() }}
-			<input id="chat-post" rows="1" name="password"
+			<input id="chat-post" rows="1" name="password" autocomplete="off"
 				class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none"
 				placeholder="Write here..." />
 			<button {{ disabled }} type="submit"
@@ -144,8 +158,8 @@
 							<path id="Vector"
 								d="M9.51 4.23001L18.07 8.51001C21.91 10.43 21.91 13.57 18.07 15.49L9.51 19.77C3.75 22.65 1.4 20.29 4.28 14.54L5.15 12.81C5.37 12.37 5.37 11.64 5.15 11.2L4.28 9.46001C1.4 3.71001 3.76 1.35001 9.51 4.23001Z"
 								stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2"
-								stroke-linecap="round" stroke-linejoin="round" />
+							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" />
 						</g>
 					</g>
 				</svg>
@@ -174,8 +188,8 @@
 							<path id="Vector"
 								d="M9.51 4.23001L18.07 8.51001C21.91 10.43 21.91 13.57 18.07 15.49L9.51 19.77C3.75 22.65 1.4 20.29 4.28 14.54L5.15 12.81C5.37 12.37 5.37 11.64 5.15 11.2L4.28 9.46001C1.4 3.71001 3.76 1.35001 9.51 4.23001Z"
 								stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2"
-								stroke-linecap="round" stroke-linejoin="round" />
+							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" />
 						</g>
 					</g>
 				</svg>
@@ -205,8 +219,8 @@
 							<path id="Vector"
 								d="M9.51 4.23001L18.07 8.51001C21.91 10.43 21.91 13.57 18.07 15.49L9.51 19.77C3.75 22.65 1.4 20.29 4.28 14.54L5.15 12.81C5.37 12.37 5.37 11.64 5.15 11.2L4.28 9.46001C1.4 3.71001 3.76 1.35001 9.51 4.23001Z"
 								stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2"
-								stroke-linecap="round" stroke-linejoin="round" />
+							<path id="Vector_2" d="M5.44 12H10.84" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" />
 						</g>
 					</g>
 				</svg>

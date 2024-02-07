@@ -17,17 +17,17 @@ from config import config
 CFG = config()
 
 
-def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]:
+def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room) -> list[m.Event]:
     c.save_message(
         "Please, input official event name (matching the official website)",
         f"{params.user_message}",
         room,
     )
     # Firstly try to find event in database by exact match
-    event_query = sa.select(m.Event).where(m.Event.name == params.user_message)
-    event: m.Event = db.session.scalar(event_query)
-    if event:
-        return [event]
+    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{params.user_message}%"))
+    events = db.session.scalars(event_query).all()
+    if events:
+        return events
 
     # Secondly try to find event in database by partial match
     search_key_words = params.user_message.split(" ") if params.user_message else []
@@ -133,8 +133,9 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
             location_id = location.id
 
         # Getting the category by unique id
-        category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
-        category: m.Category = db.session.scalar(category_query)
+        if isinstance(params, s.ChatSellEventParams) and params.event_category_id:
+            category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
+            category: m.Category = db.session.scalar(category_query)
 
         # Creating a new event in database if we have at least minimal data
         event = m.Event(
@@ -150,6 +151,17 @@ def get_event_by_name_bard(params: s.ChatSellEventParams, room) -> list[m.Event]
         log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
 
     return events
+
+
+def get_event_by_uuid(event_unique_id: str, room) -> m.Event:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == event_unique_id)
+    event = db.session.scalar(event_query)
+    if not event:
+        log(log.INFO, "Event not found: [%s]", event_unique_id)
+        raise ValueError(f"Event not found: {event_unique_id}")
+
+    c.save_message("Super! Please check if this event is right?", event.name, room)
+    return event
 
 
 def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m.Event:

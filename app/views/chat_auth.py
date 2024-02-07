@@ -99,23 +99,78 @@ def login():
 @chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
-    room = m.Room(
-        seller_id=seller_id,
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-    ).save()
+    room_unique_id = request.args.get("room_unique_id")
+    renew_search = request.args.get("renew_search")
+    if room_unique_id:
+        room = c.get_room(room_unique_id)
+        c.save_message(
+            "How can I assist you? Are you looking to buy or sell a ticket?",
+            "Sell",
+            room,
+        )
+    else:
+        room = m.Room(
+            seller_id=seller_id,
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+        c.save_message(
+            "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+            "Sell",
+            room,
+        )
 
-    c.save_message(
-        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-        "Sell",
-        room,
-    )
+    if renew_search:
+        c.save_message("Choose action", "Renew search", room)
+        log(log.ERROR, "Renew search")
 
     categories = []
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.activated:
         template = "chat/sell/event_category.html"
         categories = m.Category.all()
-    else:
+    elif not current_user.is_authenticated:
         template = "chat/chat_auth.html"
+    elif not current_user.activated and not current_user.identity_document:
+        return render_template(
+            "chat/registration/passport_identity_number.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.name:
+        return render_template(
+            "chat/registration/name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.last_name:
+        return render_template(
+            "chat/registration/last_name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.phone:
+        return render_template(
+            "chat/registration/phone.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.address:
+        return render_template(
+            "chat/registration/address.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.birth_date:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
 
     return render_template(
         template,
@@ -128,14 +183,23 @@ def sell():
 
 @chat_auth_blueprint.route("/buy")
 def buy():
-    room = m.Room(
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-    ).save()
-    c.save_message(
-        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-        "Buy",
-        room,
-    )
+    room_unique_id = request.args.get("room_unique_id")
+    if room_unique_id:
+        room = c.get_room(room_unique_id)
+        c.save_message(
+            "How can I assist you? Are you looking to buy or sell a ticket?",
+            "Buy",
+            room,
+        )
+    else:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+        c.save_message(
+            "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+            "Buy",
+            room,
+        )
 
     return render_template(
         "chat/buy/event_name.html",
@@ -197,7 +261,7 @@ def login_email():
         log(log.ERROR, "User not found: [%s]", params.user_message)
         return render_template(
             "chat/registration/login_email.html",
-            error_message="Email not found, add correct email",
+            error_message="Email not found, add correct email or sign up",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -538,7 +602,7 @@ def confirm_user_password():
     c.save_message("Please confirm your password", "Password has been confirmed", room)
 
     return render_template(
-        "chat/registration/passport.html",
+        "chat/registration/passport_identity_number.html",
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=form.user_unique_id.data,
@@ -671,22 +735,15 @@ def create_passport_identity_number():
         )
 
     if user.document_identity_number:
+        c.save_message("Please input your identification number", f"Identification number: {params.user_message}", room)
         return render_template(
-            "chat/registration/phone.html",
+            "chat/registration/name.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
         )
 
     c.add_identity_document_number(params.user_message, user, room)
-
-    if current_user.is_authenticated:
-        return render_template(
-            "chat/registration/phone.html",
-            room=room,
-            now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
-        )
 
     return render_template(
         "chat/registration/name.html",
@@ -736,6 +793,14 @@ def create_user_name():
             error_message="Form submitting error",
             now=c.utcnow_chat_format(),
         )
+
+    # if user.name:
+    #     return render_template(
+    #         "chat/registration/last_name.html",
+    #         room=room,
+    #         now=c.utcnow_chat_format(),
+    #         user_unique_id=user.unique_id,
+    #     )
 
     c.create_user_name(params.user_message, user, room)
 
@@ -882,7 +947,7 @@ def create_user_phone():
 
     if user.phone:
         return render_template(
-            "chat/registration/birth_date.html",
+            "chat/registration/address.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
@@ -914,13 +979,13 @@ def create_user_phone():
             now=c.utcnow_chat_format(),
         )
 
-    if current_user.is_authenticated:
-        return render_template(
-            "chat/registration/birth_date.html",
-            room=room,
-            now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
-        )
+    # if current_user.is_authenticated:
+    #     return render_template(
+    #         "chat/registration/birth_date.html",
+    #         room=room,
+    #         now=c.utcnow_chat_format(),
+    #         user_unique_id=user.unique_id,
+    #     )
 
     # parse url and get the domain name
     # TODO: add production url
@@ -983,6 +1048,14 @@ def create_user_address():
             now=c.utcnow_chat_format(),
         )
 
+    if user.address:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
+        )
+
     c.create_address(params.user_message, user, room)
 
     try:
@@ -999,7 +1072,7 @@ def create_user_address():
         )
 
     return render_template(
-        "chat/registration/ask_social_profile.html",
+        "chat/registration/birth_date.html",
         room=room,
         now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
@@ -1047,11 +1120,16 @@ def create_user_birth_date():
             now=c.utcnow_chat_format(),
         )
 
-    if user.birth_date:
-        user.activated = True
-        db.session.commit()
-
-    c.create_birth_date(params.user_message, user, room)
+    birth_date_added = c.create_birth_date(params.user_message, user, room)
+    if not birth_date_added:
+        log(log.ERROR, "Birth date not added: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/birth_date.html",
+            error_message="Wrong date format. Please try again",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
+        )
 
     try:
         db.session.commit()
@@ -1068,7 +1146,7 @@ def create_user_birth_date():
 
     if current_user.is_authenticated:
         return render_template(
-            "chat/buy/event_name.html",
+            "chat/chat_home.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,

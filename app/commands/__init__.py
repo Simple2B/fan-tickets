@@ -253,3 +253,21 @@ def init(app: Flask):
             print("Unreserved all tickets with expired reservation")
         else:
             print("No tickets to unreserve")
+
+    @app.cli.command("delete-tickets")
+    @click.option("--location", type=str)
+    def delete_tickets(location: str):
+        """Delete all tickets"""
+        tickets_query = m.Ticket.select().where(
+            m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike(f"%{location}%")))
+        )
+        tickets = db.session.scalars(tickets_query).all()
+        for ticket in tickets:
+            payments_query = m.Payment.select().where(m.Payment.ticket_id == ticket.id)
+            payments = db.session.scalars(payments_query).all()
+            if payments:
+                for payment in payments:
+                    db.session.delete(payment)
+            db.session.delete(ticket)
+        db.session.commit()
+        print("Selected tickets deleted")
