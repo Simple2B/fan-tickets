@@ -19,6 +19,7 @@ from .chat import (
 )
 from .chat_sell import (
     get_event_by_name_bard,
+    get_event_by_uuid,
     add_event_location,
     add_event_venue,
     add_event_date,

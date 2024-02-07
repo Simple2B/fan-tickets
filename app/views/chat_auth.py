@@ -100,6 +100,7 @@ def login():
 def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
     room_unique_id = request.args.get("room_unique_id")
+    renew_search = request.args.get("renew_search")
     if room_unique_id:
         room = c.get_room(room_unique_id)
         c.save_message(
@@ -117,6 +118,10 @@ def sell():
             "Sell",
             room,
         )
+
+    if renew_search:
+        c.save_message("Choose action", "Renew search", room)
+        log(log.ERROR, "Renew search")
 
     categories = []
     if current_user.is_authenticated and current_user.activated:

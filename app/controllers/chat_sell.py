@@ -153,6 +153,17 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
     return events
 
 
+def get_event_by_uuid(event_unique_id: str, room) -> m.Event:
+    event_query = sa.select(m.Event).where(m.Event.unique_id == event_unique_id)
+    event = db.session.scalar(event_query)
+    if not event:
+        log(log.INFO, "Event not found: [%s]", event_unique_id)
+        raise ValueError(f"Event not found: {event_unique_id}")
+
+    c.save_message("Super! Please check if this event is right?", event.name, room)
+    return event
+
+
 def create_event(params: s.ChatSellEventParams, room: m.Room, user: m.User) -> m.Event:
     category_query = sa.select(m.Category).where(m.Category.unique_id == params.event_category_id)
     category = db.session.scalar(category_query)

@@ -80,6 +80,31 @@ def get_event_name():
     )
 
 
+@chat_sell_blueprint.route("/event_approve")
+@login_required
+def event_approve():
+    params = c.validate_event_sell_params(request.args)
+
+    room = c.get_room(params.room_unique_id)
+
+    if params.event_unique_id:
+        event: m.Event = c.get_event_by_uuid(params.event_unique_id, room)
+        return render_template(
+            "chat/sell/ticket_quantity.html",
+            event_name=event.name,
+            event_unique_id=event.unique_id,
+            event_category_id=event.category_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
+    return render_template(
+        "chat/sell/event_name.html",
+        event_category_id=params.event_category_id,
+        room=room,
+        now=c.utcnow_chat_format(),
+    )
+
+
 @chat_sell_blueprint.route("/get_event_url")
 @login_required
 def get_event_url():
