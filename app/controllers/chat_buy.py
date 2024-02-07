@@ -99,10 +99,18 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
 
     ticket.is_reserved = True
     ticket.buyer_id = user.id
+    room.ticket = ticket
 
-    ticket_details = c.ticket_details(ticket)
-
-    c.save_message("We have found tickets. What ticket do you want?", "Ticket details:", room)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="We have found tickets. What ticket do you want?",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text="Ticket details:",
+        details=True,
+    ).save()
 
     return ticket
 

@@ -5,7 +5,6 @@ from psycopg2 import IntegrityError
 from app import controllers as c
 from app import forms as f
 from app import models as m, db
-from app.controllers.jinja_globals import cut_seconds
 from app.logger import log
 from config import config
 
@@ -796,8 +795,8 @@ def get_ticket_details():
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
 
-    ticket_details = c.ticket_details(ticket)
-    c.save_message(ticket_details, "Got it", room)
+    c.ticket_details(ticket, room)
+
     return render_template(
         "chat/sell/ticket_details.html",
         ticket_unique_id=params.ticket_unique_id,

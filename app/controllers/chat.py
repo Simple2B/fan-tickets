@@ -93,9 +93,8 @@ def save_message(bot_message: str, user_message: str, room: m.Room):
     log(log.INFO, "Messages for history saved. Bot: [%s], user: [%s]", bot_message, user_message)
 
 
-def ticket_details(ticket: m.Ticket, buy=False):
+def ticket_details(ticket: m.Ticket, room: m.Room, buy=False) -> bool:
     date_time = ticket.event.date_time.strftime("%Y-%m-%d %H:%M") if ticket.event.date_time else ""
-
     ticket_details = (
         f"Event: {ticket.event.name}\n"
         + f"Location: {ticket.event.location.name}\n"
@@ -108,5 +107,49 @@ def ticket_details(ticket: m.Ticket, buy=False):
         + f"Ticket price gross: {ticket.price_gross}\n"
         + f"Ticket description: {ticket.description}"
     )
+    if buy:
+        c.save_message("We have found tickets. What ticket do you want?", "Ticket details:", room)
+        m.Message(
+            room_id=room.id,
+            text=f"Event: {ticket.event.name}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Location: {ticket.event.location.name}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Venue: {ticket.event.venue}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Date time: {date_time}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket type: {ticket.ticket_type}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket category: {ticket.ticket_category}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket section: {ticket.section}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket price net: {ticket.price_net}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket price gross: {ticket.price_gross}\n",
+        ).save(False)
+        m.Message(
+            room_id=room.id,
+            text=f"Ticket description: {ticket.description}",
+        ).save()
+    else:
+        c.save_message(ticket_details, "Got it", room)
 
-    return ticket_details
+    return True
