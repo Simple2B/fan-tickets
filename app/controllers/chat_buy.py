@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 import sqlalchemy as sa
 
 from flask import current_app as app
@@ -98,6 +99,7 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
         return None
 
     ticket.is_reserved = True
+    ticket.last_reservation_time = datetime.now(UTC)
     ticket.buyer_id = user.id
     room.ticket = ticket
 
@@ -141,9 +143,9 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         unique_ids += f"{ticket.unique_id}, "
     # TODO: Do we need to round the total price here?
     return s.ChatBuyTicketTotalPrice(
-        service=round(price_service, 2),
-        total=round(price_total, 2),
-        net=round(price_net, 2),
+        service=int(round(price_service)),
+        total=int(round(price_total)),
+        net=int(round(price_net)),
         unique_ids=unique_ids,
     )
 

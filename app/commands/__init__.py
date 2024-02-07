@@ -239,8 +239,10 @@ def init(app: Flask):
         tickets = db.session.scalars(tickets_query).all()
 
         for ticket in tickets:
-            if ticket.is_reserved and ticket.last_reservation_time < datetime.now() - timedelta(
-                minutes=CFG.TICKETS_IN_CART_EXPIRES_IN
+            if (
+                ticket.is_reserved
+                and ticket.last_reservation_time
+                and ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN)
             ):
                 ticket.is_reserved = False
                 ticket.last_reservation_time = datetime.now()
