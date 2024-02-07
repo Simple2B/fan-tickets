@@ -17,7 +17,7 @@ def category_index():
 
 @category_blueprint.route("/categories")
 def get_categories():
-    categories_query = m.Category.select().order_by(m.Category.created_at.asc())
+    categories_query = m.Category.select().where(m.Category.deleted.is_(False)).order_by(m.Category.created_at.asc())
     categories = db.session.scalars(categories_query).all()
     log(log.INFO, "Categories: [%s]", categories)
     return render_template("admin/categories.html", categories=categories)
@@ -75,20 +75,8 @@ def delete_category(category_id):
         log(log.INFO, "Location not found: [%s]", category_id)
         return redirect(url_for("admin.category.get_categories"))
 
-    if category.picture:
-        db.session.delete(category.picture)
-
-    if category.events:
-        for event in category.events:
-            if event.picture:
-                db.session.delete(event.picture)
-            if event.tickets:
-                for ticket in event.tickets:
-                    db.session.delete(ticket)
-            db.session.delete(event)
-
-    db.session.delete(category)
-    db.session.commit()
+    category.deleted = True
+    category.save()
     log(log.INFO, "Category deleted: [%s]", category_id)
     return redirect(url_for("admin.category.get_categories"))
 

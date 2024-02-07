@@ -40,7 +40,7 @@ services:
     depends_on:
       - db
     ports:
-      - 127.0.0.1:${LOCAL_API_PORT:-8002}:8000
+      - 127.0.0.1:${LOCAL_CELERY_PORT:-8002}:8000
 
   redis:
     image: redis:7

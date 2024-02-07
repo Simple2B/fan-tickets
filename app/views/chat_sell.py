@@ -21,7 +21,9 @@ def get_event_category():
     room = c.get_room(params.room_unique_id)
 
     category_name = db.session.scalar(
-        m.Category.select().where(m.Category.unique_id == params.event_category_id).with_only_columns(m.Category.name)
+        m.Category.select()
+        .where(m.Category.unique_id == params.event_category_id, m.Category.deleted.is_(False))
+        .with_only_columns(m.Category.name)
     )
 
     if not category_name:
