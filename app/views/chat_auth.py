@@ -126,7 +126,8 @@ def sell():
     categories = []
     if current_user.is_authenticated and current_user.activated:
         template = "chat/sell/event_category.html"
-        categories = m.Category.all()
+        categories_query = m.Category.select().where(m.Category.deleted.is_(False))
+        categories = db.session.scalars(categories_query).all()
     elif not current_user.is_authenticated:
         template = "chat/chat_auth.html"
     elif not current_user.activated and not current_user.identity_document:
