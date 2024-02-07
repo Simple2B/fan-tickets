@@ -207,7 +207,11 @@ def get_ticket(ticket_unique_id):
         log(log.INFO, "Ticket not found: [%s]", ticket_unique_id)
         return redirect(url_for("admin.get_tickets"))
 
-    form = f.TicketForm(ticket_type=ticket.ticket_type, ticket_category=ticket.ticket_category)
+    form = f.TicketForm(
+        ticket_type=ticket.ticket_type,
+        ticket_category=ticket.ticket_category,
+        ticket_deleted=ticket.is_deleted,
+    )
     if request.method == "GET":
         form.description.data = ticket.description
         form.warning.data = ticket.warning
@@ -218,6 +222,7 @@ def get_ticket(ticket_unique_id):
         form.seat.data = ticket.seat
         form.price_net.data = ticket.price_net
         form.price_gross.data = ticket.price_gross
+        form.deleted.data = ticket.is_deleted
 
         log(log.INFO, "request.method = GET. Ticket form populated: [%s]", ticket)
         return render_template("admin/ticket.html", ticket=ticket, form=form)

@@ -8,16 +8,35 @@ from .payments import (
 )
 from .utils import utcnow_chat_format
 from .image_upload import image_upload, ImageType
+from .chat import validate_event_params, validate_ticket_params, get_room, save_message
+from .chat_sell import (
+    get_event_by_name_bard,
+    add_event_location,
+    add_event_venue,
+    add_event_date,
+    add_event_time,
+    create_event,
+    create_ticket,
+    create_paired_ticket,
+    add_ticket_category,
+    add_ticket_section,
+    add_ticket_queue,
+    add_ticket_seat,
+    add_ticket_notes,
+    add_ticket_wallet_id,
+    add_ticket_document,
+    add_ticket_price,
+    check_file_type,
+)
 from .chat_auth import (
-    get_room,
     get_user,
     create_user_name,
     create_user_last_name,
-    save_message,
     create_email,
     create_password,
     confirm_password,
     add_identity_document,
+    add_identity_document_number,
     create_phone,
     create_address,
     create_birth_date,

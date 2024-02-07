@@ -27,6 +27,7 @@ def register():
         verification_code = randint(100000, 999999)
         user = m.User(
             username=form.username.data,
+            name=form.username.data,
             email=form.email.data,
             picture_id=picture_id,
             password=form.password.data,
@@ -114,15 +115,19 @@ def activate():
 
     if not user:
         log(log.INFO, "User not found")
-        flash("Incorrect email confirmation", "danger")
+        flash("Activation for this user is failed", "danger")
         return redirect(url_for("main.index"))
 
     if user.verification_code != verification_code:
         log(log.INFO, "Incorrect verification code")
-        flash("Incorrect email confirmation", "danger")
+        flash(
+            f"Incorrect email confirmation user-code -{user.verification_code}, verification - {verification_code}",
+            "danger",
+        )
         return redirect(url_for("main.index"))
 
-    user.activated = True
+    # TODO: remove after testing registration flow
+    # user.activated = True
     user.save()
 
     flask_sse_notification.notify_admin(

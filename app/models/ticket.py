@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -22,6 +23,7 @@ class TicketType(Enum):
 
 
 class TicketCategory(Enum):
+    REGULAR = "regular"
     STUDENT = "student"
     ELDERLY = "elderly"
     SOCIAL = "social"
@@ -33,6 +35,12 @@ class Ticket(db.Model, ModelMixin):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
 
+    # Foreign keys
+    event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
+    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
+
+    # Columns
     unique_id: orm.Mapped[str] = orm.mapped_column(
         sa.String(36),
         default=gen_uuid,
@@ -44,10 +52,14 @@ class Ticket(db.Model, ModelMixin):
 
     ticket_category: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=TicketCategory.ELDERLY.value)
 
-    # The ticket file could be a PDF or a stringed QR code
-    # TODO: add relation to many tickets (one to many relationship)
+    # Pair ticket
+    is_paired: orm.Mapped[bool] = orm.mapped_column(default=False)
+    pair_unique_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
+    separate_selling_allowed: orm.Mapped[bool] = orm.mapped_column(default=False)
+
+    # The ticket file could be a PDF or a stringed wallet id
     file: orm.Mapped[bytes | None] = orm.mapped_column(sa.LargeBinary)
-    wallet_qr_code: orm.Mapped[bytes | None] = orm.mapped_column(sa.String(512))
+    wallet_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
     warning: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
@@ -56,25 +68,23 @@ class Ticket(db.Model, ModelMixin):
         default=utcnow,
     )
 
-    section: orm.Mapped[str] = orm.mapped_column(sa.String(16))
-    queue: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    section: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    queue: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
 
-    seat: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    seat: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
 
-    price_net: orm.Mapped[float] = orm.mapped_column(sa.Float)
-    price_gross: orm.Mapped[float] = orm.mapped_column(sa.Float)
+    price_net: orm.Mapped[int | None] = orm.mapped_column(sa.Integer)
+    price_gross: orm.Mapped[int | None] = orm.mapped_column(sa.Integer)
 
     quantity: orm.Mapped[int] = orm.mapped_column(default=1)
 
     is_in_cart: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_reserved: orm.Mapped[bool] = orm.mapped_column(default=False)
+    last_reservation_time: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(default=False, server_default=sa.false())
-    seller_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
 
-    buyer_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
-    event_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("events.id"))
-
+    # Relationships
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")
 
     seller: orm.Mapped["User"] = orm.relationship(
@@ -95,10 +105,22 @@ class Ticket(db.Model, ModelMixin):
 
     @property
     def is_available(self):
-        if self.event.date_time > utcnow():
+        if self.event.date_time < utcnow():
             return False
         if self.is_deleted:
             return False
         if self.is_sold:
             return False
+        if self.is_reserved:
+            return False
         return True
+
+    @property
+    def base64_src(self) -> str:
+        """
+        Returns the base64 representation of the picture.
+        """
+        if self.file:
+            base64_img = base64.b64encode(self.file).decode("utf-8")
+            return f"data:application/pdf;base64,{ base64_img }"
+        return ""

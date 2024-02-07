@@ -20,10 +20,9 @@ services:
     command: sh ./start_web.sh
     environment:
       APP_ENV: production
+      SERVER_TYPE: production
     depends_on:
       - db
-    ports:
-      - 127.0.0.1:${APP_LOCAL_PORT:-8007}:8000
     env_file:
       - .env
     labels:
@@ -47,6 +46,9 @@ services:
       - "traefik.http.routers.fan_ticket_api.rule=Host(`api.fan-ticket.simple2b.net`)"
       - "traefik.http.routers.fan_ticket_api.tls=true"
       - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
+
+  backup:
+    image: simple2b/pg-backup:1.0
 
 volumes:
   db_data:

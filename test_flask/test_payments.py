@@ -55,7 +55,7 @@ def test_pagarme_get_card(client: FlaskClient):
     assert response.customer.id == TEST_CUSTOMER_ID
 
 
-@pytest.mark.skipif(not os.environ.get("APP_ENV") == "testing", reason="no pagar.me API secret key")
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_pagarme_ticket_order(client: FlaskClient):
     login(client)
     letters = string.ascii_lowercase

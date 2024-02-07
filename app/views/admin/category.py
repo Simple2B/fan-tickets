@@ -78,6 +78,15 @@ def delete_category(category_id):
     if category.picture:
         db.session.delete(category.picture)
 
+    if category.events:
+        for event in category.events:
+            if event.picture:
+                db.session.delete(event.picture)
+            if event.tickets:
+                for ticket in event.tickets:
+                    db.session.delete(ticket)
+            db.session.delete(event)
+
     db.session.delete(category)
     db.session.commit()
     log(log.INFO, "Category deleted: [%s]", category_id)

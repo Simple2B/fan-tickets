@@ -1,4 +1,7 @@
 from datetime import datetime
+import requests
+import base64
+import json
 import os
 from flask import request, Blueprint, render_template, current_app as app, url_for
 from flask_login import current_user, login_required
@@ -9,6 +12,7 @@ from app import controllers as c
 from app import schema as s
 from app import models as m, db, mail
 from app import forms as f
+from app import pagarme_client
 from app.logger import log
 from config import config
 
@@ -274,7 +278,8 @@ def get_tickets():
         )
 
     if params.from_date_template:
-        event_time = tickets[0].event.date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
+        event_date_time = tickets[0].event.date_time if tickets[0].event.date_time else datetime.now()
+        event_time = event_date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
         c.save_message(
             "Sure! When are you planning to attend? Please specify the date and time.",
             f"{tickets[0].event.name}, {event_time}",
@@ -320,6 +325,7 @@ def booking_ticket():
         )
 
     room = c.get_room(params.room_unique_id)
+    form: f.ChatFileUploadForm = f.ChatFileUploadForm()
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
@@ -342,6 +348,16 @@ def booking_ticket():
             "chat/registration/login_form.html",
             room=room,
             now=c.utcnow_chat_format(),
+        )
+
+    if not current_user.activated:
+        log(log.ERROR, "User not activated: [%s]", current_user)
+        return render_template(
+            "chat/registration/passport.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+            form=form,
         )
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room)
@@ -437,9 +453,91 @@ def payment():
         "Payment",
         room,
     )
+    # TODO: collect info for json
+    # data = {
+    #     "items": [
+    #         {
+    #             "amount": {total_prices.total},
+    #             "description": "Concert Ticket",
+    #             "quantity": {total_prices.count},
+    #             "category": "Concert Event",
+    #         }
+    #     ],
+    #     "customer_id": {current_user.pagarme_id},
+    #     "payments": [
+    #         {
+    #             "expires_in": 30,
+    #             "payment_method": "pix",
+    #             "billing_address_editable": False,
+    #             "customer_editable": False,
+    #             "accepted_payment_methods": ["pix"],
+    #             "success_url": "https://fan-ticket.simple2b.org//pay/webhook",
+    #             "Pix": {"expires_in": 2147483647},
+    #         }
+    #     ],
+    # }
+
+    if not current_user.pagarme_id:
+        phone_data = pagarme_client.generate_customer_phone(current_user.phone)
+        phones_data = s.PagarmeCustomerPhones(
+            mobile_phone=phone_data,
+        )
+
+        customer_data = s.PagarmeCustomerCreate(
+            name=current_user.name,
+            birthdate=current_user.birth_date_string,
+            code=current_user.unique_id,
+            email=current_user.email,
+            document=current_user.document_identity_number,
+            phones=phones_data,
+        )
+
+        pagarme_customer = pagarme_client.create_customer(customer_data)
+
+        assert pagarme_customer
+
+        current_user.pagarme_id = pagarme_customer.id
+        current_user.save()
+
+    data = s.PagarmeCreateOrderPix(
+        items=[
+            s.PagarmeItem(
+                amount=int(total_prices.total),
+                description=total_prices.unique_ids,
+                category="Concert Event",
+            )
+        ],
+        customer_id=current_user.pagarme_id,
+        payments=[
+            s.PagarmePaymentPix(
+                expires_in=30,
+                payment_method="pix",
+                billing_address_editable=False,
+                customer_editable=False,
+                accepted_payment_methods=["pix"],
+                success_url="https://fan-ticket.simple2b.org/pay/webhook",
+                Pix=s.PagarmePixData(
+                    expires_in=2147483647,
+                ),
+            )
+        ],
+    )
+    resp = pagarme_client.create_order_pix(data)
+    response_dict = json.loads(resp.json())
+    qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
+    qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
+    response = requests.get(qr_code_url)
+    assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
+    qr = response.content
+    qr_url = response.url
+    qr_base64 = base64.b64encode(qr).decode()
+
     return render_template(
         "chat/buy/payment.html",
         room=room,
+        qr=qr_base64,
+        qr_to_copy=qr_to_copy,
+        qr_url=qr_url,
         now=c.utcnow_chat_format(),
         total_prices=total_prices,
         form=f.OrderCreateForm(),
@@ -569,8 +667,8 @@ def subscribe_on_event():
     )
 
 
-def compute_total_price(cart_tickets: list[m.Ticket]) -> float:
-    return sum([ticket.price_gross for ticket in cart_tickets])
+def compute_total_price(cart_tickets: list[m.Ticket]) -> int:
+    return sum([ticket.price_gross for ticket in cart_tickets if ticket.price_gross])
 
 
 def clear_message_history(room: m.Room) -> None:

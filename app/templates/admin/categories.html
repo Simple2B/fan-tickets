@@ -55,7 +55,8 @@
 
         <!-- Remove button -->
         <td class="p-4 space-x-2 whitespace-nowrap">
-          <a href="{{url_for('admin.category.delete_category', category_id=category.id)}}">
+          <a href="{{url_for('admin.category.delete_category', category_id=category.id)}}"
+            onclick="return confirm('Are you sure?');">
             <svg class="w-6 h-6  text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
               viewBox="0 0 18 20">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

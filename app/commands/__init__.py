@@ -4,10 +4,14 @@ from flask import Flask
 import sqlalchemy as sa
 from sqlalchemy import or_, orm
 from app import models as m
-from app import db, forms
+from app import db, forms, pagarme_client
 from app import schema as s
 from app import flask_sse_notification
 from app.controllers.notification_client import NotificationType
+from config import config
+
+
+CFG = config()
 
 
 def init(app: Flask):
@@ -15,7 +19,7 @@ def init(app: Flask):
     @app.shell_context_processor
     def get_context():
         """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm)
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
 
     @app.cli.command()
     @click.option("--count", default=100, type=int)
@@ -105,7 +109,7 @@ def init(app: Flask):
         user.password = "pass"
         user.save()
 
-    @app.cli.command("delete-users")
+    @app.cli.command("delete-user")
     @click.option("--email", type=str)
     def delete_user(email: str):
         user_query = m.User.select().where(m.User.email == email)
@@ -113,6 +117,21 @@ def init(app: Flask):
         if not user:
             print(f"User with e-mail: [{email}] not found")
             return
+
+        tickets_bought_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
+        tickets_bought = db.session.scalars(tickets_bought_query).all()
+
+        if tickets_bought:
+            for ticket in tickets_bought:
+                db.session.delete(ticket)
+
+        tickets_sold_query = m.Ticket.select().where(m.Ticket.seller_id == user.id)
+        tickets_sold = db.session.scalars(tickets_sold_query).all()
+
+        if tickets_sold:
+            for ticket in tickets_sold:
+                db.session.delete(ticket)
+
         rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
         rooms: m.Room = db.session.scalars(rooms_query).all()
         messages_query = (
@@ -152,7 +171,7 @@ def init(app: Flask):
         users_query = m.User.select()
         users = db.session.scalars(users_query).all()
         for user in users:
-            print(user.id, user.email, user.role, user.tickets_bought)
+            print(user.id, user.email, user.role, user.username, user.name, user.last_name)
 
     @app.cli.command("reassign-events")
     @click.option("--username", type=str)
@@ -206,3 +225,57 @@ def init(app: Flask):
             sa.select(sa.func.count(m.Notification.id)).where(m.Notification.users.any(m.User.id == user.id))
         )
         print(f"Notifications set: {notifications_count}")
+        print("rollbacked")
+
+    @app.cli.command("create-pagarme-order")
+    def create_pagarme_order():
+        """Create test pagarme order"""
+
+        with open("test_flask/assets/pagarme/create_order_pix.json") as json_f:
+            json_data = json_f.read()
+            data = s.PagarmeCreateOrderPix.model_validate_json(json_data)
+
+        resp = pagarme_client.create_order_pix(data)
+        print(resp)
+
+    @app.cli.command("reserve")
+    def reserve():
+        """Reserve tickets for testing"""
+        tickets_query = m.Ticket.select()
+        tickets = db.session.scalars(tickets_query).all()
+
+        reserved_tickets = []
+        for i, ticket in enumerate(tickets):
+            if i % 3 == 0:
+                ticket.is_reserved = True
+                ticket.last_reservation_time = datetime.now()
+                ticket.save(False)
+                reserved_tickets.append(ticket)
+        db.session.commit()
+
+        print(reserved_tickets)
+
+    @app.cli.command("unreserve")
+    def unreserve():
+        """Unreserve all tickets"""
+        tickets_query = (
+            m.Ticket.select().where(m.Ticket.is_reserved.is_(True))
+            # .where(m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike("%Rio%"))))
+        )
+        tickets = db.session.scalars(tickets_query).all()
+
+        for ticket in tickets:
+            if ticket.is_reserved and ticket.last_reservation_time < datetime.now() - timedelta(
+                minutes=CFG.TICKETS_IN_CART_EXPIRES_IN
+            ):
+                ticket.is_reserved = False
+                ticket.last_reservation_time = datetime.now()
+                print(ticket, "unreserved")
+                ticket.save()
+            elif ticket.is_reserved:
+                print(f"Ticket {ticket.id} is still reserved")
+
+        if tickets:
+            print("Unreserved all tickets with expired reservation")
+        else:
+            print("No tickets to unreserve")

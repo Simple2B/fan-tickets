@@ -53,6 +53,7 @@ class BaseConfig(BaseSettings):
     TICKETS_PER_CHAT: int = 3
 
     # UI config
+    CHAT_USER_FORMAT: str = "%d/%m/%Y"
     DATE_PICKER_FORMAT: str = "%m/%d/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
@@ -85,6 +86,7 @@ class BaseConfig(BaseSettings):
     # dev base url
     DEV_BASE_URL: str = "127.0.0.1:5000/"
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
+    PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
     # platform commission rate
     PLATFORM_COMMISSION_RATE: float = 1.08
@@ -101,6 +103,20 @@ class BaseConfig(BaseSettings):
 
     # Redis
     REDIS_URL: str
+
+    # Bard
+    BARD_API_KEY: str | None = None
+
+    # Events posting
+    BARD_DATE_FORMAT: str = "%Y-%m-%d"
+    DAYS_TO_EVENT_MINIMUM: int = 3
+    DEFAULT_EVENT_TIME_HOURS: int = 20
+    DEFAULT_EVENT_TIME_MINUTES: int = 0
+    DEFAULT_EVENT_CATEGORY_ID: int = 1
+    TICKETS_IN_CART_EXPIRES_IN: int = 30  # minutes
+    TICKETS_IN_CART_CLEAN_IN: int = 10  # minutes
+
+    SERVER_TYPE: str = "development"
 
     @staticmethod
     def configure(app: Flask):
@@ -142,6 +158,9 @@ class ProductionConfig(BaseConfig):
     ALCHEMICAL_DATABASE_URL: str = Field(
         alias="DATABASE_URL",
         default="sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3"),
+    )
+    REDIS_URL: str = Field(
+        alias="REDIS_URL",
     )
     WTF_CSRF_ENABLED: bool = True
 

@@ -27,7 +27,7 @@ def app(requests_mock, mocker):
         }
     )
     os.environ["APP_ENV"] = "testing"
-    os.environ["_BARD_API_KEY"] = "some_bard_key."
+    # os.environ["_BARD_API_KEY"] = "some_bard_key."
     print('os.environ.get("PAGARME_CONNECTION")', os.environ.get("PAGARME_CONNECTION"))
 
     # mock requests

@@ -260,7 +260,8 @@ def save_card():
         user.card = card_form.card.data
         if user.card and len(user.card) == CARD_NUMBER_LENGTH:
             log(log.INFO, "Card activated. User: [%s]", user)
-            user.activated = True
+            # TODO: remove after test payment system
+            # user.activated = True
         else:
             log(log.INFO, "Card deactivated. User: [%s]", user)
             user.activated = False

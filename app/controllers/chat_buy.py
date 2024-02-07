@@ -81,7 +81,7 @@ def get_cheapest_tickets(
     limit_ticket: bool,
     add_ticket: bool,
 ) -> list[m.Ticket]:
-    tickets.sort(key=lambda ticket: ticket.price_gross)
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_gross if ticket.price_gross else 0)
 
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
@@ -101,7 +101,7 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
     ticket.buyer_id = user.id
 
     # TODO: create string with ticket info
-    c.save_message("We have found tickets. What ticket do you want?", f"ticket seat: {ticket.seat}", room)
+    c.save_message("We have found tickets. What ticket do you want?", f"Ticket seat: {ticket.seat}", room)
 
     return ticket
 
@@ -121,6 +121,7 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
     price_total = 0
     price_service = 0
     price_net = 0
+    unique_ids = ""
     for ticket in tickets:
         ticket_price_gross = ticket.price_net * app.config["PLATFORM_COMMISSION_RATE"]
         ticket.price_gross = ticket_price_gross
@@ -128,12 +129,13 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         price_total += ticket_price_gross
         price_service += ticket_price_gross - ticket.price_net
         price_net += ticket.price_net
-
+        unique_ids += f"{ticket.unique_id}, "
     # TODO: Do we need to round the total price here?
     return s.ChatBuyTicketTotalPrice(
         service=round(price_service, 2),
         total=round(price_total, 2),
         net=round(price_net, 2),
+        unique_ids=unique_ids,
     )
 
 

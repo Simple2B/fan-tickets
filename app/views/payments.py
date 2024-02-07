@@ -148,14 +148,9 @@ def ticket_order():
             customer=pagarme_customer,
         )
 
-        checkout = [
-            pagarme_client.generate_checkout_data(card_input),
-        ]
-
-    elif payment_method == "pix":
-        checkout = [
-            pagarme_client.generate_pix_data(tickets_number=len(tickets)),
-        ]
+    checkout = [
+        pagarme_client.generate_checkout_data(card_input),
+    ]
 
     order_items = []
     for ticket in tickets:
