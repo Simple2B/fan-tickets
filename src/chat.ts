@@ -285,3 +285,8 @@ async function showSpinnerAndMessage(
   message.classList.add('chat-message-active');
   scrollDownSmooth(chatMain);
 }
+
+const chatInput: HTMLInputElement = document.querySelector('#chat-get');
+if (chatInput) {
+  chatInput.focus();
+}

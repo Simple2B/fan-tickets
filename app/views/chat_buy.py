@@ -333,7 +333,7 @@ def booking_ticket():
     if not current_user.activated:
         log(log.ERROR, "User not activated: [%s]", current_user)
         return render_template(
-            "chat/registration/passport.html",
+            "chat/registration/passport_identity_number.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=current_user.unique_id,

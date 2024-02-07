@@ -111,11 +111,53 @@ def sell():
     )
 
     categories = []
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.activated:
         template = "chat/sell/event_category.html"
         categories = m.Category.all()
-    else:
+    elif not current_user.is_authenticated:
         template = "chat/chat_auth.html"
+    elif not current_user.activated and not current_user.identity_document:
+        return render_template(
+            "chat/registration/passport_identity_number.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.name:
+        return render_template(
+            "chat/registration/name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.last_name:
+        return render_template(
+            "chat/registration/last_name.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.phone:
+        return render_template(
+            "chat/registration/phone.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.address:
+        return render_template(
+            "chat/registration/address.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
+    elif not current_user.activated and not current_user.birth_date:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=current_user.unique_id,
+        )
 
     return render_template(
         template,
@@ -197,7 +239,7 @@ def login_email():
         log(log.ERROR, "User not found: [%s]", params.user_message)
         return render_template(
             "chat/registration/login_email.html",
-            error_message="Email not found, add correct email",
+            error_message="Email not found, add correct email or sign up",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -671,22 +713,15 @@ def create_passport_identity_number():
         )
 
     if user.document_identity_number:
+        c.save_message("Please input your identification number", f"Identification number: {params.user_message}", room)
         return render_template(
-            "chat/registration/phone.html",
+            "chat/registration/name.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
         )
 
     c.add_identity_document_number(params.user_message, user, room)
-
-    if current_user.is_authenticated:
-        return render_template(
-            "chat/registration/phone.html",
-            room=room,
-            now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
-        )
 
     return render_template(
         "chat/registration/name.html",
@@ -736,6 +771,14 @@ def create_user_name():
             error_message="Form submitting error",
             now=c.utcnow_chat_format(),
         )
+
+    # if user.name:
+    #     return render_template(
+    #         "chat/registration/last_name.html",
+    #         room=room,
+    #         now=c.utcnow_chat_format(),
+    #         user_unique_id=user.unique_id,
+    #     )
 
     c.create_user_name(params.user_message, user, room)
 
@@ -882,7 +925,7 @@ def create_user_phone():
 
     if user.phone:
         return render_template(
-            "chat/registration/birth_date.html",
+            "chat/registration/address.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,
@@ -914,13 +957,13 @@ def create_user_phone():
             now=c.utcnow_chat_format(),
         )
 
-    if current_user.is_authenticated:
-        return render_template(
-            "chat/registration/birth_date.html",
-            room=room,
-            now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
-        )
+    # if current_user.is_authenticated:
+    #     return render_template(
+    #         "chat/registration/birth_date.html",
+    #         room=room,
+    #         now=c.utcnow_chat_format(),
+    #         user_unique_id=user.unique_id,
+    #     )
 
     # parse url and get the domain name
     # TODO: add production url
@@ -981,6 +1024,14 @@ def create_user_address():
             "chat/chat_error.html",
             error_message="Form submitting error",
             now=c.utcnow_chat_format(),
+        )
+
+    if user.address:
+        return render_template(
+            "chat/registration/birth_date.html",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=user.unique_id,
         )
 
     c.create_address(params.user_message, user, room)
@@ -1068,7 +1119,7 @@ def create_user_birth_date():
 
     if current_user.is_authenticated:
         return render_template(
-            "chat/buy/event_name.html",
+            "chat/chat_home.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.unique_id,

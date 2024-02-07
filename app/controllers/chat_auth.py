@@ -179,7 +179,7 @@ def create_address(address: str, user: m.User, room: m.Room):
 
 
 def create_birth_date(birth_date: str, user: m.User, room: m.Room):
-    user.birth_date = datetime.strptime(birth_date, app.config["DATE_PICKER_FORMAT"])
+    user.birth_date = datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
     user.activated = True
     user.save(False)
 
