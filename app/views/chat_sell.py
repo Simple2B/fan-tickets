@@ -771,19 +771,7 @@ def get_ticket_details():
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
 
-    date_time = cut_seconds(ticket.event.date_time) if ticket.event.date_time else ""
-    ticket_details = (
-        f"Event: {ticket.event.name}\n"
-        + f"Location: {ticket.event.location.name}\n"
-        + f"Venue: {ticket.event.venue}\n"
-        + f"Date time: {date_time}\n"
-        + f"Ticket type: {ticket.ticket_type}\n"
-        + f"Ticket category: {ticket.ticket_category}\n"
-        + f"Ticket section: {ticket.section}\n"
-        + f"Ticket price net: {ticket.price_net}\n"
-        + f"Ticket price gross: {ticket.price_gross}\n"
-        + f"Ticket description: {ticket.description}"
-    )
+    ticket_details = c.ticket_details(ticket)
     c.save_message(ticket_details, "Got it", room)
     return render_template(
         "chat/sell/ticket_details.html",

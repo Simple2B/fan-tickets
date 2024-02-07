@@ -91,3 +91,22 @@ def save_message(bot_message: str, user_message: str, room: m.Room):
     ).save()
 
     log(log.INFO, "Messages for history saved. Bot: [%s], user: [%s]", bot_message, user_message)
+
+
+def ticket_details(ticket: m.Ticket, buy=False):
+    date_time = ticket.event.date_time.strftime("%Y-%m-%d %H:%M") if ticket.event.date_time else ""
+
+    ticket_details = (
+        f"Event: {ticket.event.name}\n"
+        + f"Location: {ticket.event.location.name}\n"
+        + f"Venue: {ticket.event.venue}\n"
+        + f"Date time: {date_time}\n"
+        + f"Ticket type: {ticket.ticket_type}\n"
+        + f"Ticket category: {ticket.ticket_category}\n"
+        + f"Ticket section: {ticket.section}\n"
+        + f"Ticket price net: {ticket.price_net}\n"
+        + f"Ticket price gross: {ticket.price_gross}\n"
+        + f"Ticket description: {ticket.description}"
+    )
+
+    return ticket_details

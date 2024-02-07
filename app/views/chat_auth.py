@@ -99,16 +99,24 @@ def login():
 @chat_auth_blueprint.route("/sell", methods=["GET", "POST"])
 def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
-    room = m.Room(
-        seller_id=seller_id,
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-    ).save()
-
-    c.save_message(
-        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-        "Sell",
-        room,
-    )
+    room_unique_id = request.args.get("room_unique_id")
+    if room_unique_id:
+        room = c.get_room(room_unique_id)
+        c.save_message(
+            "How can I assist you? Are you looking to buy or sell a ticket?",
+            "Sell",
+            room,
+        )
+    else:
+        room = m.Room(
+            seller_id=seller_id,
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+        c.save_message(
+            "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+            "Sell",
+            room,
+        )
 
     categories = []
     if current_user.is_authenticated and current_user.activated:
@@ -170,14 +178,23 @@ def sell():
 
 @chat_auth_blueprint.route("/buy")
 def buy():
-    room = m.Room(
-        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
-    ).save()
-    c.save_message(
-        "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
-        "Buy",
-        room,
-    )
+    room_unique_id = request.args.get("room_unique_id")
+    if room_unique_id:
+        room = c.get_room(room_unique_id)
+        c.save_message(
+            "How can I assist you? Are you looking to buy or sell a ticket?",
+            "Buy",
+            room,
+        )
+    else:
+        room = m.Room(
+            buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        ).save()
+        c.save_message(
+            "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
+            "Buy",
+            room,
+        )
 
     return render_template(
         "chat/buy/event_name.html",
@@ -1050,7 +1067,7 @@ def create_user_address():
         )
 
     return render_template(
-        "chat/registration/ask_social_profile.html",
+        "chat/registration/birth_date.html",
         room=room,
         now=c.utcnow_chat_format(),
         user_unique_id=user.unique_id,
