@@ -178,13 +178,19 @@ def create_address(address: str, user: m.User, room: m.Room):
     return
 
 
-def create_birth_date(birth_date: str, user: m.User, room: m.Room):
+def create_birth_date(birth_date: str, user: m.User, room: m.Room) -> bool:
+    try:
+        datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
+    except ValueError:
+        log(log.ERROR, "Invalid birth date format: [%s]", birth_date)
+        return False
+
     user.birth_date = datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
     user.activated = True
     user.save(False)
 
-    c.save_message("Please input your birth date", f"Birth date: {birth_date}", room)
-    return
+    c.save_message("Please input your birth date in format DD/MM/YYYY 📅", f"Birth date: {birth_date}", room)
+    return True
 
 
 def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):

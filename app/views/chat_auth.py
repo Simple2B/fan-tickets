@@ -1120,11 +1120,16 @@ def create_user_birth_date():
             now=c.utcnow_chat_format(),
         )
 
-    if user.birth_date:
-        user.activated = True
-        db.session.commit()
-
-    c.create_birth_date(params.user_message, user, room)
+    birth_date_added = c.create_birth_date(params.user_message, user, room)
+    if not birth_date_added:
+        log(log.ERROR, "Birth date not added: [%s]", params.user_message)
+        return render_template(
+            "chat/registration/birth_date.html",
+            error_message="Wrong date format. Please try again",
+            room=room,
+            now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
+        )
 
     try:
         db.session.commit()
