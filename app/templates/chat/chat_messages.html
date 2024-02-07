@@ -5,9 +5,9 @@
 {{ history_message_bot(message.text) }}
 {% else %}
 {% if current_user.is_authenticated %}
-{{ history_message_user(message.text, current_user.name, current_user.picture.base64_src) }}
+{{ history_message_user(message, current_user.name, current_user.picture.base64_src, room) }}
 {% else %}
-{{ history_message_user(message.text, "Guest") }}
+{{ history_message_user(message, "Guest", room) }}
 {% endif %}
 {% endif %}
 {% endfor %}

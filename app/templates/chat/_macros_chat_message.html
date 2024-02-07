@@ -65,16 +65,31 @@
 </div>
 {% endmacro %}
 
-{% macro history_message_user(message, username, logo) -%}
+{% macro history_message_user(message, username, logo, room) -%}
 <div class="mb-2 flex gap-2 justify-end test_user_message">
 	<div class="max-w-265">
 		<div class="flex text-grey justify-end">
 			<small class="pt-1">{{ username }} {{ cut_seconds() }}</small>
 		</div>
-		<div class="p-4 flex justify-center text-grey bg-dark-grey rounded-t-lg rounded-bl-lg">
-			<p class="overflow-x-hidden">
-				{{ message }}
+		<div class="p-4 flex flex-col justify-center text-grey bg-dark-grey rounded-t-lg rounded-bl-lg">
+			{% if message.details %}
+			<p>{{ message.text }}</p>
+			<p>
+				Event name: {{ room.ticket.event.name}} <br>
+				Location: {{ room.ticket.event.location.name }} <br>
+				Venue: {{ room.ticket.event.venue.name }} <br>
+				Date: {{ cut_seconds(room.ticket.event.date_time) }} <br>
+				Price: {{ room.ticket.price_gross }} <br>
+				Section: {{ room.ticket.section }} <br>
+				Queue: {{ room.ticket.queue }} <br>
+				Seat: {{ room.ticket.seat }} <br>
+				Notes: {{ room.ticket.description }} <br>
 			</p>
+			{% else %}
+			<p class="overflow-x-hidden">
+				{{ message.text }}
+			</p>
+			{% endif %}
 		</div>
 	</div>
 	{% if logo %}
