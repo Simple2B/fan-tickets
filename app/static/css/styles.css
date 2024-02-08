@@ -1674,10 +1674,6 @@ input:checked + .toggle-bg{
   max-height: 10rem;
 }
 
-.max-h-96{
-  max-height: 24rem;
-}
-
 .max-h-full{
   max-height: 100%;
 }

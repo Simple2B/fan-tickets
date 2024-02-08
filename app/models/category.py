@@ -23,6 +23,7 @@ class Category(db.Model, ModelMixin):
     name: orm.Mapped[str] = orm.mapped_column(sa.String(64), unique=True)
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True), default=utcnow)
+    deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False, server_default=sa.text("false"))
 
     picture: orm.Mapped["Picture"] = orm.relationship()
     events: orm.Mapped[list["Event"]] = orm.relationship("Event", back_populates="category")

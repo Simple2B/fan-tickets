@@ -8,11 +8,7 @@ from flask_login import current_user, login_required
 from flask_mail import Message
 from psycopg2 import IntegrityError
 
-from app import controllers as c
-from app import schema as s
-from app import models as m, db, mail
-from app import forms as f
-from app import pagarme_client
+from app import controllers as c, schema as s, models as m, forms as f, db, mail, pagarme_client
 from app.logger import log
 from config import config
 
@@ -23,25 +19,9 @@ chat_buy_blueprint = Blueprint("buy", __name__, url_prefix="/buy")
 
 @chat_buy_blueprint.route("/get_event_name", methods=["GET", "POST"])
 def get_event_name():
-    try:
-        params = s.ChatBuyEventParams.model_validate(dict(request.args))
-    except Exception as e:
-        log(log.ERROR, "Form submitting error: [%s]", e)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
+    params = c.validate_event_buy_params(request.args)
 
     room = c.get_room(params.room_unique_id)
-
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
 
     if params.renew_search:
         c.save_message("Choose action", "Renew search", room)
@@ -67,12 +47,12 @@ def get_event_name():
         room,
     )
 
-    events = c.get_events_by_event_name(params.user_message, room)
+    events = c.get_event_by_name_bard(params, room)
 
     if not events:
         log(log.INFO, "Events not found: [%s]", params.user_message)
         return render_template(
-            "chat/buy/ticket_not_found.html",
+            "chat/buy/event_not_found.html",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -264,10 +244,10 @@ def get_tickets():
     if not tickets:
         log(log.ERROR, "Tickets not found: [%s]", params.event_unique_id)
         return render_template(
-            "chat/buy/event_name.html",
-            error_message="Something went wrong. Please add event name",
+            "chat/buy/ticket_not_found.html",
             room=room,
             now=c.utcnow_chat_format(),
+            event_unique_id=params.event_unique_id,
         )
 
     if params.add_ticket:
@@ -353,7 +333,7 @@ def booking_ticket():
     if not current_user.activated:
         log(log.ERROR, "User not activated: [%s]", current_user)
         return render_template(
-            "chat/registration/passport.html",
+            "chat/registration/passport_identity_number.html",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=current_user.unique_id,
@@ -546,31 +526,14 @@ def payment():
 
 @chat_buy_blueprint.route("/subscribe_on_event")
 def subscribe_on_event():
-    try:
-        params = s.ChatBuyTicketParams.model_validate(dict(request.args))
-    except Exception as e:
-        log(log.ERROR, "Form submitting error: [%s]", e)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
+    params = c.validate_buy_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
 
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
-        return render_template(
-            "chat/chat_error.html",
-            error_message="Form submitting error",
-            now=c.utcnow_chat_format(),
-        )
-
     if not params.event_unique_id:
-        log(log.ERROR, "No event unique id provided: [%s]", params.event_unique_id)
         return render_template(
             "chat/buy/event_name.html",
-            error_message="Something went wrong. Please add event name",
+            error_message="Something went wrong, please choose event again",
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -594,9 +557,7 @@ def subscribe_on_event():
             event_unique_id=params.event_unique_id,
         )
 
-    if current_user.is_authenticated:
-        c.subscribe_event(params.event_unique_id, current_user)
-    else:
+    if not current_user.is_authenticated:
         if not params.user_message:
             log(log.INFO, "User unauthorized. Email is not provided: [%s]", params.user_message)
             return render_template(
@@ -621,43 +582,42 @@ def subscribe_on_event():
                 now=c.utcnow_chat_format(),
             )
 
-        msg = Message(
-            subject="Congratulations! You have successfully register on {CFG.APP_NAME}",
-            sender=app.config["MAIL_DEFAULT_SENDER"],
-            recipients=[user.email],
-        )
-        # TODO: add production url
-        if os.environ.get("APP_ENV") == "development":
-            url = url_for(
-                "auth.activate",
-                reset_password_uid=user.uuid,
-                _external=True,
-            )
-        else:
-            base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated/{user.uuid}"
+    event = c.subscribe_event(params.event_unique_id, user)
 
-        msg.html = render_template(
-            "email/confirm.htm",
-            user=user,
-            url=url,
-        )
-        mail.send(msg)
-
-        c.subscribe_event(params.event_unique_id, user)
-
-    try:
-        db.session.commit()
-        log(log.INFO, "Subscribe on event: [%s], [%s]", params.event_unique_id, current_user.email)
-    except IntegrityError as e:
-        db.session.rollback()
-        log(log.ERROR, "Subscribe on event failed: [%s]", e)
+    if not event:
+        log(log.ERROR, "Subscribe not found: [%s]", event)
         return render_template(
             "chat/buy/event_name.html",
             error_message="Something went wrong, please choose event again",
             room=room,
             now=c.utcnow_chat_format(),
         )
+
+    msg = Message(
+        subject=f"Subscription to {CFG.APP_NAME}",
+        sender=app.config["MAIL_DEFAULT_SENDER"],
+        recipients=[user.email],
+    )
+    if os.environ.get("APP_ENV") == "development":
+        url = url_for(
+            "auth.activate",
+            reset_password_uid=user.unique_id,
+            _external=True,
+        )
+    else:
+        if os.environ.get("SERVER_TYPE") == "production":
+            base_url = app.config["PRODUCTION_BASE_URL"]
+        else:
+            base_url = app.config["STAGING_BASE_URL"]
+        url = f"{base_url}activated/{user.unique_id}"
+
+    msg.html = render_template(
+        "email/email_confirm_subscribe.htm",
+        user=user,
+        event_name=event.name,
+        url=url,
+    )
+    mail.send(msg)
 
     return render_template(
         "chat/buy/subscribe_success.html",

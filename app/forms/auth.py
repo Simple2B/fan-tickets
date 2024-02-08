@@ -27,13 +27,13 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField("Register")
 
-    def validate_username(form, field):
-        query = User.select().where(User.username == field.data)
-        if db.session.scalar(query) is not None:
-            raise ValidationError("This username is taken.")
+    # def validate_username(form, field):
+    #     query = User.select().where(User.username == field.data)
+    #     if db.session.scalar(query) is not None:
+    #         raise ValidationError("This username is taken.")
 
     def validate_email(form, field):
-        query = User.select().where(User.email == field.data)
+        query = User.select().where(User.email == field.data, User.password_hash != "")
         if db.session.scalar(query) is not None:
             raise ValidationError("This email is already registered.")
 

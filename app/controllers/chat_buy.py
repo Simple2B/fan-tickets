@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 import sqlalchemy as sa
 
 from flask import current_app as app
@@ -98,10 +99,20 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
         return None
 
     ticket.is_reserved = True
+    ticket.last_reservation_time = datetime.now(UTC)
     ticket.buyer_id = user.id
+    room.ticket = ticket
 
-    # TODO: create string with ticket info
-    c.save_message("We have found tickets. What ticket do you want?", f"Ticket seat: {ticket.seat}", room)
+    m.Message(
+        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
+        room_id=room.id,
+        text="We have found tickets. What ticket do you want?",
+    ).save(False)
+    m.Message(
+        room_id=room.id,
+        text="Ticket details:",
+        details=True,
+    ).save()
 
     return ticket
 
@@ -132,9 +143,9 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         unique_ids += f"{ticket.unique_id}, "
     # TODO: Do we need to round the total price here?
     return s.ChatBuyTicketTotalPrice(
-        service=round(price_service, 2),
-        total=round(price_total, 2),
-        net=round(price_net, 2),
+        service=int(round(price_service)),
+        total=int(round(price_total)),
+        net=int(round(price_net)),
         unique_ids=unique_ids,
     )
 
@@ -150,14 +161,22 @@ def get_locations_by_events(events: list[m.Event], room: m.Room) -> list[m.Locat
     return locations
 
 
-def subscribe_event(event_unique_id: str, user: m.User):
+def subscribe_event(event_unique_id: str, user: m.User) -> m.Event:
     event_query = sa.select(m.Event).where(m.Event.unique_id == event_unique_id)
     event = db.session.scalar(event_query)
 
     if not event:
         log(log.INFO, "Event not found: [%s]", event_unique_id)
+        return event
 
-    user.subscribed_events.append(event)
+    if user not in event.subscribers:
+        event.subscribers.append(user)
+        event.save(False)
+    if event not in user.subscribed_events:
+        user.subscribed_events.append(event)
+        user.save()
+
+    return event
 
 
 def create_user(email: str) -> m.User:

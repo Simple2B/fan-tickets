@@ -26,7 +26,7 @@ def register():
         picture_id = picture.id if picture else None
         verification_code = randint(100000, 999999)
         user = m.User(
-            username=form.username.data,
+            # username=form.username.data,
             name=form.username.data,
             email=form.email.data,
             picture_id=picture_id,

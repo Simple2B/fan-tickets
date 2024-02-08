@@ -184,13 +184,13 @@ def test_create_user_birth_date(client: FlaskClient):
     assert response.status_code == 200
     assert "Please, add your birth date" in response.data.decode()
 
-    TESTING_BIRTH_DATE = "10/22/1990"
+    TESTING_BIRTH_DATE = "22/10/1990"
     response = client.get(
         f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_BIRTH_DATE}"
     )
     assert response.status_code == 200
     assert len(room.messages) == 2
-    assert user.birth_date == datetime.strptime(TESTING_BIRTH_DATE, app.config["DATE_PICKER_FORMAT"])
+    assert user.birth_date == datetime.strptime(TESTING_BIRTH_DATE, app.config["CHAT_USER_FORMAT"])
     assert f"Birth date: {TESTING_BIRTH_DATE}" in response.data.decode()
 
 

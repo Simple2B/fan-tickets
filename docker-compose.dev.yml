@@ -25,8 +25,6 @@ services:
       - db
     env_file:
       - .env
-    ports:
-    - "127.0.0.1:8007:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
@@ -48,6 +46,19 @@ services:
       - "traefik.http.routers.fan_ticket_api.rule=Host(`api.fan-ticket.simple2b.net`)"
       - "traefik.http.routers.fan_ticket_api.tls=true"
       - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
+
+  redis:
+    image: redis:7
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redis_password}
+
+  worker:
+    image: simple2b/fan_ticket
+    command: sh ./start_worker.sh
+    environment:
+      APP_ENV: production
+    depends_on:
+      - redis
 
   backup:
     image: simple2b/pg-backup:1.0

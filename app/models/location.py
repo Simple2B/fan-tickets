@@ -25,6 +25,7 @@ class Location(db.Model, ModelMixin):
         sa.DateTime(timezone=True),
         default=utcnow,
     )
+    deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False, server_default=sa.text("false"))
 
     picture: orm.Mapped["Picture"] = orm.relationship()
     events: orm.Mapped[list["Event"]] = orm.relationship(back_populates="location")

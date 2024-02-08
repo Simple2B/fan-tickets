@@ -33,9 +33,9 @@ class ChatBuyTicketParams(ChatBuyRequiredParams):
 
 
 class ChatBuyTicketTotalPrice(BaseModel):
-    total: float
-    service: float
-    net: float
+    total: int
+    service: int
+    net: int
     unique_ids: str
 
     model_config = SettingsConfigDict(from_attributes=True)

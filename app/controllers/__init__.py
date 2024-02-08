@@ -8,9 +8,18 @@ from .payments import (
 )
 from .utils import utcnow_chat_format
 from .image_upload import image_upload, ImageType
-from .chat import validate_event_params, validate_ticket_params, get_room, save_message
+from .chat import (
+    validate_event_sell_params,
+    validate_event_buy_params,
+    validate_cell_ticket_params,
+    validate_buy_ticket_params,
+    get_room,
+    save_message,
+    ticket_details,
+)
 from .chat_sell import (
     get_event_by_name_bard,
+    get_event_by_uuid,
     add_event_location,
     add_event_venue,
     add_event_date,

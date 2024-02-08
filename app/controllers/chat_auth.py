@@ -34,10 +34,11 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
     if not match_pattern:
         return s.ChatAuthEmailValidate(email=email, message="Invalid email format", is_error=True), None
 
-    user_email_query = sa.select(m.User).where(m.User.email == email)
-    user_email = db.session.scalar(user_email_query)
+    user_email_query = sa.select(m.User).where(m.User.email == email, m.User.password_hash != "")
+    user = db.session.scalar(user_email_query)
+    check_password = check_password_hash(user.password, "") if user else False
 
-    if user_email:
+    if user and not check_password:
         return s.ChatAuthEmailValidate(email=email, message="Email already taken", is_error=True), None
 
     picture_query = m.Picture.select().where(m.Picture.filename.ilike(f"%{'default_avatar'}%"))
@@ -48,21 +49,27 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
     identity_document_id = identity_document.id if identity_document else None
     verification_code = randint(100000, 999999)
 
-    user = m.User(
-        # Since in chat registration we get user's info step by step,
-        # asking user to input credentials one by one,
-        # we need to fill the rest of the fields with default values
-        picture_id=picture_id,
-        identity_document_id=identity_document_id,
-        email=email,
-        phone=app.config["CHAT_DEFAULT_PHONE"],
-        card=app.config["CHAT_DEFAULT_CARD"],
-        password="",
-        verification_code=verification_code,
-    ).save(False)
+    if user:
+        user.verification_code = verification_code
+        user.picture_id = picture_id
+        user.identity_document_id = identity_document_id
+        user.password = ""
+        user.save(False)
+        room.seller_id = user.id
+    else:
+        user = m.User(
+            # Since in chat registration we get user's info step by step,
+            # asking user to input credentials one by one,
+            # we need to fill the rest of the fields with default values
+            picture_id=picture_id,
+            identity_document_id=identity_document_id,
+            email=email,
+            password="",
+            verification_code=verification_code,
+        ).save(False)
 
-    db.session.flush()
-    room.seller_id = user.id
+        db.session.flush()
+        room.seller_id = user.id
 
     c.save_message("Please input your email", f"Email: {email}", room)
 
@@ -130,6 +137,7 @@ def create_user_name(name: str, user: m.User, room: m.Room):
     user.save(False)
 
     c.save_message("Please input your name", f"Name: {name}", room)
+    return
 
 
 def create_user_last_name(last_name: str, user: m.User, room: m.Room):
@@ -137,6 +145,7 @@ def create_user_last_name(last_name: str, user: m.User, room: m.Room):
     user.save(False)
 
     c.save_message("Please input your last name", f"Last name: {last_name}", room)
+    return
 
 
 def create_phone(phone: str, user: m.User, room: m.Room) -> str:
@@ -166,14 +175,22 @@ def create_address(address: str, user: m.User, room: m.Room):
     user.save(False)
 
     c.save_message("Please input your address", f"Address: {address}", room)
+    return
 
 
-def create_birth_date(birth_date: str, user: m.User, room: m.Room):
-    user.birth_date = datetime.strptime(birth_date, app.config["DATE_PICKER_FORMAT"])
+def create_birth_date(birth_date: str, user: m.User, room: m.Room) -> bool:
+    try:
+        datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
+    except ValueError:
+        log(log.ERROR, "Invalid birth date format: [%s]", birth_date)
+        return False
+
+    user.birth_date = datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
     user.activated = True
     user.save(False)
 
-    c.save_message("Please input your birth date", f"Birth date: {birth_date}", room)
+    c.save_message("Please input your birth date in format DD/MM/YYYY 📅", f"Birth date: {birth_date}", room)
+    return True
 
 
 def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, room: m.Room):
@@ -190,6 +207,7 @@ def create_social_profile(params: s.ChatAuthSocialProfileParams, user: m.User, r
         message = "Twitter url added"
 
     c.save_message("Please add your social profiles", message, room)
+    return
 
 
 def get_user_by_email(email: str, room: m.Room) -> m.User | None:
