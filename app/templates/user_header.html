@@ -1,0 +1,66 @@
+{% if current_user.is_authenticated %}
+<input class="hidden" value="{{ current_user.uuid }}" id="user-uuid" />
+<!-- prettier-ignore -->
+<div class="flex items-center ml-3">
+  <!-- prettier-ignore -->
+  <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification" class="inline-flex items-center text-sm font-medium text-center text-gray-400 hover:text-gray-900 focus:outline-none dark:hover:text-white notification-bell" type="button">
+    {% include 'icons/bell.html' %}
+    <div class="relative flex">
+      <div class="relative inline-flex w-3 h-3 bg-red-500 border-2 rounded-full -top-2 right-3 border-gray-900"></div>
+    </div>
+  </button>
+  <!-- Dropdown menu -->
+  <!-- prettier-ignore -->
+  <div id="dropdownNotification" class="z-20 hidden w-full max-w-sm divide-y rounded-lg shadow bg-black divide-gray-700" aria-labelledby="dropdownNotificationButton" >
+    <div class="block px-4 py-2 font-medium text-center text-gray-700 rounded-t-lg bg-gray-50 dark:bg-black dark:text-white"> Notifications</div>
+    <div class="h-[50vh] overflow-auto notification-container"> 
+      <!-- prettier-ignore -->
+      <div class="h-2 border-t-0 invisible border-red-300"></div>
+        <p hx-get="{{url_for('notification.get_notifications')}}" hx-trigger="intersect once" hx-swap="beforebegin"></p>
+        <div id="notification_loader" hx-get="{{url_for('notification.get_notification')}}" hx-trigger="load_notification" hx-swap="afterend" hx-target="#new_notifications" hx-include="[name='notification_uuid']">
+          <div id="notification-new-label" class="hidden justify-center items-center mb-4 text-sm text-yellow-800 rounded-lg  dark:text-yellow-300" role="alert"><span class="font-medium">New</span></div>
+        </div>
+        <input class="hidden" name="notification_uuid">
+        <div id="new_notifications"></div>
+        
+        <button id="notification-scroll-to-bottom" class="hidden fixed top-[84%] right-5">
+          <svg id="scroll-on-bottom-svg" width="25px" height="25px" viewBox="0 0 24 24" fill="none" stroke="#ffea00"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z" fill="#fab700" fill-opacity=".16" stroke="#fab700" stroke-width="1.5" stroke-miterlimit="10"></path><path d="m8 10 4 4 4-4" stroke="#fab700" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+          <div id="scroll-on-bottom-messages-count" class="p-2 flex justify-center items-center text-sm border-yellow-300 text-yellow-300 bg-grey-900 rounded-full border-2 w-8 h-8"></div>
+        </button>
+        <!-- <div class="border rounded-full border-yellow-300 bg-yellow-900 text-sm fixed right-6 top-[82%]">23</div> -->
+    </div>
+
+    <div class="divide-y divide-gray-700">
+    <a href="#" class="block py-2 text-sm font-medium text-center text-gray-900 rounded-b-lg bg-gray-50 hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-700 dark:text-white">
+      <div class="inline-flex items-center">
+        {% include 'icons/eye.html' %}
+        View all
+      </div>
+    </a>
+    </div>
+  </div>
+  <div>
+    <button type="button" class="text-gray-400 hover:bg-gray-100 mr-2 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+      <span class="sr-only">Open user menu</span>
+      <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75  group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user"> <div class="px-4 py-3" role="none">
+      <p class="text-sm text-gray-900 dark:text-white" role="none">{{current_user.name}}</p>
+      <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none"> {{current_user.email}}
+      </p>
+    </div>
+    <ul class="py-1" role="none">
+      <li><a href="/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem" >Dashboard</a></li>
+      <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem" data-modal-target="editCurrentUserModal" data-modal-show="editCurrentUserModal" >Settings</a></li>
+      <li><a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem" >Sign out</a></li>
+    </ul>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/notification.js') }}"></script>
+<!-- prettier-ignore -->
+{% if current_user.role == "admin" %}
+<script src="{{ url_for('static', filename='js/notification_admin.js')}}"></script>
+{% endif %} {% endif %}

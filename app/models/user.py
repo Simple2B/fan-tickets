@@ -1,18 +1,21 @@
+from typing import TYPE_CHECKING
+from enum import Enum
 from datetime import datetime
 from uuid import uuid4
-from typing import TYPE_CHECKING
-from flask_login import UserMixin, AnonymousUserMixin
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, AnonymousUserMixin
 
-from enum import Enum
+
 from app.database import db
 from app.logger import log
 from app import schema as s
 
 from .users_events import users_events
-from .utils import ModelMixin, utcnow
+from .user_notification import UserNotification
+from .utils import ModelMixin, utcnow, gen_uuid
 
 if TYPE_CHECKING:
     from .picture import Picture
@@ -37,13 +40,13 @@ class User(db.Model, UserMixin, ModelMixin):
     __tablename__ = "users"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-
+    uuid: orm.Mapped[str] = orm.mapped_column(sa.String(36), default=gen_uuid)
     # Foreign keys
     identity_document_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
     picture_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("pictures.id"))
-
+    last_notification_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("notifications.id"))
     # Columns
-    username: orm.Mapped[str | None] = orm.mapped_column(sa.String(64), nullable=True)
+    username: orm.Mapped[str | None] = orm.mapped_column(sa.String(64))
     email: orm.Mapped[str] = orm.mapped_column(
         sa.String(256),
         unique=True,
@@ -76,31 +79,23 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.DateTime,
         default=utcnow,
     )
-    unique_id: orm.Mapped[str] = orm.mapped_column(
-        sa.String(36),
-        default=gen_password_reset_id,
-    )
-    reset_password_uid: orm.Mapped[str] = orm.mapped_column(
-        sa.String(64),
-        default=gen_password_reset_id,
-    )
+    reset_password_uid: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=gen_password_reset_id)
     role: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=UserRole.client.value)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-
     # Relationships
     identity_document: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[identity_document_id])
     picture: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[picture_id])
     tickets_for_sale: orm.Mapped[list["Ticket"]] = orm.relationship(
-        foreign_keys="Ticket.seller_id",
-        back_populates="seller",
+        foreign_keys="Ticket.seller_id", back_populates="seller"
     )
     tickets_bought: orm.Mapped[list["Ticket"]] = orm.relationship(
         foreign_keys="Ticket.buyer_id",
         back_populates="buyer",
     )
-    notifications: orm.Mapped[list["Notification"]] = orm.relationship(
-        back_populates="user",
+    notifications: orm.WriteOnlyMapped["Notification"] = orm.relationship(
+        back_populates="users", secondary=UserNotification, passive_deletes=True
     )
+    last_notification: orm.Mapped["Notification"] = orm.relationship(foreign_keys=[last_notification_id])
     notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(back_populates="user")
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(
         foreign_keys="Review.reviewer_id",

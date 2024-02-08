@@ -1,16 +1,20 @@
 import os
 
 import sqlalchemy as sa
+from sqlalchemy import orm
 
-from flask import Flask, render_template
-from flask_login import LoginManager
+from flask import Flask, render_template, abort, request
+from flask_login import LoginManager, current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
 
-# from flask_sse import sse
+from app import forms, schema as s
 from app.logger import log
-from app.controllers import PagarmeClient
+from app.controllers import PagarmeClient, FlaskSSENotification
+from app.models.utils import generate_paginate_query
+
+
 from .database import db
 
 # instantiate extensions
@@ -18,14 +22,15 @@ login_manager = LoginManager()
 migration = Migrate()
 mail = Mail()
 pagarme_client = PagarmeClient()
+flask_sse_notification = FlaskSSENotification()
 
 
 def create_app(environment="development") -> Flask:
+    from flask_sse import sse
     from config import config
     from app.views import (
         main_blueprint,
         auth_blueprint,
-        user_blueprint,
         events_blueprint,
         tickets_blueprint,
         admin_blueprint,
@@ -34,6 +39,7 @@ def create_app(environment="development") -> Flask:
         chat_buy_blueprint,
         pay_blueprint,
         chat_disputes_blueprint,
+        notification_blueprint,
     )
     from app import models as m
 
@@ -59,7 +65,6 @@ def create_app(environment="development") -> Flask:
     # Register blueprints.
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
-    app.register_blueprint(user_blueprint)
     app.register_blueprint(events_blueprint)
     app.register_blueprint(tickets_blueprint)
     app.register_blueprint(admin_blueprint)
@@ -68,17 +73,42 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(chat_buy_blueprint)
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
+    app.register_blueprint(notification_blueprint)
 
-    # TODO SSE
     # SSE
-    # @sse.before_request
-    # def check_access():
-    #     if not current_user.is_authenticated:
-    #         abort(403)
+    @sse.before_request
+    def check_access():
+        if not current_user.is_authenticated:
+            abort(403)
 
-    #     # TODO check if user not admin and in room
+        channel = request.args.get("channel")
 
-    # app.register_blueprint(sse, url_prefix="/stream")
+        if not channel:
+            abort(403)
+
+        if channel == "admin":
+            if current_user.role != m.UserRole.admin.value:
+                abort(403)
+            return
+
+        topic, identifier = channel.split(":")
+
+        if topic == "room" and current_user.role != m.UserRole.admin.value:
+            room = db.session.scalar(
+                sa.select(m.Room).where(
+                    sa.and_(
+                        m.Room.unique_id == identifier,
+                        sa.or_(m.Room.seller_id == current_user.id, m.Room.buyer_id == current_user.id),
+                    )
+                )
+            )
+            if not room:
+                abort(403)
+
+        elif topic == "notification" and current_user.uuid != identifier:
+            abort(403)
+
+    app.register_blueprint(sse, url_prefix="/sse")
 
     # Set up flask login.
     @login_manager.user_loader
@@ -111,6 +141,14 @@ def create_app(environment="development") -> Flask:
         get_ticket_subsequential_number,
     )
 
+    def get_current_user_notifications():
+        if not current_user.is_authenticated:
+            return ()
+        query = generate_paginate_query(current_user.notifications.select(), 1, 6).order_by(
+            m.Notification.created_at.desc()
+        )
+        return db.session.scalars(query)
+
     app.jinja_env.globals["today"] = today
     app.jinja_env.globals["form_hidden_tag"] = form_hidden_tag
     app.jinja_env.globals["date_from_datetime"] = date_from_datetime
@@ -123,5 +161,12 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
+    app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
+
+    # Shell context
+    @app.shell_context_processor
+    def get_context():
+        """Objects exposed here will be automatically available from the shell."""
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
 
     return app

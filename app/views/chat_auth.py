@@ -271,7 +271,7 @@ def login_email():
         "chat/registration/login_password.html",
         now=c.utcnow_chat_format(),
         room=room,
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
         form=f.ChatAuthPasswordForm(),
     )
 
@@ -424,7 +424,7 @@ def create_user_email():
         "chat/registration/email_confirm.html",
         now=c.utcnow_chat_format(),
         room=room,
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -489,7 +489,7 @@ def email_verification():
         "chat/registration/password.html",
         now=c.utcnow_chat_format(),
         room=room,
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
         form=form,
     )
 
@@ -822,7 +822,7 @@ def create_user_name():
         "chat/registration/last_name.html",
         room=room,
         now=c.utcnow_chat_format(),
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -901,7 +901,7 @@ def create_user_last_name():
         "chat/registration/phone.html",
         room=room,
         now=c.utcnow_chat_format(),
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -1004,7 +1004,7 @@ def create_user_phone():
         "chat/registration/address.html",
         now=c.utcnow_chat_format(),
         room=room,
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
         profile_url=profile_url,
     )
 
@@ -1076,7 +1076,7 @@ def create_user_address():
         "chat/registration/birth_date.html",
         room=room,
         now=c.utcnow_chat_format(),
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -1157,7 +1157,7 @@ def create_user_birth_date():
         "chat/registration/ask_social_profile.html",
         room=room,
         now=c.utcnow_chat_format(),
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -1318,7 +1318,7 @@ def create_user_social_profile():
             "chat/registration/profile_facebook.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     return render_template(

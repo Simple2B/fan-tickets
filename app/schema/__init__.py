@@ -47,4 +47,5 @@ from .chat_auth import (
 from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
 from .chat_sell import ChatSellEventParams, ChatSellTicketParams
 from .room import Room
+from .notification import NotificationNewUserRegistered, NotificationUserActivated
 from .bard_response import BardResponse

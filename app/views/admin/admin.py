@@ -22,7 +22,7 @@ def check_if_user_is_admin():
 @admin_blueprint.route("/")
 def admin():
     log(log.INFO, "Admin page requested by [%s]", current_user.id)
-    return redirect(url_for("user.get_all"))
+    return redirect(url_for("admin.user.get_all"))
 
 
 @admin_blueprint.route("/picture-upload", methods=["GET", "POST"])
@@ -53,12 +53,12 @@ def get_tickets():
     count_query = sa.select(sa.func.count()).select_from(m.Ticket)
 
     if buyer_unique_id:
-        tickets_query = tickets_query.where(m.Ticket.buyer.has(m.User.unique_id == buyer_unique_id))
-        count_query = count_query.where(m.Ticket.buyer.has(m.User.unique_id == buyer_unique_id))
+        tickets_query = tickets_query.where(m.Ticket.buyer.has(m.User.uuid == buyer_unique_id))
+        count_query = count_query.where(m.Ticket.buyer.has(m.User.uuid == buyer_unique_id))
 
     if seller_unique_id:
-        tickets_query = tickets_query.where(m.Ticket.seller.has(m.User.unique_id == seller_unique_id))
-        count_query = count_query.where(m.Ticket.seller.has(m.User.unique_id == seller_unique_id))
+        tickets_query = tickets_query.where(m.Ticket.seller.has(m.User.uuid == seller_unique_id))
+        count_query = count_query.where(m.Ticket.seller.has(m.User.uuid == seller_unique_id))
 
     location_unique_id = None
     if location_id:
@@ -260,5 +260,4 @@ def get_disputes():
 
 @admin_blueprint.route("/notifications")
 def get_notifications():
-    notifications = m.Notification.all()
-    return render_template("admin/notifications.html", notifications=notifications)
+    return "notification template"

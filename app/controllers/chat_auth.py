@@ -18,7 +18,7 @@ from app.logger import log
 
 
 def get_user(user_unique_id: str) -> m.User | None:
-    user_query = sa.select(m.User).where(m.User.unique_id == user_unique_id)
+    user_query = sa.select(m.User).where(m.User.uuid == user_unique_id)
     user = db.session.scalar(user_query)
 
     if not user:
@@ -77,7 +77,7 @@ def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.U
 
 
 def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
-    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user_query = sa.select(m.User).where(m.User.uuid == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
     if not user:
@@ -93,7 +93,7 @@ def create_password(form: f.ChatAuthPasswordForm, room: m.Room) -> bool:
 
 
 def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, m.User | None]:
-    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user_query = sa.select(m.User).where(m.User.uuid == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
     if not user:
@@ -106,7 +106,7 @@ def confirm_password(form: f.ChatAuthPasswordForm, room: m.Room) -> tuple[bool, 
 
 
 def add_identity_document(form: f.ChatFileUploadForm, room: m.Room) -> str:
-    user_query = sa.select(m.User).where(m.User.unique_id == form.user_unique_id.data)
+    user_query = sa.select(m.User).where(m.User.uuid == form.user_unique_id.data)
     user = db.session.scalar(user_query)
 
     if not user:

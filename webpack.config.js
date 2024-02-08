@@ -86,6 +86,26 @@ const utilsConfig = {
   },
 };
 
+const notificationConfig = {
+  entry: {
+    main: './src/notification/notification.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/notification.js', // <--- Will be compiled to this single file
+  },
+};
+
+const notificationAdminConfig = {
+  entry: {
+    main: './src/notification/notification_admin.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/notification_admin.js', // <--- Will be compiled to this single file
+  },
+};
+
 const configs = [
   baseConfig,
   userConfig,
@@ -94,6 +114,8 @@ const configs = [
   chatConfig,
   adminConfig,
   utilsConfig,
+  notificationConfig,
+  notificationAdminConfig,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;

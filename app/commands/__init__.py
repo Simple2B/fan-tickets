@@ -2,23 +2,20 @@ from datetime import datetime, timedelta
 import click
 from flask import Flask
 import sqlalchemy as sa
-from sqlalchemy import or_, orm
+from sqlalchemy import or_
+
 from app import models as m
-from app import db, forms, pagarme_client
 from app import schema as s
+from app import flask_sse_notification, pagarme_client
+from app.database import db
+from app.controllers.notification_client import NotificationType
 from config import config
 
 
 CFG = config()
 
 
-def init(app: Flask):
-    # flask cli context setup
-    @app.shell_context_processor
-    def get_context():
-        """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
-
+def init_shell_commands(app: Flask):
     @app.cli.command()
     @click.option("--count", default=100, type=int)
     def db_populate(count: int):
@@ -103,13 +100,9 @@ def init(app: Flask):
         events_query = m.Event.select().limit(3)
         events = db.session.scalars(events_query).all()
 
-        print(user)
-
         user.subscribed_events.extend(events)
         user.password = "pass"
         user.save()
-
-        print(user.subscribed_events)
 
     @app.cli.command("delete-user")
     @click.option("--email", type=str)
@@ -199,6 +192,34 @@ def init(app: Flask):
         Command for rollbacking all changes
         """
         db.session.rollback()
+
+    @app.cli.command("send-admin-notification")
+    def send_admin_notification():
+        flask_sse_notification.notify_admin({"username": "aa"}, db.session, NotificationType.NEW_REGISTRATION)
+
+    @app.cli.command("set-test-notifications")
+    @click.option("--login")
+    def set_test_notifications(login):
+        if not login:
+            user = db.session.scalar(sa.select(m.User).where(m.User.role == m.UserRole.admin.value))
+        else:
+            user = db.session.scalar(sa.select(m.User).where(m.User.username == login))
+
+        if not user:
+            print("User not found")
+            return
+
+        print(f"Setting user notifications [{user}]")
+        notifications = db.session.scalars(user.notifications.select().order_by(m.Notification.created_at.desc()))
+
+        for i, notification in enumerate(notifications):
+            notification.payload = {"test": f"test_{i}"}
+
+        db.session.commit()
+        notifications_count = db.session.scalar(
+            sa.select(sa.func.count(m.Notification.id)).where(m.Notification.users.any(m.User.id == user.id))
+        )
+        print(f"Notifications set: {notifications_count}")
         print("rollbacked")
 
     @app.cli.command("create-pagarme-order")

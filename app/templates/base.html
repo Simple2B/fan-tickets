@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ config.APP_NAME }}</title>
+    <!-- meta -->
+    <meta name="description" content="Fan Ticket App" />
+    <meta name="author" content="Simple2B" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>{{ config.APP_NAME }}</title>
-  <!-- meta -->
-  <meta name="description" content="Fan Ticket App" />
-  <meta name="author" content="Simple2B" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+    {% block meta %}{% endblock %}
 
-  {% block meta %}{% endblock %}
+    <!-- styles -->
   <style type="text/css">
     body {
       background: #1c1c1c;
@@ -17,70 +18,76 @@
     }
   </style>
 
-  <!-- styles -->
+    <link
+      href="{{ url_for('static', filename='css/styles.css') }}"
+      rel="stylesheet" />
 
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+    {% block links %} {% endblock %}
+  </head>
 
+  <body class="bg-white dark:bg-black text-white font-body">
+    <!-- Header -->
 
-  {% block links %}
-  {% endblock %}
-</head>
+    {% include 'header.html' %}
+    <!-- Flash Messages -->
 
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <!-- Flash message markup -->
 <body class="bg-black text-white font-body">
   <!-- Header -->
 
-  {% include 'header.html' %}
-  <!-- Flash Messages -->
+    <div
+      id="toast-{{category}}"
+      class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger' %} text-red-500 {% else %} text-green-400 {% endif %} bg-black border border-grey rounded-lg shadow"
+      role="alert">
+      <div class="ml-3 text-sm font-normal">{{message}}</div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <!-- Flash message markup -->
+      <button
+        type="button"
+        class="ml-auto -mx-1.5 -my-1.5 text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex h-8 w-8"
+        data-dismiss-target="#toast-{{category}}"
+        aria-label="Close">
+        <span class="sr-only">Close</span>
 
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
   <div id="toast-{{category}}"
     class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary{% endif %} bg-black border border-grey rounded-lg shadow "
     role="alert">
 
-    <div class="ml-3 text-sm font-normal">{{message}}</div>
+    {% endfor %} {% endif %} {% endwith %} {% block body %} {% include
+    'chat/chat_window.html' %}
 
-    <button type="button"
-      class="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5  inline-flex h-8 w-8 "
-      data-dismiss-target="#toast-{{category}}" aria-label="Close">
-      <span class="sr-only">Close</span>
+    <!-- SideBar -->
 
-      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd"
-          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-          clip-rule="evenodd"></path>
-      </svg>
-    </button>
-  </div>
+    {% include 'sidebar.html' %}
 
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
+    <div class="sm:ml-64 mt-14 h-full">
+      <!-- Main Content -->
+      {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+    <!-- scripts -->
+    <!-- prettier-ignore -->
+    <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
+    <!-- prettier-ignore -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+    <!-- prettier-ignore -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/htmx.min.js')}}"></script>
 
-  {% block body %}
-  {% include 'chat/chat_window.html' %}
-
-  <!-- SideBar -->
-
-  {% include 'sidebar.html' %}
-
-  <div class="sm:ml-64 mt-14 h-full">
-    <!-- Main Content -->
-    {% block content %}{% endblock %}
-  </div>
-  {% endblock %}
-  <!-- scripts -->
-
-
-  <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
-  <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
-
-  {% block scripts %} {% endblock %}
-</body>
-
+    {% block scripts %} {% endblock %}
+  </body>
 </html>

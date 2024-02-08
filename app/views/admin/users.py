@@ -18,10 +18,10 @@ from app import forms as f
 from app.logger import log
 
 
-bp = Blueprint("user", __name__, url_prefix="/user")
+blueprint_user = Blueprint("user", __name__, url_prefix="/user")
 
 
-@bp.route("/admin", methods=["GET"])
+@blueprint_user.route("/users", methods=["GET"])
 @login_required
 def get_all():
     search = request.args.get("search")
@@ -96,7 +96,7 @@ def get_all():
     )
 
 
-@bp.route("/save", methods=["POST"])
+@blueprint_user.route("/save", methods=["POST"])
 @login_required
 def save():
     form = f.UserForm()
@@ -115,15 +115,15 @@ def save():
             u.save()
         if form.next_url.data:
             return redirect(form.next_url.data)
-        return redirect(url_for("user.get_all"))
+        return redirect(url_for("admin.user.get_all"))
 
     else:
         log(log.ERROR, "User save errors: [%s]", form.errors)
         flash(f"{form.errors}", "danger")
-        return redirect(url_for("user.get_all"))
+        return redirect(url_for("admin.user.get_all"))
 
 
-@bp.route("/delete/<int:id>", methods=["DELETE"])
+@blueprint_user.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete(id: int):
     user_query = m.User.select().where(m.User.id == id)
@@ -140,7 +140,7 @@ def delete(id: int):
     return "ok", 200
 
 
-@bp.route("/deactivate", methods=["GET"])
+@blueprint_user.route("/deactivate", methods=["GET"])
 @login_required
 def deactivate():
     user: m.User = current_user
@@ -151,7 +151,7 @@ def deactivate():
     return redirect(url_for("auth.login"))
 
 
-@bp.route("/profile", methods=["GET"])
+@blueprint_user.route("/profile", methods=["GET"])
 @login_required
 def profile():
     user: m.User = current_user
@@ -171,7 +171,7 @@ def profile():
     )
 
 
-@bp.route("/logo-upload", methods=["GET", "POST"])
+@blueprint_user.route("/logo-upload", methods=["GET", "POST"])
 @login_required
 def logo_upload():
     image_upload(
@@ -181,7 +181,7 @@ def logo_upload():
     return {}, 200
 
 
-@bp.route("/edit_email")
+@blueprint_user.route("/edit_email")
 @login_required
 def edit_email():
     email_form = f.EmailEditForm()
@@ -192,7 +192,7 @@ def edit_email():
     )
 
 
-@bp.route("/save_email", methods=["GET", "POST"])
+@blueprint_user.route("/save_email", methods=["GET", "POST"])
 @login_required
 def save_email():
     user: m.User = current_user
@@ -209,7 +209,7 @@ def save_email():
     return render_template("user/email_save.html", user=user, email_form=email_form)
 
 
-@bp.route("/edit_phone")
+@blueprint_user.route("/edit_phone")
 @login_required
 def edit_phone():
     phone_form = f.PhoneEditForm()
@@ -220,7 +220,7 @@ def edit_phone():
     )
 
 
-@bp.route("/save_phone", methods=["GET", "POST"])
+@blueprint_user.route("/save_phone", methods=["GET", "POST"])
 @login_required
 def save_phone():
     user: m.User = current_user
@@ -237,7 +237,7 @@ def save_phone():
     return render_template("user/phone_save.html", user=user, phone_form=phone_form)
 
 
-@bp.route("/edit_card")
+@blueprint_user.route("/edit_card")
 @login_required
 def edit_card():
     card_form = f.CardEditForm()
@@ -248,7 +248,7 @@ def edit_card():
     )
 
 
-@bp.route("/save_card", methods=["GET", "POST"])
+@blueprint_user.route("/save_card", methods=["GET", "POST"])
 @login_required
 def save_card():
     user: m.User = current_user
@@ -273,7 +273,7 @@ def save_card():
     return render_template("user/card_save.html", user=user, card_form=card_form)
 
 
-@bp.route("/set_notifications", methods=["GET", "POST"])
+@blueprint_user.route("/set_notifications", methods=["GET", "POST"])
 @login_required
 def set_notifications():
     form = f.NotificationsConfigForm()
@@ -296,7 +296,7 @@ def set_notifications():
     return render_template("user/notifications_save.html", user=user)
 
 
-@bp.route("/export", methods=["GET", "POST"])
+@blueprint_user.route("/export", methods=["GET", "POST"])
 @login_required
 def export():
     with io.StringIO() as proxy:

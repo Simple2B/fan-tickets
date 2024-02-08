@@ -53,7 +53,7 @@ def test_register(client):
         letter: Message = outbox[0]
         assert letter.subject == "Verify your e-mail"
         assert "Confirm registration" in letter.html
-        assert user.unique_id in letter.html
+        assert user.uuid in letter.html
         # html: str = letter.html
 
         # pattern = r"https?:\/\/[\w\d\.-]+\/activated\/[\w\d-]{36}"
@@ -101,10 +101,10 @@ def test_forgot(client):
         assert len(outbox) == 1
         letter = outbox[0]
         assert letter.subject == "Reset password"
-        assert ("/password_recovery/" + user.unique_id) in letter.html
+        assert ("/password_recovery/" + user.uuid) in letter.html
 
     response = client.post(
-        "/password_recovery/" + user.unique_id,
+        "/password_recovery/" + user.uuid,
         data=dict(
             password="123456789",
             password_confirmation="123456789",

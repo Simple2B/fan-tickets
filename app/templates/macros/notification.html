@@ -1,0 +1,44 @@
+{% macro notification_new_user(notification) -%}
+<!-- prettier-ignore -->
+<a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-700 border-b-2">
+  <div class="flex-shrink-0">
+    <!-- prettier-ignore -->
+    <div class="flex items-center justify-center w-5 h-5 ml-4 -mt-5 z-50 relative bg-gray-900 border border-white rounded-full dark:border-gray-800">
+      {% include 'icons/user_add.html' %}
+    </div>
+  </div>
+  <div class="w-full pl-3">
+    <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
+      <span class="font-semibold text-gray-900 dark:text-white -ml-10">New user: </span>
+      {{notification.payload.username}}
+    </div>
+    <div class="text-xs text-blue-600 dark:text-blue-500 -ml-10">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+  </div>
+</a>
+{%- endmacro %} {% macro notification_user_verified(notification) -%}
+<!-- prettier-ignore -->
+<a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-700 border-b-2">
+  <div class="flex-shrink-0">
+    <!-- prettier-ignore -->
+    <div class="flex items-center justify-center w-5 h-5 ml-4 -mt-5 z-50 relative bg-gray-900 border border-white rounded-full dark:border-gray-800">
+      {% include 'icons/user_add.html' %}
+    </div>
+  </div>
+  <div class="w-full pl-3">
+    <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
+      <span class="font-semibold text-gray-900 dark:text-white -ml-10">User verified: </span>
+      {{notification.payload.email}}
+    </div>
+    <div class="text-xs text-blue-600 dark:text-blue-500 -ml-10">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+  </div>
+</a>
+{%- endmacro %}
+
+<!-- prettier-ignore -->
+{% macro render_notification(notification) -%}
+  {% if notification.notification_type == "new_registration"%} 
+    {{ notification_new_user(notification) }}
+  {% elif notification.notification_type == "account_verified" %}
+    {{ notification_user_verified(notification) }}
+  {% endif %}
+{%- endmacro %}

@@ -9,7 +9,7 @@ from test_flask.utils import login
 def test_list(client_with_data: FlaskClient):
     login(client_with_data)
     DEFAULT_PAGE_SIZE = app.config["DEFAULT_PAGE_SIZE"]
-    response = client_with_data.get("/user/admin")
+    response = client_with_data.get("/admin/user/users")
     assert response
     assert response.status_code == 200
     html = response.data.decode()
@@ -20,16 +20,16 @@ def test_list(client_with_data: FlaskClient):
     assert users[10].username not in html
 
     client_with_data.application.config["PAGE_LINKS_NUMBER"] = 6
-    response = client_with_data.get("/user/admin?page=3")
+    response = client_with_data.get("/admin/user/users?page=3")
     assert response
     assert response.status_code == 200
     html = response.data.decode()
-    assert "/user/admin?page=6" in html
-    assert "/user/admin?page=3" in html
-    assert "/user/admin?page=10" not in html
+    assert "/admin/user/users?page=6" in html
+    assert "/admin/user/users?page=3" in html
+    assert "/admin/user/users?page=10" not in html
 
 
-def test_create_admin(runner: FlaskCliRunner):
+def test_create_admin(runner: FlaskCliRunner, client):
     res: Result = runner.invoke(args=["create-admin"])
     assert "admin created" in res.output
     query = m.User.select().where(m.User.username == app.config["ADMIN_USERNAME"])
@@ -39,14 +39,14 @@ def test_create_admin(runner: FlaskCliRunner):
 def test_delete_user(client: FlaskClient):
     login(client)
     user: m.User = db.session.scalar(m.User.select())
-    response = client.delete("/user/delete/1")
+    response = client.delete("/admin/user/delete/1")
     assert response.status_code == 200
     assert user.activated is False
 
 
 def test_user_profile(client: FlaskClient):
     login(client)
-    response = client.get("/user/profile")
+    response = client.get("/admin/user/profile")
     assert response.status_code == 200
     assert "profile" in response.data.decode()
     assert "Endereço de Email" in response.data.decode()
@@ -55,16 +55,16 @@ def test_user_profile(client: FlaskClient):
 def test_user_email_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    response = client.get("/user/profile")
+    response = client.get("/admin/user/profile")
     assert response.status_code == 200
     assert user.username in response.data.decode()
     assert user.email in response.data.decode()
 
-    response = client.get("/user/edit_email")
+    response = client.get("/admin/user/edit_email")
     assert response.status_code == 200
 
     response = client.post(
-        "/user/save_email",
+        "/admin/user/save_email",
         data={"email": "new@email.com"},
         follow_redirects=True,
     )
@@ -75,11 +75,11 @@ def test_user_email_edit(client: FlaskClient):
 def test_user_phone_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    response = client.get("/user/edit_phone")
+    response = client.get("/admin/user/edit_phone")
     assert response.status_code == 200
 
     response = client.post(
-        "/user/save_phone",
+        "/admin/user/save_phone",
         data={"phone": "123456789"},
         follow_redirects=True,
     )
@@ -91,11 +91,11 @@ def test_user_card_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/user/edit_card")
+    response = client.get("/admin/user/edit_card")
     assert response.status_code == 200
 
     response = client.post(
-        "/user/save_card",
+        "/admin/user/save_card",
         data={"card": "0000111122223333"},
         follow_redirects=True,
     )
@@ -104,7 +104,7 @@ def test_user_card_edit(client: FlaskClient):
     assert user.activated
 
     response = client.post(
-        "/user/save_card",
+        "/admin/user/save_card",
         data={"card": "1"},
         follow_redirects=True,
     )
@@ -129,7 +129,7 @@ def test_user_notifications_edit(client: FlaskClient):
         new_buyers_payment=True,
     )
     response = client.post(
-        "/user/set_notifications",
+        "/admin/user/set_notifications",
         data=notification_data,
         follow_redirects=True,
     )
@@ -149,7 +149,7 @@ def test_user_export_data(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/user/export")
+    response = client.get("/admin/user/export")
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "text/csv; charset=utf-8"
     assert response.headers["Content-Disposition"].startswith("attachment;")
@@ -161,6 +161,6 @@ def test_user_deactivate_account(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/user/deactivate")
+    response = client.get("/admin/user/deactivate")
     assert response.status_code == 302
     assert user.activated is False

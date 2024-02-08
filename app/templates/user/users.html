@@ -19,7 +19,7 @@
       </div>
 
       <input {% if q %}value={{ q }}{% endif %} id="table-search-users"
-        hx-get="{{url_for('user.get_all', search=True)}}" hx-swap="outerHTML" hx-target="#users-table"
+        hx-get="{{url_for('admin.user.get_all', search=True)}}" hx-swap="outerHTML" hx-target="#users-table"
         hx-trigger="click, keyup changed delay:1000ms" hx-include="[name='q']" name="q" autocomplete="off"
         class="block p-2 pl-10 text-sm  border rounded-lg w-80 input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent"
         placeholder="Search for users" />

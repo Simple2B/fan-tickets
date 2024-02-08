@@ -1,0 +1,12 @@
+{% from "macros/notification.html" import render_notification %}
+<!-- prettier-ignore -->
+<p
+  hx-get="{{url_for('notification.get_notifications', page=page + 1)}}"
+  hx-trigger="intersect once"
+  hx-swap="beforebegin">
+</p>
+
+<!-- prettier-ignore -->
+{% for notification in notifications %} 
+  {{ render_notification(notification)}}
+{%endfor %}

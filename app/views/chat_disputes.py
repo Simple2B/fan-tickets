@@ -1,7 +1,6 @@
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_required
 
-# from flask_sse import sse
 from app import models as m, db
 from app.controllers import utcnow_chat_format
 from app.logger import log

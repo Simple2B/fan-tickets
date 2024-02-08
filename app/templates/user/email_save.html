@@ -1,7 +1,11 @@
 <div class="mb-4 flex gap-2 items-center">
   <p class="text-grey">{{ user.email }}</p>
 </div>
-<button class="text-secondary underline" hx-get="{{ url_for('user.edit_email') }}" hx-target="#profile_email"
-  hx-swap="outerHTML" hx-trigger="click">
+<button
+  class="text-secondary underline"
+  hx-get="{{ url_for('admin.user.edit_email') }}"
+  hx-target="#profile_email"
+  hx-swap="outerHTML"
+  hx-trigger="click">
   Editar
 </button>
