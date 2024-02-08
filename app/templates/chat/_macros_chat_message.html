@@ -143,7 +143,7 @@
 {% endmacro %}
 
 {% macro submit_message_get(route, filters, disabled) -%}
-<div>
+<div id="chat-footer">
 	<label for="chat-get" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<div class="w-full p-2.5 flex bg-dark-grey rounded-2xl ">
@@ -172,7 +172,7 @@
 {% endmacro %}
 
 {% macro submit_message_post(route, filters, disabled, form) -%}
-<div>
+<div id="chat-footer">
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post='/chat/{{ route }}' hx-target="#chat-body"
@@ -202,7 +202,7 @@
 {% endmacro %}
 
 {% macro submit_message_file(route, filters, disabled, form) -%}
-<div>
+<div id="chat-footer">
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-encoding="multipart/form-data"
@@ -233,7 +233,7 @@
 
 
 {% macro submit_ticket_pdf(route, filters, disabled, form) -%}
-<div>
+<div id="chat-footer">
 	<label for="chat-post" class="sr-only">Your message</label>
 	<div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
 		<form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-encoding="multipart/form-data"

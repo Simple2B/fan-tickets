@@ -33,6 +33,8 @@ export function handleHideElements(
 
 export function resizeChat() {
   const header: HTMLElement = document.querySelector('.header');
+  const chatMain: HTMLElement = document.querySelector('#chat-body');
+  const chatFooter: HTMLElement = document.querySelector('#chat-footer');
   const chatWindow: HTMLElement = document.querySelector('#chat-window');
 
   if (!header || !chatWindow) return;
@@ -48,5 +50,9 @@ export function resizeChat() {
   }
   if (chatWindow.offsetHeight > maxChatWindowHeight) {
     chatWindow.style.height = `${maxChatWindowHeight}px`;
+  }
+
+  if (chatMain && chatFooter) {
+    chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
   }
 }
