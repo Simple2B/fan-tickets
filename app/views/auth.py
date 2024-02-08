@@ -61,7 +61,7 @@ def register():
         )
         mail.send(msg)
         # send sse notification
-        notification_payload = s.NotificationNewUserRegistered(username=user.username)
+        notification_payload = s.NotificationNewUserRegistered(username=user.email)
         flask_sse_notification.notify_admin(
             notification_payload.model_dump(),
             db.session,
