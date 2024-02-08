@@ -1,8 +1,8 @@
 <form
-  action="{{ url_for('user.set_notifications') }}"
+  action="{{ url_for('admin.user.set_notifications') }}"
   method="post"
   id="profile_notifications"
-  hx-post="{{ url_for('user.set_notifications') }}"
+  hx-post="{{ url_for('admin.user.set_notifications') }}"
   hx-target="#profile_notifications"
   hx-swap="innerHTML">
   <p class="pt-3">Email notifications settings</p>

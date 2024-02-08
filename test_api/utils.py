@@ -3,6 +3,7 @@ from random import randint
 from faker import Faker
 from sqlalchemy import orm
 from app import models as m
+from app.controllers.notification_client import NotificationType
 
 
 NUM_TEST_USERS = 30
@@ -127,21 +128,21 @@ def generate_test_events(
             session.add(ticket)
             session.flush()
             notification = m.Notification(
-                type_of=m.NotificationType.TICKET_PUBLISHED.value,
+                type_of=NotificationType.TICKET_PUBLISHED.value,
                 text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
                 user_id=seller_id,
             )
             session.add(notification)
             if is_sold:
                 notification = m.Notification(
-                    type_of=m.NotificationType.TICKET_SOLD.value,
+                    type_of=NotificationType.TICKET_SOLD.value,
                     text=f"Ticket {ticket.id} of user {seller_id} is sold",
                     user_id=seller_id,
                 )
                 session.add(notification)
             if ticket.is_available:
                 notification = m.Notification(
-                    type_of=m.NotificationType.TICKET_AVAILABLE.value,
+                    type_of=NotificationType.TICKET_AVAILABLE.value,
                     text=f"Ticket {ticket} is available",
                     user_id=seller_id,
                 )
@@ -150,7 +151,7 @@ def generate_test_events(
                 type_of = m.RoomType.DISPUTE.value if k == 0 else m.RoomType.CHAT.value
                 if type_of == m.RoomType.DISPUTE.value:
                     notification = m.Notification(
-                        type_of=m.NotificationType.DISPUTE_CREATED.value,
+                        type_of=NotificationType.DISPUTE_CREATED.value,
                         text=f"Dispute created for ticket {ticket.id} of user {seller_id}",
                         user_id=seller_id,
                     )

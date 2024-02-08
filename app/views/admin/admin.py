@@ -260,6 +260,4 @@ def get_disputes():
 
 @admin_blueprint.route("/notifications")
 def get_notifications():
-    notifications = m.Notification.all()
-    # return render_template("admin/notifications.html", notifications=notifications)
-    return "hello"
+    return "notification template"

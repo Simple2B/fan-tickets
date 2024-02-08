@@ -1,6 +1,5 @@
 from flask_sse import sse
 
-
 from .notification import NotificationClient
 
 

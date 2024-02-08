@@ -1,17 +1,19 @@
 import os
 
 import sqlalchemy as sa
+from sqlalchemy import orm
 
 from flask import Flask, render_template, abort, request
 from flask_login import LoginManager, current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
 from flask_mail import Mail
-from flask_sse import sse
 
+from app import forms, schema as s
 from app.logger import log
 from app.controllers import PagarmeClient, FlaskSSENotification
 from app.models.utils import generate_paginate_query
+
 
 from .database import db
 
@@ -24,6 +26,7 @@ flask_sse_notification = FlaskSSENotification()
 
 
 def create_app(environment="development") -> Flask:
+    from flask_sse import sse
     from config import config
     from app.views import (
         main_blueprint,
@@ -159,5 +162,11 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
     app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
+
+    # Shell context
+    @app.shell_context_processor
+    def get_context():
+        """Objects exposed here will be automatically available from the shell."""
+        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
 
     return app

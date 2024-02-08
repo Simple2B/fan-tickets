@@ -22,10 +22,6 @@
   <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.5"
-    integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO"
-    crossorigin="anonymous"></script>
-  <script>
     // On page load or when changing themes, best to add inline in `head` to avoid FOUC
     if (
       localStorage.getItem("color-theme") === "dark" ||
@@ -120,7 +116,7 @@
   <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
   <!-- prettier-ignore -->
   <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+  <script src="{{ url_for('static', filename='js/htmx.min.js')}}"></script>
 
   {% block scripts %} {% endblock %}
 </body>

@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 import click
 from flask import Flask
 import sqlalchemy as sa
-from sqlalchemy import or_, orm
+from sqlalchemy import or_
+
 from app import models as m
-from app import db, forms, pagarme_client
 from app import schema as s
-from app import flask_sse_notification
+from app import flask_sse_notification, pagarme_client
+from app.database import db
 from app.controllers.notification_client import NotificationType
 from config import config
 
@@ -14,13 +15,7 @@ from config import config
 CFG = config()
 
 
-def init(app: Flask):
-    # flask cli context setup
-    @app.shell_context_processor
-    def get_context():
-        """Objects exposed here will be automatically available from the shell."""
-        return dict(app=app, db=db, m=m, f=forms, s=s, sa=sa, orm=orm, pagarme_client=pagarme_client)
-
+def init_shell_commands(app: Flask):
     @app.cli.command()
     @click.option("--count", default=100, type=int)
     def db_populate(count: int):
