@@ -1,7 +1,8 @@
+import os
 import requests
 import json
 
-API_KEY = "AIzaSyB4_P7900CKnauVZd_SG6ClrpmcySRR70I"
+API_KEY = os.environ.get("BARD_API_KEY")
 url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={API_KEY}"
 
 headers = {"Content-Type": "application/json"}
