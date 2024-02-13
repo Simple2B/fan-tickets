@@ -40,6 +40,7 @@ def create_app(environment="development") -> Flask:
         pay_blueprint,
         chat_disputes_blueprint,
         notification_blueprint,
+        blueprint_user,
     )
     from app import models as m
 
@@ -74,6 +75,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
     app.register_blueprint(notification_blueprint)
+    app.register_blueprint(blueprint_user)
 
     # SSE
     @sse.before_request
@@ -134,7 +136,7 @@ def create_app(environment="development") -> Flask:
         cut_seconds,
         card_mask,
         get_categories,
-        get_chat_room_messages,
+        # get_chat_room_messages,
         get_chatbot_id,
         round_to_two_places,
         event_form_date,
@@ -157,7 +159,7 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
     app.jinja_env.globals["get_categories"] = get_categories
-    app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
+    # app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number

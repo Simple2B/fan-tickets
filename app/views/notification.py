@@ -9,6 +9,8 @@ from app import models as m
 from app.database import db
 
 
+NOTIFICATIONS_PER_PAGE = 5
+
 notification_blueprint = Blueprint("notification", __name__, url_prefix="/notification")
 
 
@@ -16,11 +18,10 @@ notification_blueprint = Blueprint("notification", __name__, url_prefix="/notifi
 @login_required
 def get_notifications():
     page = request.args.get("page", 1, type=int)
-    per_page = 5
     total_notifications_count = db.session.scalar(
         sa.select(sa.func.count(m.Notification.id)).where(m.Notification.users.any(m.User.id == current_user.id))
     )
-    total_pages = total_notifications_count // per_page
+    total_pages = total_notifications_count // NOTIFICATIONS_PER_PAGE
     if page > total_pages + 1:
         return ""
 
@@ -28,7 +29,7 @@ def get_notifications():
         m.utils.generate_paginate_query(
             current_user.notifications.select().order_by(m.Notification.created_at.desc()),
             page,
-            per_page,
+            NOTIFICATIONS_PER_PAGE,
         )
     )
 

@@ -7,7 +7,6 @@ const themeToggleDarkIcons = document.querySelectorAll(
 const themeToggleLightIcons = document.querySelectorAll(
   '#theme-toggle-light-icon',
 );
-const chatWindow = document.querySelector('#chat-window');
 
 // Change the icons inside the button based on previous settings
 // if (

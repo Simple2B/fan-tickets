@@ -21,3 +21,4 @@ from .ticket import TicketForm
 from .location import LocationForm
 from .orders import OrderForm, OrderCreateForm
 from .category import CategoryForm
+from .dispute import MessageForm

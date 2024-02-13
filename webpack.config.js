@@ -66,6 +66,16 @@ const chatConfig = {
   },
 };
 
+const chatButtonOpenConfig = {
+  entry: {
+    main: './src/chat_button_open.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/chat_button_open.js', // <--- Will be compiled to this single file
+  },
+};
+
 const adminConfig = {
   entry: {
     main: './src/admin.ts',
@@ -106,16 +116,39 @@ const notificationAdminConfig = {
   },
 };
 
+const disputeConfig = {
+  entry: {
+    main: './src/dispute.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/dispute.js',
+  },
+};
+
+const profileConfig = {
+  entry: {
+    main: './src/profile.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/profile.js',
+  },
+}
+
 const configs = [
   baseConfig,
   userConfig,
   eventConfig,
   homeConfig,
   chatConfig,
+  chatButtonOpenConfig,
   adminConfig,
   utilsConfig,
   notificationConfig,
   notificationAdminConfig,
+  disputeConfig,
+  profileConfig,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;

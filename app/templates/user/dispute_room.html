@@ -1,0 +1,7 @@
+<!-- prettier-ignore -->
+<div
+  hx-get="{{ url_for('disputes.get_messages', room_uuid=room.unique_id) }}"
+  hx-target="#chat-main"
+  hx-swap="innerHTML"
+  hx-trigger="load">
+</div>

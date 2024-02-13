@@ -1,14 +1,13 @@
-{% from 'chat/_macros_chat_message.html' import history_message_bot, history_message_user %}
-
-{% for message in room.messages %}
-{% if message.sender_id == get_chatbot_id() %}
-{{ history_message_bot(message.text) }}
-{% else %}
-{% if current_user.is_authenticated %}
-{{ history_message_user(message, current_user.name, current_user.picture.base64_src, room=room,
-user=current_user) }}
-{% else %}
-{{ history_message_user(message, "Guest", room=room, user=current_user) }}
-{% endif %}
-{% endif %}
+<!-- prettier-ignore -->
+{% from 'chat/_macros_chat_message.html' import history_message_bot, history_message_user_current %}
+{% for message in messages %}
+    {% if message.sender_id == get_chatbot_id() %}
+        {{ history_message_bot(message.text) }}
+    {% else %}
+        {% if current_user.is_authenticated %}
+            {{ history_message_user_current(message, current_user.name, current_user.picture.base64_src, room=room, user=current_user) }}
+        {% else %}
+            {{ history_message_user_current(message, "Guest", room=room, user=current_user) }}
+        {% endif %}
+    {% endif %}
 {% endfor %}

@@ -13,7 +13,7 @@ UserNotification = sa.Table(
     sa.Column(
         "notification_id",
         sa.Integer,
-        sa.ForeignKey("notifications.id"),
+        sa.ForeignKey("notifications.id", ondelete="CASCADE"),
         primary_key=True,
     ),
 )

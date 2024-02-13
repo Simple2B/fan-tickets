@@ -59,8 +59,11 @@
     </ul>
   </div>
 </div>
+
 <script src="{{ url_for('static', filename='js/notification.js') }}"></script>
 <!-- prettier-ignore -->
 {% if current_user.role == "admin" %}
+<!-- prettier-ignore -->
+{% block chat_window %} {% include "chat/chat_window_disputes.html" %}{% endblock %}
 <script src="{{ url_for('static', filename='js/notification_admin.js')}}"></script>
 {% endif %} {% endif %}

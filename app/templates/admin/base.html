@@ -67,9 +67,10 @@
     class="absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary{% endif %} bg-black border border-grey rounded-lg shadow "
     role="alert">
 
-    {% endfor %} {% endif %} {% endwith %} {% block body %} {% include
-    'chat/chat_window.html' %}
-
+    {% endfor %} 
+    {% endif %} 
+    {% endwith %}
+    {% block body %}
     <!-- SideBar -->
 
     {% include 'sidebar.html' %}
@@ -83,10 +84,7 @@
     <!-- prettier-ignore -->
     <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
     <!-- prettier-ignore -->
-    <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-    <!-- prettier-ignore -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/htmx.min.js')}}"></script>
 
     {% block scripts %} {% endblock %}
   </body>

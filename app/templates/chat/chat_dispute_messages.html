@@ -1,0 +1,7 @@
+<!-- prettier-ignore -->
+<div class="chat-dispute-messages">
+  <div hx-trigger="intersect once" hx-swap="afterbegin" hx-target="#chat-main" hx-get="{{ url_for('disputes.get_messages', page=page + 1, room_uuid=room.unique_id)}}"></div>
+  {% for message in messages %}
+    {% include "chat/chat_dispute_message.html" %}
+  {% endfor %}
+</div>

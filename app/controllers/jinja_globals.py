@@ -43,13 +43,15 @@ def get_categories() -> list[m.Category]:
     return m.Category.all()
 
 
-def get_chat_room_messages():
-    if current_user.is_authenticated:
-        room_query = m.Room.select().where(m.Room.seller_id == current_user.id)
-        room = db.session.scalar(room_query)
-        if not room:
-            return None
-        return room.messages
+# def get_chat_room_messages():
+#     if not current_user.is_authenticated:
+#         return None
+
+#     room = db.session.scalar(m.Room.select().where(m.Room.seller_id == current_user.id))
+#     if not room:
+#         return None
+
+#     return db.session.scalars(room.messages.select())
 
 
 def get_chatbot_id():
