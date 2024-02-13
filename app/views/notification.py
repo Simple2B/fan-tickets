@@ -58,3 +58,10 @@ def get_notification():
         abort(HTTPStatus.NOT_FOUND)
 
     return render_template("notification/notification.html", notification=notification)
+
+
+@notification_blueprint.route("/notification_list", methods=["GET"])
+@login_required
+def notification_list():
+    notifications = db.session.scalars(sa.select(m.Notification)).all()
+    return render_template("user/notification/notifications.html", notifications=notifications[:5])

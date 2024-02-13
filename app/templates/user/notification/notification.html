@@ -1,0 +1,11 @@
+<div class="py-2 px-4 flex items-center justify-between button-gradient-grey">
+  <p>notification text</p>
+  {% if not notifications %}
+  <a href="#">Ler agora</a>
+  {% else %}
+  <div class="flex gap-2 items-center">
+    <span>Lido</span>
+    {% include 'icons/confirm_yellow.html' %}
+  </div>
+  {% endif %}
+</div>
