@@ -1,24 +1,15 @@
-{% extends "landing/base.html" %}
-<!-- prettier-ignore -->
-{% block main_content %}
-<div class="my-16 self-start flex flex-col gap-2">
-  <h1 class="text-6xl">Notificaçõess</h1>
-</div>
-
-
-<!-- prettier-ignore -->
-{% if notifications|length == 0 %}
-<div class="self-stretch flex flex-col gap-8">
-  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-    <p>Você ainda não tem nenhuma notificação.</p>
+{% for notification in notifications %}
+<div class="py-2 px-4 flex items-center justify-between button-gradient-grey">
+  <p>notification text</p>
+  {% if not notifications %}
+  <a href="#">Ler agora</a>
+  {% else %}
+  <div class="flex gap-2 items-center">
+    <span>Lido</span>
+    {% include 'icons/confirm_yellow.html' %}
   </div>
+  {% endif %}
 </div>
-{% else %}
-<div class="self-stretch flex flex-col gap-8">
-  <!-- prettier-ignore -->
-  {% for notification in notifications %}
-  {% include 'user/notification/notification.html' %}
-  {% endfor %}
+{% endfor %}
+<div hx-get="{{ url_for('notification.get_notifications', page=page + 1) }}" hx-trigger="revealed" hx-swap="afterend">
 </div>
-{% endif %}
-{% endblock %}
