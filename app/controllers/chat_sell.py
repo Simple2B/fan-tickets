@@ -1,6 +1,5 @@
-import os
+import requests
 import re
-from bardapi import Bard
 from datetime import datetime, time, timedelta
 from flask import current_app as app
 from flask_login import current_user
@@ -15,6 +14,7 @@ from app.logger import log
 from config import config
 
 CFG = config()
+BARD_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={CFG.BARD_API_KEY}"
 
 
 def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room) -> list[m.Event]:
@@ -41,13 +41,6 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
     if not events:
         log(log.INFO, "Event not found in database: [%s]", params.user_message)
 
-        try:
-            # Establishing connection with Bard
-            bard = Bard(token=os.environ.get("_BARD_API_KEY"))
-        except Exception as e:
-            log(log.ERROR, "Bard connection error: [%s]", e)
-            return events
-
         question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
 
         json_example = """
@@ -63,12 +56,22 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
 
         message = f"{question}\n{json_example}"
 
-        try:
-            bard_response = bard.get_answer(message).get("content")
-            log(log.INFO, "Bard response: [%s]", bard_response)
-        except Exception as e:
-            log(log.ERROR, "Bard get answer error: [%s]", e)
-            return events
+        bard_response = requests.post(
+            BARD_URL,
+            headers={"Content-Type": "application/json"},
+            data=s.BardRequest(
+                contents=[
+                    s.BardRequestContents(
+                        role="user",
+                        parts=[
+                            s.QuestionToBard(
+                                text=message,
+                            ),
+                        ],
+                    ),
+                ],
+            ).model_dump_json(),
+        )
 
         if (
             "not able to help" in bard_response
