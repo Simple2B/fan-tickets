@@ -119,6 +119,19 @@ class PagarmeClient:
 
         return response_data
 
+    def create_split(self, create_order_data):
+        """
+        This is a 2nd stage of payment
+        1st stage is when a buyer pays for a ticket to FanTicket platform via PIX payment method
+        2nd stage is when FanTicket platform pays to the seller via split payment method
+        On this stage split is used to pay to the seller, that is called on pagarme as recipient
+        All the money that is paid to the FanTicket platform is redirected to the seller
+        excluding the platform fee and the payment method fee, which are left on the platform account
+        """
+
+        response = self.api.post(self.__generate_url__("orders"), json=create_order_data)
+        return response
+
     # Customers
     def get_customers(
         self, customer_list_query: Optional[s.PagarCustomerListQuery] = None
