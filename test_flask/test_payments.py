@@ -1,12 +1,13 @@
 import os
 import pytest
-
-# from datetime import datetime
+import random
+from datetime import datetime, timedelta
 import random
 import string
 from flask_login import current_user
-from flask.testing import FlaskClient
-from app import schema as s, models as m
+from flask.testing import FlaskClient, FlaskCliRunner
+from click.testing import Result
+from app import schema as s, models as m, db
 from .utils import login
 
 # from .utils import login
@@ -106,3 +107,35 @@ def test_pagarme_ticket_order(client: FlaskClient):
     assert response.status_code == 200
     if isinstance(response.json, dict):
         assert response.json["status"] == "approved"
+
+
+def test_pay_sellers(runner: FlaskCliRunner):
+    command_output: Result = runner.invoke(args=["db-populate"])
+    assert "populated by" in command_output.stdout
+
+    events_query = m.Event.select().where(m.Event.date_time < datetime.now())
+    events: list[m.Event] = db.session.scalars(events_query).all()
+    assert events
+
+    TESTING_TICKETS_TO_PAY_PER_EVENT = 5
+
+    tickets_to_pay: list[m.Ticket] = []
+    for event in events:
+        for i in range(TESTING_TICKETS_TO_PAY_PER_EVENT):
+            ticket = m.Ticket(
+                seller_id=event.creator_id,
+                buyer_id=random.randint(5, 10),
+                event=event,
+                is_sold=True,
+                last_reservation_time=datetime.now() - timedelta(hours=49),
+                price_net=100,
+                price_gross=111,
+            ).save()
+            tickets_to_pay.append(ticket)
+    assert tickets_to_pay
+    for ticket in tickets_to_pay:
+        assert ticket.is_sold
+        assert ticket.last_reservation_time < datetime.now() - timedelta(hours=48)
+
+    command_output: Result = runner.invoke(args=["pay-sellers"])
+    assert f"{len(tickets_to_pay)} tickets to pay" in command_output.stdout

@@ -60,7 +60,7 @@ def client(app: Flask):
 
 
 @pytest.fixture()
-def runner(app):
+def runner(app, client):
     init_shell_commands(app)
     yield app.test_cli_runner()
 

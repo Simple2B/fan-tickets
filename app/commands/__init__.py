@@ -294,3 +294,24 @@ def init_shell_commands(app: Flask):
             db.session.delete(ticket)
         db.session.commit()
         print("Selected tickets deleted")
+
+    @app.cli.command("pay-sellers")
+    def pay_sellers():
+        """
+        Pays for sold tickets to sellers
+        after 48 hours if no disputes were started
+        """
+        tickets_query = m.Ticket.select().where(
+            m.Ticket.is_sold.is_(True),
+            m.Ticket.last_reservation_time < datetime.now() - timedelta(days=2),
+        )
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+
+        if tickets:
+            print(len(tickets), "tickets to pay")
+            for ticket in tickets:
+                if ticket.sold_at and ticket.sold_at < datetime.now() - timedelta(days=2):
+                    print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
+                    ...  # pay to seller
+        else:
+            print("No tickets to pay")
