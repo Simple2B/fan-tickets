@@ -83,6 +83,7 @@ class Ticket(db.Model, ModelMixin):
     last_reservation_time: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
     is_sold: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(default=False, server_default=sa.false())
+    paid_to_seller_at: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime, server_default=sa.text("NULL"))
 
     # Relationships
     event: orm.Mapped["Event"] = orm.relationship(back_populates="tickets")

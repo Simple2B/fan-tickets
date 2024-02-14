@@ -290,6 +290,43 @@ def init_shell_commands(app: Flask):
         db.session.commit()
         print("Selected tickets deleted")
 
+    @app.cli.command("create-unpaid-tickets")
+    def create_unpaid_tickets():
+        """Create test unpaid tickets"""
+        events_query = m.Event.select().where(m.Event.date_time < datetime.now())
+        events = db.session.scalars(events_query).all()
+        assert events
+
+        TESTING_TICKETS_TO_PAY_PER_EVENT = 5
+
+        tickets_to_pay: list[m.Ticket] = []
+        for event in events:
+            for i in range(TESTING_TICKETS_TO_PAY_PER_EVENT):
+                ticket = m.Ticket(
+                    seller_id=event.creator_id,
+                    buyer_id=1,
+                    event=event,
+                    is_sold=True,
+                    last_reservation_time=datetime.now() - timedelta(hours=49),
+                    price_net=100,
+                    price_gross=111,
+                ).save()
+                tickets_to_pay.append(ticket)
+        print(len(tickets_to_pay), "tickets unpaid to sellers created")
+
+    @app.cli.command("get-unpaid-tickets")
+    def get_unpaid_tickets():
+        """Get all tickets"""
+        tickets_query = m.Ticket.select().where(
+            m.Ticket.is_sold.is_(True),
+            m.Ticket.paid_to_seller_at.is_(None),
+            m.Ticket.is_deleted.is_(False),
+        )
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+        for ticket in tickets:
+            print(ticket.unique_id, ticket.paid_to_seller_at, ticket.is_deleted)
+        print(len(tickets), "tickets unpaid to sellers")
+
     @app.cli.command("pay-sellers")
     def pay_sellers():
         """
@@ -299,14 +336,19 @@ def init_shell_commands(app: Flask):
         tickets_query = m.Ticket.select().where(
             m.Ticket.is_sold.is_(True),
             m.Ticket.last_reservation_time < datetime.now() - timedelta(days=2),
+            m.Ticket.is_deleted.is_(False),
         )
         tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
 
         if tickets:
             print(len(tickets), "tickets to pay")
             for ticket in tickets:
-                if ticket.sold_at and ticket.sold_at < datetime.now() - timedelta(days=2):
-                    print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
-                    ...  # pay to seller
+                print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
+                ...  # pay to seller via pagarme
+                ticket.paid_to_seller_at = datetime.now()
+                ticket.is_deleted = True
+                print(f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}")
+            print(len(tickets), "paid to sellers")
+            db.session.commit()
         else:
             print("No tickets to pay")
