@@ -243,7 +243,7 @@ def init_shell_commands(app: Flask):
         for i, ticket in enumerate(tickets):
             if i % 3 == 0:
                 ticket.is_reserved = True
-                ticket.last_reservation_time = datetime.now()
+                ticket.last_reservation_time = datetime.now() - timedelta(minutes=31)
                 ticket.save(False)
                 reserved_tickets.append(ticket)
         db.session.commit()
@@ -254,26 +254,21 @@ def init_shell_commands(app: Flask):
     def unreserve():
         """Unreserve all tickets"""
         tickets_query = (
-            m.Ticket.select().where(m.Ticket.is_reserved.is_(True))
+            m.Ticket.select()
+            .where(m.Ticket.is_reserved.is_(True))
+            .where(m.Ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN))
             # .where(m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike("%Rio%"))))
         )
-        tickets = db.session.scalars(tickets_query).all()
-
-        for ticket in tickets:
-            if (
-                ticket.is_reserved
-                and ticket.last_reservation_time
-                and ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN)
-            ):
-                ticket.is_reserved = False
-                ticket.last_reservation_time = datetime.now()
-                print(ticket, "unreserved")
-                ticket.save()
-            elif ticket.is_reserved:
-                print(f"Ticket {ticket.id} is still reserved")
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
 
         if tickets:
-            print("Unreserved all tickets with expired reservation")
+            for ticket in tickets:
+                ticket.is_reserved = False
+                ticket.last_reservation_time = datetime.now()
+                ticket.save()
+                print(ticket, "unreserved")
+            print(len(tickets), "with expired reservation unreserved")
+
         else:
             print("No tickets to unreserve")
 

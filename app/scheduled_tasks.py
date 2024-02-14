@@ -23,7 +23,7 @@ def delete_tickets_from_cart():
 @celery.task
 def pay_to_sellers():
     log(log.INFO, "Periodic task pay_to_sellers started at [%s]", datetime.now())
-    process = subprocess.Popen(["poetry", "run", "flask", "pay_sellers"])
+    process = subprocess.Popen(["poetry", "run", "flask", "pay-sellers"])
     process.communicate()
 
 

@@ -109,6 +109,23 @@ def test_pagarme_ticket_order(client: FlaskClient):
         assert response.json["status"] == "approved"
 
 
+def test_unreserve_tickets(runner: FlaskCliRunner):
+    command_output: Result = runner.invoke(args=["db-populate"])
+    assert "populated by" in command_output.stdout
+
+    tickets_query = m.Ticket.select()
+    tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+
+    for ticket in tickets:
+        ticket.is_reserved = True
+        ticket.last_reservation_time = datetime.now() - timedelta(minutes=31)
+        ticket.save(False)
+    db.session.commit()
+
+    command_output: Result = runner.invoke(args=["unreserve"])
+    assert f"{len(tickets)} with expired reservation unreserved" in command_output.stdout
+
+
 def test_pay_sellers(runner: FlaskCliRunner):
     command_output: Result = runner.invoke(args=["db-populate"])
     assert "populated by" in command_output.stdout
