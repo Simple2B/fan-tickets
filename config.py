@@ -115,6 +115,7 @@ class BaseConfig(BaseSettings):
     DEFAULT_EVENT_CATEGORY_ID: int = 1
     TICKETS_IN_CART_EXPIRES_IN: int = 30  # minutes
     TICKETS_IN_CART_CLEAN_IN: int = 10  # minutes
+    TICKETS_SOLD_PAY_SELLERS_AFTER: int = 48  # hours
 
     SERVER_TYPE: str = "development"
 
