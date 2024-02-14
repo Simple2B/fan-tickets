@@ -20,6 +20,13 @@ def delete_tickets_from_cart():
     process.communicate()
 
 
+@celery.task
+def pay_to_sellers():
+    log(log.INFO, "Periodic task pay_to_sellers started at [%s]", datetime.now())
+    process = subprocess.Popen(["poetry", "run", "flask", "pay_sellers"])
+    process.communicate()
+
+
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
@@ -27,4 +34,10 @@ def setup_periodic_tasks(sender, **kwargs):
         timedelta(minutes=1),
         delete_tickets_from_cart.s(),
         name="delete tickets from cart",
+    )
+    sender.add_periodic_task(
+        # timedelta(minutes=CFG.TICKETS_IN_CART_CLEAN_IN),
+        timedelta(minutes=1),
+        pay_to_sellers.s(),
+        name="pay to sellers",
     )
