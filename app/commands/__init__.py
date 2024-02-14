@@ -345,8 +345,12 @@ def init_shell_commands(app: Flask):
             for ticket in tickets:
                 print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
                 ...  # pay to seller via pagarme
+
+                # -----------------  MOVE TO WEBHOOK  -----------------
                 ticket.paid_to_seller_at = datetime.now()
                 ticket.is_deleted = True
+                # -----------------  MOVE TO WEBHOOK  -----------------
+
                 print(f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}")
             print(len(tickets), "paid to sellers")
             db.session.commit()
