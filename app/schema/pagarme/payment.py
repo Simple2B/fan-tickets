@@ -179,6 +179,12 @@ class PagarmePaymentPix(BaseModel):
         return str(v)
 
 
+class PagarmePaymentSplit(BaseModel):
+    amount: int = 90  # TODO: adjust to business rules
+    recipient_id: str
+    type: str = "percentage"
+
+
 class PagarmeCreateOrderInput(BaseModel):
     """
     {

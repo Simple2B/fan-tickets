@@ -7,7 +7,7 @@ import string
 from flask_login import current_user
 from flask.testing import FlaskClient, FlaskCliRunner
 from click.testing import Result
-from app import schema as s, models as m, db
+from app import schema as s, models as m, db, pagarme_client
 from .utils import login
 
 # from .utils import login
@@ -107,6 +107,54 @@ def test_pagarme_ticket_order(client: FlaskClient):
     assert response.status_code == 200
     if isinstance(response.json, dict):
         assert response.json["status"] == "approved"
+
+
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+def test_get_recipients(client: FlaskClient):
+    response = pagarme_client.get_recipients()
+    assert response
+
+
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+def test_get_recipient(client: FlaskClient):
+    TESTING_RECIPIENT_ID = "re_clsn5rjgu04qv019tnksv6spy"
+    response = pagarme_client.get_recipient(TESTING_RECIPIENT_ID)
+    assert response
+
+
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+def test_create_recipient(client: FlaskClient):
+    TESTING_DOCUMENT = "9309513"
+    for i in range(4):
+        TESTING_DOCUMENT += str(random.randint(0, 9))
+    TESTING_NAME = f"Recipient_{TESTING_DOCUMENT}"
+    TESTING_EMAIL = f"recipient_{TESTING_DOCUMENT}@mail.com"
+    # TESTING_DOCUMENT = "93095135270"
+    TESTING_DOCUMENT = "05982997005"
+    recipient_data = s.PagarmeRecipientCreate(
+        name=TESTING_NAME,
+        email=TESTING_EMAIL,
+        description="testing recipient description",
+        document=TESTING_DOCUMENT,
+        type="individual",
+        code=TESTING_DOCUMENT,
+        default_bank_account=s.DefaultBankAccount(
+            holder_name=TESTING_NAME,
+            bank="321",
+            branch_check_digit="6",
+            branch_number="1234",
+            account_number=TESTING_DOCUMENT,
+            account_check_digit="1",
+            holder_type="individual",
+            holder_document=TESTING_DOCUMENT,
+            type="checking",
+        ),
+    )
+    response = pagarme_client.create_recipient(recipient_data)
+    assert response
+    assert response["name"] == TESTING_NAME
+    assert response["email"] == TESTING_EMAIL
+    assert response["document"] == TESTING_DOCUMENT
 
 
 def test_unreserve_tickets(runner: FlaskCliRunner):

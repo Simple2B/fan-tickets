@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "amount": 1400,
+      "description": "Testing Concert Ticket",
+      "quantity": 1,
+      "category": "Testing Concert Event"
+    }
+  ],
+  "customer_id": "cus_LD8jWxauYfOm9yEe",
+  "payments": [
+    {
+      "amount": 70,
+      "recipient_id": "rp_XXXXXXXXXXXXXXXX",
+      "type": "percentage"
+    }
+  ]
+}

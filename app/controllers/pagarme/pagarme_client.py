@@ -121,7 +121,7 @@ class PagarmeClient:
 
     def create_split(self, create_order_data):
         """
-        This is a 2nd stage of payment
+        Split payment method is used as a 2nd stage of payment
         1st stage is when a buyer pays for a ticket to FanTicket platform via PIX payment method
         2nd stage is when FanTicket platform pays to the seller via split payment method
         On this stage split is used to pay to the seller, that is called on pagarme as recipient
@@ -131,6 +131,26 @@ class PagarmeClient:
 
         response = self.api.post(self.__generate_url__("orders"), json=create_order_data)
         return response
+
+    # Recipients for split payments
+    def get_recipients(self):
+        """
+        Get all recipients from pagarme account.
+        Recipients are the sellers that will receive the money from the FT on the 2nd stage.
+        It's special role that is only in split payment method.
+        """
+        response = self.api.get(self.__generate_url__("recipients"))
+        return response.json()
+
+    def get_recipient(self, recipient_id: str):
+        """Gets a single recipient by its id while split payment method is used."""
+        response = self.api.get(self.__generate_url__(f"recipients/{recipient_id}"))
+        return response.json()
+
+    def create_recipient(self, recipient_data: s.PagarmeRecipientCreate):
+        """Creates a recipient for split payment method."""
+        response = self.api.post(self.__generate_url__("recipients"), json=recipient_data.model_dump())
+        return response.json()
 
     # Customers
     def get_customers(

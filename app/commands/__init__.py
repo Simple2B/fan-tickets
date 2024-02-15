@@ -344,7 +344,26 @@ def init_shell_commands(app: Flask):
             print(len(tickets), "tickets to pay")
             for ticket in tickets:
                 print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
-                ...  # pay to seller via pagarme
+
+                data = {
+                    "items": [
+                        {
+                            "amount": 1400,
+                            "description": "Testing Concert Ticket",
+                            "quantity": 1,
+                            "category": "Testing Concert Event",
+                        }
+                    ],
+                    "customer_id": "cus_LD8jWxauYfOm9yEe",  # TODO: has to be got or created via pagarme API
+                    "payments": [
+                        {
+                            "amount": 70,
+                            "recipient_id": "rp_XXXXXXXXXXXXXXXX",  # TODO: has to be got or created via pagarme API
+                            "type": "percentage",
+                        }
+                    ],
+                }
+                response = pagarme_client.create_split(data)  # pay to seller via pagarme
 
                 # -----------------  MOVE TO WEBHOOK  -----------------
                 ticket.paid_to_seller_at = datetime.now()

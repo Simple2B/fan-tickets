@@ -93,3 +93,25 @@ class PagarCustomerOut(BaseModel):
 class PagarCustomerListResponse(BaseModel):
     paging: PagarPaging
     data: list[PagarCustomerOut]
+
+
+class DefaultBankAccount(BaseModel):
+    holder_name: str
+    holder_type: str = "individual"
+    holder_document: str
+    bank: str
+    branch_number: str
+    branch_check_digit: str
+    account_number: str
+    account_check_digit: str
+    type: str = "checking"
+
+
+class PagarmeRecipientCreate(BaseModel):
+    name: str
+    email: str
+    description: str
+    document: str
+    type: str = "individual"
+    code: str
+    default_bank_account: DefaultBankAccount

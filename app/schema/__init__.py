@@ -31,7 +31,10 @@ from .pagarme import (
     PagarmeItem,
     PagarmeCreditCardPayment,
     PagarmeCreateOrderPix,
+    PagarmeCreateOrderSplit,
     PagarmeCreateOrderResponsePix,
+    DefaultBankAccount,
+    PagarmeRecipientCreate,
 )
 
 from .chat_auth import (
