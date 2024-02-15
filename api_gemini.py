@@ -7,14 +7,32 @@ url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateC
 
 headers = {"Content-Type": "application/json"}
 
+EVENT_NAME = "Lollapalooza brasil"
+# EVENT_NAME = "Rock in rio"
+# EVENT_NAME = "Warung day festival"
+# EVENT_NAME = "Brunch electronic sao paulo"
+
+question = f'Could you please tell me if there is an event with name "{EVENT_NAME}" in Brasil and if yes give me a json with event details. For example:'
+
+json_example = """
+    {
+    "event_name": "official event name",
+    "official_url": "https://someofficialurl.com",
+    "location": "City name",
+    "venue": "Sao Paolo Stadium",
+    "date": "2024-02-24",
+    "time": "20:00"
+    }
+"""
+
+message = f"{question}\n{json_example}"
+
 data = {
     "contents": [
         {
             "role": "user",
             "parts": [
-                {
-                    "text": "Could you please give me 5-10 most expected musical events that are scheduled to this weekend in Rio de Janeiro?"
-                }
+                {"text": message},
             ],
         }
     ]
