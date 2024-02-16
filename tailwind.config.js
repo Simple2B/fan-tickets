@@ -38,6 +38,7 @@ module.exports = {
         'light-grey-b0': '#b0b0b0',
         'light-grey-82': '#828282',
         'light-grey': '#cecece',
+        'ultra-light-grey': '#e0e0e0',
         grey: '#99a1a3',
         'grey-41': '#414141',
         'middle-grey': '#5a5a5a',
@@ -63,6 +64,9 @@ module.exports = {
       }),
       maxWidth: () => ({
         265: '265px',
+      }),
+      maxHeight: () => ({
+        560: '560px',
       }),
       top: ({theme}) => ({
         '60%': '50%',

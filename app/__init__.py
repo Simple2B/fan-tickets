@@ -91,6 +91,7 @@ def create_app(environment="development") -> Flask:
         if channel == "admin":
             if current_user.role != m.UserRole.admin.value:
                 abort(403)
+            db.session.close()
             return
 
         topic, identifier = channel.split(":")
@@ -110,13 +111,14 @@ def create_app(environment="development") -> Flask:
         elif topic == "notification" and current_user.uuid != identifier:
             abort(403)
 
+        db.session.close()
+
     app.register_blueprint(sse, url_prefix="/sse")
 
     # Set up flask login.
     @login_manager.user_loader
     def get_user(id: int) -> m.User | None:
-        query = sa.select(m.User).where(m.User.id == int(id))
-        return db.session.scalar(query)
+        return db.session.get(m.User, int(id))
 
     login_manager.login_view = "auth.login"
     login_manager.login_message_category = "info"

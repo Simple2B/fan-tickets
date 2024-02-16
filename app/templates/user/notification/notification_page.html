@@ -14,14 +14,11 @@
 </div>
 {% else %}
 <!-- prettier-ignore -->
-<div class="self-stretch flex flex-col gap-8">
+<div class="max-h-560 overflow-y-auto self-stretch flex flex-col gap-8">
   <div hx-get="{{ url_for('notification.get_notifications') }}" hx-trigger="revealed" hx-swap="afterend"></div>
 </div>
 {% endif %} {% endblock %} {% block chat_window %} {% include
 "chat/chat_window_disputes.html" %}
 <!-- prettier-ignore -->
-<script
-  src="{{ url_for('static', filename='js/notification_user.js') }}"
-  type="text/javascript"
-  defer></script>
+<script src="{{ url_for('static', filename='js/notification_user.js') }}" type="text/javascript" defer></script>
 {% endblock %}

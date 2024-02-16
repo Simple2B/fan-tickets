@@ -224,4 +224,15 @@ verificationInputs.forEach((input: HTMLInputElement, index1) => {
   });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const chatIcon = document.querySelector('#chat-icon');
+  if (chatIcon) {
+    chatIcon.addEventListener('click', () => {
+      setTimeout(() => {
+        resizeChat();
+      }, 200);
+    });
+  }
+});
+
 window.addEventListener('resize', resizeChat);
