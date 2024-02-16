@@ -1,19 +1,14 @@
 import sqlalchemy as sa
+from sqlalchemy import orm
+
 from app.database import db
 
-UserNotification = sa.Table(
-    "user_notification",
-    db.metadata,
-    sa.Column(
-        "user_id",
-        sa.Integer,
-        sa.ForeignKey("users.id"),
-        primary_key=True,
-    ),
-    sa.Column(
-        "notification_id",
-        sa.Integer,
-        sa.ForeignKey("notifications.id", ondelete="CASCADE"),
-        primary_key=True,
-    ),
-)
+
+class UserNotification(db.Model):
+    __tablename__ = "user_notifications"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+
+    user_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("users.id"))
+    notification_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("notifications.id", ondelete="CASCADE"))
+    is_viewed: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)

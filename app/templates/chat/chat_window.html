@@ -1,6 +1,6 @@
 <!-- prettier-ignore -->
-{% from 'chat/_macros_chat_message.html' import submit_message_get %}
- 
+{% from 'chat/_macros_chat_message.html' import submit_message_get, bot_message, history_message_bot, history_message_user_home %}
+
 {% if current_user.is_authenticated %}
   {% set user_name = current_user.name %} 
 {% else %} 
@@ -10,19 +10,47 @@
 <!-- prettier-ignore -->
 <div id="chat-window" class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
   {% include 'chat/chat_header.html' %}
-  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch rounded-b-2xl">
+  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
     <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
-      <div id="chat-message-container" data-send-message>
-        {% if error_message %} 
-          {% include 'chat/chat_message_error.html' %} 
+      {% if get_chat_room_messages() %}
+        {% for message in get_chat_room_messages() %}
+          {% if message.sender_id == get_chatbot_id() %}
+            {{ history_message_bot(message.text) }}
+          {% else %}
+          {% if current_user.is_authenticated %}
+            {{ history_message_user_home(message, current_user.name, current_user.picture.base64_src) }}
+          {% else %}
+            {{ history_message_user_home(message, "Guest") }}
+          {% endif %}
         {% endif %}
+      {% endfor %}
+      {% endif %}
+      {% include 'chat/chat_spinner.html' %}
+      {% set html_element %}
+      <div class="mt-2 flex justify-stretch gap-2">
+        <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
+          hx-swap="innerHTML" hx-trigger="click"
+          class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+          Selling
+        </button>
+        <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body"
+          hx-swap="innerHTML" hx-trigger="click"
+          class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
+          Buying
+        </button>
       </div>
-      <div id="new_messages"></div>
+      {% endset %}
+
+      <div id="chat-message-container" data-send-message>
+        {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?', html_element) }}
+      </div>
     </div>
-    {% block chat_footer %}{{ submit_message_get('chat.sell', disabled='disabled') }}{% endblock %}
+
+    {{ submit_message_get('chat.sell', disabled='disabled') }}
   </div>
 
   <input name="message_uuid" class="hidden">
   <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message" hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
-
 </div>
+
+{% include "chat/chat_icon.html" %}

@@ -66,3 +66,4 @@ from .chat_buy import (
 )
 from .pagarme import PagarmeClient
 from .notification_client import FlaskSSENotification, NotificationType
+from .mail import MailController

@@ -80,29 +80,48 @@ def init_shell_commands(app: Flask):
         To make us available add testing subscriptions if it's needed
         """
         sold_tickets_query = (
-            sa.select(m.User.username)
+            sa.select(m.User.email)
             .select_from(sa.join(m.Ticket, m.User, m.Ticket.buyer_id == m.User.id))
             .where(m.Ticket.is_sold.is_(True))
-            .group_by(m.User.username)
-            .order_by(m.User.username)
+            .group_by(m.User.email)
+            .order_by(m.User.email)
         )
         sold_tickets_buyers = db.session.scalars(sold_tickets_query).all()
         print(sold_tickets_buyers)
 
     @app.cli.command("set-subscriptions")
-    @click.option("--username", type=str)
-    def set_subscriptions(username: str):
+    @click.option("--email", type=str)
+    def set_subscriptions(email: str):
         """
         Command for setting testing subscriptions to display in profile
         """
-        user_query = m.User.select().where(m.User.username == username)
-        user = db.session.scalar(user_query)
-        events_query = m.Event.select().limit(3)
-        events = db.session.scalars(events_query).all()
+        event = db.session.scalar(sa.select(m.Event))
+        user = db.session.scalar(
+            m.User.select().where(m.User.email == email, m.User.subscribed_events.any(m.Event.id == event.id))
+        )
 
-        user.subscribed_events.extend(events)
-        user.password = "pass"
-        user.save()
+        if not user:
+            user = db.session.scalar(m.User.select().where(m.User.email == email))
+            if not user:
+                print(f"User with e-mail: [{email}] not found")
+                return
+            user.subscribed_events.append(event)
+
+        seller = db.session.scalar(m.User.select().where(m.User.role == m.UserRole.client.value, m.User.id != user.id))
+
+        for i in range(3):
+            ticket = m.Ticket(
+                event=event,
+                seller=seller,
+                buyer=user,
+                is_sold=True,
+            )
+            payment = m.Payment(
+                ticket=ticket,
+                buyer=user,
+            )
+            db.session.add(payment)
+        db.session.commit()
 
     @app.cli.command("delete-user")
     @click.option("--email", type=str)

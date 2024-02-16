@@ -5,8 +5,6 @@ const timeTyping = 1500;
 export let chatWindow: HTMLDivElement;
 export let chatMessageContainer: HTMLDivElement;
 
-console.log('chat.js')
-
 let roomUuidInput: HTMLInputElement;
 let messageSendUrl: string;
 
@@ -23,6 +21,8 @@ export function toggleChatWindow() {
   chatWindow.classList.toggle('chat-window-close');
   chatWindow.classList.toggle('chat-window-open');
 }
+
+export let sendMessage = async () => {};
 
 function closeChatWindow() {
   chatWindow.classList.remove('chat-window-open');
@@ -45,6 +45,7 @@ export function createChatWindow() {
 }
 
 export async function showMessage() {
+  chatMessageContainer = document.querySelector('#chat-message-container');
   const chatMessages = chatMessageContainer.querySelectorAll('.chat-message');
   const chatSpinner: HTMLDivElement = document.querySelector('.chat-spinner');
 
@@ -64,7 +65,7 @@ async function showSpinnerAndMessage(
   const chatMain: HTMLDivElement = document.querySelector('#chat-main');
 
   message.parentNode.insertBefore(spinnerClone, message);
-
+  spinnerClone.classList.remove('hidden');
   spinnerClone.style.display = 'flex';
   spinnerClone.classList.add('chat-spinner-active');
   scrollDown(chatMain);
@@ -77,7 +78,7 @@ async function showSpinnerAndMessage(
 }
 
 // HTMX chat handler
-document.addEventListener('DOMContentLoaded', () => {  
+document.addEventListener('DOMContentLoaded', () => {
   // Nodes
   const chatCloseButton = document.querySelector('#chat-close-button') as HTMLButtonElement;
   const chatMain = document.getElementById('chat-main') as HTMLDivElement;
@@ -118,12 +119,19 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (targetElement.classList.contains('new_message')){
       chatMain.scrollTo(0, chatMain.scrollHeight);
     }
-  })
+  });
+
+  document.addEventListener('htmx:afterSwap', (e) => {
+    const targetElement = e.target as HTMLElement;
+
+    if (targetElement.getAttribute('id') === 'chat-body'){
+      showMessage();
+    }
+  });
 
   chatCloseButtons.forEach(button => button.addEventListener('click', () => toggleChatWindow));
 
-  // send message button
-  async function sendMessage() {
+  async function sendDisputeMessage() {
     const messageText = messageInput.value;
     const roomUuid = roomUuidInput.value;
 
@@ -138,13 +146,26 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.value = '';
   }
 
-  sendMessageButton.addEventListener('click', sendMessage);
-  document.addEventListener("keyup", async (event) => {
+  // send message button
+  sendMessage = sendDisputeMessage;
+  if (sendMessageButton) {
+    sendMessageButton.addEventListener('click', sendMessage);
+    document.addEventListener("keyup", async (event) => {
       switch(event.key) {
           case "Enter":
               await sendMessage();
           break;
       }
 
-  });
+    });
+  }
+  
+
+  const chatIconButton = document.getElementById('chat-icon') as HTMLDivElement || null;
+  if (chatIconButton) {
+    chatIconButton.addEventListener('click', () => {
+      toggleChatWindow();
+    });
+  }
+
 });

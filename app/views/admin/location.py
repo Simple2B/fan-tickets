@@ -16,7 +16,7 @@ def location_index():
 
 @location_blueprint.route("/locations")
 def get_locations():
-    locations = m.Location.all()
+    locations = db.session.scalars(sa.select(m.Location).where(m.Location.deleted.is_(False)).order_by(m.Location.name))
     log(log.INFO, "Locations: [%s]", locations)
     return render_template("admin/locations.html", locations=locations)
 
@@ -70,10 +70,7 @@ def location_delete(location_id):
         log(log.INFO, "Location not found: [%s]", location_id)
         return redirect(url_for("admin.location.get_locations"))
 
-    if location.picture:
-        db.session.delete(location.picture)
-
-    db.session.delete(location)
+    location.deleted = True
     db.session.commit()
     log(log.INFO, "Location deleted: [%s]", location_id)
     return redirect(url_for("admin.location.get_locations"))

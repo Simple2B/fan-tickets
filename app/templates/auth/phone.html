@@ -11,7 +11,7 @@
   <div class="px-6 flex flex-col">
     <form
       role="form"
-      action="{{ url_for('auth.activate', reset_password_uid=reset_password_uid) }}"
+      action="{{ url_for('auth.activate', reset_password_uuid=reset_password_uuid) }}"
       method="post"
       class="py-9 flex flex-col gap-4">
       {{ form_hidden_tag() }}

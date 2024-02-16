@@ -1,24 +1,18 @@
-{% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
-submit_message_get
-%}
+{% from 'chat/_macros_chat_message.html' import bot_message,
+bot_message_without_date, user_message, submit_message_get %}
 
-<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
-  {% include 'chat/chat_messages.html' %}
-  {% include 'chat/chat_spinner.html' %}
+<div
+  id="chat-main"
+  class="bot-message eveny py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
 
   <div id="chat-message-container" data-send-message>
-    {% if error_message %}
-    {% include 'chat/chat_message_error.html' %}
-    {% else %}
-    {{ bot_message("Great! To get started, could you please write below name of the event you're looking for?") }}
-    {% endif %}
+    {% if error_message %} {% include 'chat/chat_message_error.html' %} {% else
+    %} {{ bot_message("Great! To get started, could you please write below name
+    of the event you're looking for?") }} {% endif %}
   </div>
 </div>
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']") }}
-
-{% block scripts %}
-<!-- prettier-ignore -->
-<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-{% endblock %}
+{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'],
+[name='user_message']") }}

@@ -1,4 +1,6 @@
-<div id="header" class="header fixed w-full top-0 py-6 px-6 z-50 col-span-12 duration-300">
+<div
+  id="header"
+  class="header fixed w-full top-0 py-6 px-6 z-50 col-span-12 duration-300">
   <header class="max-w-7xl my-0 mx-auto">
     <div class="hidden lg:flex justify-between">
       <a href="{{ url_for('main.index') }}">
@@ -58,8 +60,12 @@
           <li>
             <button id="header-user-dropdown-button">
               <div class="flex gap-2 items-center">
-                <img class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
-                  src="{{ current_user.picture.base64_src }}" alt="Profile picture" />
+                <img
+                  class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
+                  src="{{ current_user.picture.base64_src }}"
+                  alt="Profile picture" />
+                <!-- prettier-ignore -->
+                <div id="unread-notifications-count" hx-get="{{ url_for('notification.get_unread_notifications') }}" hx-trigger="update_unread_notifications_count">{{ current_user.unread_notifications_count}}</div>
                 <!-- prettier-ignore -->
                 <svg id="header-user-dropdown-arrow"
                   class="w-7 h-7 transform transition-all duration-300 fill-white hover:fill-secondary " width="24"
@@ -72,12 +78,20 @@
             </button>
           </li>
           <li>
-            <a class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
-              href="#">Vender ingresso</a>
+            <a
+              class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
+              href="#"
+              >Vender ingresso</a
+            >
           </li>
         </ul>
         <!-- prettier-ignore -->
         {% include 'landing/header/user_dropdown.html' %}
+        <!-- SSE user channel listen -->
+        <input class="hidden" id="user-uuid" value="{{ current_user.uuid}}" />
+        <!-- prettier-ignore -->
+        <script src="{{ url_for('static', filename='js/user_header_notifications.js') }}"></script>
+
         {% else %}
         <ul class="flex gap-4">
           <li>
@@ -87,14 +101,18 @@
             <a href="{{ url_for('auth.login') }}">Login</a>
           </li>
           <li>
-            <a class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
-              href="#">Vender ingresso</a>
+            <a
+              class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
+              href="#"
+              >Vender ingresso</a
+            >
           </li>
         </ul>
         {% endif %}
       </nav>
     </div>
-    <div class="lg:hidden w-full flex gap-12 max-w-3xl my-0 mx-auto justify-between items-center">
+    <div
+      class="lg:hidden w-full flex gap-12 max-w-3xl my-0 mx-auto justify-between items-center">
       <a href="{{ url_for('main.index') }}">
         <!-- prettier-ignore -->
         <svg xmlns="http://www.w3.org/2000/svg" width="180" height="37" viewBox="0 0 180 37" fill="none">
@@ -143,7 +161,9 @@
       <nav>
         <ul class="flex gap-4 items-center">
           <li>
-            <a href="{{ url_for('main.index') }}" class="text-white fill-current">
+            <a
+              href="{{ url_for('main.index') }}"
+              class="text-white fill-current">
               <!-- prettier-ignore -->
               <svg class="stroke-current" width="21" height="20" viewBox="0 0 21 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">

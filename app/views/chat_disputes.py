@@ -7,9 +7,10 @@ from flask_login import current_user, login_required
 
 from app import models as m, db
 from app import flask_sse_notification
-from app.controllers import utcnow_chat_format, NotificationType
+from app.controllers import NotificationType
 from app.logger import log
 from app import forms as f
+from app import mail_controller
 from config import config
 
 CFG = config()
@@ -56,34 +57,43 @@ def start_dispute():
         )
         room.messages.add(message)
 
-        # 2 send seller notification
-        # 3 send notification on seller email
-
         db.session.add(room)
         db.session.commit()
 
-        # 1 send admin notification
+        # send admin notification
         flask_sse_notification.notify_admin(
             {"room_uuid": room.unique_id, "buyer": current_user.email, "seller": payment.ticket.seller.email},
             db.session,
             NotificationType.DISPUTE_CREATED,
         )
+        # send rooms users
+        flask_sse_notification.notify_users(
+            (current_user, payment.ticket.seller),
+            {
+                "room_uuid": room.unique_id,
+                "buyer": current_user.email,
+                "seller": payment.ticket.seller.email,
+                "event": payment.ticket.event.name,
+            },
+            db.session,
+            NotificationType.DISPUTE_CREATED,
+        )
 
-        # return render_template(
-        #     "admin/start_dispute.html",
-        #     now=utcnow_chat_format(),
-        #     room=room,
-        # )
+        # send email notification (Admins + room users)
+        admins = db.session.scalars(m.User.select().where(m.User.role == m.UserRole.admin.value)).all()
+        mail_controller.send_email(
+            admins + [current_user, payment.ticket.seller],
+            "Dispute created",
+            render_template(
+                "email/dispute_created.html",
+                event_name=payment.ticket.event.name,
+            ),
+        )
 
     else:
         log(log.INFO, "Dispute room already exists for payment [%s]", payment.id)
 
     return room.unique_id, HTTPStatus.OK
-
-    # return render_template(
-    #     "user/dispute_room.html",
-    #     room=room,
-    # )
 
 
 @chat_disputes_blueprint.route("/get_message", methods=["GET"])
@@ -181,10 +191,18 @@ def send_message():
     db.session.add(message)
     db.session.commit()
 
-    flask_sse_notification.notify_users(
-        [room.seller, room.buyer], {"room_uuid": room.unique_id}, db.session, NotificationType.NEW_POST
-    )
+    users: tuple[m.User, ...]
 
+    if current_user.id == room.seller_id:
+        users = (room.buyer,)
+    elif current_user.id == room.buyer_id:
+        users = (room.seller,)
+    else:
+        users = (room.seller, room.buyer)
+
+    flask_sse_notification.notify_users(
+        users, {"room_uuid": room.unique_id, "from": current_user.name}, db.session, NotificationType.NEW_POST
+    )
     flask_sse_notification.notify_room(room, {"msg": message.unique_id})
 
     return "OK", HTTPStatus.OK

@@ -5,13 +5,14 @@ from sqlalchemy.exc import IntegrityError
 
 from flask import request, Blueprint, render_template, current_app as app
 from flask_login import current_user, login_user
-from flask_mail import Message
 
 from app import controllers as c
 from app import schema as s
 from app import forms as f
-from app import models as m, db, mail
+from app import models as m, db
 from app.logger import log
+from app import mail_controller
+
 from config import config
 
 CFG = config()
@@ -135,42 +136,42 @@ def sell():
             "chat/registration/passport_identity_number.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
     elif not current_user.activated and not current_user.name:
         return render_template(
             "chat/registration/name.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
     elif not current_user.activated and not current_user.last_name:
         return render_template(
             "chat/registration/last_name.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
     elif not current_user.activated and not current_user.phone:
         return render_template(
             "chat/registration/phone.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
     elif not current_user.activated and not current_user.address:
         return render_template(
             "chat/registration/address.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
     elif not current_user.activated and not current_user.birth_date:
         return render_template(
             "chat/registration/birth_date.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
         )
 
     return render_template(
@@ -202,11 +203,15 @@ def buy():
             room,
         )
 
+    locations = m.Location.all()
+    messages = db.session.scalars(room.messages.select())
+
     return render_template(
         "chat/buy/event_name.html",
-        locations=m.Location.all(),
+        locations=locations,
         now=c.utcnow_chat_format(),
         room=room,
+        messages=messages,
     )
 
 
@@ -409,16 +414,14 @@ def create_user_email():
             now=c.utcnow_chat_format(),
         )
 
-    msg = Message(
-        subject=f"Verify email for {CFG.APP_NAME}",
-        sender=app.config["MAIL_DEFAULT_SENDER"],
-        recipients=[user.email],
+    mail_controller.send_email(
+        (user,),
+        f"Verify email for {CFG.APP_NAME}",
+        render_template(
+            "email/email_confirm.htm",
+            verification_code=response.verification_code,
+        ),
     )
-    msg.html = render_template(
-        "email/email_confirm.htm",
-        verification_code=response.verification_code,
-    )
-    mail.send(msg)
 
     return render_template(
         "chat/registration/email_confirm.html",
@@ -669,7 +672,7 @@ def create_user_passport():
             "chat/registration/passport_identity_number.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     error_message = c.add_identity_document(form, room)
@@ -741,7 +744,7 @@ def create_passport_identity_number():
             "chat/registration/name.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     c.add_identity_document_number(params.user_message, user, room)
@@ -750,7 +753,7 @@ def create_passport_identity_number():
         "chat/registration/name.html",
         room=room,
         now=c.utcnow_chat_format(),
-        user_unique_id=user.unique_id,
+        user_unique_id=user.uuid,
     )
 
 
@@ -871,7 +874,7 @@ def create_user_last_name():
             "chat/registration/phone.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     if not user:
@@ -951,7 +954,7 @@ def create_user_phone():
             "chat/registration/address.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     error_message = c.create_phone(params.user_message, user, room)
@@ -1054,7 +1057,7 @@ def create_user_address():
             "chat/registration/birth_date.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     c.create_address(params.user_message, user, room)
@@ -1150,7 +1153,7 @@ def create_user_birth_date():
             "chat/chat_home.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=user.unique_id,
+            user_unique_id=user.uuid,
         )
 
     return render_template(

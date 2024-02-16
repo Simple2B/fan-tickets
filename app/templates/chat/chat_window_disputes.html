@@ -1,5 +1,5 @@
 <!-- prettier-ignore -->
-{% from 'chat/_macros_chat_message.html' import submit_message_get %}
+{% from 'chat/_macros_chat_message.html' import submit_message_dispute %}
 
 <!-- prettier-ignore -->
 <div id="chat-window" class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
@@ -9,7 +9,7 @@
       <div id="chat-message-container" data-send-message></div>
       <div id="new_messages"></div>
     </div>
-    {% block chat_footer %}{{ submit_message_get('disputes.send_message', "[name='room_unique_id'], [name='user_message']") }}{% endblock %}
+    {% block chat_footer %}{{ submit_message_dispute('disputes.send_message', "[name='room_unique_id'], [name='user_message']") }}{% endblock %}
   </div>
 
   <input name="message_uuid" class="hidden">

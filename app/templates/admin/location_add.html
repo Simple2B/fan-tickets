@@ -1,7 +1,8 @@
-{% extends 'base.html' %} {% block links %}
+{% extends 'admin/base.html' %} {% block links %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
 {% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <!-- prettier-ignore -->
   <form action="{{url_for('admin.location.add_location')}}" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <table class="w-full mt-3 text-sm text-left  text-gray-400">
@@ -51,5 +52,8 @@
 </div>
 
 {% endblock %} {% block scripts %}
-<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+<script
+  src="{{ url_for('static', filename='js/user.js') }}"
+  type="text/javascript"
+  defer></script>
 {% endblock %}
