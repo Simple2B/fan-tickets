@@ -1,4 +1,6 @@
-<button type="button" id="chat-icon"
+<button
+  type="button"
+  id="chat-icon"
   class="fixed p-3 z-50 right-10 bottom-10 w-14 h-14 rounded-50% bg-secondary hover:scale-110 transform transition-transform duration-300">
   <!--prettier-ignore-->
   <svg class="chat-icon-open  w-full h-full transform transition-all duration-500 fill-black"
@@ -15,3 +17,5 @@
       fill="black"></path>
   </svg>
 </button>
+
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>

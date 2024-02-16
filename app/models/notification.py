@@ -27,13 +27,17 @@ class Notification(db.Model, ModelMixin):
     notification_type: orm.Mapped[str] = orm.mapped_column(sa.String(32))
     payload: orm.Mapped[dict] = orm.mapped_column(sa.JSON, default={})
 
-    is_viewed: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     users: orm.WriteOnlyMapped["User"] = orm.relationship(
         back_populates="notifications",
-        secondary=UserNotification,
+        secondary=UserNotification.__table__,
         passive_deletes=True,
         cascade="all, delete",
     )
+    user_notification: orm.Mapped[UserNotification] = orm.relationship(viewonly=True)
+
+    @property
+    def is_viewed(self) -> bool:
+        return self.user_notification.is_viewed
 
     def __repr__(self):
         return f"<{self.id}: {self.notification_type}>"

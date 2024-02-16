@@ -1,7 +1,7 @@
 from flask_mail import Message
 from flask import url_for
 
-from app import mail
+from app import mail_controller
 from app import models as m
 from app.database import db
 from test_flask.utils import register, login, logout
@@ -24,7 +24,7 @@ def test_auth_pages(client):
 def test_register(client):
     TEST_EMAIL = "sam@test.com"
 
-    with mail.record_messages() as outbox:
+    with mail_controller.mail.record_messages() as outbox:
         response = client.post(
             "/register",
             data=dict(
@@ -85,7 +85,7 @@ def test_forgot(client):
         card="9999888877776666",
         password="password",
     ).save()
-    with mail.record_messages() as outbox:
+    with mail_controller.mail.record_messages() as outbox:
         response = client.post(
             "/forgot",
             data=dict(
@@ -101,10 +101,10 @@ def test_forgot(client):
         assert len(outbox) == 1
         letter = outbox[0]
         assert letter.subject == "Reset password"
-        assert ("/password_recovery/" + user.uuid) in letter.html
+        assert ("reset_password_uuid=" + user.reset_password_uuid) in letter.html
 
     response = client.post(
-        "/password_recovery/" + user.uuid,
+        "/password_recovery?reset_password_uuid=" + user.reset_password_uuid + "&email=" + user.email,
         data=dict(
             password="123456789",
             password_confirmation="123456789",

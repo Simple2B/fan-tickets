@@ -1,99 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ config.APP_NAME }}</title>
+    <!-- meta -->
+    <meta name="description" content="Fan Ticket App" />
+    <meta name="author" content="Simple2B" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>{{ config.APP_NAME }}</title>
-  <!-- meta -->
-  <meta name="description" content="Fan Ticket App" />
-  <meta name="author" content="Simple2B" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+    {% block meta %}{% endblock %}
+    <style type="text/css">
+      body {
+        background: #1c1c1c;
+        margin: 0;
+      }
+    </style>
 
-  {% block meta %}{% endblock %}
-  <style type="text/css">
-    body {
-      background: #1c1c1c;
-      margin: 0
-    }
-  </style>
-
-  <!-- styles -->
-  <link rel="icon" href="{{ url_for('static', filename='img/logo/Logo_fan_ticket.svg') }}">
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-    if (
-      localStorage.getItem("color-theme") === "dark" ||
-      (!("color-theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  </script>
-  <!-- prettier-ignore -->
-  {% block links %}
+    <!-- styles -->
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='img/logo/Logo_fan_ticket.svg') }}" />
+    <link
+      href="{{ url_for('static', filename='css/styles.css') }}"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+      if (
+        localStorage.getItem('color-theme') === 'dark' ||
+        (!('color-theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+    <!-- prettier-ignore -->
+    {% block links %}
   {% endblock %}
-</head>
+  </head>
 
-<body class="text-white font-body">
-  <!-- prettier-ignore -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <!-- Flash message markup -->
-  <!-- prettier-ignore -->
-  <div id="toast-{{category}}"
-    class="toast absolute top-24 left-1/2 -translate-x-1/2 z-50 flex items-center w-full max-w-xs p-4 mb-4 {% if category == 'danger'  %} text-red-500 {% else %} text-secondary {% endif %} bg-black border border-grey rounded-lg shadow "
-    role="alert">
+  <body class="text-white font-body">
     <!-- prettier-ignore -->
-    <div class="ml-3 text-sm font-normal">{{message}}</div>
+    {% include 'flash_message.html' %}
     <!-- prettier-ignore -->
-    <button type="button"
-      class="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-500 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5  inline-flex h-8 w-8 "
-      data-dismiss-target=".toast" aria-label="Close">
-      <span class="sr-only">Close</span>
-      <!-- prettier-ignore -->
-      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd"
-          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-          clip-rule="evenodd"></path>
-      </svg>
-    </button>
-  </div>
-  <!-- prettier-ignore -->
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
-  <!-- prettier-ignore -->
-  {% set background = "concert" %}
+    {% set background = "concert" %}
   {% if "help" in request.path or "profile" in request.path or "events" in request.path %}
   {% set background = "concert-blur" %}
   {% endif %}
   {% block body %}
-
-  {% include 'chat/chat_window.html' %}
-  {% include 'menu.html' %}
-  {% include 'landing/header/header.html' %}
-  <div class="relative pt-8 px-6 pb-24 bg-no-repeat bg-main">
-    <div class="max-w-7xl relative my-0 mx-auto">
-      <!-- prettier-ignore -->
-      <main class="flex flex-col justify-center items-center">
+    {% include 'menu.html' %} {% include 'landing/header/header.html' %}
+    <div class="relative pt-8 px-6 pb-24 bg-no-repeat bg-main">
+      <div class="max-w-7xl relative my-0 mx-auto">
+        <!-- prettier-ignore -->
+        <main class="flex flex-col justify-center items-center">
         <pre>{{ text }}</pre>
-        {% block main_content %} {% endblock %}
+        {% block main_content %}{% endblock %}
+         {% block chat_window %} {% include 'chat/chat_window.html' %} {% endblock %}
       </main>
+      </div>
     </div>
-  </div>
-  <!-- prettier-ignore -->
-  {% block content %}
-  {% endblock %}
-  {% endblock %}
-  <div class="relative bg-footer">
     <!-- prettier-ignore -->
-    <svg class="hidden lg:block absolute right-0 top-16" xmlns="http://www.w3.org/2000/svg" width="544" height="333"
+    {% block content %}
+  {% endblock %}
+  {% endblock %}
+
+    <div class="relative bg-footer">
+      <!-- prettier-ignore -->
+      <svg class="hidden lg:block absolute right-0 top-16" xmlns="http://www.w3.org/2000/svg" width="544" height="333"
       viewBox="0 0 544 333" fill="none">
       <path
         d="M777.831 26.7175L779.538 25.0104H779.473C813.878 -7.56331 868.113 -6.99273 901.713 26.7164L901.714 26.7175C936.005 61.0082 936.003 116.534 901.715 150.711L901.714 150.713C781.199 271.339 622.598 331.654 464.216 331.654C305.834 331.654 147.344 271.339 26.7175 150.713C-7.57314 116.422 -7.57149 60.8959 26.7164 26.7187L26.7175 26.7175C61.0082 -7.57314 116.534 -7.57149 150.711 26.7164L150.713 26.7175C323.611 199.616 604.933 199.616 777.831 26.7175Z"
@@ -106,19 +84,15 @@
         </linearGradient>
       </defs>
     </svg>
-    <!-- prettier-ignore -->
-    <div class="max-w-7xl my-0 mx-auto">
-      {% include 'landing/footer.html' %}
+      <!-- prettier-ignore -->
+      <div class="max-w-7xl my-0 mx-auto">
+        {% include 'landing/footer.html' %}
+      </div>
     </div>
-  </div>
 
-  <!-- prettier-ignore -->
-  <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
-  <!-- prettier-ignore -->
-  <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
-  <script src="{{ url_for('static', filename='js/htmx.min.js')}}"></script>
-
-  {% block scripts %} {% endblock %}
-</body>
-
+    <!-- prettier-ignore -->
+    <script src="{{ url_for('static', filename='js/base.js') }}" type="text/javascript" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    {% block scripts %} {% endblock %}
+  </body>
 </html>

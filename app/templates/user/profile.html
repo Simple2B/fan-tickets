@@ -1,16 +1,13 @@
 {% extends 'landing/base.html' %} {% block main_content %}
+
+<div id="message-history-htmx-loader"></div>
+
 <div class="mt-16 flex flex-col gap-8">
   <div class="relative self-center" id="profile_image">
-    <button
-      class="bottom-0 right-0 absolute"
-      data-modal-toggle="user-upload-image-modal">
+    <!-- prettier-ignore -->
+    <button class="bottom-0 right-0 absolute" data-modal-toggle="user-upload-image-modal">
       <!-- prettier-ignore -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="24" fill="#5D4B15" />
-        <path
-          d="M24.7609 23.2391L19.3805 28.6195M31.2175 23.2391L20.5511 33.9054C20.4906 33.966 20.4084 34 20.3228 34H14.3228C14.1445 34 14 33.8555 14 33.6772L14 27.6772C14 27.5916 14.034 27.5094 14.0946 27.4489L24.7609 16.7825M31.2175 23.2391L33.6848 20.7717C34.1051 20.3515 34.1051 19.6701 33.6848 19.2499L28.7501 14.3152C28.3299 13.8949 27.6485 13.8949 27.2283 14.3152L24.7609 16.7825M31.2175 23.2391L24.7609 16.7825"
-          stroke="#F2B705" stroke-width="2" stroke-linecap="round" />
-      </svg>
+      {% include "icons/pencil.html" %}
       <span class="sr-only">Upload image</span>
     </button>
     <img
@@ -72,10 +69,8 @@
             </div>
             {% endfor %}
           </div>
-          <button
-            class="text-secondary underline"
-            id="user-profile-subscribe-btn">
-            Mostrar
+          <!-- prettier-ignore -->
+          <button class="text-secondary underline" id="user-profile-subscribe-btn"> Mostrar
           </button>
         </div>
 
@@ -134,12 +129,16 @@
                   payment.ticket.event.date_time.strftime('%a, %d %b') }}
                 </p>
               </div>
-              <button
-                class="px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200"
+              <!-- button
+                class="start-dispute-btn px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200"
                 hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}"
-                hx-target="#chat-body"
+                hx-target="#message-history-htmx-loader"
                 hx-swap="innerHTML"
                 hx-trigger="click">
+                Start dispute
+              </button -->
+              <!-- prettier-ignore -->
+              <button data-payment-id="{{payment.id}}" class="start-dispute-btn px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200">
                 Start dispute
               </button>
             </div>
@@ -170,15 +169,10 @@
           <p class="mb-4 text-grey">
             Controle quais e-mails você deseja receber
           </p>
-
-          <div
-            id="user-profile-email-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
-            {% include 'user/notifications_save.html' %}
-          </div>
-          <button class="text-secondary underline" id="user-profile-email-btn">
-            Mostrar
-          </button>
+          <!-- prettier-ignore -->
+          <div id="user-profile-email-container" class="dropdown-close mb-4 flex flex-col gap-3"> {% include 'user/notifications_save.html' %} </div>
+          <!-- prettier-ignore -->
+          <button class="text-secondary underline" id="user-profile-email-btn">Mostrar</button>
         </div>
 
         <div class="pt-8">
@@ -202,9 +196,14 @@
   </div>
 </section>
 
+<!-- prettier-ignore -->
+{% block chat_window %}
+{% include 'chat/chat_window_disputes.html' %} 
+{% endblock %}
+
 {% include 'user/upload_image.html' %} {% endblock %} {% block scripts %}
-<script
-  src="{{ url_for('static', filename='js/user.js') }}"
-  type="text/javascript"
-  defer></script>
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/profile.js') }}" type="text/javascript" defer></script>
 {% endblock %}

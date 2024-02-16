@@ -56,3 +56,19 @@ export function resizeChat() {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
   }
 }
+
+export function scrollDown(element: HTMLDivElement) {
+  element.scrollTo({
+    top: element.scrollHeight,
+  });
+}
+
+const scrollAnimationDuration = 200;
+export function scrollDownSmooth(element: HTMLDivElement) {
+  setTimeout(() => {
+    element.scrollTo({
+      top: element.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, scrollAnimationDuration);
+}

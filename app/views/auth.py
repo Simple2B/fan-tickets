@@ -1,16 +1,19 @@
-import os
 from random import randint
-from flask_mail import Message
-from flask import Blueprint, render_template, url_for, redirect, flash, request, session
-from flask import current_app as app
+
+import sqlalchemy as sa
+
+from http import HTTPStatus
+
+from flask import Blueprint, render_template, url_for, redirect, flash, request, session, abort
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app.controllers.notification_client import NotificationType
+
 from app import models as m
 from app import forms as f
 from app import schema as s
-from app import mail, db
-from app import flask_sse_notification
+from app import db
+from app import flask_sse_notification, mail_controller
 from app.logger import log
 
 
@@ -26,7 +29,6 @@ def register():
         picture_id = picture.id if picture else None
         verification_code = randint(100000, 999999)
         user = m.User(
-            # username=form.username.data,
             name=form.username.data,
             email=form.email.data,
             picture_id=picture_id,
@@ -36,30 +38,15 @@ def register():
         user.save()
         log(log.INFO, "Form submitted. User: [%s]", user)
 
-        # create e-mail message
-        msg = Message(
-            subject="Verify your e-mail",
-            sender=app.config["MAIL_DEFAULT_SENDER"],
-            recipients=[user.email],
+        mail_controller.send_email(
+            (user,),
+            "Verify your e-mail",
+            render_template(
+                "email/email_confirm_web.htm",
+                user=user,
+            ),
         )
-        # TODO: add production url
-        if os.environ.get("APP_ENV") == "development":
-            url = url_for(
-                "auth.activate",
-                user_id=user.uuid,
-                verification_code=verification_code,
-                _external=True,
-            )
-        else:
-            base_url = app.config["STAGING_BASE_URL"]
-            url = f"{base_url}activated?user_id={user.uuid}&verification_code={verification_code}"
 
-        msg.html = render_template(
-            "email/email_confirm_web.htm",
-            user=user,
-            url=url,
-        )
-        mail.send(msg)
         # send sse notification
         notification_payload = s.NotificationNewUserRegistered(username=user.email)
         flask_sse_notification.notify_admin(
@@ -109,9 +96,8 @@ def logout():
 @auth_blueprint.route("/activated", methods=["GET", "POST"])
 def activate():
     verification_code = request.args.get("verification_code")
-    user_id = request.args.get("user_id")
-    query = m.User.select().where(m.User.uuid == user_id)
-    user: m.User | None = db.session.scalar(query)
+    user_uuid = request.args.get("user_uuid")
+    user = db.session.scalar(sa.select(m.User).where(m.User.uuid == user_uuid))
 
     if not user:
         log(log.INFO, "User not found")
@@ -125,10 +111,6 @@ def activate():
             "danger",
         )
         return redirect(url_for("main.index"))
-
-    # TODO: remove after testing registration flow
-    # user.activated = True
-    user.save()
 
     flask_sse_notification.notify_admin(
         s.NotificationUserActivated(email=user.email).model_dump(), db.session, NotificationType.ACCOUNT_VERIFIED
@@ -164,7 +146,7 @@ def activate():
     #     flash("Um código de confirmação foi enviado para o seu telefone.", "success")
     #     return redirect(url_for("auth.phone_verification"))
 
-    # return render_template("auth/phone.html", reset_password_uid=reset_password_uid, form=phone_form)
+    # return render_template("auth/phone.html", reset_password_uuid=reset_password_uuid, form=phone_form)
 
 
 @auth_blueprint.route("/phone_verification", methods=["GET", "POST"])
@@ -198,26 +180,23 @@ def phone_verification():
 def forgot_pass():
     form = f.ForgotForm(request.form)
     if form.validate_on_submit():
-        query = m.User.select().where(m.User.email == form.email.data)
-        user: m.User = db.session.scalar(query)
-        # create e-mail message
-        msg = Message(
-            subject="Reset password",
-            sender=app.config["MAIL_DEFAULT_SENDER"],
-            recipients=[user.email],
-        )
-        url = url_for(
-            "auth.password_recovery",
-            reset_password_uid=user.uuid,
-            _external=True,
-        )
-        msg.html = render_template(
-            "email/remind.htm",
-            user=user,
-            url=url,
-        )
-        mail.send(msg)
+        user = db.session.scalar(m.User.select().where(m.User.email == form.email.data))
+
+        if not user:
+            abort(HTTPStatus.NOT_FOUND)
+
         user.reset_password()
+
+        # Send reset password link to email
+        mail_controller.send_email(
+            (user,),
+            "Reset password",
+            render_template(
+                "email/remind.htm",
+                user=user,
+            ),
+        )
+
         flash(
             "Password reset successful. For set new password please check your e-mail.",
             "success",
@@ -228,13 +207,20 @@ def forgot_pass():
     return render_template("auth/forgot.html", form=form)
 
 
-@auth_blueprint.route("/password_recovery/<reset_password_uid>", methods=["GET", "POST"])
-def password_recovery(reset_password_uid):
+@auth_blueprint.route("/password_recovery", methods=["GET", "POST"])
+def password_recovery():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
 
-    query = m.User.select().where(m.User.uuid == reset_password_uid)
-    user: m.User = db.session.scalar(query)
+    reset_password_uuid = request.args.get("reset_password_uuid")
+    email = request.args.get("email")
+
+    if not reset_password_uuid or not email:
+        abort(HTTPStatus.BAD_REQUEST)
+
+    user = db.session.scalar(
+        sa.select(m.User).where(m.User.reset_password_uuid == reset_password_uuid, m.User.email == email)
+    )
 
     if not user:
         flash("Incorrect reset password link", "danger")
@@ -244,15 +230,14 @@ def password_recovery(reset_password_uid):
 
     if form.validate_on_submit():
         user.password = form.password.data
-        user.activated = True
-        user.uuid = m.gen_password_reset_id()
         user.save()
         login_user(user)
         flash("Login successful.", "success")
         return redirect(url_for("main.index"))
 
+    user.reset_password()
     return render_template(
         "auth-admin/reset_password.html",
         form=form,
-        unique_id=reset_password_uid,
+        user=user,
     )

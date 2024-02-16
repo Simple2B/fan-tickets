@@ -24,7 +24,7 @@ class Message(db.Model, ModelMixin):
         default=gen_uuid,
     )
     sender_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey("users.id"))
-    room_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("rooms.id"))
+    room_id: orm.Mapped[int] = orm.mapped_column(sa.ForeignKey("rooms.id", ondelete="CASCADE"))
     created_at: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime(timezone=True),
         default=utcnow,

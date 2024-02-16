@@ -46,7 +46,7 @@ def test_delete_user(client: FlaskClient):
 
 def test_user_profile(client: FlaskClient):
     login(client)
-    response = client.get("/admin/user/profile")
+    response = client.get("/user/profile")
     assert response.status_code == 200
     assert "profile" in response.data.decode()
     assert "Endereço de Email" in response.data.decode()
@@ -55,7 +55,7 @@ def test_user_profile(client: FlaskClient):
 def test_user_email_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    response = client.get("/admin/user/profile")
+    response = client.get("/user/profile")
     assert response.status_code == 200
     assert user.username in response.data.decode()
     assert user.email in response.data.decode()

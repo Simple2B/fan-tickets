@@ -1,0 +1,7 @@
+{% for notification in notifications %}
+<!-- prettier-ignore -->
+{% include "user/notification/notification.html" %}
+
+{% endfor %}
+<!-- prettier-ignore -->
+<div hx-get="{{ url_for('notification.get_notifications', page=page + 1) }}" hx-trigger="revealed" hx-swap="afterend"></div>

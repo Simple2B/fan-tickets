@@ -1,38 +1,31 @@
-{% if not "/admin" in request.path %}
-{% include 'chat/chat_icon.html' %}
-{% endif %}
-{% from 'chat/_macros_chat_message.html' import bot_message, user_message, submit_message_get,
-history_message_user_home,
-history_message_bot %}
-
+<!-- prettier-ignore -->
+{% from 'chat/_macros_chat_message.html' import submit_message_get, bot_message, history_message_bot, history_message_user_home %}
 
 {% if current_user.is_authenticated %}
-{% set user_name = current_user.name %}
-{% else %}
-{% set user_name = 'Guest' %}
+  {% set user_name = current_user.name %} 
+{% else %} 
+  {% set user_name = 'Guest' %} 
 {% endif %}
 
-<div id="chat-window"
-  class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
+<!-- prettier-ignore -->
+<div id="chat-window" class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
   {% include 'chat/chat_header.html' %}
-
   <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
     <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
       {% if get_chat_room_messages() %}
-      {% for message in get_chat_room_messages() %}
-      {% if message.sender_id == get_chatbot_id() %}
-      {{ history_message_bot(message.text) }}
-      {% else %}
-      {% if current_user.is_authenticated %}
-      {{ history_message_user_home(message, current_user.name, current_user.picture.base64_src) }}
-      {% else %}
-      {{ history_message_user_home(message, "Guest") }}
-      {% endif %}
-      {% endif %}
+        {% for message in get_chat_room_messages() %}
+          {% if message.sender_id == get_chatbot_id() %}
+            {{ history_message_bot(message.text) }}
+          {% else %}
+          {% if current_user.is_authenticated %}
+            {{ history_message_user_home(message, current_user.name, current_user.picture.base64_src) }}
+          {% else %}
+            {{ history_message_user_home(message, "Guest") }}
+          {% endif %}
+        {% endif %}
       {% endfor %}
       {% endif %}
       {% include 'chat/chat_spinner.html' %}
-
       {% set html_element %}
       <div class="mt-2 flex justify-stretch gap-2">
         <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
@@ -48,55 +41,16 @@ history_message_bot %}
       </div>
       {% endset %}
 
-      <div id="chat-message-container">
-        {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a
-        ticket?', html_element) }}
+      <div id="chat-message-container" data-send-message>
+        {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?', html_element) }}
       </div>
     </div>
 
     {{ submit_message_get('chat.sell', disabled='disabled') }}
   </div>
-  <!-- TODO: ask client about footer. Maybe will be deleted in the future -->
-  <!-- <div class="py-2 px-4 flex justify-around text-grey  bg-dark-grey rounded-b-2xl transition-colors duration-200">
-    <button type="button" class="p-2 flex flex-col items-center justify-center hover:text-white"
-      hx-get="{{ url_for('chat.home')}}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click">
-      <svg class="fill-current" width="32" height="33" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <mask id="home-active_svg__a" fill="#fff">
-          <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M10.5 2.335L3 7.51c-.625.437-1 1.116-1 1.84V19.7C2 20.965 3.125 22 4.5 22h15c1.375 0 2.5-1.035 2.5-2.3V9.35c0-.724-.375-1.403-1-1.84l-7.5-5.175a2.69 2.69 0 00-3 0zM7.316 14.366a.85.85 0 10-1.132 1.268A8.704 8.704 0 0012 17.852c2.233 0 4.272-.84 5.816-2.218a.85.85 0 10-1.132-1.268A7.005 7.005 0 0112 16.152c-1.8 0-3.44-.675-4.684-1.786z">
-          </path>
-        </mask>
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M10.5 2.335L3 7.51c-.625.437-1 1.116-1 1.84V19.7C2 20.965 3.125 22 4.5 22h15c1.375 0 2.5-1.035 2.5-2.3V9.35c0-.724-.375-1.403-1-1.84l-7.5-5.175a2.69 2.69 0 00-3 0zM7.316 14.366a.85.85 0 10-1.132 1.268A8.704 8.704 0 0012 17.852c2.233 0 4.272-.84 5.816-2.218a.85.85 0 10-1.132-1.268A7.005 7.005 0 0112 16.152c-1.8 0-3.44-.675-4.684-1.786z"
-          fill="#f2b705"></path>
-        <path
-          d="M3 7.51l-.965-1.4-.01.007L3 7.51zm7.5-5.175L9.538.934l-.003.002.965 1.399zM21 7.51l.974-1.393-.009-.006L21 7.51zm-7.5-5.175l.966-1.4-.004-.001-.962 1.401zM6.116 14.434l1.268 1.132-1.268-1.132zm1.2-.068l1.133-1.268-1.133 1.268zm-1.132 1.268L5.05 16.902l1.133-1.268zm11.632 0l1.133 1.268-1.133-1.268zm.068-1.2l-1.268 1.132 1.268-1.132zm-1.2-.068l-1.133-1.268 1.133 1.268zM3.965 8.91l7.5-5.175L9.536.936l-7.5 5.175 1.93 2.798zM3.7 9.35c0-.12.063-.299.274-.447L2.026 6.117C.987 6.843.3 8.022.3 9.35h3.4zm0 10.35V9.35H.3V19.7h3.4zm.8.6a.906.906 0 01-.615-.227.509.509 0 01-.185-.373H.3c0 2.335 2.022 4 4.2 4v-3.4zm15 0h-15v3.4h15v-3.4zm.8-.6c0 .11-.047.246-.185.373a.906.906 0 01-.615.227v3.4c2.178 0 4.2-1.665 4.2-4h-3.4zm0-10.35V19.7h3.4V9.35h-3.4zm-.274-.447c.211.148.274.326.274.447h3.4c0-1.328-.687-2.507-1.726-3.233l-1.948 2.786zm-7.492-5.169l7.5 5.175 1.931-2.798-7.5-5.175-1.93 2.798zm-1.072.002a.991.991 0 011.076 0L14.462.934a4.39 4.39 0 00-4.924 0l1.924 2.802zm-4.078 11.83a.85.85 0 01-1.2.068l2.265-2.536a2.55 2.55 0 00-3.6.203l2.535 2.265zm-.068-1.2c.35.313.38.85.068 1.2l-2.536-2.265a2.55 2.55 0 00.203 3.6l2.265-2.535zM12 16.152c-1.8 0-3.44-.675-4.684-1.786l-2.265 2.536A10.405 10.405 0 0012 19.552v-3.4zm4.684-1.786A7.005 7.005 0 0112 16.152v3.4c2.667 0 5.105-1.004 6.949-2.65l-2.265-2.536zm-.068 1.2a.85.85 0 01.068-1.2l2.265 2.536a2.55 2.55 0 00.203-3.6l-2.536 2.264zm1.2.068a.85.85 0 01-1.2-.068l2.536-2.265a2.55 2.55 0 00-3.6-.203l2.264 2.536zM12 17.852c2.233 0 4.272-.839 5.816-2.218l-2.265-2.536A5.305 5.305 0 0112 14.452v3.4zm-5.816-2.218A8.704 8.704 0 0012 17.852v-3.4a5.305 5.305 0 01-3.551-1.354l-2.265 2.536z"
-          fill="#f2b705" mask="url(#home-active_svg__a)"></path>
-      </svg>
-      <span>Home</span>
-    </button>
-    <button type="button" class="p-2 flex flex-col items-center justify-center hover:text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
-        <path
-          d="M6.66666 11.0426C6.66666 8.80237 6.66666 7.68226 7.10263 6.82662C7.48612 6.07397 8.09805 5.46205 8.85069 5.07855C9.70634 4.64258 10.8264 4.64258 13.0667 4.64258H18.9333C21.1735 4.64258 22.2936 4.64258 23.1493 5.07855C23.9019 5.46205 24.5139 6.07397 24.8973 6.82662C25.3333 7.68226 25.3333 8.80237 25.3333 11.0426V28.6426L16 23.3092L6.66666 28.6426V11.0426Z"
-          stroke="#F2B705" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      <span>Subscriptions</span>
-    </button>
-    {% if current_user.is_authenticated %}
-    {# set cart_url = url_for('buy.cart', cart_from_navbar=True) #}
-    {% else %}
-    {% set cart_url = url_for('chat.login_form', login_from_navbar=True) %}
-    {% endif %}
-    <button type="button" hx-get="{{ cart_url }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
-      class="p-2 flex flex-col items-center justify-center hover:text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
-        <path
-          d="M2.66666 2.95581H4.40821C4.73623 2.95581 4.90025 2.95581 5.03223 3.01613C5.14855 3.06929 5.24712 3.15478 5.31619 3.2624C5.39457 3.38454 5.41777 3.5469 5.46415 3.87163L6.09523 8.28914M6.09523 8.28914L7.49775 18.5977C7.67573 19.9058 7.76472 20.5599 8.07746 21.0523C8.35303 21.4861 8.7481 21.8311 9.21513 22.0456C9.74514 22.2891 10.4052 22.2891 11.7255 22.2891H23.136C24.3927 22.2891 25.0211 22.2891 25.5346 22.063C25.9874 21.8637 26.3758 21.5423 26.6564 21.1348C26.9746 20.6726 27.0921 20.0554 27.3273 18.8208L29.0921 9.5554C29.1749 9.12089 29.2163 8.90363 29.1563 8.73381C29.1037 8.58484 28.9999 8.45939 28.8634 8.37983C28.7078 8.28914 28.4866 8.28914 28.0443 8.28914H6.09523ZM13.3333 28.2891C13.3333 29.0255 12.7364 29.6225 12 29.6225C11.2636 29.6225 10.6667 29.0255 10.6667 28.2891C10.6667 27.5528 11.2636 26.9558 12 26.9558C12.7364 26.9558 13.3333 27.5528 13.3333 28.2891ZM24 28.2891C24 29.0255 23.403 29.6225 22.6667 29.6225C21.9303 29.6225 21.3333 29.0255 21.3333 28.2891C21.3333 27.5528 21.9303 26.9558 22.6667 26.9558C23.403 26.9558 24 27.5528 24 28.2891Z"
-          stroke="#F2B705" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      <span>Cart</span>
-    </button>
-  </div> -->
+
+  <input name="message_uuid" class="hidden">
+  <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message" hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
 </div>
+
+{% include "chat/chat_icon.html" %}

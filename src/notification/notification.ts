@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('htmx:beforeSwap', () => {
         setIsScrollOnBottom();
-    })
+    });
 
     document.addEventListener('htmx:load', (e) => {
         const targetElement = e.target as HTMLElement;

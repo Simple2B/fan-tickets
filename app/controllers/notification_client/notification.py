@@ -18,6 +18,7 @@ class NotificationType(Enum):
     TICKET_SOLD = "ticket_sold"
     PAYMENT_APPROVED = "payment_approved"
     DISPUTE_CREATED = "dispute_created"
+    DISPUTE_NEW_MESSAGE = "dispute_new_message"
 
 
 class NotificationData(BaseModel):
@@ -51,7 +52,10 @@ class NotificationClient(ABC):
         session.commit()
         # send sse notification
         for user in users:
-            self.send_notification(payload, f"room:{user.uuid}")
+            self.send_notification(payload, f"notification:{user.uuid}")
+
+    def notify_room(self, room: m.Room, payload: dict):
+        self.send_notification(payload, f"room:{room.unique_id}")
 
     def notify_admin(self, payload: dict, session: orm.Session, notification_type: NotificationType):
         admin_users = session.scalars(sa.select(m.User).where(m.User.role == m.UserRole.admin.value))

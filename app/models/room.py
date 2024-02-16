@@ -56,9 +56,11 @@ class Room(db.Model, ModelMixin):
         back_populates="buyer_chat_rooms",
     )
 
-    messages: orm.Mapped[list["Message"]] = orm.relationship(
+    messages: orm.WriteOnlyMapped[list["Message"]] = orm.relationship(
         "Message",
         back_populates="room",
+        passive_deletes=True,
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):

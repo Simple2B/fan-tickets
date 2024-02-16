@@ -22,12 +22,12 @@ def test_get_notifications(client: FlaskClient):
     )
     assert notification
 
-    response = client.get("notification/get_notification")
+    response = client.get("admin/notification/get_notification")
     assert response.status_code == HTTPStatus.NOT_FOUND
 
-    response = client.get("notification/get_notification?notification_uuid=abcdf")
+    response = client.get("admin/notification/get_notification?notification_uuid=abcdf")
     assert response.status_code == HTTPStatus.NOT_FOUND
 
-    response = client.get(f"notification/get_notification?notification_uuid={notification.uuid}")
+    response = client.get(f"admin/notification/get_notification?notification_uuid={notification.uuid}")
     assert response.status_code == HTTPStatus.OK
     assert "test_user" in response.text

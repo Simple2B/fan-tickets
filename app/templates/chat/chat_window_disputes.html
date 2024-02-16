@@ -1,0 +1,21 @@
+<!-- prettier-ignore -->
+{% from 'chat/_macros_chat_message.html' import submit_message_dispute %}
+
+<!-- prettier-ignore -->
+<div id="chat-window" class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
+  {% include 'chat/chat_header.html' %}
+  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch rounded-b-2xl">
+    <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
+      <div id="chat-message-container" data-send-message></div>
+      <div id="new_messages"></div>
+    </div>
+    {% block chat_footer %}{{ submit_message_dispute('disputes.send_message', "[name='room_unique_id'], [name='user_message']") }}{% endblock %}
+  </div>
+
+  <input name="message_uuid" class="hidden">
+  <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message" hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
+
+  <input name="room_uuid" class="hidden">
+  <div id="message_history_loader" hx-get="{{ url_for('disputes.get_messages') }}" hx-include="[name='room_uuid']" hx-target="#chat-message-container" hx-swap="innerHTML" hx-trigger="load_message_history"></div>
+
+</div>
