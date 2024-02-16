@@ -1,27 +1,22 @@
-<div
-  hx-get="{{ url_for('notification.set_notification_is_viewed', notification_uuid=notification.uuid) }}"
-  hx-trigger="click"
-  data-notification-type="{{notification.notification_type}}"
-  hx-swap="outerHTML"
-  class="notification-item py-2 px-4 flex items-center justify-between button-gradient-grey update_unread_notifications">
-  {% if notification.notification_type == "dispute_created" %}
-  <p>Dispute created: {{notification.payload["event"]}}</p>
-  <div
-    data-room-uuid="{{notification.payload['room_uuid']}}"
-    class="notification-data"></div>
-  {% elif notification.notification_type == "new_post" %}
-  <p>New message: {{notification.payload["from"]}}</p>
-  <div
-    data-room-uuid="{{notification.payload['room_uuid']}}"
-    class="notification-data"></div>
-  {% endif %}
+<div hx-get="{{ url_for('notification.set_notification_is_viewed', notification_uuid=notification.uuid) }}"
+  hx-trigger="click" data-notification-type="{{notification.notification_type}}" hx-swap="outerHTML"
+  class="notification-item p-3 px-5 flex items-center justify-between {% if notification.is_viewed %} button-gradient-grey {% else %} button-gradient-yellow {% endif %} update_unread_notifications cursor-pointer">
+  <div class="h-8 flex items-center">
+    {% if notification.notification_type == "dispute_created" %}
+    <p>Dispute created: {{notification.payload["event"]}}</p>
+    <div data-room-uuid="{{notification.payload['room_uuid']}}" class="notification-data"></div>
+    {% elif notification.notification_type == "new_post" %}
+    <p>New message from {{notification.payload["from"]}}</p>
+    <div data-room-uuid="{{notification.payload['room_uuid']}}" class="notification-data"></div>
+    {% endif %}
+  </div>
   <div class="flex gap-2 items-center">
     {% if notification.is_viewed %}
     <span>Lido</span>
     {% include 'icons/confirm_yellow.html' %}
     <!-- prettier-ignore -->
     {% else %}
-    <span>Notification didn't read</span>
+    <span class="underline text-secondary">Let agora</span>
     {% endif %}
   </div>
 </div>
