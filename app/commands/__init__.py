@@ -345,31 +345,37 @@ def init_shell_commands(app: Flask):
             for ticket in tickets:
                 print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
 
-                data = {
-                    "items": [
-                        {
-                            "amount": 1400,
-                            "description": "Testing Concert Ticket",
-                            "quantity": 1,
-                            "category": "Testing Concert Event",
-                        }
-                    ],
-                    "customer_id": "cus_LD8jWxauYfOm9yEe",  # TODO: has to be got or created via pagarme API
-                    "payments": [
-                        {
-                            "amount": 70,
-                            "recipient_id": "rp_XXXXXXXXXXXXXXXX",  # TODO: has to be got or created via pagarme API
-                            "type": "percentage",
-                        }
-                    ],
-                }
-                response = pagarme_client.create_split(data)  # pay to seller via pagarme
+                if not ticket.seller.recipient_id:
+                    recipient_credentials = pagarme_client.check_recipient_credentials(ticket.seller)
+                    if not recipient_credentials:
+                        # TODO: user notification to fill out the recipient credentials
+                        print(
+                            f"Ticket {ticket.unique_id} is not paid. Recipient credentials for {ticket.seller.email} not found"
+                        )
+                        continue
 
-                # -----------------  MOVE TO WEBHOOK  -----------------
-                ticket.paid_to_seller_at = datetime.now()
-                ticket.is_deleted = True
-                # -----------------  MOVE TO WEBHOOK  -----------------
+                    # forming data for creating a recipient
+                    recipient_data = pagarme_client.prepare_recipient_data(ticket)
 
+                    # going to pagar to create a new recipient
+                    # if success saving a recipient_id to the seller
+                    recipient_id = pagarme_client.create_recipient(recipient_data, ticket.seller)
+                    if not recipient_id:
+                        print(f"Pagarme error. Recipient for {ticket.seller.email} not created")
+                        continue
+
+                # forming data for split payment
+                split_data = pagarme_client.generate_split_data(ticket)
+                if not split_data:
+                    continue
+
+                response = pagarme_client.create_split(split_data)  # pay to seller via pagarme
+
+                # On the webhook we have to catch an info about paid tickets and save new properties to each ticket
+                # ticket.paid_to_seller_at = datetime.now()
+                # ticket.is_deleted = True
+
+                # If response is ok
                 print(f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}")
             print(len(tickets), "paid to sellers")
             db.session.commit()

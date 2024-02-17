@@ -207,4 +207,10 @@ def webhook():
     order.created
     order.canceled
     """
+
+    # # If we get info about tickets that have been paid to sellers from FT pagarme account
+    # for ticket in tickets:
+    # ticket.paid_to_seller_at = datetime.now()
+    # ticket.is_deleted = True
+
     return {"status": "success"}, 200

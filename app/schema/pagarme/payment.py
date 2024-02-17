@@ -179,10 +179,23 @@ class PagarmePaymentPix(BaseModel):
         return str(v)
 
 
-class PagarmePaymentSplit(BaseModel):
+class SplitOptions(BaseModel):
+    charge_processing_fee: bool = True
+    charge_remainder_fee: bool = True
+    liable: bool = True
+
+
+class PagarmeSplitObject(BaseModel):
     amount: int = 90  # TODO: adjust to business rules
     recipient_id: str
     type: str = "percentage"
+    options: SplitOptions
+
+
+class PagarmePaymentSplit(BaseModel):
+    payment_method: str = "pix"
+    pix: PagarmePaymentPix
+    split: list[PagarmeSplitObject]
 
 
 class PagarmeCreateOrderInput(BaseModel):

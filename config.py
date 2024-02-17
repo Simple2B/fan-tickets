@@ -100,6 +100,10 @@ class BaseConfig(BaseSettings):
     PAGARME_DEFAULT_PAYMENT_METHOD: str = "credit_card"
     BRASIL_COUNTRY_PHONE_CODE: str = "55"
     BRASIL_COUNTRY_AREA_CODE: str = "11"
+    PAGARME_DEFAULT_FT_CUSTOMER_ID: str = ""
+    PAGARME_DEFAULT_FT_RECIPIENT_ID: str = ""
+    PAGARME_SELLER_PERCENTAGE: int = 94
+    PAGARME_PLATFORM_PERCENTAGE: int = 6
 
     # Redis
     REDIS_URL: str

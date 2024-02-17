@@ -122,15 +122,15 @@ def test_get_recipient(client: FlaskClient):
     assert response
 
 
-@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+# @pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_create_recipient(client: FlaskClient):
     TESTING_DOCUMENT = "9309513"
     for i in range(4):
         TESTING_DOCUMENT += str(random.randint(0, 9))
     TESTING_NAME = f"Recipient_{TESTING_DOCUMENT}"
     TESTING_EMAIL = f"recipient_{TESTING_DOCUMENT}@mail.com"
-    # TESTING_DOCUMENT = "93095135270"
-    TESTING_DOCUMENT = "05982997005"
+    # TESTING_DOCUMENT = "05982997005"
+    TESTING_DOCUMENT = "72490418009"
     recipient_data = s.PagarmeRecipientCreate(
         name=TESTING_NAME,
         email=TESTING_EMAIL,
@@ -150,7 +150,8 @@ def test_create_recipient(client: FlaskClient):
             type="checking",
         ),
     )
-    response = pagarme_client.create_recipient(recipient_data)
+    seller: m.User = db.session.scalar(m.User.select())
+    response = pagarme_client.create_recipient(recipient_data, seller)
     assert response
     assert response["name"] == TESTING_NAME
     assert response["email"] == TESTING_EMAIL

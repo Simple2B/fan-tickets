@@ -4,7 +4,7 @@ from http import HTTPStatus
 import requests
 from pydantic import BaseModel, ValidationError
 
-from app import schema as s
+from app import schema as s, models as m
 from app.logger import log
 
 from config import BaseConfig
@@ -55,6 +55,10 @@ class PagarmeClient:
         self.PAGARME_CHECKOUT_EXPIRES_IN = config.PAGARME_CHECKOUT_EXPIRES_IN
         self.PAGARME_DEFAULT_PAYMENT_METHOD = config.PAGARME_DEFAULT_PAYMENT_METHOD
         self.PAGARME_WEBHOOK_URL = config.PAGARME_WEBHOOK_URL
+        self.PAGARME_SELLER_PERCENTAGE = config.PAGARME_SELLER_PERCENTAGE
+        self.PAGARME_PLATFORM_PERCENTAGE = config.PAGARME_PLATFORM_PERCENTAGE
+        self.PAGARME_DEFAULT_FT_CUSTOMER_ID = config.PAGARME_DEFAULT_FT_CUSTOMER_ID
+        self.PAGARME_DEFAULT_FT_RECIPIENT_ID = config.PAGARME_DEFAULT_FT_RECIPIENT_ID
 
         self.base_url = config.PAGARME_BASE_URL
 
@@ -77,22 +81,6 @@ class PagarmeClient:
     def create_order(self, order_data: s.PagarmeCreateOrderInput):
         response = self.api.post(self.__generate_url__("orders"), json=order_data.model_dump(exclude_none=True))
         return s.PagarmeCreateOrderOutput.model_validate(response.json())
-
-    # def create_order(self, order_data: s.PagarmeOrderCreateData) -> dict:
-    #     response = self.api.post(self.__generate_url__("orders"), data=order_data.model_dump(exclude_none=True))
-    #     return response.json()
-
-    # def create_checkout_order(self, order_data: s.PagarmeOrderCreateData):
-    #     for payment in order_data.payments:
-    #         payment.payment_method = "checkout"
-
-    #     return self.create_order(order_data)
-
-    # def create_credit_card_order(self, order_data: s.PagarmeOrderCreateData):
-    #     for payment in order_data.payments:
-    #         payment.payment_method = "credit_card"
-
-    #     return s.PagarmeCreateOrderOutput.model_validate(self.create_order(order_data))
 
     def generate_checkout_data(
         self, card_input: s.PagarmeCardInput, billing_address_editable=False, customer_editable=False
@@ -119,7 +107,72 @@ class PagarmeClient:
 
         return response_data
 
-    def create_split(self, create_order_data):
+    def generate_split_data(self, ticket: m.Ticket):
+        """
+        data = {
+            "items": [
+                {
+                    "amount": ticket.price_net * 100,
+                    "description": f"Ticket {ticket.event.name}",
+                    "quantity": 1,
+                    "category": f"Ticket: {ticket.event.category.name}",
+                }
+            ],
+            "customer_id": "cus_LD8jWxauYfOm9yEe",  # this is a default customer that pays from FT to sellers
+            "payments": [
+                "payment_method": "pix",
+                {
+                    "amount": 70,
+                    "recipient_id": ticket.seller.recipient_id,
+                    "type": "percentage",
+                }
+            ],
+        }
+        """
+
+        data = s.PagarmeCreateOrderSplit(
+            items=[
+                s.PagarmeItem(
+                    amount=ticket.price_net * 100,
+                    description=f"Ticket {ticket.event.name}",
+                    quantity=1,
+                    category=ticket.ticket_category,
+                )
+            ],
+            customer_id=self.PAGARME_DEFAULT_FT_CUSTOMER_ID,  # this is a default customer that pays from FT to sellers
+            payments=[
+                s.PagarmePaymentSplit(
+                    payment_method="pix",
+                    pix=s.PagarmePaymentPix(
+                        expires_in=30,
+                        payment_method="pix",
+                        billing_address_editable=False,
+                        customer_editable=False,
+                        accepted_payment_methods=["pix"],
+                        success_url="https://fan-ticket.simple2b.org/pay/webhook",
+                        Pix=s.PagarmePixData(
+                            expires_in=2147483647,
+                        ),
+                    ),
+                    split=[
+                        s.PagarmeSplitObject(
+                            amount=self.PAGARME_SELLER_PERCENTAGE,  # 94% of the ticket price - has to be calculated according to new business rules
+                            recipient_id=ticket.seller.recipient_id,
+                            options=s.SplitOptions(),
+                        ),
+                        s.PagarmeSplitObject(
+                            amount=self.PAGARME_PLATFORM_PERCENTAGE,  # 6% of the ticket price - has to be calculated according to new business rules
+                            recipient_id=ticket.seller.recipient_id,
+                            options=s.SplitOptions(),
+                        ),
+                    ],
+                ),
+            ],
+        )
+
+        return data
+
+    def create_split(self, create_split_order_data: s.PagarmeCreateOrderSplit):
         """
         Split payment method is used as a 2nd stage of payment
         1st stage is when a buyer pays for a ticket to FanTicket platform via PIX payment method
@@ -129,7 +182,10 @@ class PagarmeClient:
         excluding the platform fee and the payment method fee, which are left on the platform account
         """
 
-        response = self.api.post(self.__generate_url__("orders"), json=create_order_data)
+        response = self.api.post(
+            self.__generate_url__("orders"),
+            json=create_split_order_data.model_dump(exclude_none=True),
+        )
         return response
 
     # Recipients for split payments
@@ -147,10 +203,46 @@ class PagarmeClient:
         response = self.api.get(self.__generate_url__(f"recipients/{recipient_id}"))
         return response.json()
 
-    def create_recipient(self, recipient_data: s.PagarmeRecipientCreate):
+    def prepare_recipient_data(self, ticket: m.Ticket) -> s.PagarmeRecipientCreate:
+        name = f"{ticket.seller.name} {ticket.seller.last_name}"
+        recipient_data = s.PagarmeRecipientCreate(
+            name=name,
+            email=ticket.seller.email,
+            description="FanTicket platform seller",
+            document=ticket.seller.document_identity_number,
+            type="individual",
+            code=ticket.seller.uuid,
+            default_bank_account=s.DefaultBankAccount(
+                holder_name=name,
+                bank=ticket.seller.bank,
+                branch_check_digit=ticket.seller.branch_check_digit,
+                branch_number=ticket.seller.branch_number,
+                account_number=ticket.seller.account_number,  # 16 digits
+                account_check_digit=ticket.seller.account_check_digit,
+                holder_type="individual",
+                holder_document=ticket.seller.document_identity_number,
+                type="checking",
+            ),
+        )
+        return recipient_data
+
+    def create_recipient(self, recipient_data: s.PagarmeRecipientCreate, seller: m.User):
         """Creates a recipient for split payment method."""
         response = self.api.post(self.__generate_url__("recipients"), json=recipient_data.model_dump())
-        return response.json()
+        seller.recipient_id = response.json().get("id")
+        return seller.recipient_id
+
+    def check_recipient_credentials(self, seller: m.User) -> bool:
+        if (
+            seller.recipient_id
+            and seller.bank
+            and seller.branch_check_digit
+            and seller.branch_number
+            and seller.account_number
+            and seller.account_check_digit
+        ):
+            return True
+        return False
 
     # Customers
     def get_customers(
