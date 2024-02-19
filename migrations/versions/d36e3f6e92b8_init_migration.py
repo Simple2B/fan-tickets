@@ -1,8 +1,8 @@
 """Init migration
 
-Revision ID: fb5d762a2563
+Revision ID: d36e3f6e92b8
 Revises: 
-Create Date: 2024-02-13 17:18:33.373082
+Create Date: 2024-02-16 15:18:13.492246
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fb5d762a2563'
+revision = 'd36e3f6e92b8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,7 +24,6 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('notification_type', sa.String(length=32), nullable=False),
     sa.Column('payload', sa.JSON(), nullable=False),
-    sa.Column('is_viewed', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_notifications'))
     )
     op.create_table('pictures',
@@ -85,7 +84,7 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=256), nullable=False),
     sa.Column('activated', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('reset_password_uid', sa.String(length=64), nullable=False),
+    sa.Column('reset_password_uuid', sa.String(length=64), nullable=False),
     sa.Column('role', sa.String(length=32), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['identity_document_id'], ['pictures.id'], name=op.f('fk_users_identity_document_id_pictures')),
@@ -139,12 +138,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['reviewer_id'], ['users.id'], name=op.f('fk_reviews_reviewer_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_reviews'))
     )
-    op.create_table('user_notification',
+    op.create_table('user_notifications',
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('notification_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['notification_id'], ['notifications.id'], name=op.f('fk_user_notification_notification_id_notifications'), ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_user_notification_user_id_users')),
-    sa.PrimaryKeyConstraint('user_id', 'notification_id', name=op.f('pk_user_notification'))
+    sa.Column('is_viewed', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['notification_id'], ['notifications.id'], name=op.f('fk_user_notifications_notification_id_notifications'), ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_user_notifications_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_user_notifications'))
     )
     op.create_table('tickets',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -232,7 +233,7 @@ def downgrade():
     op.drop_table('payments')
     op.drop_table('users_events')
     op.drop_table('tickets')
-    op.drop_table('user_notification')
+    op.drop_table('user_notifications')
     op.drop_table('reviews')
     op.drop_table('notifications_configs')
     op.drop_table('events')

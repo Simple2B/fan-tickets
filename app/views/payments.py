@@ -213,4 +213,5 @@ def webhook():
     # ticket.paid_to_seller_at = datetime.now()
     # ticket.is_deleted = True
 
+    log(log.INFO, "Webhook received: [%s]", request)
     return {"status": "success"}, 200

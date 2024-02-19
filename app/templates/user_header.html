@@ -16,8 +16,8 @@
     <div class="h-[50vh] overflow-auto notification-container"> 
       <!-- prettier-ignore -->
       <div class="h-2 border-t-0 invisible border-red-300"></div>
-        <p hx-get="{{url_for('notification.get_notifications')}}" hx-trigger="intersect once" hx-swap="beforebegin"></p>
-        <div id="notification_loader" hx-get="{{url_for('notification.get_notification')}}" hx-trigger="load_notification" hx-swap="afterend" hx-target="#new_notifications" hx-include="[name='notification_uuid']">
+        <p hx-get="{{url_for('admin.notification.get_notifications')}}" hx-trigger="intersect once" hx-swap="beforebegin"></p>
+        <div id="notification_loader" hx-get="{{url_for('admin.notification.get_notification')}}" hx-trigger="load_notification" hx-swap="afterend" hx-target="#new_notifications" hx-include="[name='notification_uuid']">
           <div id="notification-new-label" class="hidden justify-center items-center mb-4 text-sm text-yellow-800 rounded-lg  dark:text-yellow-300" role="alert"><span class="font-medium">New</span></div>
         </div>
         <input class="hidden" name="notification_uuid">

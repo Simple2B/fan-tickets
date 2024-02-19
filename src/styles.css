@@ -179,6 +179,14 @@
   color: #fff;
 }
 
+.button-gradient-yellow {
+  background: linear-gradient(#5d4b15, #5d4b15) padding-box,
+    linear-gradient(180deg, #f2b705 0%, #323232 100%) border-box;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  color: #fff;
+}
+
 .button-gradient-grey:-webkit-autofill,
 .button-gradient-grey:-webkit-autofill:hover,
 .button-gradient-grey:-webkit-autofill:focus {
@@ -523,8 +531,8 @@ select::-ms-expand {
   width: 5px;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

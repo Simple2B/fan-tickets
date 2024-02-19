@@ -533,7 +533,7 @@
                                                     align="center"
                                                     bgcolor="#f2b705">
                                                     <a
-                                                      href="{{ url_for('auth.activate', user_uuid=user.uuid, verification_code=user.verification_code, _external=True) }}"
+                                                      href="{{ url_for('main.index', _external=True) }}"
                                                       target="_blank"
                                                       style="
                                                         color: #000;
@@ -551,8 +551,9 @@
                                                         border: 1px solid
                                                           #f2b705;
                                                       "
-                                                      >Confirm registration</a
+                                                      >Dispute created</a
                                                     >
+                                                    <p>{{ event_name }}</p>
                                                   </td>
                                                 </tr>
                                               </tbody>

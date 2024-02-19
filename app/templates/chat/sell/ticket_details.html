@@ -1,5 +1,5 @@
 {% from 'chat/_macros_chat_message.html' import bot_message,
-bot_message_without_date, user_message, submit_message_get %}
+bot_message_without_date, user_message, submit_message_disable %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
@@ -60,8 +60,7 @@ bot_message_without_date, user_message, submit_message_get %}
   </div>
 </div>
 
-{{ submit_message_get('sell.get_ticket_details', "[name='room_unique_id'], [name='ticket_unique_id'],
-[name='user_message']", disabled='disabled') }} {% block scripts %}
+{{ submit_message_disable() }} {% block scripts %}
 <!-- prettier-ignore -->
 <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
 {% endblock %}

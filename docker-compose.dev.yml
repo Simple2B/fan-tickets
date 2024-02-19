@@ -25,11 +25,8 @@ services:
       - db
     env_file:
       - .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
-      - "traefik.http.routers.fan_ticket.tls=true"
-      - "traefik.http.routers.fan_ticket.tls.certresolver=myresolver"
+    ports:
+      - "127.0.0.1:8007:8000"
 
   api:
     image: simple2b/fan_ticket
@@ -41,11 +38,6 @@ services:
       ALCHEMICAL_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-passwd}@db:5432/db
     depends_on:
       - db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fan_ticket_api.rule=Host(`api.fan-ticket.simple2b.net`)"
-      - "traefik.http.routers.fan_ticket_api.tls=true"
-      - "traefik.http.routers.fan_ticket_api.tls.certresolver=myresolver"
 
   redis:
     image: redis:7

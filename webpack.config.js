@@ -106,6 +106,16 @@ const notificationConfig = {
   },
 };
 
+const notificationUserConfig = {
+  entry: {
+    main: './src/notification.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/notification_user.js', // <--- Will be compiled to this single file
+  },
+};
+
 const notificationAdminConfig = {
   entry: {
     main: './src/notification/notification_admin.ts',
@@ -136,6 +146,16 @@ const profileConfig = {
   },
 }
 
+const userHeaderNotificationsConfig = {
+  entry: {
+    main: './src/user_header_notifications.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/user_header_notifications.js',
+  },
+}
+
 const configs = [
   baseConfig,
   userConfig,
@@ -147,8 +167,10 @@ const configs = [
   utilsConfig,
   notificationConfig,
   notificationAdminConfig,
+  notificationUserConfig,
   disputeConfig,
   profileConfig,
+  userHeaderNotificationsConfig,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;

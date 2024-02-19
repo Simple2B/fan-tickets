@@ -36,7 +36,7 @@ def test_create_user_email(client: FlaskClient):
     response = client.get(f"/chat/create_user_email?room_unique_id={room.unique_id}&user_message={TESTING_EMAIL}")
     assert response.status_code == 200
     assert len(m.User.all()) == users_count + 1
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
 
 
 def test_password(client: FlaskClient):
@@ -53,7 +53,7 @@ def test_password(client: FlaskClient):
     ).save(False)
     db.session.commit()
     TEST_PASSWORD = "123456"
-    messages_count = len(room.messages)
+    messages_count = len(db.session.scalars(room.messages.select()).all())
     MESSAGES_IN_CHAT = 2
 
     response = client.post(
@@ -68,7 +68,7 @@ def test_password(client: FlaskClient):
 
     assert response.status_code == 200
     assert "Password has been added" in response.data.decode()
-    assert len(room.messages) == messages_count
+    assert len(db.session.scalars(room.messages.select()).all()) == messages_count
 
     response = client.post(
         "/chat/confirm_user_password",
@@ -81,7 +81,7 @@ def test_password(client: FlaskClient):
     messages_count += MESSAGES_IN_CHAT
     assert response.status_code == 200
     assert "Password does not match" in response.data.decode()
-    assert len(room.messages) == messages_count
+    assert len(db.session.scalars(room.messages.select()).all()) == messages_count
 
     response = client.post(
         "/chat/confirm_user_password",
@@ -95,7 +95,7 @@ def test_password(client: FlaskClient):
 
     assert response.status_code == 200
     assert "Password has been confirmed" in response.data.decode()
-    assert len(room.messages) == messages_count
+    assert len(db.session.scalars(room.messages.select()).all()) == messages_count
 
 
 def test_create_user_name(client: FlaskClient):
@@ -114,7 +114,7 @@ def test_create_user_name(client: FlaskClient):
         f"/chat/create_user_name?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_NAME}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.name == TESTING_NAME
     assert f"Name: {TESTING_NAME}" in response.data.decode()
 
@@ -139,7 +139,7 @@ def test_create_user_last_name(client: FlaskClient):
         f"/chat/create_user_last_name?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_LAST_NAME}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.last_name == TESTING_LAST_NAME
     assert f"Last name: {TESTING_LAST_NAME}" in response.data.decode()
 
@@ -165,7 +165,7 @@ def test_create_user_phone(client: FlaskClient):
     )
     assert response.status_code == 200
     assert f"Phone: {TESTING_PHONE}" in response.data.decode()
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.phone == TESTING_PHONE
 
 
@@ -189,7 +189,7 @@ def test_create_user_birth_date(client: FlaskClient):
         f"/chat/create_user_birth_date?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_BIRTH_DATE}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.birth_date == datetime.strptime(TESTING_BIRTH_DATE, app.config["CHAT_USER_FORMAT"])
     assert f"Birth date: {TESTING_BIRTH_DATE}" in response.data.decode()
 
@@ -214,7 +214,7 @@ def test_create_user_address(client: FlaskClient):
         f"/chat/create_user_address?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_ADDRESS}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.address == TESTING_ADDRESS
     assert f"Address: {TESTING_ADDRESS}" in response.data.decode()
 
@@ -237,7 +237,7 @@ def test_create_user_social_profile(client: FlaskClient):
         f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&facebook={True}&user_message={TESTING_FACEBOOK}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 2
+    assert len(db.session.scalars(room.messages.select()).all()) == 2
     assert user.facebook == TESTING_FACEBOOK
     assert "Facebook url added" in response.data.decode()
 
@@ -245,7 +245,7 @@ def test_create_user_social_profile(client: FlaskClient):
         f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&instagram={True}&user_message={TESTING_INSTAGRAM}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 4
+    assert len(db.session.scalars(room.messages.select()).all()) == 4
     assert user.instagram == TESTING_INSTAGRAM
     assert "Instagram url added" in response.data.decode()
 
@@ -253,7 +253,7 @@ def test_create_user_social_profile(client: FlaskClient):
         f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&twitter={True}&user_message={TESTING_TWITTER}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 7
+    assert len(db.session.scalars(room.messages.select()).all()) == 7
     assert user.twitter == TESTING_TWITTER
     assert "Twitter url added" in response.data.decode()
     assert "You have successfully registered" in response.data.decode()
@@ -264,7 +264,7 @@ def test_create_user_social_profile(client: FlaskClient):
         f"/chat/create_user_social_profile?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&without_social_profile={True}"
     )
     assert response.status_code == 200
-    assert len(room.messages) == 9
+    assert len(db.session.scalars(room.messages.select()).all()) == 9
     assert "You have successfully registered" in response.data.decode()
     assert "Without social profile" in response.data.decode()
     assert user.email == current_user.email

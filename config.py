@@ -84,7 +84,6 @@ class BaseConfig(BaseSettings):
     CHAT_DEFAULT_CARD: str = "0000000000000000"
 
     # dev base url
-    DEV_BASE_URL: str = "127.0.0.1:5000/"
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
     PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
@@ -137,6 +136,10 @@ class BaseConfig(BaseSettings):
     TICKETS_SOLD_PAY_SELLERS_AFTER: int = 48  # hours
 
     SERVER_TYPE: str = "development"
+
+    # Basic URL for url_for
+    SERVER_NAME: str
+    PREFERRED_URL_SCHEME: str = "http"
 
     @staticmethod
     def configure(app: Flask):

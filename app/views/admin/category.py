@@ -11,14 +11,10 @@ category_blueprint = Blueprint("category", __name__, url_prefix="/category")
 
 
 @category_blueprint.route("/")
-def category_index():
-    return redirect(url_for("admin.category.get_categories"))
-
-
-@category_blueprint.route("/categories")
 def get_categories():
-    categories_query = m.Category.select().where(m.Category.deleted.is_(False)).order_by(m.Category.created_at.asc())
-    categories = db.session.scalars(categories_query).all()
+    categories = db.session.scalars(
+        m.Category.select().where(m.Category.deleted.is_(False)).order_by(m.Category.created_at.asc())
+    )
     log(log.INFO, "Categories: [%s]", categories)
     return render_template("admin/categories.html", categories=categories)
 

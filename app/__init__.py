@@ -7,11 +7,10 @@ from flask import Flask, render_template, abort, request
 from flask_login import LoginManager, current_user
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
-from flask_mail import Mail
 
 from app import forms, schema as s
 from app.logger import log
-from app.controllers import PagarmeClient, FlaskSSENotification
+from app.controllers import PagarmeClient, FlaskSSENotification, MailController
 from app.models.utils import generate_paginate_query
 
 
@@ -20,9 +19,10 @@ from .database import db
 # instantiate extensions
 login_manager = LoginManager()
 migration = Migrate()
-mail = Mail()
+
 pagarme_client = PagarmeClient()
 flask_sse_notification = FlaskSSENotification()
+mail_controller = MailController()
 
 
 def create_app(environment="development") -> Flask:
@@ -58,7 +58,7 @@ def create_app(environment="development") -> Flask:
     db.init_app(app)
     migration.init_app(app, db)
     login_manager.init_app(app)
-    mail.init_app(app)
+    mail_controller.init_app(app)
 
     # init pagarme client
     pagarme_client.configure(configuration)
@@ -91,6 +91,7 @@ def create_app(environment="development") -> Flask:
         if channel == "admin":
             if current_user.role != m.UserRole.admin.value:
                 abort(403)
+            db.session.close()
             return
 
         topic, identifier = channel.split(":")
@@ -110,13 +111,14 @@ def create_app(environment="development") -> Flask:
         elif topic == "notification" and current_user.uuid != identifier:
             abort(403)
 
+        db.session.close()
+
     app.register_blueprint(sse, url_prefix="/sse")
 
     # Set up flask login.
     @login_manager.user_loader
     def get_user(id: int) -> m.User | None:
-        query = sa.select(m.User).where(m.User.id == int(id))
-        return db.session.scalar(query)
+        return db.session.get(m.User, int(id))
 
     login_manager.login_view = "auth.login"
     login_manager.login_message_category = "info"
@@ -136,7 +138,7 @@ def create_app(environment="development") -> Flask:
         cut_seconds,
         card_mask,
         get_categories,
-        # get_chat_room_messages,
+        get_chat_room_messages,
         get_chatbot_id,
         round_to_two_places,
         event_form_date,
@@ -159,11 +161,12 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
     app.jinja_env.globals["get_categories"] = get_categories
-    # app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
+    app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
     app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
+    app.jinja_env.globals["get_room_messages"] = lambda room: db.session.scalars(room.messages.select())
 
     # Shell context
     @app.shell_context_processor

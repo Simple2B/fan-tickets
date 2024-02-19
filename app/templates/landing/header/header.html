@@ -58,8 +58,13 @@
           <li>
             <button id="header-user-dropdown-button">
               <div class="flex gap-2 items-center">
-                <img class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
-                  src="{{ current_user.picture.base64_src }}" alt="Profile picture" />
+                <div class="relative">
+                  <img class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
+                    src="{{ current_user.picture.base64_src }}" alt="Profile picture" />
+                  <div id="new-notifications-indicator"
+                    class="absolute {% if not current_user.unread_notifications_count %} hidden {% endif %} w-2 h-2 right-0 top-0 rounded-full bg-red-600">
+                  </div>
+                </div>
                 <!-- prettier-ignore -->
                 <svg id="header-user-dropdown-arrow"
                   class="w-7 h-7 transform transition-all duration-300 fill-white hover:fill-secondary " width="24"
@@ -78,6 +83,11 @@
         </ul>
         <!-- prettier-ignore -->
         {% include 'landing/header/user_dropdown.html' %}
+        <!-- SSE user channel listen -->
+        <input class="hidden" id="user-uuid" value="{{ current_user.uuid}}" />
+        <!-- prettier-ignore -->
+        <script src="{{ url_for('static', filename='js/user_header_notifications.js') }}"></script>
+
         {% else %}
         <ul class="flex gap-4">
           <li>

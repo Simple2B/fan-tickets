@@ -91,7 +91,7 @@ class User(db.Model, UserMixin, ModelMixin):
         sa.DateTime,
         default=utcnow,
     )
-    reset_password_uid: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=gen_password_reset_id)
+    reset_password_uuid: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=gen_password_reset_id)
     role: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=UserRole.client.value)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     # Relationships
@@ -105,8 +105,9 @@ class User(db.Model, UserMixin, ModelMixin):
         back_populates="buyer",
     )
     notifications: orm.WriteOnlyMapped["Notification"] = orm.relationship(
-        back_populates="users", secondary=UserNotification, passive_deletes=True
+        back_populates="users", secondary=UserNotification.__table__, passive_deletes=True
     )
+
     last_notification: orm.Mapped["Notification"] = orm.relationship(foreign_keys=[last_notification_id])
     notifications_config: orm.Mapped["NotificationsConfig"] = orm.relationship(back_populates="user")
     reviewers: orm.Mapped[list["Review"]] = orm.relationship(
@@ -160,8 +161,7 @@ class User(db.Model, UserMixin, ModelMixin):
             return user
 
     def reset_password(self):
-        self.password_hash = ""
-        self.reset_password_uid = gen_password_reset_id()
+        self.reset_password_uuid = gen_password_reset_id()
         self.save()
 
     def __repr__(self):
@@ -175,6 +175,18 @@ class User(db.Model, UserMixin, ModelMixin):
     @property
     def birth_date_string(self):
         return self.birth_date.strftime("%m/%d/%Y") if self.birth_date else None
+
+    @property
+    def unread_notifications_count(self):
+        session = orm.Session.object_session(self)
+
+        assert session, "session is None in User.unread_notifications_count()"
+
+        return session.scalar(
+            sa.select(sa.func.count(UserNotification.notification_id)).where(
+                UserNotification.user_id == self.id, UserNotification.is_viewed.is_(False)
+            )
+        )
 
 
 class AnonymousUser(AnonymousUserMixin):

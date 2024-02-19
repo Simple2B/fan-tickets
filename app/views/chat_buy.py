@@ -3,14 +3,19 @@ import requests
 import base64
 import json
 import os
-from flask import request, Blueprint, render_template, current_app as app, url_for
-from flask_login import current_user, login_required
-from flask_mail import Message
+
 from psycopg2 import IntegrityError
 
-from app import controllers as c, schema as s, models as m, forms as f, db, mail, pagarme_client
+from flask import request, Blueprint, render_template, current_app as app, url_for
+from flask_login import current_user, login_required
+
+
+from app import controllers as c, schema as s, models as m, forms as f, db, pagarme_client
 from app.logger import log
+from app import mail_controller
+
 from config import config
+
 
 CFG = config()
 
@@ -336,7 +341,7 @@ def booking_ticket():
             "chat/registration/passport_identity_number.html",
             room=room,
             now=c.utcnow_chat_format(),
-            user_unique_id=current_user.unique_id,
+            user_unique_id=current_user.uuid,
             form=form,
         )
 
@@ -466,7 +471,7 @@ def payment():
         customer_data = s.PagarmeCustomerCreate(
             name=current_user.name,
             birthdate=current_user.birth_date_string,
-            code=current_user.unique_id,
+            code=current_user.uuid,
             email=current_user.email,
             document=current_user.document_identity_number,
             phones=phones_data,
@@ -593,15 +598,10 @@ def subscribe_on_event():
             now=c.utcnow_chat_format(),
         )
 
-    msg = Message(
-        subject=f"Subscription to {CFG.APP_NAME}",
-        sender=app.config["MAIL_DEFAULT_SENDER"],
-        recipients=[user.email],
-    )
     if os.environ.get("APP_ENV") == "development":
         url = url_for(
             "auth.activate",
-            reset_password_uid=user.unique_id,
+            reset_password_uuid=user.uuid,
             _external=True,
         )
     else:
@@ -609,15 +609,18 @@ def subscribe_on_event():
             base_url = app.config["PRODUCTION_BASE_URL"]
         else:
             base_url = app.config["STAGING_BASE_URL"]
-        url = f"{base_url}activated/{user.unique_id}"
+        url = f"{base_url}activated/{user.uuid}"
 
-    msg.html = render_template(
-        "email/email_confirm_subscribe.htm",
-        user=user,
-        event_name=event.name,
-        url=url,
+    mail_controller.send_email(
+        (user,),
+        f"Subscription to {CFG.APP_NAME}",
+        render_template(
+            "email/email_confirm_subscribe.htm",
+            user=user,
+            event_name=event.name,
+            url=url,
+        ),
     )
-    mail.send(msg)
 
     return render_template(
         "chat/buy/subscribe_success.html",
@@ -639,22 +642,19 @@ def clear_message_history(room: m.Room) -> None:
     messages_query = m.Message.select().where(m.Message.room_id == room.id)
     messages = db.session.scalars(messages_query).all()
 
-    msg = Message(
-        subject=f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
-        sender=app.config["MAIL_DEFAULT_SENDER"],
-        recipients=[current_user.email],
+    mail_controller.send_email(
+        (current_user,),
+        f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+        render_template(
+            "email/chat_history.htm",
+            user=current_user,
+            messages=messages,
+        ),
     )
-    msg.html = render_template(
-        "email/chat_history.htm",
-        user=current_user,
-        messages=messages,
-    )
-    mail.send(msg)
 
     for message in messages:
         db.session.delete(message)
     db.session.commit()
-    return
 
 
 @chat_buy_blueprint.route("/pagar", methods=["GET", "POST"])

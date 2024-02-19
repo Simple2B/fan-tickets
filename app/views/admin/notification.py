@@ -33,7 +33,7 @@ def get_notifications():
     )
 
     return render_template(
-        "notification/notifications.html",
+        "admin/notification/notifications.html",
         notifications=reversed(notifications.all()),
         page=page,
     )
@@ -53,4 +53,4 @@ def get_notification():
     if not notification:
         abort(HTTPStatus.NOT_FOUND)
 
-    return render_template("notification/notification.html", notification=notification)
+    return render_template("admin/notification/notification.html", notification=notification)
