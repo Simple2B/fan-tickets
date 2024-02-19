@@ -36,6 +36,25 @@ class PagarmeShippingData(BaseModel):
     address: Optional[PagarmeBillingAddress] = None
 
 
+class PagarmeSplitCard(BaseModel):
+    number: str
+    holder_name: str
+    holder_document: str
+    exp_month: int
+    exp_year: int
+    cvv: str
+    brand: str
+    label: str
+    billing_address: PagarmeBillingAddress
+
+
+class PagarmePaymentCard(BaseModel):
+    operation_type: str
+    installments: int
+    statement_descriptor: str
+    card: PagarmeSplitCard
+
+
 class PagarmeCard(BaseModel):
     """
     '{"id": "card_lD6BoyphvHaLVv0y",
@@ -193,8 +212,9 @@ class PagarmeSplitObject(BaseModel):
 
 
 class PagarmePaymentSplit(BaseModel):
-    payment_method: str = "pix"
-    pix: PagarmePaymentPix
+    payment_method: str = "credit_card"
+    # pix: PagarmePaymentPix
+    credit_card: PagarmePaymentCard
     split: list[PagarmeSplitObject]
 
 

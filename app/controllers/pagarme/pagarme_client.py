@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 from urllib.parse import urljoin
 from http import HTTPStatus
@@ -59,6 +60,21 @@ class PagarmeClient:
         self.PAGARME_PLATFORM_PERCENTAGE = config.PAGARME_PLATFORM_PERCENTAGE
         self.PAGARME_DEFAULT_FT_CUSTOMER_ID = config.PAGARME_DEFAULT_FT_CUSTOMER_ID
         self.PAGARME_DEFAULT_FT_RECIPIENT_ID = config.PAGARME_DEFAULT_FT_RECIPIENT_ID
+
+        # Default card data for FT
+        self.PAGARME_DEFAULT_FT_CARD_NUMBER = config.PAGARME_DEFAULT_FT_CARD_NUMBER
+        self.PAGARME_DEFAULT_FT_CARD_HOLDER_NAME = config.PAGARME_DEFAULT_FT_CARD_HOLDER_NAME
+        self.PAGARME_DEFAULT_FT_CARD_HOLDER_DOCUMENT = config.PAGARME_DEFAULT_FT_CARD_HOLDER_DOCUMENT
+        self.PAGARME_DEFAULT_FT_CARD_EXP_MONTH = config.PAGARME_DEFAULT_FT_CARD_EXP_MONTH
+        self.PAGARME_DEFAULT_FT_CARD_EXP_YEAR = config.PAGARME_DEFAULT_FT_CARD_EXP_YEAR
+        self.PAGARME_DEFAULT_FT_CARD_CVV = config.PAGARME_DEFAULT_FT_CARD_CVV
+        self.PAGARME_DEFAULT_FT_CARD_BRAND = config.PAGARME_DEFAULT_FT_CARD_BRAND
+        self.PAGARME_DEFAULT_FT_CARD_LABEL = config.PAGARME_DEFAULT_FT_CARD_LABEL
+        self.PAGARME_DEFAULT_FT_CARD_STATE = config.PAGARME_DEFAULT_FT_CARD_STATE
+        self.PAGARME_DEFAULT_FT_CARD_ZIP_CODE = config.PAGARME_DEFAULT_FT_CARD_ZIP_CODE
+        self.PAGARME_DEFAULT_FT_CARD_CITY = config.PAGARME_DEFAULT_FT_CARD_CITY
+        self.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_1 = config.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_1
+        self.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_2 = config.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_2
 
         self.base_url = config.PAGARME_BASE_URL
 
@@ -134,7 +150,8 @@ class PagarmeClient:
             items=[
                 s.PagarmeItem(
                     amount=ticket.price_net * 100,
-                    description=f"Ticket {ticket.event.name}",
+                    code=ticket.unique_id,
+                    description=f"Ticket {ticket.event.name} seller: {ticket.seller.uuid}",
                     quantity=1,
                     category=ticket.ticket_category,
                 )
@@ -142,29 +159,56 @@ class PagarmeClient:
             customer_id=self.PAGARME_DEFAULT_FT_CUSTOMER_ID,  # this is a default customer that pays from FT to sellers
             payments=[
                 s.PagarmePaymentSplit(
-                    payment_method="pix",
-                    pix=s.PagarmePaymentPix(
-                        expires_in=30,
-                        payment_method="pix",
-                        billing_address_editable=False,
-                        customer_editable=False,
-                        accepted_payment_methods=["pix"],
-                        success_url="https://fan-ticket.simple2b.org/pay/webhook",
-                        Pix=s.PagarmePixData(
-                            expires_in=2147483647,
+                    # payment_method="pix",
+                    # pix=s.PagarmePaymentPix(
+                    #     expires_in=30,
+                    #     payment_method="pix",
+                    #     billing_address_editable=False,
+                    #     customer_editable=False,
+                    #     accepted_payment_methods=["pix"],
+                    #     success_url="https://fan-ticket.simple2b.org/pay/webhook",
+                    #     Pix=s.PagarmePixData(
+                    #         expires_in=2147483647,
+                    #     ),
+                    # ),
+                    payment_method="credit_card",
+                    credit_card=s.PagarmePaymentCard(
+                        # operation_type="auth_only",
+                        operation_type="auth_and_capture",
+                        installments=1,
+                        statement_descriptor="FanTicket",  # Texto exibido na fatura do cartão. Max: 22 caracteres para clientes Gateway; 13 para clientes PSP
+                        # The default FT card from which 2nd stage payments should be made
+                        card=s.PagarmeSplitCard(
+                            number=self.PAGARME_DEFAULT_FT_CARD_NUMBER,
+                            holder_name=self.PAGARME_DEFAULT_FT_CARD_HOLDER_NAME,
+                            holder_document=self.PAGARME_DEFAULT_FT_CARD_HOLDER_DOCUMENT,
+                            exp_month=self.PAGARME_DEFAULT_FT_CARD_EXP_MONTH,
+                            exp_year=self.PAGARME_DEFAULT_FT_CARD_EXP_YEAR,
+                            cvv=self.PAGARME_DEFAULT_FT_CARD_CVV,
+                            brand=self.PAGARME_DEFAULT_FT_CARD_BRAND,
+                            label=self.PAGARME_DEFAULT_FT_CARD_LABEL,
+                            billing_address=s.PagarmeBillingAddress(
+                                country="br",
+                                state=self.PAGARME_DEFAULT_FT_CARD_STATE,
+                                zip_code=self.PAGARME_DEFAULT_FT_CARD_ZIP_CODE,
+                                city=self.PAGARME_DEFAULT_FT_CARD_CITY,
+                                line_1=self.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_1,
+                                line_2=self.PAGARME_DEFAULT_FT_CARD_BILLING_LINE_2,
+                            ),
                         ),
                     ),
                     split=[
                         s.PagarmeSplitObject(
-                            amount=self.PAGARME_SELLER_PERCENTAGE,  # 94% of the ticket price - has to be calculated according to new business rules
+                            # amount=self.PAGARME_SELLER_PERCENTAGE,  # 94% of the ticket price - has to be calculated according to new business rules
+                            amount=100,  # 94% of the ticket price - has to be calculated according to new business rules
                             recipient_id=ticket.seller.recipient_id,
                             options=s.SplitOptions(),
                         ),
-                        s.PagarmeSplitObject(
-                            amount=self.PAGARME_PLATFORM_PERCENTAGE,  # 6% of the ticket price - has to be calculated according to new business rules
-                            recipient_id=ticket.seller.recipient_id,
-                            options=s.SplitOptions(),
-                        ),
+                        # s.PagarmeSplitObject(
+                        #     amount=self.PAGARME_PLATFORM_PERCENTAGE,  # 6% of the ticket price - has to be calculated according to new business rules
+                        #     recipient_id=self.PAGARME_DEFAULT_FT_RECIPIENT_ID,
+                        #     options=s.SplitOptions(),
+                        # ),
                     ],
                 ),
             ],
@@ -182,11 +226,27 @@ class PagarmeClient:
         excluding the platform fee and the payment method fee, which are left on the platform account
         """
 
+        # Logging a request data to a file
+        with open("split_order_request.json", "w") as file:
+            file.write(create_split_order_data.model_dump_json())
+
+        # Sending a request to the pagarme API
         response = self.api.post(
             self.__generate_url__("orders"),
             json=create_split_order_data.model_dump(exclude_none=True),
         )
-        return response
+
+        if not response.ok:
+            log(log.ERROR, "create_split_order response: [%s]", response.status_code)
+
+        # Logging a response data to a file
+        try:
+            with open("split_order_response.json", "w") as file:
+                file.write(json.dumps(response.json()))
+        except Exception as e:
+            log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
+
+        return response.ok
 
     # Recipients for split payments
     def get_recipients(self):

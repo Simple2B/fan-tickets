@@ -32,5 +32,7 @@ from .payment import (
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
+    PagarmeSplitCard,
+    PagarmePaymentCard,
 )
 from .order import PagarmeCreateOrderPix, PagarmeCreateOrderResponsePix, PagarmeCreateOrderSplit

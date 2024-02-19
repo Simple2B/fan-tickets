@@ -205,3 +205,4 @@ def test_pay_sellers(runner: FlaskCliRunner):
 
     command_output: Result = runner.invoke(args=["pay-sellers"])
     assert f"{len(tickets_to_pay)} tickets to pay" in command_output.stdout
+    assert tickets_to_pay

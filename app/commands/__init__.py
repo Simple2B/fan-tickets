@@ -369,14 +369,17 @@ def init_shell_commands(app: Flask):
                 if not split_data:
                     continue
 
-                response = pagarme_client.create_split(split_data)  # pay to seller via pagarme
+                response = pagarme_client.create_split(split_data)  # pays to seller via pagarme
+                print(response)
 
-                # On the webhook we have to catch an info about paid tickets and save new properties to each ticket
-                # ticket.paid_to_seller_at = datetime.now()
-                # ticket.is_deleted = True
-
-                # If response is ok
-                print(f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}")
+                if response:
+                    ticket.paid_to_seller_at = datetime.now()
+                    ticket.is_deleted = True
+                    print(
+                        f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}"
+                    )
+                else:
+                    print(f"Ticket {ticket.unique_id} is not paid")
             print(len(tickets), "paid to sellers")
             db.session.commit()
         else:

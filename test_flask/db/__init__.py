@@ -117,7 +117,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
 
         # set to seller a recipient_id
         seller: m.User = db.session.get(m.User, seller_id)
-        seller.recipient_id = "05982997005"
+        seller.recipient_id = "re_clsnbbg4c071b019twu0zvkio"
         seller.save(False)
 
         event = m.Event(

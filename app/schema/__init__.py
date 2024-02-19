@@ -38,6 +38,8 @@ from .pagarme import (
     PagarmeCreateOrderResponsePix,
     DefaultBankAccount,
     PagarmeRecipientCreate,
+    PagarmeSplitCard,
+    PagarmePaymentCard,
 )
 
 from .chat_auth import (
