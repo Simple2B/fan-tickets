@@ -1,5 +1,5 @@
 {% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
-submit_message_get
+submit_message_disable
 %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
@@ -11,8 +11,9 @@ submit_message_get
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <div>
     <a href={{qr_url}}>
-    <img class="w-full h-full" src="data:image/png;base64,{{ qr }}" alt="qr_code"></a></div>
-    <div class="mt-2 w-265 flex flex-col gap-3">
+      <img class="w-full h-full" src="data:image/png;base64,{{ qr }}" alt="qr_code"></a>
+  </div>
+  <div class="mt-2 w-265 flex flex-col gap-3">
     <div class="flex flex-col gap-2">
       <button type="button" onclick="copyToClipboard('{{qr_to_copy}}')"
         class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
@@ -69,7 +70,7 @@ submit_message_get
 </div>
 </div>
 
-{{ submit_message_get('buy.get_event_name', "[name='room_unique_id'], [name='user_message']", disabled='disabled') }}
+{{ submit_message_disable() }}
 
 {% block scripts %}
 <!-- prettier-ignore -->
