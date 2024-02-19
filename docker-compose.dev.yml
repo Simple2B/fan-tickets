@@ -25,6 +25,8 @@ services:
       - db
     env_file:
       - .env
+    ports:
+      - "127.0.0.1:8007:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fan_ticket.rule=Host(`fan-ticket.simple2b.net`)"
