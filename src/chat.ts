@@ -127,6 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (targetElement.classList.contains('new_message')) {
       chatMain.scrollTo(0, chatMain.scrollHeight);
     }
+    if (targetElement.querySelector('.chat-message-input')) {
+      const messageInput = targetElement.querySelector(
+        '.chat-message-input',
+      ) as HTMLInputElement;
+      messageInput.focus();
+    }
   });
 
   document.addEventListener('htmx:afterSwap', e => {
@@ -134,6 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (targetElement.getAttribute('id') === 'chat-body') {
       showMessage();
+    }
+    if (targetElement.querySelector('.chat-message-input')) {
+      const messageInput = targetElement.querySelector(
+        '.chat-message-input',
+      ) as HTMLInputElement;
+      messageInput.focus();
     }
   });
 

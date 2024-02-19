@@ -1,5 +1,5 @@
 {% from 'chat/_macros_chat_message.html' import bot_message, bot_message_without_date, user_message,
-submit_message_get
+submit_message_disable
 %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
@@ -33,8 +33,7 @@ submit_message_get
   </div>
 </div>
 
-{{ submit_message_get('chat.create_user_birth_date', "[name='room_unique_id'], [name='user_unique_id'],
-[name='user_message']", disabled='disabled') }}
+{{ submit_message_disable() }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

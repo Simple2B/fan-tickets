@@ -219,4 +219,5 @@ def webhook():
     order.created
     order.canceled
     """
+    log(log.INFO, "Webhook received: [%s]", request)
     return {"status": "success"}, 200

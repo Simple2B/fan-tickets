@@ -237,7 +237,7 @@ def password_recovery():
 
     user.reset_password()
     return render_template(
-        "auth-admin/reset_password.html",
+        "auth/reset_password.html",
         form=form,
         user=user,
     )
