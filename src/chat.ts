@@ -97,7 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const csrfTokenInput = document.getElementById(
     'csrf_token',
   ) as HTMLInputElement;
-  const csrfToken = csrfTokenInput.value;
+
+  let csrfToken = '';
+
+  if (csrfTokenInput) {
+    csrfToken = csrfTokenInput.value;
+  }
 
   roomUuidInput = document.querySelector(
     '[name="room_uuid"]',
