@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 from urllib.parse import urljoin
 from http import HTTPStatus
@@ -14,6 +15,10 @@ from .exceptions import (
     APIConnectionError,
     APICreateOrderError,
 )
+
+from config import config
+
+CFG = config()
 
 
 class PagarmeClient:
@@ -150,8 +155,15 @@ class PagarmeClient:
         return s.PagarmeCustomerOutput.model_validate(response.json())
 
     def generate_customer_phone(self, phone: str):
+        # Regexp for phone validation
+        match_res = re.search(CFG.PATTERN_PHONE, phone)
+        country_code = match_res.group(1)
+        area_code = match_res.group(2)
+        number = match_res.group(3)
         return s.PagarmePhoneData(
-            country_code=self.BRASIL_COUNTRY_PHONE_CODE, area_code=self.BRASIL_COUNTRY_AREA_CODE, number=phone
+            country_code=country_code,
+            area_code=area_code,
+            number=number,
         )
 
     # Cards
