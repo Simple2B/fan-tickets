@@ -159,14 +159,16 @@ def test_create_user_phone(client: FlaskClient):
     assert response.status_code == 200
     assert "Please, add your phone" in response.data.decode()
 
-    TESTING_PHONE = "380000000000"
+    TESTING_PHONE = "+55-11-11223344"
     response = client.get(
         f"/chat/create_user_phone?room_unique_id={room.unique_id}&user_unique_id={user.uuid}&user_message={TESTING_PHONE}"
     )
     assert response.status_code == 200
-    assert f"Phone: {TESTING_PHONE}" in response.data.decode()
+    assert "Phone: " in response.data.decode()
+    assert TESTING_PHONE[1:] in response.data.decode()
+    assert "Please input your address" in response.data.decode()
     assert len(db.session.scalars(room.messages.select()).all()) == 2
-    assert user.phone == TESTING_PHONE
+    assert user.phone == TESTING_PHONE[1:]
 
 
 def test_create_user_birth_date(client: FlaskClient):

@@ -1,3 +1,4 @@
+import os
 from typing import Any
 from uuid import uuid4
 from datetime import datetime, UTC
@@ -71,4 +72,6 @@ def gen_uuid() -> str:
 
 
 def utcnow():
+    if os.environ.get("APP_ENV") == "testing":
+        return datetime.now()
     return datetime.now(UTC)

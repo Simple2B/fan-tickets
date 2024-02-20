@@ -4,7 +4,6 @@ import re
 
 import sqlalchemy as sa
 
-from flask import current_app as app
 from werkzeug.security import check_password_hash
 
 from app.database import db
@@ -13,8 +12,10 @@ from app import schema as s
 from app import forms as f
 from app import models as m
 
-
 from app.logger import log
+from config import config
+
+CFG = config()
 
 
 def get_user(user_unique_id: str) -> m.User | None:
@@ -29,7 +30,7 @@ def get_user(user_unique_id: str) -> m.User | None:
 
 def create_email(email: str, room: m.Room) -> tuple[s.ChatAuthEmailValidate, m.User | None]:
     email = email.strip().lower()
-    match_pattern = re.search(app.config["PATTERN_EMAIL"], email)
+    match_pattern = re.search(CFG.PATTERN_EMAIL, email)
 
     if not match_pattern:
         return s.ChatAuthEmailValidate(email=email, message="Invalid email format", is_error=True), None
@@ -149,7 +150,7 @@ def create_user_last_name(last_name: str, user: m.User, room: m.Room):
 
 
 def create_phone(phone: str, user: m.User, room: m.Room) -> str:
-    match_pattern = re.search(app.config["PATTERN_PHONE"], str(phone))
+    match_pattern = re.search(CFG.PATTERN_PHONE, str(phone))
 
     if not match_pattern:
         return "Invalid phone format"
@@ -160,7 +161,7 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
     if user_phone:
         return "Phone already taken"
 
-    user.phone = phone
+    user.phone = phone.strip()
     user.save(False)
 
     c.save_message("Please input your phone", f"Phone: {phone}", room)
@@ -180,12 +181,12 @@ def create_address(address: str, user: m.User, room: m.Room):
 
 def create_birth_date(birth_date: str, user: m.User, room: m.Room) -> bool:
     try:
-        datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
+        datetime.strptime(birth_date, CFG.CHAT_USER_FORMAT)
     except ValueError:
         log(log.ERROR, "Invalid birth date format: [%s]", birth_date)
         return False
 
-    user.birth_date = datetime.strptime(birth_date, app.config["CHAT_USER_FORMAT"])
+    user.birth_date = datetime.strptime(birth_date, CFG.CHAT_USER_FORMAT)
     user.activated = True
     user.save(False)
 

@@ -18,9 +18,14 @@ class PagarmeBillingAddress(BaseModel):
 
 
 class PagarmePhoneData(BaseModel):
-    country_code: Optional[str] = None
-    area_code: Optional[str] = None
-    number: Optional[str] = None
+    """
+    +55 11 9 9999-9999 (São Paulo)
+    +55 21 9 8888-8888 (Rio de Janeiro)
+    """
+
+    country_code: Optional[str] = None  # 2 digits
+    area_code: Optional[str] = None  # 2 digits
+    number: Optional[str] = None  # 8 digits
 
 
 class PagarmePhonesData(BaseModel):

@@ -58,7 +58,8 @@ class BaseConfig(BaseSettings):
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
     PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    # PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    PATTERN_PHONE: str = r"\+?\d{2}-\d{2}-\d{8}"
 
     # API
     IS_API: bool = False
@@ -87,8 +88,9 @@ class BaseConfig(BaseSettings):
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
     PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
-    # platform commission rate
-    PLATFORM_COMMISSION_RATE: float = 1.08
+    # platform commission rate - 11%
+    # 5% - platform commission rate, 3% - payment gateway commission rate that is included twice because of the 2-stage payment
+    PLATFORM_COMMISSION_RATE: float = 1.11
 
     # pagar.me
     PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"
