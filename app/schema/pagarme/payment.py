@@ -2,7 +2,7 @@ from typing import Optional
 from enum import Enum
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, AnyUrl, field_serializer
+from pydantic import BaseModel, ConfigDict
 
 from .customer import PagarmeCustomerOutput, PagarmeCustomerInput, PagarmeCustomerCreate, PagarCustomerOut
 from .api import PagarmeGatewayResponse, PagarmeAntifraudResponse
@@ -176,12 +176,13 @@ class PagarmePaymentPix(BaseModel):
     billing_address_editable: bool = False
     customer_editable: bool = False
     accepted_payment_methods: list[str] = ["pix"]
-    success_url: AnyUrl
+    # success_url: AnyUrl
+    success_url: str
     Pix: PagarmePixData
 
-    @field_serializer("success_url")
-    def serialize_success_url(cls, v):
-        return str(v)
+    # @field_serializer("success_url")
+    # def serialize_success_url(cls, v):
+    #     return str(v)
 
 
 class PagarmeCreateOrderInput(BaseModel):

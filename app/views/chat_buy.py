@@ -487,7 +487,7 @@ def payment():
     data = s.PagarmeCreateOrderPix(
         items=[
             s.PagarmeItem(
-                amount=int(total_prices.total),
+                amount=int(total_prices.total) * 100,
                 description=total_prices.unique_ids,
                 category="Concert Event",
             )
@@ -500,7 +500,7 @@ def payment():
                 billing_address_editable=False,
                 customer_editable=False,
                 accepted_payment_methods=["pix"],
-                success_url="https://fan-ticket.simple2b.org/pay/webhook",
+                success_url="https://fan-ticket.simple2b.net/pay/webhook",
                 Pix=s.PagarmePixData(
                     expires_in=2147483647,
                 ),
