@@ -22,6 +22,7 @@ class PagarmeCustomerMobilePhone(BaseModel):
 
 class PagarmeCustomerPhones(BaseModel):
     mobile_phone: PagarmeCustomerMobilePhone
+    # mobile_phone: str
 
     model_config = ConfigDict(from_attributes=True)
 

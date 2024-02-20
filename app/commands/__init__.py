@@ -158,12 +158,13 @@ def init_shell_commands(app: Flask):
             db.session.delete(message)
         for room in rooms:
             db.session.delete(room)
-        notifications_query = m.Notification.select().where(m.Notification.user_id == user.id)
+        notifications_query = m.Notification.select().where(m.Notification.users.any(m.User.id == user.id))
         notifications = db.session.scalars(notifications_query).all()
         print("notifications", notifications)
         if notifications:
             for notification in notifications:
                 db.session.delete(notification)
+
         notification_configs_query = m.NotificationsConfig.select().where(m.NotificationsConfig.user_id == user.id)
         notification_configs = db.session.scalars(notification_configs_query).all()
         for notification_config in notification_configs:

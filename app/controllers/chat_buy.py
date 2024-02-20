@@ -42,17 +42,15 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
 
 
 def get_tickets_by_event(event: m.Event, room: m.Room) -> list[m.Ticket] | None:
-    tickets_query = sa.select(m.Ticket).where(
-        m.Ticket.event_id == event.id,
-        m.Ticket.is_reserved.is_(False),
-        m.Ticket.is_sold.is_(False),
-    )
+    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id)
     tickets = db.session.scalars(tickets_query).all()
 
-    if not tickets:
+    tickets_available = [ticket for ticket in tickets if ticket.is_available]
+
+    if not tickets_available:
         log(log.INFO, "Tickets not found: [%s]", event.name)
 
-    return tickets
+    return tickets_available
 
 
 def get_tickets_by_event_id(params: s.ChatBuyTicketParams, room: m.Room) -> list[m.Ticket] | None:
@@ -63,17 +61,15 @@ def get_tickets_by_event_id(params: s.ChatBuyTicketParams, room: m.Room) -> list
         log(log.INFO, "Event not found: [%s]", params.event_unique_id)
         return None
 
-    tickets_query = sa.select(m.Ticket).where(
-        m.Ticket.event_id == event.id,
-        m.Ticket.is_reserved.is_(False),
-        m.Ticket.is_sold.is_(False),
-    )
+    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id)
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:
         log(log.INFO, "Tickets not found: [%s]", params.event_unique_id)
 
-    return tickets
+    tickets_available = [ticket for ticket in tickets if ticket.is_available]
+
+    return tickets_available
 
 
 def get_cheapest_tickets(
@@ -98,9 +94,22 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
         log(log.INFO, "Ticket not found: [%s]", ticket_unique_id)
         return None
 
+    previous_tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.buyer_id == user.id,
+        m.Ticket.is_reserved.is_(True),
+        m.Ticket.is_sold.is_(False),
+    )
+    previous_tickets = db.session.scalars(previous_tickets_query).all()
+
     ticket.is_reserved = True
     ticket.last_reservation_time = datetime.now(UTC)
     ticket.buyer_id = user.id
+
+    for previous_ticket in previous_tickets:
+        previous_ticket.is_reserved = False
+        previous_ticket.buyer_id = None
+        previous_ticket.save(False)
+
     room.ticket = ticket
 
     m.Message(
