@@ -22,7 +22,7 @@ class BaseConfig(BaseSettings):
     VERSION: str = get_version()
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-    WTF_CSRF_ENABLED: bool = False
+    WTF_CSRF_ENABLED: bool = True
 
     # Mail config
     MAIL_SERVER: str
@@ -152,6 +152,8 @@ class TestingConfig(BaseConfig):
     PRESERVE_CONTEXT_ON_EXCEPTION: bool = False
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3")
 
+    WTF_CSRF_ENABLED: bool = False
+
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
@@ -165,7 +167,6 @@ class ProductionConfig(BaseConfig):
     REDIS_URL: str = Field(
         alias="REDIS_URL",
     )
-    WTF_CSRF_ENABLED: bool = True
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
