@@ -1,9 +1,7 @@
 from typing import Optional
 from enum import Enum
 from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
-
 from .customer import PagarmeCustomerOutput, PagarmeCustomerInput, PagarmeCustomerCreate, PagarCustomerOut
 from .api import PagarmeGatewayResponse, PagarmeAntifraudResponse
 
