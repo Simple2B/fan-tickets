@@ -146,10 +146,11 @@ class PagarmeClient:
         }
         """
 
+        ticket_price = ticket.price_net * 100 if ticket.price_net else 0
         data = s.PagarmeCreateOrderSplit(
             items=[
                 s.PagarmeItem(
-                    amount=ticket.price_net * 100,
+                    amount=ticket_price,
                     code=ticket.unique_id,
                     description=f"Ticket {ticket.event.name} seller: {ticket.seller.uuid}",
                     quantity=1,

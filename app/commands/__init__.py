@@ -364,6 +364,12 @@ def init_shell_commands(app: Flask):
             for ticket in tickets:
                 print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
 
+                disputes = [room for room in ticket.rooms if room.type_of == m.RoomType.DISPUTE.value]
+
+                if disputes:
+                    print(f"Ticket {ticket.unique_id} has disputes")
+                    continue
+
                 if not ticket.seller.recipient_id:
                     recipient_credentials = pagarme_client.check_recipient_credentials(ticket.seller)
                     if not recipient_credentials:

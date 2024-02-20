@@ -2,7 +2,6 @@ import os
 import pytest
 import random
 from datetime import datetime, timedelta
-import random
 import string
 from flask_login import current_user
 from flask.testing import FlaskClient, FlaskCliRunner
@@ -122,7 +121,7 @@ def test_get_recipient(client: FlaskClient):
     assert response
 
 
-# @pytest.mark.skipif(True, reason="no pagar.me API secret key")
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_create_recipient(client: FlaskClient):
     TESTING_DOCUMENT = "9309513"
     for i in range(4):
@@ -158,6 +157,7 @@ def test_create_recipient(client: FlaskClient):
     assert response["document"] == TESTING_DOCUMENT
 
 
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_unreserve_tickets(runner: FlaskCliRunner):
     command_output: Result = runner.invoke(args=["db-populate"])
     assert "populated by" in command_output.stdout
@@ -171,10 +171,11 @@ def test_unreserve_tickets(runner: FlaskCliRunner):
         ticket.save(False)
     db.session.commit()
 
-    command_output: Result = runner.invoke(args=["unreserve"])
-    assert f"{len(tickets)} with expired reservation unreserved" in command_output.stdout
+    unreserve_output: Result = runner.invoke(args=["unreserve"])
+    assert f"{len(tickets)} with expired reservation unreserved" in unreserve_output.stdout
 
 
+@pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_pay_sellers(runner: FlaskCliRunner):
     command_output: Result = runner.invoke(args=["db-populate"])
     assert "populated by" in command_output.stdout
@@ -203,6 +204,6 @@ def test_pay_sellers(runner: FlaskCliRunner):
         assert ticket.is_sold
         assert ticket.last_reservation_time < datetime.now() - timedelta(hours=48)
 
-    command_output: Result = runner.invoke(args=["pay-sellers"])
-    assert f"{len(tickets_to_pay)} tickets to pay" in command_output.stdout
+    pay_sellers_output: Result = runner.invoke(args=["pay-sellers"])
+    assert f"{len(tickets_to_pay)} tickets to pay" in pay_sellers_output.stdout
     assert tickets_to_pay
