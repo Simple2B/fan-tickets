@@ -1,6 +1,6 @@
-import os
+import json
 import re
-from bardapi import Bard
+import requests
 from datetime import datetime, time, timedelta
 from flask import current_app as app
 from flask_login import current_user
@@ -41,13 +41,6 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
     if not events:
         log(log.INFO, "Event not found in database: [%s]", params.user_message)
 
-        try:
-            # Establishing connection with Bard
-            bard = Bard(token=os.environ.get("_BARD_API_KEY"))
-        except Exception as e:
-            log(log.ERROR, "Bard connection error: [%s]", e)
-            return events
-
         question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
 
         json_example = """
@@ -62,13 +55,32 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
         """
 
         message = f"{question}\n{json_example}"
+        url = f"{CFG.BARD_URL}{CFG.BARD_API_KEY}"
+        # data = {
+        #     "contents": [
+        #         {
+        #             "role": "user",
+        #             "parts": [
+        #                 {"text": message},
+        #             ],
+        #         }
+        #     ]
+        # }
 
-        try:
-            bard_response = bard.get_answer(message).get("content")
-            log(log.INFO, "Bard response: [%s]", bard_response)
-        except Exception as e:
-            log(log.ERROR, "Bard get answer error: [%s]", e)
-            return events
+        data = s.BardRequestData(
+            contents=[
+                s.BardRequestDataContent(
+                    role="user",
+                    parts=[
+                        s.BardRequestDataContentPart(
+                            text=message,
+                        ),
+                    ],
+                ),
+            ],
+        ).model_dump_json()
+
+        bard_response = requests.post(url, data=data, headers={"Content-Type": "application/json"})
 
         if (
             "not able to help" in bard_response

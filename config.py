@@ -124,6 +124,7 @@ class BaseConfig(BaseSettings):
 
     # Bard
     BARD_API_KEY: str | None = None
+    BARD_URL: str = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key="
 
     # Events posting
     BARD_DATE_FORMAT: str = "%Y-%m-%d"

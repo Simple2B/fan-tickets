@@ -39,3 +39,29 @@ class ChatSellTicketParams(ChatSellRequiredParams):
     ticket_paired: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class BardRequestDataContentPart(BaseModel):
+    text: str
+
+
+class BardRequestDataContent(BaseModel):
+    role: str = "user"
+    parts: list[BardRequestDataContentPart]
+
+
+class BardRequestData(BaseModel):
+    """
+    data = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [
+                        {"text": message},
+                    ],
+                }
+            ]
+        }
+    """
+
+    contents: list[BardRequestDataContent]

@@ -53,7 +53,13 @@ from .chat_auth import (
     ChatAuthPhoneValidate,
 )
 from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
-from .chat_sell import ChatSellEventParams, ChatSellTicketParams
+from .chat_sell import (
+    ChatSellEventParams,
+    ChatSellTicketParams,
+    BardRequestData,
+    BardRequestDataContent,
+    BardRequestDataContentPart,
+)
 from .room import Room
 from .notification import NotificationNewUserRegistered, NotificationUserActivated
 from .bard_response import BardResponse
