@@ -438,29 +438,6 @@ def payment():
         "Payment",
         room,
     )
-    # TODO: collect info for json
-    # data = {
-    #     "items": [
-    #         {
-    #             "amount": {total_prices.total},
-    #             "description": "Concert Ticket",
-    #             "quantity": {total_prices.count},
-    #             "category": "Concert Event",
-    #         }
-    #     ],
-    #     "customer_id": {current_user.pagarme_id},
-    #     "payments": [
-    #         {
-    #             "expires_in": 30,
-    #             "payment_method": "pix",
-    #             "billing_address_editable": False,
-    #             "customer_editable": False,
-    #             "accepted_payment_methods": ["pix"],
-    #             "success_url": "https://fan-ticket.simple2b.org//pay/webhook",
-    #             "Pix": {"expires_in": 2147483647},
-    #         }
-    #     ],
-    # }
 
     if not current_user.pagarme_id:
         phone_data = pagarme_client.generate_customer_phone(current_user.phone)
@@ -503,7 +480,6 @@ def payment():
                 success_url="https://fan-ticket.simple2b.net/pay/webhook",
                 Pix=s.PagarmePixData(
                     expires_in=115576000,
-                    # expires_at="2030-12-31T23:59:59Z",
                 ),
             )
         ],
