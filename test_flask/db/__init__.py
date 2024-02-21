@@ -111,8 +111,16 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
         category_name = test_categories[category_id - 1].name
         # seller_id = randint(1, NUM_TEST_USERS)
         # buyer_id = randint(1, NUM_TEST_USERS)
+
         seller_id = 3
         buyer_id = 4
+
+        # set to seller a recipient_id
+        seller: m.User = db.session.get(m.User, seller_id)
+        if seller:
+            seller.recipient_id = "re_clsnbbg4c071b019twu0zvkio"
+            seller.save(False)
+
         event = m.Event(
             name=f"{location_name} {category_name} {i}",
             url=f"https://{location_name.lower().replace(' ', '-')}-{category_name.lower().replace(' ', '-')}-{i}.com",
@@ -122,7 +130,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             venue=f"{location_name} venue {i}",
             category_id=category_id,
             creator_id=seller_id,
-            date_time=utcnow() + timedelta(days=randint(-10, 100)),
+            date_time=utcnow() + timedelta(days=randint(10, 30)),
             approved=True,
         ).save(False)
         for j in range(12):
@@ -161,7 +169,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 ).save(False)
                 m.Notification(
                     notification_type=NotificationType.TICKET_SOLD.value,
-                    payload={"data": "Ticket {ticket.unique_id} of user {seller_id} is sold"},
+                    payload={"data": f"Ticket {ticket.unique_id} of user {seller_id} is sold"},
                 ).save(False)
             if ticket.is_available:
                 m.Notification(

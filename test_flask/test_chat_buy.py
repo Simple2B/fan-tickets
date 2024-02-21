@@ -11,15 +11,20 @@ def test_get_event_name(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    tickets: list[m.Ticket] = db.session.scalars(
-        m.Ticket.select().where(
-            m.Ticket.event_id == event.id,
-            m.Ticket.is_reserved.is_(False),
-            m.Ticket.is_sold.is_(False),
-        )
-    ).all()
+
+    with db.session.no_autoflush:
+        tickets_available: list[m.Ticket] = []
+        while not tickets_available:
+            populate()
+            event: m.Event = db.session.scalar(m.Event.select())
+            tickets: list[m.Ticket] = db.session.scalars(
+                m.Ticket.select().where(
+                    m.Ticket.event_id == event.id,
+                    m.Ticket.is_reserved.is_(False),
+                    m.Ticket.is_sold.is_(False),
+                )
+            ).all()
+            tickets_available = [t for t in tickets if t.is_available]
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}")
     assert response.status_code == 200
@@ -27,7 +32,7 @@ def test_get_event_name(client: FlaskClient):
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
     assert response.status_code == 200
-    assert f"We have found {len(tickets)} available tickets" in response.data.decode()
+    assert f"We have found {len(tickets_available)} available tickets" in response.data.decode()
 
 
 def test_get_events_by_location(client: FlaskClient):
@@ -35,16 +40,23 @@ def test_get_events_by_location(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    location: m.Location = db.session.scalar(m.Location.select().where(m.Location.events.any(m.Event.id == event.id)))
-    tickets: list[m.Ticket] = db.session.scalars(
-        m.Ticket.select().where(
-            m.Ticket.event_id == event.id,
-            m.Ticket.is_reserved.is_(False),
-            m.Ticket.is_sold.is_(False),
-        )
-    ).all()
+
+    with db.session.no_autoflush:
+        tickets_available: list[m.Ticket] = []
+        while not tickets_available:
+            populate()
+            event: m.Event = db.session.scalar(m.Event.select())
+            location: m.Location = db.session.scalar(
+                m.Location.select().where(m.Location.events.any(m.Event.id == event.id))
+            )
+            tickets: list[m.Ticket] = db.session.scalars(
+                m.Ticket.select().where(
+                    m.Ticket.event_id == event.id,
+                    m.Ticket.is_reserved.is_(False),
+                    m.Ticket.is_sold.is_(False),
+                )
+            ).all()
+            tickets_available = [t for t in tickets if t.is_available]
 
     response = client.get(f"/buy/get_events_by_location?room_unique_id={room.unique_id}")
     assert response.status_code == 200
@@ -54,7 +66,7 @@ def test_get_events_by_location(client: FlaskClient):
         f"/buy/get_events_by_location?room_unique_id={room.unique_id}&location_unique_id={location.unique_id}&event_name={event.name}"
     )
     assert response.status_code == 200
-    assert f"We have found {len(tickets)} available tickets" in response.data.decode()
+    assert f"We have found {len(tickets_available)} available tickets" in response.data.decode()
 
     if event.date_time:
         date_time = event.date_time + timedelta(hours=2)
@@ -79,15 +91,20 @@ def test_get_tickets(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    tickets: list[m.Ticket] = db.session.scalars(
-        m.Ticket.select().where(
-            m.Ticket.event_id == event.id,
-            m.Ticket.is_reserved.is_(False),
-            m.Ticket.is_sold.is_(False),
-        )
-    ).all()
+
+    with db.session.no_autoflush:
+        tickets_available: list[m.Ticket] = []
+        while not tickets_available:
+            populate()
+            event: m.Event = db.session.scalar(m.Event.select())
+            tickets: list[m.Ticket] = db.session.scalars(
+                m.Ticket.select().where(
+                    m.Ticket.event_id == event.id,
+                    m.Ticket.is_reserved.is_(False),
+                    m.Ticket.is_sold.is_(False),
+                )
+            ).all()
+            tickets_available = [t for t in tickets if t.is_available]
 
     response = client.get(f"/buy/get_tickets?room_unique_id={room.unique_id}")
     assert response.status_code == 200
@@ -103,15 +120,22 @@ def test_booking_ticket(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    ticket: m.Ticket = db.session.scalar(
-        m.Ticket.select().where(
-            m.Ticket.event_id == event.id,
-            m.Ticket.is_reserved.is_(False),
-            m.Ticket.is_sold.is_(False),
-        )
-    )
+
+    with db.session.no_autoflush:
+        tickets_available: list[m.Ticket] = []
+        while not tickets_available:
+            populate()
+            event: m.Event = db.session.scalar(m.Event.select())
+            tickets: list[m.Ticket] = db.session.scalars(
+                m.Ticket.select().where(
+                    m.Ticket.event_id == event.id,
+                    m.Ticket.is_reserved.is_(False),
+                    m.Ticket.is_sold.is_(False),
+                )
+            ).all()
+            tickets_available = [t for t in tickets if t.is_available]
+
+    ticket = tickets_available[0]
 
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}")
     assert response.status_code == 200
@@ -124,7 +148,7 @@ def test_booking_ticket(client: FlaskClient):
     login(client)
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket.unique_id}")
     assert response.status_code == 200
-    assert "Do you want to buy another one or proceed to purchase?" in response.data.decode()
+    assert "Do you want to proceed to purchase?" in response.data.decode()
     assert f"{ticket.unique_id}" in response.data.decode()
 
 

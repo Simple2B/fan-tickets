@@ -1,9 +1,9 @@
 {
   "items": [
     {
-      "amount": 1000,
+      "amount": 1400,
       "description": "Testing Concert Ticket",
-      "quantity": 2,
+      "quantity": 1,
       "category": "Testing Concert Event"
     }
   ],
@@ -14,8 +14,10 @@
       "payment_method": "pix",
       "billing_address_editable": false,
       "customer_editable": false,
-      "accepted_payment_methods": ["pix"],
-      "success_url": "https://fan-ticket.simple2b.org//pay/webhook",
+      "accepted_payment_methods": [
+        "pix"
+      ],
+      "success_url": "https://fan-ticket.simple2b.net/pay/webhook",
       "Pix": {
         "expires_in": 2147483647
       }

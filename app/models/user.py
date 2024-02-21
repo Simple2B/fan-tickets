@@ -57,14 +57,26 @@ class User(db.Model, UserMixin, ModelMixin):
     phone: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     address: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     birth_date: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime)
-    document_identity_number: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     # Improve naming
     facebook: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     instagram: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     twitter: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     card: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
-    card_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+
+    # Pagar.me
+    document_identity_number: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
     pagarme_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+
+    # Pagar.me recipient data
+    recipient_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    bank: orm.Mapped[str | None] = orm.mapped_column(sa.String(4))
+    branch_check_digit: orm.Mapped[str | None] = orm.mapped_column(sa.String(2))
+    branch_number: orm.Mapped[str | None] = orm.mapped_column(sa.String(8))
+    account_number: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
+    account_check_digit: orm.Mapped[str | None] = orm.mapped_column(sa.String(2))
+
+    # Pagar.me card data
+    card_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))
     billing_line_1: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     billing_line_2: orm.Mapped[str | None] = orm.mapped_column(sa.String(256))
     billing_zip_code: orm.Mapped[str | None] = orm.mapped_column(sa.String(16))

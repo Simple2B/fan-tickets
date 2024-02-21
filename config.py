@@ -58,7 +58,8 @@ class BaseConfig(BaseSettings):
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
     PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    # PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    PATTERN_PHONE: str = r"\+?(\d{2})-(\d{2})-(\d{8})"
 
     # API
     IS_API: bool = False
@@ -87,8 +88,9 @@ class BaseConfig(BaseSettings):
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
     PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
-    # platform commission rate
-    PLATFORM_COMMISSION_RATE: float = 1.08
+    # platform commission rate - 11%
+    # 5% - platform commission rate, 3% - payment gateway commission rate that is included twice because of the 2-stage payment
+    PLATFORM_COMMISSION_RATE: float = 1.11
 
     # pagar.me
     PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"
@@ -99,6 +101,25 @@ class BaseConfig(BaseSettings):
     PAGARME_DEFAULT_PAYMENT_METHOD: str = "credit_card"
     BRASIL_COUNTRY_PHONE_CODE: str = "55"
     BRASIL_COUNTRY_AREA_CODE: str = "11"
+    PAGARME_DEFAULT_FT_CUSTOMER_ID: str = ""
+    PAGARME_DEFAULT_FT_RECIPIENT_ID: str = ""
+    PAGARME_SELLER_PERCENTAGE: int = 94
+    PAGARME_PLATFORM_PERCENTAGE: int = 6
+
+    # FT default card
+    PAGARME_DEFAULT_FT_CARD_NUMBER: str = "4111111111111111"
+    PAGARME_DEFAULT_FT_CARD_HOLDER_NAME: str = "John Doe"
+    PAGARME_DEFAULT_FT_CARD_HOLDER_DOCUMENT: str = "4242424242424242"
+    PAGARME_DEFAULT_FT_CARD_EXP_MONTH: int = 12
+    PAGARME_DEFAULT_FT_CARD_EXP_YEAR: int = 2025
+    PAGARME_DEFAULT_FT_CARD_CVV: str = "123"
+    PAGARME_DEFAULT_FT_CARD_BRAND: str = "visa"
+    PAGARME_DEFAULT_FT_CARD_LABEL: str = "top"
+    PAGARME_DEFAULT_FT_CARD_STATE: str = "SP"
+    PAGARME_DEFAULT_FT_CARD_ZIP_CODE: str = "00000000"
+    PAGARME_DEFAULT_FT_CARD_CITY: str = "São Paulo"
+    PAGARME_DEFAULT_FT_CARD_BILLING_LINE_1: str = "Rua Fidêncio Ramos"
+    PAGARME_DEFAULT_FT_CARD_BILLING_LINE_2: str = "308"
 
     # Redis
     REDIS_URL: str
@@ -114,6 +135,7 @@ class BaseConfig(BaseSettings):
     DEFAULT_EVENT_CATEGORY_ID: int = 1
     TICKETS_IN_CART_EXPIRES_IN: int = 30  # minutes
     TICKETS_IN_CART_CLEAN_IN: int = 10  # minutes
+    TICKETS_SOLD_PAY_SELLERS_AFTER: int = 48  # hours
 
     SERVER_TYPE: str = "development"
 

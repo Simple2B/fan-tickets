@@ -26,12 +26,20 @@ from .pagarme import (
     PagarmePix,
     PagarmePixData,
     PagarmePaymentPix,
+    SplitOptions,
+    PagarmeSplitObject,
+    PagarmePaymentSplit,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
     PagarmeCreateOrderPix,
+    PagarmeCreateOrderSplit,
     PagarmeCreateOrderResponsePix,
+    DefaultBankAccount,
+    PagarmeRecipientCreate,
+    PagarmeSplitCard,
+    PagarmePaymentCard,
 )
 
 from .chat_auth import (

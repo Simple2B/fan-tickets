@@ -1,9 +1,7 @@
 from typing import Optional
 from enum import Enum
 from datetime import datetime
-
-from pydantic import BaseModel, ConfigDict, AnyUrl, field_serializer
-
+from pydantic import BaseModel, ConfigDict
 from .customer import PagarmeCustomerOutput, PagarmeCustomerInput, PagarmeCustomerCreate, PagarCustomerOut
 from .api import PagarmeGatewayResponse, PagarmeAntifraudResponse
 
@@ -18,9 +16,14 @@ class PagarmeBillingAddress(BaseModel):
 
 
 class PagarmePhoneData(BaseModel):
-    country_code: Optional[str] = None
-    area_code: Optional[str] = None
-    number: Optional[str] = None
+    """
+    +55 11 9 9999-9999 (São Paulo)
+    +55 21 9 8888-8888 (Rio de Janeiro)
+    """
+
+    country_code: Optional[str] = None  # 2 digits
+    area_code: Optional[str] = None  # 2 digits
+    number: Optional[str] = None  # 8 digits
 
 
 class PagarmePhonesData(BaseModel):
@@ -34,6 +37,25 @@ class PagarmeShippingData(BaseModel):
     recipient_name: Optional[str] = None
     recipient_phone: Optional[str] = None
     address: Optional[PagarmeBillingAddress] = None
+
+
+class PagarmeSplitCard(BaseModel):
+    number: str
+    holder_name: str
+    holder_document: str
+    exp_month: int
+    exp_year: int
+    cvv: str
+    brand: str
+    label: str
+    billing_address: PagarmeBillingAddress
+
+
+class PagarmePaymentCard(BaseModel):
+    operation_type: str
+    installments: int
+    statement_descriptor: str
+    card: PagarmeSplitCard
 
 
 class PagarmeCard(BaseModel):
@@ -171,12 +193,33 @@ class PagarmePaymentPix(BaseModel):
     billing_address_editable: bool = False
     customer_editable: bool = False
     accepted_payment_methods: list[str] = ["pix"]
-    success_url: AnyUrl
+    # success_url: AnyUrl
+    success_url: str
     Pix: PagarmePixData
 
-    @field_serializer("success_url")
-    def serialize_success_url(cls, v):
-        return str(v)
+    # @field_serializer("success_url")
+    # def serialize_success_url(cls, v):
+    #     return str(v)
+
+
+class SplitOptions(BaseModel):
+    charge_processing_fee: bool = True
+    charge_remainder_fee: bool = True
+    liable: bool = True
+
+
+class PagarmeSplitObject(BaseModel):
+    amount: int = 90  # TODO: adjust to business rules
+    recipient_id: str
+    type: str = "percentage"
+    options: SplitOptions
+
+
+class PagarmePaymentSplit(BaseModel):
+    payment_method: str = "credit_card"
+    # pix: PagarmePaymentPix
+    credit_card: PagarmePaymentCard
+    split: list[PagarmeSplitObject]
 
 
 class PagarmeCreateOrderInput(BaseModel):
