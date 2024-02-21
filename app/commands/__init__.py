@@ -396,7 +396,6 @@ def init_shell_commands(app: Flask):
                     continue
 
                 response = pagarme_client.create_split(split_data)  # pays to seller via pagarme
-                print(response)
 
                 if response:
                     ticket.paid_to_seller_at = datetime.now()

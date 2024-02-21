@@ -1,1 +1,92 @@
-{"id": "or_9q1N7BeinirwGMRL", "code": "0WXQF8FLNO", "amount": 50200, "currency": "BRL", "closed": true, "items": [{"id": "oi_glRVAnmSWSVx3zv5", "type": "product", "description": "295ef742-9588-4e6c-ae75-ed1ca26c0b6e, ", "category": "Concert Event", "amount": 50200, "quantity": 1, "status": "active", "created_at": "2024-02-20T18:00:01Z", "updated_at": "2024-02-20T18:00:01Z"}], "customer": {"id": "cus_w4ZgGYgT0TPaDP8B", "name": "Denys", "email": "denysburimov@gmail.com", "code": "f5f2f375-1088-4391-9327-5cb186259e2c", "document": "70406680094", "type": "individual", "delinquent": false, "created_at": "2024-02-07T17:37:03Z", "updated_at": "2024-02-20T17:49:51Z", "birthdate": "1981-11-13T00:00:00Z", "phones": {"mobile_phone": {"country_code": "55", "number": "22334477", "area_code": "11"}}}, "status": "failed", "created_at": "2024-02-20T18:00:01Z", "updated_at": "2024-02-20T18:00:01Z", "closed_at": "2024-02-20T18:00:01Z", "charges": [{"id": "ch_EwAVn3gFXFVnzK5d", "code": "0WXQF8FLNO", "amount": 50200, "status": "failed", "currency": "BRL", "payment_method": "pix", "created_at": "2024-02-20T18:00:01Z", "updated_at": "2024-02-20T18:00:01Z", "customer": {"id": "cus_w4ZgGYgT0TPaDP8B", "name": "Denys", "email": "denysburimov@gmail.com", "code": "f5f2f375-1088-4391-9327-5cb186259e2c", "document": "70406680094", "type": "individual", "delinquent": false, "created_at": "2024-02-07T17:37:03Z", "updated_at": "2024-02-20T17:49:51Z", "birthdate": "1981-11-13T00:00:00Z", "phones": {"mobile_phone": {"country_code": "55", "number": "22334477", "area_code": "11"}}}, "last_transaction": {"expires_at": "2092-03-09T21:14:08Z", "id": "tran_eJklRZvfLfgRZYb7", "transaction_type": "pix", "amount": 50200, "status": "failed", "success": false, "created_at": "2024-02-20T18:00:01Z", "updated_at": "2024-02-20T18:00:01Z", "gateway_response": {"code": "400", "errors": [{"message": "action_forbidden |  | Erro no gateway"}]}, "antifraud_response": {}, "metadata": {}}}]}
+{
+    "id": "or_QPYXz9PIjIknGrME",
+    "code": "7X8WSZS9YE",
+    "amount": 18600,
+    "currency": "BRL",
+    "closed": true,
+    "items": [
+        {
+            "id": "oi_XKxOaJqumu4BmGre",
+            "type": "product",
+            "description": "b37102f8-0d10-48bc-b989-8185ddd7ea53, ",
+            "category": "Concert Event",
+            "amount": 18600,
+            "quantity": 1,
+            "status": "active",
+            "created_at": "2024-02-21T14:55:17Z",
+            "updated_at": "2024-02-21T14:55:17Z"
+        }
+    ],
+    "customer": {
+        "id": "cus_w4ZgGYgT0TPaDP8B",
+        "name": "Denys",
+        "email": "denysburimov@gmail.com",
+        "code": "5089f4aa-decb-4bd1-a3e0-7eb8208c2f44",
+        "document": "96645775024",
+        "type": "individual",
+        "delinquent": false,
+        "created_at": "2024-02-07T17:37:03Z",
+        "updated_at": "2024-02-21T11:56:25Z",
+        "birthdate": "1981-11-13T00:00:00Z",
+        "phones": {
+            "mobile_phone": {
+                "country_code": "55",
+                "number": "00112233",
+                "area_code": "11"
+            }
+        }
+    },
+    "status": "pending",
+    "created_at": "2024-02-21T14:55:17Z",
+    "updated_at": "2024-02-21T14:55:18Z",
+    "closed_at": "2024-02-21T14:55:17Z",
+    "charges": [
+        {
+            "id": "ch_x5kKNXKC4CRj8wLm",
+            "code": "7X8WSZS9YE",
+            "gateway_id": "2202606157",
+            "amount": 18600,
+            "status": "pending",
+            "currency": "BRL",
+            "payment_method": "pix",
+            "created_at": "2024-02-21T14:55:17Z",
+            "updated_at": "2024-02-21T14:55:18Z",
+            "customer": {
+                "id": "cus_w4ZgGYgT0TPaDP8B",
+                "name": "Denys",
+                "email": "denysburimov@gmail.com",
+                "code": "5089f4aa-decb-4bd1-a3e0-7eb8208c2f44",
+                "document": "96645775024",
+                "type": "individual",
+                "delinquent": false,
+                "created_at": "2024-02-07T17:37:03Z",
+                "updated_at": "2024-02-21T11:56:25Z",
+                "birthdate": "1981-11-13T00:00:00Z",
+                "phones": {
+                    "mobile_phone": {
+                        "country_code": "55",
+                        "number": "00112233",
+                        "area_code": "11"
+                    }
+                }
+            },
+            "last_transaction": {
+                "pix_provider_tid": "2202606157",
+                "qr_code": "00020101021226840014br.gov.bcb.pix2562pix-h.stone.com.br/pix/v2/d1b63470-ad44-4214-a77b-bf56c0144f5b5204000053039865406186.005802BR5914EAD PLATAFORMA6014RIO DE JANEIRO62290525paclsvx1vj20osp1fjz1vt8fq63043240",
+                "qr_code_url": "https://api.pagar.me/core/v5/transactions/tran_Nk9m4ynt7tkJBEMd/qrcode?payment_method=pix",
+                "expires_at": "2027-10-21T07:21:57Z",
+                "id": "tran_Nk9m4ynt7tkJBEMd",
+                "transaction_type": "pix",
+                "gateway_id": "2202606157",
+                "amount": 18600,
+                "status": "waiting_payment",
+                "success": true,
+                "created_at": "2024-02-21T14:55:17Z",
+                "updated_at": "2024-02-21T14:55:18Z",
+                "gateway_response": {},
+                "antifraud_response": {},
+                "metadata": {}
+            }
+        }
+    ]
+}

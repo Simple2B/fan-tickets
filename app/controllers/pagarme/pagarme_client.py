@@ -264,7 +264,15 @@ class PagarmeClient:
         except Exception as e:
             log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
 
-        return response.ok
+        try:
+            if response.json().get("status") == "paid":
+                log(log.INFO, "create_split_order is paid successfully")
+                return True
+            log(log.ERROR, "create_split_order status: [%s]", response.json().get("status"))
+            return False
+        except Exception as e:
+            log(log.ERROR, "create_split_order response: [%s] Response text: [%s]", e, response.text)
+            return False
 
     # Recipients for split payments
     def get_recipients(self):

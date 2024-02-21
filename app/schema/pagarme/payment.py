@@ -160,6 +160,7 @@ class PagarmeCheckout(BaseModel):
     """
 
     expires_in: int
+    expires_at: str = "2030-12-21T12:24:03Z"
     payment_method: str
     billing_address_editable: bool
     customer_editable: bool
@@ -193,13 +194,8 @@ class PagarmePaymentPix(BaseModel):
     billing_address_editable: bool = False
     customer_editable: bool = False
     accepted_payment_methods: list[str] = ["pix"]
-    # success_url: AnyUrl
     success_url: str
     Pix: PagarmePixData
-
-    # @field_serializer("success_url")
-    # def serialize_success_url(cls, v):
-    #     return str(v)
 
 
 class SplitOptions(BaseModel):

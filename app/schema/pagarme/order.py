@@ -9,6 +9,7 @@ class PagarmeCreateOrder(BaseModel):
 
 
 class PagarmeCreateOrderPix(PagarmeCreateOrder):
+    expires_at: str = "2030-12-31T23:59:59Z"
     payments: list[PagarmePaymentPix]
 
 
