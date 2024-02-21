@@ -130,7 +130,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             venue=f"{location_name} venue {i}",
             category_id=category_id,
             creator_id=seller_id,
-            date_time=utcnow() + timedelta(days=randint(-10, 30)),
+            date_time=utcnow() + timedelta(days=randint(10, 30)),
             approved=True,
         ).save(False)
         for j in range(12):
