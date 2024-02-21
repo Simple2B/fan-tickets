@@ -98,10 +98,14 @@ def test_booking_ticket(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    tickets: m.Ticket = db.session.scalars(m.Ticket.select().where(m.Ticket.event_id == event.id)).all()
-    tickets_available = [t for t in tickets if t.is_available]
+
+    tickets_available: list[m.Ticket] = []
+    while not tickets_available:
+        populate()
+        event: m.Event = db.session.scalar(m.Event.select())
+        tickets: m.Ticket = db.session.scalars(m.Ticket.select().where(m.Ticket.event_id == event.id)).all()
+        tickets_available = [t for t in tickets if t.is_available]
+
     ticket = tickets_available[0]
 
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}")
