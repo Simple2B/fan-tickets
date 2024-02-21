@@ -11,10 +11,13 @@ def test_get_event_name(client: FlaskClient):
         seller_id=None,
         buyer_id=2,
     ).save(False)
-    populate()
-    event: m.Event = db.session.scalar(m.Event.select())
-    tickets: list[m.Ticket] = db.session.scalars(m.Ticket.select().where(m.Ticket.event_id == event.id)).all()
-    tickets_available = [t for t in tickets if t.is_available]
+
+    tickets_available: list[m.Ticket] = []
+    while not tickets_available:
+        populate()
+        event: m.Event = db.session.scalar(m.Event.select())
+        tickets: list[m.Ticket] = db.session.scalars(m.Ticket.select().where(m.Ticket.event_id == event.id)).all()
+        tickets_available = [t for t in tickets if t.is_available]
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}")
     assert response.status_code == 200
