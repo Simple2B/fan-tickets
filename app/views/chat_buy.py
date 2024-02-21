@@ -502,7 +502,8 @@ def payment():
                 accepted_payment_methods=["pix"],
                 success_url="https://fan-ticket.simple2b.net/pay/webhook",
                 Pix=s.PagarmePixData(
-                    expires_in=2147483647,
+                    expires_in=115576000,
+                    # expires_at="2030-12-31T23:59:59Z",
                 ),
             )
         ],

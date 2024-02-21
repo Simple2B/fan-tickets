@@ -160,6 +160,7 @@ class PagarmeCheckout(BaseModel):
     """
 
     expires_in: int
+    expires_at: str = "2030-12-21T12:24:03Z"
     payment_method: str
     billing_address_editable: bool
     customer_editable: bool
@@ -189,6 +190,7 @@ class PagarmePixData(BaseModel):
 
 class PagarmePaymentPix(BaseModel):
     expires_in: int
+    # expires_at: str = "2030-12-31T23:59:59Z"
     payment_method: str = "pix"
     billing_address_editable: bool = False
     customer_editable: bool = False
