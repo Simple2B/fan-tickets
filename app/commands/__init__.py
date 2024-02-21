@@ -263,7 +263,7 @@ def init_shell_commands(app: Flask):
         for i, ticket in enumerate(tickets):
             if i % 3 == 0:
                 ticket.is_reserved = True
-                ticket.last_reservation_time = datetime.now()
+                ticket.last_reservation_time = datetime.now() - timedelta(minutes=31)
                 ticket.save(False)
                 reserved_tickets.append(ticket)
         db.session.commit()
@@ -274,26 +274,21 @@ def init_shell_commands(app: Flask):
     def unreserve():
         """Unreserve all tickets"""
         tickets_query = (
-            m.Ticket.select().where(m.Ticket.is_reserved.is_(True))
+            m.Ticket.select()
+            .where(m.Ticket.is_reserved.is_(True))
+            .where(m.Ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN))
             # .where(m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike("%Rio%"))))
         )
-        tickets = db.session.scalars(tickets_query).all()
-
-        for ticket in tickets:
-            if (
-                ticket.is_reserved
-                and ticket.last_reservation_time
-                and ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN)
-            ):
-                ticket.is_reserved = False
-                ticket.last_reservation_time = datetime.now()
-                print(ticket, "unreserved")
-                ticket.save()
-            elif ticket.is_reserved:
-                print(f"Ticket {ticket.id} is still reserved")
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
 
         if tickets:
-            print("Unreserved all tickets with expired reservation")
+            for ticket in tickets:
+                ticket.is_reserved = False
+                ticket.last_reservation_time = datetime.now()
+                ticket.save()
+                print(ticket, "unreserved")
+            print(len(tickets), "with expired reservation unreserved")
+
         else:
             print("No tickets to unreserve")
 
@@ -314,3 +309,104 @@ def init_shell_commands(app: Flask):
             db.session.delete(ticket)
         db.session.commit()
         print("Selected tickets deleted")
+
+    @app.cli.command("create-unpaid-tickets")
+    def create_unpaid_tickets():
+        """Create test unpaid tickets"""
+        events_query = m.Event.select().where(m.Event.date_time < datetime.now())
+        events = db.session.scalars(events_query).all()
+        assert events
+
+        TESTING_TICKETS_TO_PAY_PER_EVENT = 5
+
+        tickets_to_pay: list[m.Ticket] = []
+        for event in events:
+            for i in range(TESTING_TICKETS_TO_PAY_PER_EVENT):
+                ticket = m.Ticket(
+                    seller_id=event.creator_id,
+                    buyer_id=1,
+                    event=event,
+                    is_sold=True,
+                    last_reservation_time=datetime.now() - timedelta(hours=49),
+                    price_net=100,
+                    price_gross=111,
+                ).save()
+                tickets_to_pay.append(ticket)
+        print(len(tickets_to_pay), "tickets unpaid to sellers created")
+
+    @app.cli.command("get-unpaid-tickets")
+    def get_unpaid_tickets():
+        """Get all tickets"""
+        tickets_query = m.Ticket.select().where(
+            m.Ticket.is_sold.is_(True),
+            m.Ticket.paid_to_seller_at.is_(None),
+            m.Ticket.is_deleted.is_(False),
+        )
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+        for ticket in tickets:
+            print(ticket.unique_id, ticket.paid_to_seller_at, ticket.is_deleted)
+        print(len(tickets), "tickets unpaid to sellers")
+
+    @app.cli.command("pay-sellers")
+    def pay_sellers():
+        """
+        Pays for sold tickets to sellers
+        after 48 hours if no disputes were started
+        """
+        tickets_query = m.Ticket.select().where(
+            m.Ticket.is_sold.is_(True),
+            m.Ticket.last_reservation_time < datetime.now() - timedelta(days=2),
+            m.Ticket.is_deleted.is_(False),
+        )
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+
+        if tickets:
+            print(len(tickets), "tickets to pay")
+            for ticket in tickets:
+                print(f"Ticket {ticket.unique_id} sold at {ticket.last_reservation_time} is ready to pay")
+
+                disputes = [room for room in ticket.rooms if room.type_of == m.RoomType.DISPUTE.value]
+
+                if disputes:
+                    print(f"Ticket {ticket.unique_id} has disputes")
+                    continue
+
+                if not ticket.seller.recipient_id:
+                    recipient_credentials = pagarme_client.check_recipient_credentials(ticket.seller)
+                    if not recipient_credentials:
+                        # TODO: user notification to fill out the recipient credentials
+                        print(
+                            f"Ticket {ticket.unique_id} is not paid. Recipient credentials for {ticket.seller.email} not found"
+                        )
+                        continue
+
+                    # forming data for creating a recipient
+                    recipient_data = pagarme_client.prepare_recipient_data(ticket)
+
+                    # going to pagar to create a new recipient
+                    # if success saving a recipient_id to the seller
+                    recipient_id = pagarme_client.create_recipient(recipient_data, ticket.seller)
+                    if not recipient_id:
+                        print(f"Pagarme error. Recipient for {ticket.seller.email} not created")
+                        continue
+
+                # forming data for split payment
+                split_data = pagarme_client.generate_split_data(ticket)
+                if not split_data:
+                    continue
+
+                response = pagarme_client.create_split(split_data)  # pays to seller via pagarme
+                print(response)
+
+                if response:
+                    ticket.paid_to_seller_at = datetime.now()
+                    ticket.is_deleted = True
+                    print(
+                        f"Ticket {ticket.unique_id} paid to seller [{ticket.seller.email}] at {ticket.paid_to_seller_at}"
+                    )
+                else:
+                    print(f"Ticket {ticket.unique_id} is not paid")
+            print(len(tickets), "paid to sellers")
+            db.session.commit()
+        else:
+            print("No tickets to pay")

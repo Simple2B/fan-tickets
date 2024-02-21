@@ -39,6 +39,25 @@ class PagarmeShippingData(BaseModel):
     address: Optional[PagarmeBillingAddress] = None
 
 
+class PagarmeSplitCard(BaseModel):
+    number: str
+    holder_name: str
+    holder_document: str
+    exp_month: int
+    exp_year: int
+    cvv: str
+    brand: str
+    label: str
+    billing_address: PagarmeBillingAddress
+
+
+class PagarmePaymentCard(BaseModel):
+    operation_type: str
+    installments: int
+    statement_descriptor: str
+    card: PagarmeSplitCard
+
+
 class PagarmeCard(BaseModel):
     """
     '{"id": "card_lD6BoyphvHaLVv0y",
@@ -181,6 +200,26 @@ class PagarmePaymentPix(BaseModel):
     # @field_serializer("success_url")
     # def serialize_success_url(cls, v):
     #     return str(v)
+
+
+class SplitOptions(BaseModel):
+    charge_processing_fee: bool = True
+    charge_remainder_fee: bool = True
+    liable: bool = True
+
+
+class PagarmeSplitObject(BaseModel):
+    amount: int = 90  # TODO: adjust to business rules
+    recipient_id: str
+    type: str = "percentage"
+    options: SplitOptions
+
+
+class PagarmePaymentSplit(BaseModel):
+    payment_method: str = "credit_card"
+    # pix: PagarmePaymentPix
+    credit_card: PagarmePaymentCard
+    split: list[PagarmeSplitObject]
 
 
 class PagarmeCreateOrderInput(BaseModel):

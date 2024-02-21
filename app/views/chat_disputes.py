@@ -91,6 +91,8 @@ def start_dispute():
         )
 
     else:
+        room.type_of = m.RoomType.DISPUTE.value
+        room.save()
         log(log.INFO, "Dispute room already exists for payment [%s]", payment.id)
 
     return room.unique_id, HTTPStatus.OK

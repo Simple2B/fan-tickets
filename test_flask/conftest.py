@@ -38,6 +38,7 @@ def flask_app(session_mocker):
 
 @pytest.fixture()
 def app(flask_app, requests_mock):
+    # def app(flask_app):
     # mock requests
     ## pagarme
     for endpoint, json_file in PRAGMA_GET_DATA_MOCK_MAP.items():
@@ -60,7 +61,7 @@ def client(app: Flask):
 
 
 @pytest.fixture()
-def runner(app):
+def runner(app, client):
     init_shell_commands(app)
     yield app.test_cli_runner()
 

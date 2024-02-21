@@ -9,6 +9,8 @@ from .customer import (
     PagarmeCustomerOutput,
     PagarCustomerListQuery,
     PagarCustomerListResponse,
+    DefaultBankAccount,
+    PagarmeRecipientCreate,
 )
 from .payment import (
     PagarmeCardOutput,
@@ -23,9 +25,14 @@ from .payment import (
     PagarmePix,
     PagarmePixData,
     PagarmePaymentPix,
+    SplitOptions,
+    PagarmeSplitObject,
+    PagarmePaymentSplit,
     PagarmeCreateOrderInput,
     PagarmeCreateOrderOutput,
     PagarmeItem,
     PagarmeCreditCardPayment,
+    PagarmeSplitCard,
+    PagarmePaymentCard,
 )
-from .order import PagarmeCreateOrderPix, PagarmeCreateOrderResponsePix
+from .order import PagarmeCreateOrderPix, PagarmeCreateOrderResponsePix, PagarmeCreateOrderSplit
