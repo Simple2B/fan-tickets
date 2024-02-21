@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .user import User
     from .event import Event
     from .room import Room
+    from .payment import Payment
 
 
 class TicketType(Enum):
@@ -95,6 +96,11 @@ class Ticket(db.Model, ModelMixin):
     buyer: orm.Mapped["User"] = orm.relationship(
         foreign_keys=[buyer_id],
         back_populates="tickets_bought",
+    )
+
+    payment: orm.Mapped["Payment"] = orm.relationship(
+        back_populates="ticket",
+        uselist=False,
     )
 
     rooms: orm.Mapped[list["Room"]] = orm.relationship(

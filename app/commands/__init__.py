@@ -133,10 +133,12 @@ def init_shell_commands(app: Flask):
             return
 
         tickets_bought_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
-        tickets_bought = db.session.scalars(tickets_bought_query).all()
+        tickets_bought: list[m.Ticket] = db.session.scalars(tickets_bought_query).all()
 
         if tickets_bought:
             for ticket in tickets_bought:
+                if ticket.payment:
+                    db.session.delete(ticket.payment)
                 db.session.delete(ticket)
 
         tickets_sold_query = m.Ticket.select().where(m.Ticket.seller_id == user.id)

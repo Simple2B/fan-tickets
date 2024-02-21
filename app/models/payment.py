@@ -23,7 +23,7 @@ class Payment(db.Model, ModelMixin):
         default=utcnow,
     )
 
-    ticket: orm.Mapped["Ticket"] = orm.relationship()
+    ticket: orm.Mapped["Ticket"] = orm.relationship(back_populates="payment")
     buyer: orm.Mapped["User"] = orm.relationship()
 
     @property
