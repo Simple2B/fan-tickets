@@ -2,7 +2,7 @@ import sqlalchemy as sa
 
 from http import HTTPStatus
 
-from flask import request, Blueprint, render_template, current_app as app, abort
+from flask import request, Blueprint, render_template, current_app as app, abort, redirect, url_for, flash
 from flask_login import current_user, login_required
 
 from app import models as m, db
@@ -94,6 +94,9 @@ def start_dispute():
         room.type_of = m.RoomType.DISPUTE.value
         room.save()
         log(log.INFO, "Dispute room already exists for payment [%s]", payment.id)
+
+    room.is_open = True
+    db.session.commit()
 
     return room.unique_id, HTTPStatus.OK
 
@@ -208,3 +211,43 @@ def send_message():
     flask_sse_notification.notify_room(room, {"msg": message.unique_id})
 
     return "OK", HTTPStatus.OK
+
+
+@chat_disputes_blueprint.route("/close", methods=["GET"])
+@login_required
+def close_dispute():
+    room_unique_id = request.args.get("room_unique_id")
+
+    if not room_unique_id:
+        log(log.ERROR, "No room_unique_id provided")
+        flash("Something went wrong", "danger")
+        return redirect(url_for("admin.get_disputes"))
+
+    room = db.session.scalar(sa.select(m.Room).where(m.Room.unique_id == room_unique_id))
+
+    if not room:
+        log(log.ERROR, "Room [%s] not found", room_unique_id)
+        flash("Something went wrong", "danger")
+
+    if not room.is_open:
+        log(log.ERROR, "Room [%s] already closed", room_unique_id)
+        flash("Dispute already closed", "danger")
+        return redirect(url_for("admin.get_disputes"))
+
+    room.is_open = False
+    db.session.commit()
+
+    # send email notification
+    admins = db.session.scalars(m.User.select().where(m.User.role == m.UserRole.admin.value)).all()
+    mail_controller.send_email(
+        admins + [room.seller, room.buyer],
+        "Dispute closed",
+        render_template(
+            "email/dispute_closed.html",
+            event_name=room.ticket.event.name,
+        ),
+    )
+
+    log(log.INFO, "Dispute closed room: [%s]", room)
+    flash("Dispute closed", "success")
+    return redirect(url_for("admin.get_disputes"))
