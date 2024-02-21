@@ -26,5 +26,19 @@ class Payment(db.Model, ModelMixin):
     ticket: orm.Mapped["Ticket"] = orm.relationship()
     buyer: orm.Mapped["User"] = orm.relationship()
 
+    @property
+    def is_exist_dispute(self) -> bool:
+        for room in self.ticket.rooms:
+            if room.type_of == "dispute":
+                return True
+        return False
+
+    @property
+    def is_close_dispute(self) -> bool:
+        for room in self.ticket.rooms:
+            if room.type_of == "dispute" and not room.is_open:
+                return True
+        return False
+
     def __repr__(self):
         return f"<{self.id}:<{self.ticket}>|<{self.buyer.username}"
