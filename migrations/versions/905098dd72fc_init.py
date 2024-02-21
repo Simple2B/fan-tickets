@@ -1,8 +1,8 @@
-"""Init migration
+"""init
 
-Revision ID: d36e3f6e92b8
+Revision ID: 905098dd72fc
 Revises: 
-Create Date: 2024-02-16 15:18:13.492246
+Create Date: 2024-02-21 11:48:46.640984
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd36e3f6e92b8'
+revision = '905098dd72fc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -67,13 +67,19 @@ def upgrade():
     sa.Column('phone', sa.String(length=32), nullable=True),
     sa.Column('address', sa.String(length=256), nullable=True),
     sa.Column('birth_date', sa.DateTime(), nullable=True),
-    sa.Column('document_identity_number', sa.String(length=32), nullable=True),
     sa.Column('facebook', sa.String(length=256), nullable=True),
     sa.Column('instagram', sa.String(length=256), nullable=True),
     sa.Column('twitter', sa.String(length=256), nullable=True),
     sa.Column('card', sa.String(length=16), nullable=True),
-    sa.Column('card_id', sa.String(length=16), nullable=True),
+    sa.Column('document_identity_number', sa.String(length=32), nullable=True),
     sa.Column('pagarme_id', sa.String(length=32), nullable=True),
+    sa.Column('recipient_id', sa.String(length=32), nullable=True),
+    sa.Column('bank', sa.String(length=4), nullable=True),
+    sa.Column('branch_check_digit', sa.String(length=2), nullable=True),
+    sa.Column('branch_number', sa.String(length=8), nullable=True),
+    sa.Column('account_number', sa.String(length=16), nullable=True),
+    sa.Column('account_check_digit', sa.String(length=2), nullable=True),
+    sa.Column('card_id', sa.String(length=16), nullable=True),
     sa.Column('billing_line_1', sa.String(length=256), nullable=True),
     sa.Column('billing_line_2', sa.String(length=256), nullable=True),
     sa.Column('billing_zip_code', sa.String(length=16), nullable=True),
@@ -174,6 +180,7 @@ def upgrade():
     sa.Column('last_reservation_time', sa.DateTime(), nullable=True),
     sa.Column('is_sold', sa.Boolean(), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
+    sa.Column('paid_to_seller_at', sa.DateTime(), server_default=sa.text('NULL'), nullable=True),
     sa.ForeignKeyConstraint(['buyer_id'], ['users.id'], name=op.f('fk_tickets_buyer_id_users')),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], name=op.f('fk_tickets_event_id_events')),
     sa.ForeignKeyConstraint(['seller_id'], ['users.id'], name=op.f('fk_tickets_seller_id_users')),
