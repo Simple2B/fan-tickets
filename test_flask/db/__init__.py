@@ -116,10 +116,10 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
         buyer_id = 4
 
         # set to seller a recipient_id
-        seller: m.User = db.session.get(m.User, seller_id)
-        if seller:
-            seller.recipient_id = "re_clsnbbg4c071b019twu0zvkio"
-            seller.save(False)
+        # seller: m.User = db.session.get(m.User, seller_id)
+        # if seller:
+        #     seller.recipient_id = "re_clsnbbg4c071b019twu0zvkio"
+        #     seller.save(False)
 
         event = m.Event(
             name=f"{location_name} {category_name} {i}",
