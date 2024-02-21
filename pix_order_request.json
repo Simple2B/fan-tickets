@@ -1,0 +1,29 @@
+{
+    "items": [
+        {
+            "amount": 50200,
+            "code": null,
+            "unique_id": null,
+            "description": "295ef742-9588-4e6c-ae75-ed1ca26c0b6e, ",
+            "quantity": 1,
+            "category": "Concert Event"
+        }
+    ],
+    "customer_id": "cus_w4ZgGYgT0TPaDP8B",
+    "code": null,
+    "payments": [
+        {
+            "expires_in": 30,
+            "payment_method": "pix",
+            "billing_address_editable": false,
+            "customer_editable": false,
+            "accepted_payment_methods": [
+                "pix"
+            ],
+            "success_url": "https://fan-ticket.simple2b.org/pay/webhook",
+            "Pix": {
+                "expires_in": 2147483647
+            }
+        }
+    ]
+}

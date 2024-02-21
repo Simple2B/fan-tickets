@@ -22,7 +22,7 @@ class BaseConfig(BaseSettings):
     VERSION: str = get_version()
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-    WTF_CSRF_ENABLED: bool = False
+    WTF_CSRF_ENABLED: bool = True
 
     # Mail config
     MAIL_SERVER: str
@@ -58,7 +58,8 @@ class BaseConfig(BaseSettings):
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
     PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    # PATTERN_PHONE: str = r"^\+?\d{10,13}$"
+    PATTERN_PHONE: str = r"\+?(\d{2})-(\d{2})-(\d{8})"
 
     # API
     IS_API: bool = False
@@ -87,8 +88,9 @@ class BaseConfig(BaseSettings):
     STAGING_BASE_URL: str = "https://fan-ticket.simple2b.org/"
     PRODUCTION_BASE_URL: str = "https://fan-ticket.simple2b.net/"
 
-    # platform commission rate
-    PLATFORM_COMMISSION_RATE: float = 1.08
+    # platform commission rate - 11%
+    # 5% - platform commission rate, 3% - payment gateway commission rate that is included twice because of the 2-stage payment
+    PLATFORM_COMMISSION_RATE: float = 1.11
 
     # pagar.me
     PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"
@@ -172,6 +174,8 @@ class TestingConfig(BaseConfig):
     PRESERVE_CONTEXT_ON_EXCEPTION: bool = False
     ALCHEMICAL_DATABASE_URL: str = "sqlite:///" + os.path.join(BASE_DIR, "database-test.sqlite3")
 
+    WTF_CSRF_ENABLED: bool = False
+
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 
 
@@ -185,7 +189,6 @@ class ProductionConfig(BaseConfig):
     REDIS_URL: str = Field(
         alias="REDIS_URL",
     )
-    WTF_CSRF_ENABLED: bool = True
 
     model_config = SettingsConfigDict(extra="allow", env_file=("project.env", ".env"))
 

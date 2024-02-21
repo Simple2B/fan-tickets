@@ -7,14 +7,12 @@ submit_message_disable
   {% include 'chat/chat_spinner.html' %}
 
   {% set html_element %}
-  {% set all_filters = "[name='room_unique_id'], [name='ticket_unique_id'], [name='renew_search'],
-  [name='event_unique_id']" %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='event_unique_id']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
   <div class="mt-2 flex flex-col gap-3">
     <div class=" flex flex-col gap-2">
       {% for ticket in tickets %}
-      <input type="hidden" name="ticket_unique_id" value="{{ ticket.unique_id }}" />
       {% include 'chat/buy/ticket_item.html' %}
       {% endfor %}
     </div>

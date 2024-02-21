@@ -94,6 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
     'message-send-button',
   ) as HTMLButtonElement;
   const messageInput = document.getElementById('chat-get') as HTMLInputElement;
+  const csrfTokenInput = document.getElementById(
+    'csrf_token',
+  ) as HTMLInputElement;
+
+  let csrfToken = '';
+
+  if (csrfTokenInput) {
+    csrfToken = csrfTokenInput.value;
+  }
 
   roomUuidInput = document.querySelector(
     '[name="room_uuid"]',
@@ -160,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = new FormData();
     formData.append('room_unique_id', roomUuid);
     formData.append('message', messageText);
+    formData.append('csrf_token', csrfToken);
 
     await fetch(messageSendUrl, {
       method: 'POST',

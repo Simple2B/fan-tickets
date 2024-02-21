@@ -1,3 +1,4 @@
+import re
 import json
 from typing import Optional
 from urllib.parse import urljoin
@@ -15,6 +16,10 @@ from .exceptions import (
     APIConnectionError,
     APICreateOrderError,
 )
+
+from config import config
+
+CFG = config()
 
 
 class PagarmeClient:
@@ -112,7 +117,19 @@ class PagarmeClient:
         )
 
     def create_order_pix(self, create_order_data: s.PagarmeCreateOrderPix):
+        # Logging a request data to a file
+        with open("pix_order_request.json", "w") as file:
+            file.write(create_order_data.model_dump_json())
+
         response = self.api.post(self.__generate_url__("orders"), json=create_order_data.model_dump(exclude_none=True))
+
+        # Logging a response data to a file
+        try:
+            with open("pix_order_response.json", "w") as file:
+                file.write(json.dumps(response.json()))
+        except Exception as e:
+            log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
+
         if response.status_code == HTTPStatus.FORBIDDEN:
             raise APIConnectionError
         try:
@@ -336,8 +353,15 @@ class PagarmeClient:
         return s.PagarmeCustomerOutput.model_validate(response.json())
 
     def generate_customer_phone(self, phone: str):
+        # Regexp for phone validation
+        match_res = re.search(CFG.PATTERN_PHONE, phone)
+        country_code = match_res.group(1) if match_res else self.BRASIL_COUNTRY_PHONE_CODE
+        area_code = match_res.group(2) if match_res else self.BRASIL_COUNTRY_AREA_CODE
+        number = match_res.group(3) if match_res else phone
         return s.PagarmePhoneData(
-            country_code=self.BRASIL_COUNTRY_PHONE_CODE, area_code=self.BRASIL_COUNTRY_AREA_CODE, number=phone
+            country_code=country_code,
+            area_code=area_code,
+            number=number,
         )
 
     # Cards
