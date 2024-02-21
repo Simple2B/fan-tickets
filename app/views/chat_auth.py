@@ -1,5 +1,6 @@
 import os
 from urllib.parse import urlparse
+from sqlalchemy import or_
 
 from sqlalchemy.exc import IntegrityError
 
@@ -102,6 +103,8 @@ def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
     room_unique_id = request.args.get("room_unique_id")
     renew_search = request.args.get("renew_search")
+    room = None
+
     if room_unique_id:
         room = c.get_room(room_unique_id)
         c.save_message(
@@ -109,17 +112,28 @@ def sell():
             "Sell",
             room,
         )
+    elif current_user.is_authenticated and current_user.rooms:
+        rooms_query = (
+            m.Room.select()
+            .where(
+                or_(m.Room.seller_id == current_user.id, m.Room.buyer_id == current_user.id),
+                m.Room.type_of != m.RoomType.DISPUTE.value,
+            )
+            .order_by(m.Room.id.desc())
+        )
+        room = db.session.scalar(rooms_query)
     else:
         room = m.Room(
             seller_id=seller_id,
             buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
         ).save()
+        assert room
         c.save_message(
             "Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a ticket?",
             "Sell",
             room,
         )
-
+    assert room
     if renew_search:
         c.save_message("Choose action", "Renew search", room)
         log(log.ERROR, "Renew search")

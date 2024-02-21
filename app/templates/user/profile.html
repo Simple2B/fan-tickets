@@ -10,10 +10,7 @@
       {% include "icons/pencil.html" %}
       <span class="sr-only">Upload image</span>
     </button>
-    <img
-      class="w-48 h-48 rounded-50%"
-      src="{{ user.picture.base64_src }}"
-      alt="avatar" />
+    <img class="w-48 h-48 rounded-50%" src="{{ user.picture.base64_src }}" alt="avatar" />
   </div>
 
   <h1 class="self-center text-6xl">{{ current_user.name }}</h1>
@@ -27,7 +24,8 @@
         <div class="pb-8 border-b border-grey">
           <p class="font-medium text-3xl">Endereço de Email</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_email" hx-post="{{ url_for('admin.user.save_email') }}" hx-target="#profile_email" hx-swap="innerHTML">
+          <form method="post" id="profile_email" hx-post="{{ url_for('admin.user.save_email') }}"
+            hx-target="#profile_email" hx-swap="innerHTML">
             {{ email_form.hidden_tag() }} {% include 'user/email_save.html' %}
           </form>
         </div>
@@ -35,7 +33,8 @@
         <div class="py-8 border-b border-grey">
           <p class="font-medium text-3xl">Phone</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_phone" hx-post="{{ url_for('admin.user.save_phone') }}" hx-target="#profile_phone" hx-swap="innerHTML">
+          <form method="post" id="profile_phone" hx-post="{{ url_for('admin.user.save_phone') }}"
+            hx-target="#profile_phone" hx-swap="innerHTML">
             {{ phone_form.hidden_tag() }} {% include 'user/phone_save.html' %}
           </form>
         </div>
@@ -51,9 +50,7 @@
           <p class="mb-4 text-grey">
             Uma visão geral de tudo o que você segue na FanTicket
           </p>
-          <div
-            id="user-profile-subscribe-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
+          <div id="user-profile-subscribe-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% for subscribe in user.subscribed_events %}
             <div class="flex gap-6">
               <!-- prettier-ignore -->
@@ -112,9 +109,7 @@
           <p class="mb-4 text-grey">
             Uma visão geral de todos os seus pagamentos
           </p>
-          <div
-            id="user-profile-payment-container"
-            class="dropdown-close mb-4 flex flex-col gap-3">
+          <div id="user-profile-payment-container" class="dropdown-close mb-4 flex flex-col gap-3">
             {% for payment in payments %}
             <div class="flex gap-12">
               <!-- prettier-ignore -->
@@ -138,15 +133,27 @@
                 Start dispute
               </button -->
               <!-- prettier-ignore -->
-              <button data-payment-id="{{payment.id}}" class="start-dispute-btn px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200">
+              {% if payment.is_exist_dispute %}
+              {% if payment.is_close_dispute %}
+              <span class="px-2 py-1 text-xs text-grey">
+                Dispute Closed
+              </span>
+              {% else %}
+              <button data-payment-id="{{payment.id}}"
+                class="start-dispute-btn px-2 py-1 text-xs text-secondary hover:text-yellow-500  rounded-lg cursor-pointer transition-colors duration-200">
+                Dispute in progress
+              </button>
+              {% endif %}
+              {% else %}
+              <button data-payment-id="{{payment.id}}"
+                class="start-dispute-btn px-2 py-1 text-xs text-red-600 hover:text-red-800  rounded-lg cursor-pointer transition-colors duration-200">
                 Start dispute
               </button>
+              {% endif %}
             </div>
             {% endfor %}
           </div>
-          <button
-            class="text-secondary underline"
-            id="user-profile-payment-btn">
+          <button class="text-secondary underline" id="user-profile-payment-btn">
             Mostrar
           </button>
         </div>
@@ -154,7 +161,8 @@
         <div class="py-8 border-b border-grey">
           <p class="mb-3 font-medium text-3xl">Dados bancários</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_card" hx-post="{{ url_for('admin.user.save_card') }}" hx-target="#profile_card" hx-swap="innerHTML">
+          <form method="post" id="profile_card" hx-post="{{ url_for('admin.user.save_card') }}"
+            hx-target="#profile_card" hx-swap="innerHTML">
             {{ card_form.hidden_tag() }} {% include 'user/card_save.html' %}
           </form>
         </div>
@@ -170,7 +178,8 @@
             Controle quais e-mails você deseja receber
           </p>
           <!-- prettier-ignore -->
-          <div id="user-profile-email-container" class="dropdown-close mb-4 flex flex-col gap-3"> {% include 'user/notifications_save.html' %} </div>
+          <div id="user-profile-email-container" class="dropdown-close mb-4 flex flex-col gap-3"> {% include
+            'user/notifications_save.html' %} </div>
           <!-- prettier-ignore -->
           <button class="text-secondary underline" id="user-profile-email-btn">Mostrar</button>
         </div>
@@ -182,14 +191,10 @@
       </div>
     </div>
     <div class="flex gap-8 justify-center">
-      <a
-        class="p-2 text-lg text-secondary underline cursor-pointer"
-        href="{{url_for('admin.user.export')}}">
+      <a class="p-2 text-lg text-secondary underline cursor-pointer" href="{{url_for('admin.user.export')}}">
         Exportar meus dados
       </a>
-      <a
-        class="p-2 text-lg text-danger underline cursor-pointer"
-        href="{{url_for('admin.user.deactivate')}}">
+      <a class="p-2 text-lg text-danger underline cursor-pointer" href="{{url_for('admin.user.deactivate')}}">
         Remover minha conta
       </a>
     </div>
@@ -198,7 +203,7 @@
 
 <!-- prettier-ignore -->
 {% block chat_window %}
-{% include 'chat/chat_window_disputes.html' %} 
+{% include 'chat/chat_window_disputes.html' %}
 {% endblock %}
 
 {% include 'user/upload_image.html' %} {% endblock %} {% block scripts %}

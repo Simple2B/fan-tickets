@@ -12,12 +12,14 @@
         <th scope="col" class="px-6 py-3">seller</th>
         <th scope="col" class="px-6 py-3">buyer</th>
         <th scope="col" class="px-6 py-3">is open</th>
+        <th scope="col" class="px-6 py-3">show dispute</th>
+        <th scope="col" class="px-6 py-3">close dispute</th>
       </tr>
     </thead>
     <tbody>
       {% for dispute in disputes %}
       <!-- prettier-ignore -->
-      <tr class="dispute-tr-element border-b bg-black border-gray-700 hover: hover:bg-gray-600 cursor-pointer" data-room-uuid="{{ dispute.unique_id }}">
+      <tr class=" border-b bg-black border-gray-700 hover: hover:bg-gray-600" data-room-uuid="{{ dispute.unique_id }}">
         <td class="w-4 p-4">
           <div class="flex items-center">
             {{ loop.index }}
@@ -37,7 +39,24 @@
         <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
           {{ dispute.is_open }}
         </td>
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          <a data-room-uuid="{{ dispute.unique_id }}"
+            class="dispute-tr-element link px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300 cursor-pointer">Show
+            Dispute</a>
+        </td>
+        {% if dispute.is_open %}
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          <a href="{{ url_for('disputes.close_dispute', room_unique_id=dispute.unique_id) }}"
+            class="link px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300 cursor-pointer">Close
+            Dispute</a>
+        </td>
+        {% else %}
+        <td class="p-4 text-base font-normal  whitespace-nowrap text-white">
+          <span class="px-4 py-2 text-secondary">
+            Dispute
+            Closed</span>
       </tr>
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
