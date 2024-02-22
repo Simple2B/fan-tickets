@@ -1,3 +1,5 @@
+from flask.testing import FlaskClient, FlaskCliRunner
+from click.testing import Result
 from .db import generate_test_users, generate_test_events
 from app import db
 from app import models as m
@@ -6,13 +8,13 @@ from app import models as m
 TESTING_USERS_NUMBER = 30
 
 
-def test_generate_users(client):
+def test_generate_users(client: FlaskClient):
     generate_test_users(TESTING_USERS_NUMBER)
     users_list = list(db.session.scalars(m.User.select()).all())
     assert len(users_list) == TESTING_USERS_NUMBER + 1
 
 
-def test_generate_events(client):
+def test_generate_events(client: FlaskClient):
     generate_test_events()
     locations_query = m.Location.select()
     locations = list(db.session.scalars(locations_query))
@@ -23,3 +25,22 @@ def test_generate_events(client):
     tickets_query = m.Ticket.select()
     tickets = list(db.session.scalars(tickets_query))
     assert len(tickets) == 144
+
+
+def test_delete_user(runner: FlaskCliRunner):
+    db_populate_output: Result = runner.invoke(args=["db-populate"])
+    assert "populated by" in db_populate_output.stdout
+
+    all_users_before = db.session.scalars(m.User.select()).all()
+
+    payment: m.Payment = db.session.scalar(m.Payment.select())
+    assert payment
+    user: m.User = payment.buyer
+    assert user
+
+    delete_command_output: Result = runner.invoke(args=["delete-user", f"--email={user.email}"])
+    assert delete_command_output
+
+    all_users_after = db.session.scalars(m.User.select()).all()
+
+    assert len(all_users_before) == len(all_users_after) + 1

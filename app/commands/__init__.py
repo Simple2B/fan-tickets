@@ -96,7 +96,7 @@ def init_shell_commands(app: Flask):
         Command for setting testing subscriptions to display in profile
         """
         event = db.session.scalar(sa.select(m.Event))
-        user = db.session.scalar(
+        user: m.User = db.session.scalar(
             m.User.select().where(m.User.email == email, m.User.subscribed_events.any(m.Event.id == event.id))
         )
 
@@ -121,6 +121,7 @@ def init_shell_commands(app: Flask):
                 buyer=user,
             )
             db.session.add(payment)
+        user.password = "pass"
         db.session.commit()
 
     @app.cli.command("delete-user")
@@ -411,3 +412,16 @@ def init_shell_commands(app: Flask):
             db.session.commit()
         else:
             print("No tickets to pay")
+
+    @app.cli.command("delete-rooms")
+    def delete_unused_rooms():
+        """
+        Deletes rooms if last message was sent more than 48 hours ago
+        """
+        # rooms_query = m.Room.select().where(
+        #     m.Room.messages.any(m.Message.created_at < datetime.now() - timedelta(minutes=2))
+        # )
+        rooms_query = m.Room.select()
+        rooms: list[m.Room] = db.session.scalars(rooms_query).all()
+        print(rooms)
+        print(len(rooms), "rooms to delete")
