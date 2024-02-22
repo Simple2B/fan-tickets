@@ -112,7 +112,7 @@ def sell():
             "Sell",
             room,
         )
-    elif current_user.is_authenticated and current_user.rooms:
+    elif current_user.is_authenticated and (current_user.seller_chat_rooms or current_user.buyer_chat_rooms):
         rooms_query = (
             m.Room.select()
             .where(
