@@ -38,117 +38,117 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
         events.extend(events_search)
 
     # If no events found in database, try to get event from Bard
-    if not events:
-        log(log.INFO, "Event not found in database: [%s]", params.user_message)
+    # if not events:
+    #     log(log.INFO, "Event not found in database: [%s]", params.user_message)
 
-        try:
-            # Establishing connection with Bard
-            bard = Bard(token=os.environ.get("_BARD_API_KEY"))
-        except Exception as e:
-            log(log.ERROR, "Bard connection error: [%s]", e)
-            return events
+    #     try:
+    #         # Establishing connection with Bard
+    #         bard = Bard(token=os.environ.get("_BARD_API_KEY"))
+    #     except Exception as e:
+    #         log(log.ERROR, "Bard connection error: [%s]", e)
+    #         return events
 
-        question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
+    #     question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
 
-        json_example = """
-            {
-            "event_name": "official event name",
-            "official_url": "https://someofficialurl.com",
-            "location": "City name",
-            "venue": "Sao Paolo Stadium",
-            "date": "2024-02-24",
-            "time": "20:00"
-            }
-        """
+    #     json_example = """
+    #         {
+    #         "event_name": "official event name",
+    #         "official_url": "https://someofficialurl.com",
+    #         "location": "City name",
+    #         "venue": "Sao Paolo Stadium",
+    #         "date": "2024-02-24",
+    #         "time": "20:00"
+    #         }
+    #     """
 
-        message = f"{question}\n{json_example}"
+    #     message = f"{question}\n{json_example}"
 
-        try:
-            bard_response = bard.get_answer(message).get("content")
-            log(log.INFO, "Bard response: [%s]", bard_response)
-        except Exception as e:
-            log(log.ERROR, "Bard get answer error: [%s]", e)
-            return events
+    #     try:
+    #         bard_response = bard.get_answer(message).get("content")
+    #         log(log.INFO, "Bard response: [%s]", bard_response)
+    #     except Exception as e:
+    #         log(log.ERROR, "Bard get answer error: [%s]", e)
+    #         return events
 
-        if (
-            "not able to help" in bard_response
-            or "not able to assist" in bard_response
-            or "unable to assist" in bard_response
-            or "can't help you" in bard_response
-            or "not programmed to assist with that" in bard_response
-            or "nfortunately" in bard_response
-        ):
-            log(log.ERROR, "Bard response error: [%s]", bard_response)
-            # Returning empty list if all three ways to find event failed
-            return events
+    #     if (
+    #         "not able to help" in bard_response
+    #         or "not able to assist" in bard_response
+    #         or "unable to assist" in bard_response
+    #         or "can't help you" in bard_response
+    #         or "not programmed to assist with that" in bard_response
+    #         or "nfortunately" in bard_response
+    #     ):
+    #         log(log.ERROR, "Bard response error: [%s]", bard_response)
+    #         # Returning empty list if all three ways to find event failed
+    #         return events
 
-        # If Bard response is not an error, try to parse it
-        try:
-            parsed_response = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL)
-            json_str = parsed_response.group(1) if parsed_response else ""
-            bard_response = s.BardResponse.model_validate_json(json_str)
-            log(log.INFO, "Bard response json: [%s]", bard_response)
-        except Exception as e:
-            log(log.ERROR, "Bard response parse json error: [%s]", e)
-            return events
+    #     # If Bard response is not an error, try to parse it
+    #     try:
+    #         parsed_response = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL)
+    #         json_str = parsed_response.group(1) if parsed_response else ""
+    #         bard_response = s.BardResponse.model_validate_json(json_str)
+    #         log(log.INFO, "Bard response json: [%s]", bard_response)
+    #     except Exception as e:
+    #         log(log.ERROR, "Bard response parse json error: [%s]", e)
+    #         return events
 
-        if bard_response.event_name:
-            event_name = bard_response.event_name
+    #     if bard_response.event_name:
+    #         event_name = bard_response.event_name
 
-        # Parsing date from Bard response
-        try:
-            match = re.search(r"\d{4}[-/]\d{2}[-/]\d{2}", bard_response.date)
-            if match:
-                first_date_str = match.group(0)
-                first_date_str = first_date_str.replace("/", "-")
-                event_date = datetime.strptime(first_date_str, CFG.BARD_DATE_FORMAT)
-        except Exception as e:
-            event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
-            log(log.ERROR, "Date converting error: [%s]", e)
-            log(log.ERROR, "Setting default date: [%s]", event_date_time)
+    #     # Parsing date from Bard response
+    #     try:
+    #         match = re.search(r"\d{4}[-/]\d{2}[-/]\d{2}", bard_response.date)
+    #         if match:
+    #             first_date_str = match.group(0)
+    #             first_date_str = first_date_str.replace("/", "-")
+    #             event_date = datetime.strptime(first_date_str, CFG.BARD_DATE_FORMAT)
+    #     except Exception as e:
+    #         event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
+    #         log(log.ERROR, "Date converting error: [%s]", e)
+    #         log(log.ERROR, "Setting default date: [%s]", event_date_time)
 
-        # Parsing time from Bard response
-        try:
-            match = re.search(r"\d{2}:\d{2}", bard_response.time)
-            if match:
-                event_time_str = match.group(0)
-                hours = int(event_time_str[:2])
-                minutes = int(event_time_str[3:])
-                event_date_time = event_date.replace(hour=hours, minute=minutes)
-        except Exception as e:
-            event_date_time = event_date_time.replace(
-                hour=CFG.DEFAULT_EVENT_TIME_HOURS,
-                minute=CFG.DEFAULT_EVENT_TIME_MINUTES,
-            )
-            log(log.ERROR, "Time converting error: [%s]", e)
-            log(log.ERROR, "Setting default time: [%s]", event_date_time)
+    #     # Parsing time from Bard response
+    #     try:
+    #         match = re.search(r"\d{2}:\d{2}", bard_response.time)
+    #         if match:
+    #             event_time_str = match.group(0)
+    #             hours = int(event_time_str[:2])
+    #             minutes = int(event_time_str[3:])
+    #             event_date_time = event_date.replace(hour=hours, minute=minutes)
+    #     except Exception as e:
+    #         event_date_time = event_date_time.replace(
+    #             hour=CFG.DEFAULT_EVENT_TIME_HOURS,
+    #             minute=CFG.DEFAULT_EVENT_TIME_MINUTES,
+    #         )
+    #         log(log.ERROR, "Time converting error: [%s]", e)
+    #         log(log.ERROR, "Setting default time: [%s]", event_date_time)
 
-        # Parsing location from Bard response
-        location_id = None
-        if bard_response.location:
-            location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
-            location = db.session.scalar(location_query)
-            if not location:
-                location = m.Location(name=bard_response.location).save()
-            location_id = location.id
+    #     # Parsing location from Bard response
+    #     location_id = None
+    #     if bard_response.location:
+    #         location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
+    #         location = db.session.scalar(location_query)
+    #         if not location:
+    #             location = m.Location(name=bard_response.location).save()
+    #         location_id = location.id
 
-        # Getting the category by unique id
-        if isinstance(params, s.ChatSellEventParams) and params.event_category_id:
-            category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
-            category: m.Category = db.session.scalar(category_query)
+    #     # Getting the category by unique id
+    #     if isinstance(params, s.ChatSellEventParams) and params.event_category_id:
+    #         category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
+    #         category: m.Category = db.session.scalar(category_query)
 
-        # Creating a new event in database if we have at least minimal data
-        event = m.Event(
-            name=event_name,
-            url=bard_response.official_url,
-            location_id=location_id,
-            category_id=category.id,
-            venue=bard_response.venue,
-            date_time=event_date_time,
-            creator_id=current_user.id,
-        ).save()
-        events.append(event)
-        log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
+    #     # Creating a new event in database if we have at least minimal data
+    #     event = m.Event(
+    #         name=event_name,
+    #         url=bard_response.official_url,
+    #         location_id=location_id,
+    #         category_id=category.id,
+    #         venue=bard_response.venue,
+    #         date_time=event_date_time,
+    #         creator_id=current_user.id,
+    #     ).save()
+    #     events.append(event)
+    #     log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
 
     return events
 
