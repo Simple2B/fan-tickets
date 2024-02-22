@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-
+import json
 
 from flask import render_template, Blueprint, request
 from flask_login import login_required, current_user
@@ -212,6 +212,12 @@ def webhook():
     # for ticket in tickets:
     # ticket.paid_to_seller_at = datetime.now()
     # ticket.is_deleted = True
+
+    try:
+        with open("webhook_response.json", "w") as file:
+            file.write(json.dumps(request.json))
+    except Exception as e:
+        log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
 
     log(log.INFO, "Webhook received: [%s]", request.json)
     request_data = request.json.get("data") if request.json else None
