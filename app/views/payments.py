@@ -214,7 +214,7 @@ def webhook():
     # ticket.is_deleted = True
 
     log(log.INFO, "Webhook received: [%s]", request.json)
-    request_data = request.json.get("data")
+    request_data = request.json.get("data") if request.json else None
     if request_data:
         status = request_data.get("status")
         if status:
