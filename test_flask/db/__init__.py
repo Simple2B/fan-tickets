@@ -134,8 +134,9 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             approved=True,
         ).save(False)
         for j in range(12):
-            price_net = randint(10, 1000)
-            price_gross = int(round(price_net * 1.08))
+            # price_net = randint(10, 1000)
+            price_net = 1
+            price_gross = int(round(price_net * 1.11))
             is_in_cart = True if j <= 1 else False
             is_reserved = True if 2 <= j <= 4 else False
             is_sold = True if 5 <= j <= 7 else False
