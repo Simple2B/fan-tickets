@@ -12,6 +12,10 @@ submit_message_get
     {% else %}
     {{ bot_message("Nice! Please specify the time in format HH:MM (ex. 19:00) 🕔") }}
     {% endif %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

@@ -14,19 +14,6 @@ history_message_user_home %}
   {% include 'chat/chat_header.html' %}
   <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
     <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
-      {% if get_chat_room_messages() %}
-      {% for message in get_chat_room_messages() %}
-      {% if message.sender_id == get_chatbot_id() %}
-      {{ history_message_bot(message.text) }}
-      {% else %}
-      {% if current_user.is_authenticated %}
-      {{ history_message_user_home(message, current_user.name, current_user.picture.base64_src) }}
-      {% else %}
-      {{ history_message_user_home(message, "Guest") }}
-      {% endif %}
-      {% endif %}
-      {% endfor %}
-      {% endif %}
       {% include 'chat/chat_spinner.html' %}
       {% set html_element %}
       <div class="mt-2 flex justify-stretch gap-2">

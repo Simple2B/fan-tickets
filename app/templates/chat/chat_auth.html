@@ -29,6 +29,10 @@
     {% endif %}
 
     {{ bot_message('You do not log in. Please log in or sign up', html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

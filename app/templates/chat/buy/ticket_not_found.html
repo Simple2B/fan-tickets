@@ -36,6 +36,10 @@ submit_message_disable
     {% endif %}
     {{ bot_message("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket
     appears?", html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

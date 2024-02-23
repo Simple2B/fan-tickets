@@ -29,6 +29,10 @@ submit_message_disable
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {{ bot_message("Oops, it seems like there is no such event found😢 ", html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

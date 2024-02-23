@@ -30,6 +30,10 @@ submit_message_get
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {{ bot_message("Thank you! Once we have tickets you will get notification to your email", html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

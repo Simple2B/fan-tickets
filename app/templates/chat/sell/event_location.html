@@ -1,15 +1,19 @@
 {% from 'chat/_macros_chat_message.html' import bot_message,
 bot_message_without_date, user_message, submit_message_get %}
 
-<div
-  id="chat-main"
-  class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+<div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
 
   <div id="chat-message-container" data-send-message>
-    {% if error_message %} {% include 'chat/chat_message_error.html' %} {% else
-    %} {{ bot_message("Got it! Please provide the city of the event. ex. Sao
-    Paulo👇") }} {% endif %}
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% else %}
+    {{ bot_message("Got it! Please provide the city of the event. ex. Sao Paulo👇") }}
+    {% endif %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 
