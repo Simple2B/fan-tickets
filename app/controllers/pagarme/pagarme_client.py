@@ -1,3 +1,4 @@
+import os
 import re
 import json
 from typing import Optional
@@ -117,15 +118,20 @@ class PagarmeClient:
         )
 
     def create_order_pix(self, create_order_data: s.PagarmeCreateOrderPix):
+        if os.environ.get("APP_ENV") == "testing":
+            with open("test_flask/assets/pagarme/pix_order_response.json", "r") as file:
+                mocked_response = s.PagarmeCreateOrderResponsePix.model_validate(json.load(file))
+                return mocked_response
+
         # Logging a request data to a file
-        with open("pix_order_request.json", "w") as file:
+        with open("test_flask/assets/pagarme/pix_order_request.json", "w") as file:
             file.write(create_order_data.model_dump_json())
 
         response = self.api.post(self.__generate_url__("orders"), json=create_order_data.model_dump(exclude_none=True))
 
         # Logging a response data to a file
         try:
-            with open("pix_order_response.json", "w") as file:
+            with open("test_flask/assets/pagarme/pix_order_response.json", "w") as file:
                 file.write(json.dumps(response.json()))
         except Exception as e:
             log(log.ERROR, "Cannot save response logs to a file: [%s]", e)

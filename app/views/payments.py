@@ -1,6 +1,4 @@
 import sqlalchemy as sa
-import json
-
 from flask import render_template, Blueprint, request
 from flask_login import login_required, current_user
 
@@ -208,16 +206,18 @@ def webhook():
     order.canceled
     """
 
+    log(log.INFO, "Webhook received: [%s]", request.json)
+    webhook_request = s.PagarmePaidWebhook.model_validate(request.json)
+    request_data = webhook_request.data
+    if request_data:
+        status = request_data.status
+        if status:
+            log(log.INFO, "Webhook status: [%s]", status)
+    tickets_ids_str = request_data.items[0].description
+
     # # If we get info about tickets that have been paid to sellers from FT pagarme account
     # for ticket in tickets:
     # ticket.paid_to_seller_at = datetime.now()
     # ticket.is_deleted = True
 
-    log(log.INFO, "Webhook received: [%s]", request.json)
-    request_data = request.json.get("data") if request.json else None
-    if request_data:
-        status = request_data.get("status")
-        if status:
-            log(log.INFO, "Webhook status: [%s]", status)
-    tickets_ids_str = request_data["items"][0]["description"]
-    return {"status": "success"}, 200
+    return {"status": "success", "tickets_ids_str": tickets_ids_str}, 200

@@ -1,8 +1,9 @@
 from datetime import timedelta
 from alchemical.flask import Alchemical
 from flask.testing import FlaskClient
+from flask_login import current_user
 from test_flask.utils import login
-from app import models as m, db
+from app import models as m, db, schema as s
 from .db import populate
 from app.controllers.chat_buy import get_cheapest_tickets
 
@@ -122,6 +123,8 @@ def test_booking_ticket(client: FlaskClient):
 
 
 def test_booking_paired_tickets(client: FlaskClient):
+    from .assets.pagarme.webhook_response import WEBHOOK_RESPONSE
+
     room = m.Room(
         seller_id=None,
         buyer_id=2,
@@ -137,10 +140,29 @@ def test_booking_paired_tickets(client: FlaskClient):
     ticket_2.pair_unique_id = ticket_1.unique_id
 
     login(client)
+    current_user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket_1.unique_id}")
     assert response.status_code == 200
     assert "Do you want to proceed to purchase?" in response.data.decode()
     assert f"{ticket_1.unique_id}" in response.data.decode()
+
+    assert ticket_1.is_reserved
+    assert ticket_1.last_reservation_time
+    assert ticket_2.is_reserved
+    assert ticket_2.last_reservation_time
+
+    payment_response = client.get(f"/buy/payment?room_unique_id={room.unique_id}&ticket_unique_id={ticket_1.unique_id}")
+    assert payment_response.status_code == 200
+
+    webhook_response = s.PagarmePaidWebhook.model_validate(WEBHOOK_RESPONSE)
+    webhook_response.data.items[0].description = f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
+
+    response = client.post("/pay/webhook", json=webhook_response.model_dump())
+    assert response.status_code == 200
+    assert ticket_1.is_sold is False
+    assert ticket_2.is_sold is False
+
+    assert response.json["tickets_ids_str"] == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
 
 
 def test_get_cheapest_ticket(client_with_data: FlaskClient):

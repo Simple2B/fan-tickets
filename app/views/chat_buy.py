@@ -488,10 +488,15 @@ def payment():
     response_dict = json.loads(resp.json())
     qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
     qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
-    response = requests.get(qr_code_url)
-    assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
-    qr = response.content
-    qr_url = response.url
+    if os.environ.get("APP_ENV") == "testing":
+        with open("test_flask/assets/pagarme/qr.png", "rb") as qr_file:
+            qr = qr_file.read()
+            qr_url = "https://api.pagar.me/core/v5/transactions/tran_236wYQRSPUnBwb08/qrcode?payment_method=pix"
+    else:
+        response = requests.get(qr_code_url)
+        assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
+        qr = response.content
+        qr_url = response.url
     qr_base64 = base64.b64encode(qr).decode()
 
     return render_template(
