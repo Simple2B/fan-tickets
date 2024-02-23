@@ -207,3 +207,12 @@ def test_pay_sellers(runner: FlaskCliRunner):
     pay_sellers_output: Result = runner.invoke(args=["pay-sellers"])
     assert f"{len(tickets_to_pay)} tickets to pay" in pay_sellers_output.stdout
     assert tickets_to_pay
+
+
+def test_webhook(client_with_data: FlaskClient):
+    from .assets.pagarme.webhook_response import WEBHOOK_RESPONSE
+
+    response = client_with_data.post("/pay/webhook", json=WEBHOOK_RESPONSE)
+    assert response.status_code == 200
+    assert response.json
+    # assert response.json["status"] == "paid"

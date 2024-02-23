@@ -213,16 +213,11 @@ def webhook():
     # ticket.paid_to_seller_at = datetime.now()
     # ticket.is_deleted = True
 
-    try:
-        with open("webhook_response.json", "w") as file:
-            file.write(json.dumps(request.json))
-    except Exception as e:
-        log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
-
     log(log.INFO, "Webhook received: [%s]", request.json)
     request_data = request.json.get("data") if request.json else None
     if request_data:
         status = request_data.get("status")
         if status:
             log(log.INFO, "Webhook status: [%s]", status)
+    tickets_ids_str = request_data["items"][0]["description"]
     return {"status": "success"}, 200

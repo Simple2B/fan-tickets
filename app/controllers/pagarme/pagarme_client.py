@@ -245,7 +245,7 @@ class PagarmeClient:
         """
 
         # Logging a request data to a file
-        with open("split_order_request.json", "w") as file:
+        with open("test_flask/assets/pagarme/split_order_request.json", "w") as file:
             file.write(create_split_order_data.model_dump_json())
 
         # Sending a request to the pagarme API
@@ -259,7 +259,7 @@ class PagarmeClient:
 
         # Logging a response data to a file
         try:
-            with open("split_order_response.json", "w") as file:
+            with open("test_flask/assets/pagarme/split_order_response.json", "w") as file:
                 file.write(json.dumps(response.json()))
         except Exception as e:
             log(log.ERROR, "Cannot save response logs to a file: [%s]", e)

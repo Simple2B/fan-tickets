@@ -101,14 +101,23 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
     )
     previous_tickets = db.session.scalars(previous_tickets_query).all()
 
-    ticket.is_reserved = True
-    ticket.last_reservation_time = datetime.now(UTC)
-    ticket.buyer_id = user.id
-
     for previous_ticket in previous_tickets:
         previous_ticket.is_reserved = False
         previous_ticket.buyer_id = None
         previous_ticket.save(False)
+
+    ticket.is_reserved = True
+    ticket.last_reservation_time = datetime.now(UTC)
+    ticket.buyer_id = user.id
+    ticket.save(False)
+
+    if ticket.is_paired and ticket.pair_unique_id:
+        paired_ticket_query = sa.select(m.Ticket).where(m.Ticket.pair_unique_id == ticket.unique_id)
+        paired_ticket = db.session.scalar(paired_ticket_query)
+        paired_ticket.is_reserved = True
+        paired_ticket.last_reservation_time = datetime.now(UTC)
+        paired_ticket.buyer_id = user.id
+        paired_ticket.save(False)
 
     room.ticket = ticket
 
@@ -150,7 +159,6 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         price_service += ticket_price_gross - ticket.price_net
         price_net += ticket.price_net
         unique_ids += f"{ticket.unique_id}, "
-    # TODO: Do we need to round the total price here?
     return s.ChatBuyTicketTotalPrice(
         service=int(round(price_service)),
         total=int(round(price_total)),
