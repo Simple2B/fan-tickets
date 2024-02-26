@@ -3,7 +3,11 @@
   class="p-4 w-265 flex text-white bg-dark-grey rounded-t-lg rounded-br-lg justify-between items-center">
   <div class="flex flex-col gap-2">
     <h3>{{ ticket.event.name }}</h3>
+    {% if ticket.is_paired %}
+    <span class="text-secondary">R${{ ticket.price_gross * 2 }}</span>
+    {% else %}
     <span class="text-secondary">R${{ ticket.price_gross }}</span>
+    {% endif %}
     <span class="text-xs text-grey">{{ ticket.section }} &#8226; {{ ticket.seat }}</span>
   </div>
   <div class="flex items-center gap-2 py-1.5 px-3 bg-middle-grey rounded-full">

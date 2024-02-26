@@ -4244,6 +4244,14 @@ input[type='number']::-webkit-outer-spin-button {
     width: 33.333333%;
   }
 
+  .md\:w-1\/2{
+    width: 50%;
+  }
+
+  .md\:w-3\/5{
+    width: 60%;
+  }
+
   .md\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

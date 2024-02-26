@@ -3,7 +3,7 @@ from alchemical.flask import Alchemical
 from flask.testing import FlaskClient
 from flask_login import current_user
 from test_flask.utils import login
-from app import models as m, db, schema as s
+from app import models as m, db, schema as s, mail_controller
 from .db import populate
 from app.controllers.chat_buy import get_cheapest_tickets
 
@@ -158,23 +158,25 @@ def test_booking_paired_tickets(client: FlaskClient):
     webhook_response.data.customer.code = current_user.uuid
     webhook_response.data.items[0].description = f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
 
-    response = client.post("/pay/webhook", json=webhook_response.model_dump())
-    assert response.status_code == 200
-    assert ticket_1.is_sold is True
-    assert ticket_1.is_deleted is True
-    assert ticket_1.paid_to_seller_at is None
-    assert ticket_2.is_sold is True
-    assert ticket_2.is_deleted is True
-    assert ticket_2.paid_to_seller_at is None
+    with mail_controller.mail.record_messages() as outbox:
+        response = client.post("/pay/webhook", json=webhook_response.model_dump())
+        assert response.status_code == 200
+        assert ticket_1.is_sold is True
+        assert ticket_1.is_deleted is True
+        assert ticket_1.paid_to_seller_at is None
+        assert ticket_2.is_sold is True
+        assert ticket_2.is_deleted is True
+        assert ticket_2.paid_to_seller_at is None
 
-    validated_response = s.FanTicketWebhookProcessed.model_validate(response.json)
-    assert validated_response.status == "paid"
-    assert validated_response.user_uuid == current_user.uuid
-    assert validated_response.tickets_uuids_str == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
+        validated_response = s.FanTicketWebhookProcessed.model_validate(response.json)
+        assert validated_response.status == "paid"
+        assert validated_response.user_uuid == current_user.uuid
+        assert validated_response.tickets_uuids_str == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
 
-    users_payments_query = m.Payment.select().where(m.Payment.buyer_id == current_user.id)
-    users_payments = db.session.scalars(users_payments_query).all()
-    assert len(users_payments) == 2
+        users_payments_query = m.Payment.select().where(m.Payment.buyer_id == current_user.id)
+        users_payments = db.session.scalars(users_payments_query).all()
+        assert len(users_payments) == 2
+        assert len(outbox) == 4
 
     webhook_response.data.status = "pending"
     response = client.post("/pay/webhook", json=webhook_response.model_dump())

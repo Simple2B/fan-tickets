@@ -1,0 +1,13 @@
+<div id="ticket_transfer" class="flex justify-center items-center">
+    {% if payment.ticket.is_transferred %}
+    <p class="px-2 py-1 text-xs text-grey">
+        Ingresso transferido
+    </p>
+    {% else %}
+    <button hx-get="{{ url_for('pay.transfer', ticket_unique_id=payment.ticket.unique_id) }}"
+        hx-target="#ticket_transfer"
+        class="start-dispute-btn px-2 py-1 text-xs text-red-600 hover:text-red-800  rounded-lg cursor-pointer transition-colors duration-200">
+        Confirmar transferência
+    </button>
+    {% endif %}
+</div>
