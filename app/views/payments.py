@@ -227,6 +227,8 @@ def webhook():
                 ticket.is_sold = True
                 ticket.is_deleted = True
                 ticket.save()
+                # TODO: add a payment instance
+                # TODO: add a notification instance
                 ticket_data = s.FanTicketWebhookTicketData(
                     unique_id=ticket.unique_id,
                     is_paired=ticket.is_paired,

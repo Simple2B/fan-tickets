@@ -13,11 +13,15 @@ from flask_login import current_user, login_required
 from app import controllers as c, schema as s, models as m, forms as f, db, pagarme_client
 from app.logger import log
 from app import mail_controller
+from test_flask.assets.pagarme.webhook_response import WEBHOOK_RESPONSE
 
 from config import config
 
 
 CFG = config()
+APP_ENV = os.environ.get("APP_ENV")
+DEVELOPMENT_BASE_URL = os.environ.get("SERVER_NAME")
+LOCAL_WEBHOOK_URL = f"http://{DEVELOPMENT_BASE_URL}/pay/webhook"
 
 chat_buy_blueprint = Blueprint("buy", __name__, url_prefix="/buy")
 
@@ -488,7 +492,7 @@ def payment():
     response_dict = json.loads(resp.json())
     qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
     qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
-    if os.environ.get("APP_ENV") == "testing":
+    if APP_ENV == "testing":
         with open("test_flask/assets/pagarme/qr.png", "rb") as qr_file:
             qr = qr_file.read()
             qr_url = "https://api.pagar.me/core/v5/transactions/tran_236wYQRSPUnBwb08/qrcode?payment_method=pix"
@@ -498,6 +502,12 @@ def payment():
         qr = response.content
         qr_url = response.url
     qr_base64 = base64.b64encode(qr).decode()
+
+    if APP_ENV == "development":
+        webhook_response = s.PagarmePaidWebhook.model_validate(WEBHOOK_RESPONSE)
+        webhook_response.data.items[0].description = total_prices.unique_ids
+        testing_webhook = requests.post(LOCAL_WEBHOOK_URL, json=webhook_response.model_dump())
+        log(log.INFO, f"Testing webhook response: {testing_webhook.status_code}")
 
     return render_template(
         "chat/buy/payment.html",
@@ -580,7 +590,7 @@ def subscribe_on_event():
             now=c.utcnow_chat_format(),
         )
 
-    if os.environ.get("APP_ENV") == "development":
+    if APP_ENV == "development":
         url = url_for(
             "auth.activate",
             reset_password_uuid=user.uuid,
