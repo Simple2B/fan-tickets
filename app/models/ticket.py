@@ -61,6 +61,7 @@ class Ticket(db.Model, ModelMixin):
     # The ticket file could be a PDF or a stringed wallet id
     file: orm.Mapped[bytes | None] = orm.mapped_column(sa.LargeBinary)
     wallet_id: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
+    # is_transferred: orm.Mapped[bool] = orm.mapped_column(default=False)
 
     warning: orm.Mapped[str | None] = orm.mapped_column(sa.String(512))
 
