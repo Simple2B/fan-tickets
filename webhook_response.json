@@ -1,12 +1,106 @@
-{'id': 'hook_Rjg942wHvocBObn5', 'account': {'id': 'acc_o21x3QNsVIpVY8Rq', 'name': 'FANTICKET'
-    }, 'type': 'order.created', 'created_at': '2024-02-22T17: 55: 18.9603487Z', 'data': {'id': 'or_GvA6YeBcmoFpW6jb', 'code': 'JZGKFZSE79', 'amount': 100, 'currency': 'BRL', 'closed': True, 'items': [
-            {'id': 'oi_EGj8pr2TZlhapqgz', 'amount': 100, 'category': 'Concert Event', 'created_at': '2024-02-22T17: 54: 42.7237825Z', 'description': 'de36fc00-4cdd-408e-ba22-3e9055daa384, ', 'quantity': 1, 'status': 'active', 'updated_at': '2024-02-22T17: 54: 42.7237825Z'
-            }
-        ], 'customer': {'id': 'cus_rjklazNsX1fZaX4d', 'name': 'Denys', 'email': 'denysburimov@gmail.com', 'code': '9706c1c6-50bd-4a47-880a-79d8d8df0974', 'document': '95806777006', 'type': 'individual', 'delinquent': False, 'created_at': '2024-02-22T16: 43: 02.183Z', 'updated_at': '2024-02-22T17: 44: 33.677Z', 'birthdate': '1981-11-13T00: 00: 00Z', 'phones': {'mobile_phone': {'country_code': '55', 'number': '00112233', 'area_code': '11'
+[
+    {
+        "id": "hook_NBa4MbAt68sE2KLW",
+        "account": {
+            "id": "acc_o21x3QNsVIpVY8Rq",
+            "name": "FANTICKET"
+        },
+        "type": "order.created",
+        "created_at": "2024-02-22T18: 10: 19.306008Z",
+        "data": {
+            "id": "or_yJD4w95T7S8wap98",
+            "code": "6XR1AYCYR6",
+            "amount": 100,
+            "currency": "BRL",
+            "closed": True,
+            "items": [
+                {
+                    "id": "oi_MaO7xO1vf4hBANWm",
+                    "amount": 100,
+                    "category": "Concert Event",
+                    "created_at": "2024-02-22T18: 10: 18.4735758Z",
+                    "description": "9e4f87a2-3102-4b02-8d77-bf6fabcbbabc, ",
+                    "quantity": 1,
+                    "status": "active",
+                    "updated_at": "2024-02-22T18: 10: 18.4735758Z"
                 }
-            }, 'metadata': {}
-        }, 'status': 'pending', 'created_at': '2024-02-22T17: 54: 42.7237825Z', 'updated_at': '2024-02-22T17: 54: 43.3373679Z', 'closed_at': '2024-02-22T17: 54: 42.7237825Z', 'charges': [
-            {'id': 'ch_J2KeG6BYUNSPGaAz', 'code': 'JZGKFZSE79', 'gateway_id': '2376815190', 'amount': 100, 'status': 'pending', 'currency': 'BRL', 'payment_method': 'pix', 'created_at': '2024-02-22T17: 54: 42.7387943Z', 'updated_at': '2024-02-22T17: 54: 43.3218567Z', 'pending_cancellation': False, 'customer': {'id': 'cus_rjklazNsX1fZaX4d', 'name': 'Denys', 'email': 'denysburimov@gmail.com', 'code': '9706c1c6-50bd-4a47-880a-79d8d8df0974', 'document': '95806777006', 'type': 'individual', 'delinquent': False, 'created_at': '2024-02-22T16: 43: 02.183Z', 'updated_at': '2024-02-22T17: 44: 33.677Z', 'birthdate': '1981-11-13T00: 00: 00Z', 'phones': {'mobile_phone': {'country_code': '55', 'number': '00112233', 'area_code': '11'
-                        }
-                    }, 'metadata': {}
-                }, 'last_transaction': {'transaction_type': 'pix', 'pix_provider_tid': '2376815190', 'qr_code': '00020101021226820014br.gov.bcb.pix2560pix.stone.com.br/pix/v2/fb5c9e9e-3af0-4d32-82cd-eef9f367b68652040000530398654041.005802BR5925FanTicket Brasil Servicos6014RIO DE JANEIRO62290525paclsxiwgpypiv21fk36ika2k63042603', 'qr_code_url': 'https: //api.pagar.me/core/v5/transactions/tran_w1l5D9dcRNiZexL6/qrcode?payment_method=pix', 'expires_at': '2027-10-22T10:21:22Z', 'id': 'tran_w1l5D9dcRNiZexL6', 'gateway_id': '2376815190', 'amount': 100, 'status': 'waiting_payment', 'success': True, 'created_at': '2024-02-22T17:54:42.7387943Z', 'updated_at': '2024-02-22T17:54:43.3218567Z', 'gateway_response': {}, 'antifraud_response': {}, 'metadata': {}}, 'metadata': {}}]}}
+            ],
+            "customer": {
+                "id": "cus_rjklazNsX1fZaX4d",
+                "name": "Denys",
+                "email": "denysburimov@gmail.com",
+                "code": "9706c1c6-50bd-4a47-880a-79d8d8df0974",
+                "document": "95806777006",
+                "type": "individual",
+                "delinquent": False,
+                "created_at": "2024-02-22T16: 43: 02.183Z",
+                "updated_at": "2024-02-22T17: 44: 33.677Z",
+                "birthdate": "1981-11-13T00: 00: 00Z",
+                "phones": {
+                    "mobile_phone": {
+                        "country_code": "55",
+                        "number": "00112233",
+                        "area_code": "11"
+                    }
+                },
+                "metadata": {}
+            },
+            "status": "pending",
+            "created_at": "2024-02-22T18: 10: 18.4735758Z",
+            "updated_at": "2024-02-22T18: 10: 18.9969516Z",
+            "closed_at": "2024-02-22T18: 10: 18.4735758Z",
+            "charges": [
+                {
+                    "id": "ch_BP37ZYaUMsRbkqyN",
+                    "code": "6XR1AYCYR6",
+                    "gateway_id": "2376869041",
+                    "amount": 100,
+                    "status": "pending",
+                    "currency": "BRL",
+                    "payment_method": "pix",
+                    "created_at": "2024-02-22T18: 10: 18.4923229Z",
+                    "updated_at": "2024-02-22T18: 10: 18.9969516Z",
+                    "pending_cancellation": False,
+                    "customer": {
+                        "id": "cus_rjklazNsX1fZaX4d",
+                        "name": "Denys",
+                        "email": "denysburimov@gmail.com",
+                        "code": "9706c1c6-50bd-4a47-880a-79d8d8df0974",
+                        "document": "95806777006",
+                        "type": "individual",
+                        "delinquent": False,
+                        "created_at": "2024-02-22T16: 43: 02.183Z",
+                        "updated_at": "2024-02-22T17: 44: 33.677Z",
+                        "birthdate": "1981-11-13T00: 00: 00Z",
+                        "phones": {
+                            "mobile_phone": {
+                                "country_code": "55",
+                                "number": "00112233",
+                                "area_code": "11"
+                            }
+                        },
+                        "metadata": {}
+                    },
+                    "last_transaction": {
+                        "transaction_type": "pix",
+                        "pix_provider_tid": "2376869041",
+                        "qr_code": "00020101021226820014br.gov.bcb.pix2560pix.stone.com.br/pix/v2/464f2b2a-f49f-4d3e-b500-1b090c9a561652040000530398654041.005802BR5925FanTicket Brasil Servicos6014RIO DE JANEIRO62290525paclsxjgir7pm631fk3g9i00x6304D801",
+                        "qr_code_url": "https: //api.pagar.me/core/v5/transactions/tran_X92AwbHGdTKo5GBo/qrcode?payment_method=pix",
+                        "expires_at": "2027-10-22T10:36:58Z",
+                        "id": "tran_X92AwbHGdTKo5GBo",
+                        "gateway_id": "2376869041",
+                        "amount": 100,
+                        "status": "waiting_payment",
+                        "success": True,
+                        "created_at": "2024-02-22T18:10:18.4923229Z",
+                        "updated_at": "2024-02-22T18:10:18.9969516Z",
+                        "gateway_response": {},
+                        "antifraud_response": {},
+                        "metadata": {}
+                    },
+                    "metadata": {}
+                }
+            ]
+        }
+    }
+]

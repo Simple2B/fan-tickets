@@ -1,4 +1,8 @@
-from datetime import datetime, time
+import re
+import os
+import json
+import requests
+from datetime import datetime, timedelta, time
 from flask import current_app as app
 from flask_login import current_user
 from werkzeug.datastructures.file_storage import FileStorage
@@ -13,8 +17,127 @@ from config import config
 
 CFG = config()
 
+API_KEY = os.environ.get("BARD_API_KEY")
+BARD_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={API_KEY}"
+
+
+def ask_bard_for_event(event_name: str) -> tuple[str, bool]:
+    question = f'Could you please tell me if there is an event in Brasil that has name similar to "{event_name}" and if yes give me a json with event details. For example:'
+    json_example = """
+        {
+        "event_name": "official event name",
+        "official_url": "https://someofficialurl.com",
+        "location": "City name",
+        "venue": "Sao Paolo Stadium",
+        "date": "2024-02-24",
+        "time": "20:00"
+        }
+    """
+    message = f"{question}\n{json_example}"
+    data = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {"text": message},
+                ],
+            }
+        ]
+    }
+    bard_response = requests.post(BARD_URL, data=json.dumps(data), headers={"Content-Type": "application/json"})
+
+    try:
+        response_text = bard_response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        log(log.ERROR, "Bard response error: [%s]", e)
+        return bard_response.text, False
+
+    return response_text, True
+
+
+def parse_date_with_bard(date_str: str) -> str:
+    message = f"Could you please reformat this date: {date_str} in format YYYY-MM-DD? For example: 2023-12-31. If there is a range of dates, please give me the first one."
+    data = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {"text": message},
+                ],
+            }
+        ]
+    }
+    bard_response = requests.post(BARD_URL, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    try:
+        response_date_str = bard_response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        log(log.ERROR, "Bard response error: [%s]", e)
+        default_date_str = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
+        return default_date_str.strftime(CFG.BARD_DATE_FORMAT)
+
+    return response_date_str
+
+
+def parse_time_with_bard(time_str: str) -> str:
+    message = f"Could you please reformat this time: {time_str} in format HH:MM? For example: 20:00. If there is a range of times, please give me the first one."
+    data = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {"text": message},
+                ],
+            }
+        ]
+    }
+    bard_response = requests.post(BARD_URL, data=json.dumps(data), headers={"Content-Type": "application/json"})
+    try:
+        response_time_str = bard_response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        log(log.ERROR, "Bard response error: [%s]", e)
+        response_time_str = "20:00"
+
+    return response_time_str
+
+
+def parse_bard_response(bard_response: str) -> tuple[s.BardResponse | str, bool]:
+    """
+    Bard response examples:
+    '{\n "event_name": "Rock in Rio 2024",\n "official_url": "https://rockinrio.com/",\n "location": "Rio de Janeiro",\n "venue": "Cidade do Rock",\n "date": "2024-09-27",\n "time": "18:00"\n}'
+    '{\n  "event_name": "Lollapalooza Brasil",\n  "official_url": "https://www.lollapaloozabr.com/",\n  "location": "São Paulo",\n  "venue": "Autódromo de Interlagos",\n  "date": "2023-03-24",\n  "time": "13:00"\n}'
+    'Yes, there is an event in Brazil with a name similar to "Warung day festival".\n\n```\n{\n  "event_name": "Warung Beach Club Day Festival",\n  "official_url": "https://www.warungbeachclub.com.br/eventos/",\n  "location": "Praia de Jurerê Internacional, Florianópolis, Santa Catarina",\n  "venue": "Warung Beach Club",\n  "date": "2023-01-01",\n  "time": "12:00"\n}\n```'
+    'Yes, there is an event in Brazil with a name similar to "Turnstile Latin America 2024". It is called "Turnstile Latin America 2023". Here are the details of the event:\n\n```\n{\n  "event_name": "Turnstile Latin America 2023",\n  "official_url": "https://www.turnstilelatinamerica.com/",\n  "location": "São Paulo, Brazil",\n  "venue": "São Paulo Expo",\n  "date": "2023-05-23",\n  "time": "10:00 AM - 6:00 PM"\n}\n```'
+    'Yes, there is an event in Brazil that has a name similar to "Metallica". Here are the details:\n\n```\n{\n  "event_name": "Metallica: WorldWired Tour 2023",\n  "official_url": "https://www.metallica.com/tour/",\n  "location": "São Paulo, Brazil",\n  "venue": "Estádio do Morumbi",\n  "date": "2023-05-12",\n  "time": "20:00"\n}\n```'
+    '{\n  "event_name": "Brunch Electronik São Paulo",\n  "official_url": "https://brunchelectronik.com.br/sao-paulo/",\n  "location": "São Paulo, Brazil",\n  "venue": "São Paulo Expo",\n  "date": "2023-12-02",\n  "time": "12:00 - 22:00"\n}'
+    '{\n  "event_name": "Rock in Rio",\n  "official_url": "https://rockinrio.com/",\n  "location": "Rio de Janeiro",\n  "venue": "Cidade do Rock",\n  "date": "September 2-11, 2022",\n  "time": "Starting at 7 pm"\n}'
+    """
+    try:
+        parsed_response = s.BardResponse.model_validate_json(bard_response)
+    except Exception as e:
+        log(log.ERROR, "Bard response parse json error: [%s]", e)
+        return bard_response, False
+
+    if parsed_response.date and not re.match(r"\d{4}[-/]\d{2}[-/]\d{2}", parsed_response.date):
+        log(log.ERROR, "Asking Bard to parse stringified date: [%s]", parsed_response.date)
+        parsed_response.date = parse_date_with_bard(parsed_response.date)
+
+    if parsed_response.time and not re.match(r"\d{2}:\d{2}", parsed_response.time):
+        log(log.ERROR, "Asking Bard to parse stringified time: [%s]", parsed_response.time)
+        parsed_response.time = parse_time_with_bard(parsed_response.time)
+
+    return parsed_response, True
+
+
+def create_event_date_time(date: str, time: str) -> datetime:
+    if not date and not time:
+        return datetime.now() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
+
+    date_time = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
+    return date_time
+
 
 def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room) -> list[m.Event]:
+    assert params.user_message
     c.save_message(
         "Please, input official event name (matching the official website)",
         f"{params.user_message}",
@@ -35,117 +158,45 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
         events.extend(events_search)
 
     # If no events found in database, try to get event from Bard
-    # if not events:
-    #     log(log.INFO, "Event not found in database: [%s]", params.user_message)
+    if not events:
+        log(log.INFO, "Event not found in database: [%s]", params.user_message)
 
-    #     try:
-    #         # Establishing connection with Bard
-    #         bard = Bard(token=os.environ.get("_BARD_API_KEY"))
-    #     except Exception as e:
-    #         log(log.ERROR, "Bard connection error: [%s]", e)
-    #         return events
+        bard_event_check, event_found = ask_bard_for_event(params.user_message)
+        if not event_found:
+            log(log.INFO, "Event is not found by Bard: [%s]", bard_event_check)
+            return events
 
-    #     question = f'Could you please tell me if there is an event with name "{params.user_message}" in Brasil and if yes give me a json with event details. For example:'
+        event_data, parsed_successfully = parse_bard_response(bard_event_check)
+        if not parsed_successfully:
+            log(log.ERROR, "Bard response error: [%s]", event_data)
+            return events
 
-    #     json_example = """
-    #         {
-    #         "event_name": "official event name",
-    #         "official_url": "https://someofficialurl.com",
-    #         "location": "City name",
-    #         "venue": "Sao Paolo Stadium",
-    #         "date": "2024-02-24",
-    #         "time": "20:00"
-    #         }
-    #     """
+        assert isinstance(event_data, s.BardResponse)
 
-    #     message = f"{question}\n{json_example}"
+        # Getting the location
+        location_query = sa.select(m.Location).where(m.Location.name == event_data.location)
+        location: m.Location = db.session.scalar(location_query)
+        if not location:
+            log(log.INFO, "Location not found: [%s]. Creating new location in db.", event_data.location)
+            location = m.Location(name=event_data.location).save()
 
-    #     try:
-    #         bard_response = bard.get_answer(message).get("content")
-    #         log(log.INFO, "Bard response: [%s]", bard_response)
-    #     except Exception as e:
-    #         log(log.ERROR, "Bard get answer error: [%s]", e)
-    #         return events
+        category_query = sa.select(m.Category).where(m.Category.name == "Shows")
+        category: m.Category = db.session.scalar(category_query)
 
-    #     if (
-    #         "not able to help" in bard_response
-    #         or "not able to assist" in bard_response
-    #         or "unable to assist" in bard_response
-    #         or "can't help you" in bard_response
-    #         or "not programmed to assist with that" in bard_response
-    #         or "nfortunately" in bard_response
-    #     ):
-    #         log(log.ERROR, "Bard response error: [%s]", bard_response)
-    #         # Returning empty list if all three ways to find event failed
-    #         return events
+        event_date_time = create_event_date_time(event_data.date, event_data.time)
 
-    #     # If Bard response is not an error, try to parse it
-    #     try:
-    #         parsed_response = re.search(r"```json\n(.*)\n```", bard_response, re.DOTALL)
-    #         json_str = parsed_response.group(1) if parsed_response else ""
-    #         bard_response = s.BardResponse.model_validate_json(json_str)
-    #         log(log.INFO, "Bard response json: [%s]", bard_response)
-    #     except Exception as e:
-    #         log(log.ERROR, "Bard response parse json error: [%s]", e)
-    #         return events
-
-    #     if bard_response.event_name:
-    #         event_name = bard_response.event_name
-
-    #     # Parsing date from Bard response
-    #     try:
-    #         match = re.search(r"\d{4}[-/]\d{2}[-/]\d{2}", bard_response.date)
-    #         if match:
-    #             first_date_str = match.group(0)
-    #             first_date_str = first_date_str.replace("/", "-")
-    #             event_date = datetime.strptime(first_date_str, CFG.BARD_DATE_FORMAT)
-    #     except Exception as e:
-    #         event_date_time = datetime.today() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
-    #         log(log.ERROR, "Date converting error: [%s]", e)
-    #         log(log.ERROR, "Setting default date: [%s]", event_date_time)
-
-    #     # Parsing time from Bard response
-    #     try:
-    #         match = re.search(r"\d{2}:\d{2}", bard_response.time)
-    #         if match:
-    #             event_time_str = match.group(0)
-    #             hours = int(event_time_str[:2])
-    #             minutes = int(event_time_str[3:])
-    #             event_date_time = event_date.replace(hour=hours, minute=minutes)
-    #     except Exception as e:
-    #         event_date_time = event_date_time.replace(
-    #             hour=CFG.DEFAULT_EVENT_TIME_HOURS,
-    #             minute=CFG.DEFAULT_EVENT_TIME_MINUTES,
-    #         )
-    #         log(log.ERROR, "Time converting error: [%s]", e)
-    #         log(log.ERROR, "Setting default time: [%s]", event_date_time)
-
-    #     # Parsing location from Bard response
-    #     location_id = None
-    #     if bard_response.location:
-    #         location_query = sa.select(m.Location).where(m.Location.name == bard_response.location)
-    #         location = db.session.scalar(location_query)
-    #         if not location:
-    #             location = m.Location(name=bard_response.location).save()
-    #         location_id = location.id
-
-    #     # Getting the category by unique id
-    #     if isinstance(params, s.ChatSellEventParams) and params.event_category_id:
-    #         category_query = sa.select(m.Category).where(m.Category.name == params.event_category_id)
-    #         category: m.Category = db.session.scalar(category_query)
-
-    #     # Creating a new event in database if we have at least minimal data
-    #     event = m.Event(
-    #         name=event_name,
-    #         url=bard_response.official_url,
-    #         location_id=location_id,
-    #         category_id=category.id,
-    #         venue=bard_response.venue,
-    #         date_time=event_date_time,
-    #         creator_id=current_user.id,
-    #     ).save()
-    #     events.append(event)
-    #     log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
+        # Creating a new event in database if we have at least minimal data
+        event = m.Event(
+            name=event_data.event_name,
+            url=event_data.official_url,
+            location_id=location.id,
+            category_id=category.id,
+            venue=event_data.venue,
+            date_time=event_date_time,
+            creator_id=current_user.id,
+        ).save()
+        events.append(event)
+        log(log.INFO, "User [%s] has created a new event: [%s]", current_user, event)
 
     return events
 
