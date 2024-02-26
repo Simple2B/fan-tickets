@@ -213,9 +213,15 @@ def webhook():
     if status:
         log(log.INFO, "Webhook status: [%s]", status)
 
+    user_uuid = None
     tickets_uuids_str = None
     tickets = []
     if status and status == "paid":
+        user_uuid = request_data.customer.code
+        user_query = m.User.select().where(m.User.uuid == user_uuid)
+        user: m.User = db.session.scalar(user_query)
+        log(log.INFO, "User: [%s]", user)
+
         tickets_uuids_str = request_data.items[0].description
         tickets_uuids = tickets_uuids_str.split(", ")
         log(log.INFO, "Tickets uuids: [%s]", tickets_uuids)
@@ -227,7 +233,12 @@ def webhook():
                 ticket.is_sold = True
                 ticket.is_deleted = True
                 ticket.save()
-                # TODO: add a payment instance
+                m.Payment(
+                    buyer=user,
+                    ticket=ticket,
+                    description=f"Ticket {ticket.unique_id}. Buyer: {user}",
+                ).save()
+                # TODO: transfer ticket
                 # TODO: add a notification instance
                 ticket_data = s.FanTicketWebhookTicketData(
                     unique_id=ticket.unique_id,
@@ -242,6 +253,7 @@ def webhook():
 
     return s.FanTicketWebhookProcessed(
         status=status,
+        user_uuid=user_uuid,
         tickets_uuids_str=tickets_uuids_str,
         tickets=tickets,
     ).model_dump()

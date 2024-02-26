@@ -77,7 +77,7 @@ def test_get_events_by_location(client: FlaskClient):
         f"/buy/get_events_by_location?room_unique_id={room.unique_id}&location_unique_id={location.unique_id}&event_name={event.name}"
     )
     assert response.status_code == 200
-    assert "Please specify the date and time" in response.data.decode()
+    assert "Please, choose available options" in response.data.decode()
 
 
 def test_get_tickets(client: FlaskClient):
@@ -155,6 +155,7 @@ def test_booking_paired_tickets(client: FlaskClient):
     assert payment_response.status_code == 200
 
     webhook_response = s.PagarmePaidWebhook.model_validate(WEBHOOK_RESPONSE)
+    webhook_response.data.customer.code = current_user.uuid
     webhook_response.data.items[0].description = f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
 
     response = client.post("/pay/webhook", json=webhook_response.model_dump())
@@ -168,7 +169,12 @@ def test_booking_paired_tickets(client: FlaskClient):
 
     validated_response = s.FanTicketWebhookProcessed.model_validate(response.json)
     assert validated_response.status == "paid"
+    assert validated_response.user_uuid == current_user.uuid
     assert validated_response.tickets_uuids_str == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
+
+    users_payments_query = m.Payment.select().where(m.Payment.buyer_id == current_user.id)
+    users_payments = db.session.scalars(users_payments_query).all()
+    assert len(users_payments) == 2
 
     webhook_response.data.status = "pending"
     response = client.post("/pay/webhook", json=webhook_response.model_dump())

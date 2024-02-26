@@ -269,7 +269,7 @@ def get_tickets():
         event_date_time = tickets[0].event.date_time if tickets[0].event.date_time else datetime.now()
         event_time = event_date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
         c.save_message(
-            "Sure! When are you planning to attend? Please specify the date and time.",
+            "Sure! Please, choose available options:",
             f"{tickets[0].event.name}, {event_time}",
             room,
         )
@@ -504,6 +504,7 @@ def payment():
 
     if os.environ.get("APP_ENV") == "development":
         webhook_response = s.PagarmePaidWebhook.model_validate(WEBHOOK_RESPONSE)
+        webhook_response.data.customer.code = current_user.uuid
         webhook_response.data.items[0].description = total_prices.unique_ids
         testing_webhook = requests.post(LOCAL_WEBHOOK_URL, json=webhook_response.model_dump())
         log(log.INFO, f"Testing webhook response: {testing_webhook.status_code}")

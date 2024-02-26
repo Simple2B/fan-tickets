@@ -2,6 +2,36 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
+class PagarmeWebhookCustomer(BaseModel):
+    """
+    "id": "cus_PMkWepVUrSbG3gr1",
+    "name": "Alexandre",
+    "email": "amonteiro.sp@gmail.com",
+    "code": "09308007-332c-41f2-9642-1e3e0e7ac33b",
+    "document": "13100180810",
+    "type": "individual",
+    "delinquent": False,
+    "created_at": "2024-02-22T18:20:04.927Z",
+    "updated_at": "2024-02-22T18:20:04.927Z",
+    "birthdate": "1969-11-19T00:00:00Z",
+    "phones": {"mobile_phone": {"country_code": "55", "number": "98555880", "area_code": "11"}},
+    "metadata": {},
+    """
+
+    id: str
+    name: str
+    email: str
+    code: str
+    document: str
+    type: str
+    delinquent: bool
+    created_at: str
+    updated_at: str
+    birthdate: str
+    phones: dict
+    metadata: dict | None = {}
+
+
 class PagarmeWebhookItem(BaseModel):
     """
     {
@@ -35,7 +65,7 @@ class PagarmePaidWebhookData(BaseModel):
     currency: str
     closed: bool
     items: list[PagarmeWebhookItem]
-    customer: dict
+    customer: PagarmeWebhookCustomer
     status: str
     created_at: str
     updated_at: str
@@ -169,6 +199,7 @@ class FanTicketWebhookTicketData(BaseModel):
 
 class FanTicketWebhookProcessed(BaseModel):
     status: str
+    user_uuid: str | None = None
     tickets_uuids_str: str | None = None
     tickets: list[FanTicketWebhookTicketData] | None = None
 
