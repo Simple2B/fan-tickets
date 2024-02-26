@@ -209,15 +209,37 @@ def webhook():
     log(log.INFO, "Webhook received: [%s]", request.json)
     webhook_request = s.PagarmePaidWebhook.model_validate(request.json)
     request_data = webhook_request.data
-    if request_data:
-        status = request_data.status
-        if status:
-            log(log.INFO, "Webhook status: [%s]", status)
-    tickets_ids_str = request_data.items[0].description
+    status = request_data.status if request_data else None
+    if status:
+        log(log.INFO, "Webhook status: [%s]", status)
 
-    # # If we get info about tickets that have been paid to sellers from FT pagarme account
-    # for ticket in tickets:
-    # ticket.paid_to_seller_at = datetime.now()
-    # ticket.is_deleted = True
+    tickets_uuids_str = None
+    tickets = []
+    if status and status == "paid":
+        tickets_uuids_str = request_data.items[0].description
+        tickets_uuids = tickets_uuids_str.split(", ")
+        log(log.INFO, "Tickets uuids: [%s]", tickets_uuids)
 
-    return {"status": "success", "tickets_ids_str": tickets_ids_str}, 200
+        for ticket_uuid in tickets_uuids:
+            if ticket_uuid:
+                ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_uuid)
+                ticket: m.Ticket = db.session.scalar(ticket_query)
+                ticket.is_sold = True
+                ticket.is_deleted = True
+                ticket.save()
+                ticket_data = s.FanTicketWebhookTicketData(
+                    unique_id=ticket.unique_id,
+                    is_paired=ticket.is_paired,
+                    pair_unique_id=ticket.pair_unique_id,
+                    is_reserved=ticket.is_reserved,
+                    is_sold=ticket.is_sold,
+                    is_deleted=ticket.is_deleted,
+                )
+                tickets.append(ticket_data)
+                log(log.INFO, "Ticket sold: [%s]", ticket_uuid)
+
+    return s.FanTicketWebhookProcessed(
+        status=status,
+        tickets_uuids_str=tickets_uuids_str,
+        tickets=tickets,
+    ).model_dump()

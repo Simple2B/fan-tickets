@@ -156,3 +156,20 @@ class PagarmePaidWebhook(BaseModel):
     data: PagarmePaidWebhookData
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FanTicketWebhookTicketData(BaseModel):
+    unique_id: str
+    is_paired: bool
+    pair_unique_id: str | None = None
+    is_reserved: bool
+    is_sold: bool
+    is_deleted: bool
+
+
+class FanTicketWebhookProcessed(BaseModel):
+    status: str
+    tickets_uuids_str: str | None = None
+    tickets: list[FanTicketWebhookTicketData] | None = None
+
+    model_config = ConfigDict(from_attributes=True)

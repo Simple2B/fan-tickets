@@ -159,10 +159,22 @@ def test_booking_paired_tickets(client: FlaskClient):
 
     response = client.post("/pay/webhook", json=webhook_response.model_dump())
     assert response.status_code == 200
-    assert ticket_1.is_sold is False
-    assert ticket_2.is_sold is False
+    assert ticket_1.is_sold is True
+    assert ticket_1.is_deleted is True
+    assert ticket_1.paid_to_seller_at is None
+    assert ticket_2.is_sold is True
+    assert ticket_2.is_deleted is True
+    assert ticket_2.paid_to_seller_at is None
 
-    assert response.json["tickets_ids_str"] == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
+    validated_response = s.FanTicketWebhookProcessed.model_validate(response.json)
+    assert validated_response.status == "paid"
+    assert validated_response.tickets_uuids_str == f"{ticket_1.unique_id}, {ticket_2.unique_id}, "
+
+    webhook_response.data.status = "pending"
+    response = client.post("/pay/webhook", json=webhook_response.model_dump())
+    assert response.status_code == 200
+    validated_response = s.FanTicketWebhookProcessed.model_validate(response.json)
+    assert validated_response.status == "pending"
 
 
 def test_get_cheapest_ticket(client_with_data: FlaskClient):

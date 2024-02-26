@@ -43,6 +43,8 @@ from .pagarme import (
     PagarmePaidWebhook,
     PagarmePaidWebhookData,
     PagarmeWebhookItem,
+    FanTicketWebhookTicketData,
+    FanTicketWebhookProcessed,
 )
 
 from .chat_auth import (
