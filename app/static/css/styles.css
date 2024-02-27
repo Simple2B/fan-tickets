@@ -1807,6 +1807,10 @@ input:checked + .toggle-bg{
   width: max-content;
 }
 
+.w-36{
+  width: 9rem;
+}
+
 .min-w-0{
   min-width: 0px;
 }

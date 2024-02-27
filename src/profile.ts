@@ -31,4 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
       setNewRoomUuid(roomUuid);
     }),
   );
+
+  const paymentIcons = document.querySelectorAll('.payment-icon');
+  paymentIcons.forEach(icon => {
+    const hint = icon.querySelector('.payment-hint');
+    icon.addEventListener('mouseover', () => {
+      if (hint) {
+        hint.classList.remove('hidden');
+      }
+    });
+    icon.addEventListener('mouseleave', () => {
+      if (hint) {
+        hint.classList.add('hidden');
+      }
+    });
+  });
 });
