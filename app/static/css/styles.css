@@ -1200,6 +1200,34 @@ input:checked + .toggle-bg{
   top: 84%;
 }
 
+.-top-5{
+  top: -1.25rem;
+}
+
+.-top-10{
+  top: -2.5rem;
+}
+
+.-top-12{
+  top: -3rem;
+}
+
+.-right-5{
+  right: -1.25rem;
+}
+
+.-left-5{
+  left: -1.25rem;
+}
+
+.left-12{
+  left: 3rem;
+}
+
+.left-5{
+  left: 1.25rem;
+}
+
 .z-0{
   z-index: 0;
 }

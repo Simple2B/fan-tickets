@@ -1,5 +1,7 @@
+import io
+from datetime import datetime
 import sqlalchemy as sa
-from flask import render_template, Blueprint, request, abort
+from flask import render_template, Blueprint, request, abort, send_file
 from flask_login import login_required, current_user
 
 from app.logger import log
@@ -318,11 +320,17 @@ def transfer():
     if ticket.buyer_id != current_user.id:
         abort(403)
 
-    ticket.is_transferred = True
+    if ticket.is_transferred:
+        ticket.is_transferred = False
+    else:
+        ticket.is_transferred = True
     if ticket.is_paired:
         paired_ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket.pair_unique_id)
         paired_ticket: m.Ticket = db.session.scalar(paired_ticket_query)
-        paired_ticket.is_transferred = True
+        if paired_ticket.is_transferred:
+            paired_ticket.is_transferred = False
+        else:
+            paired_ticket.is_transferred = True
         paired_ticket.save(False)
     ticket.save()
 
@@ -334,3 +342,31 @@ def transfer():
         abort(404)
 
     return render_template("user/ticket_transfer.html", payments=payments)
+
+
+@pay_blueprint.route("/download_pdf")
+@login_required
+def download_pdf():
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    if not ticket:
+        abort(404)
+
+    if ticket.buyer_id != current_user.id:
+        abort(403)
+
+    if not ticket.file:
+        log(log.ERROR, "Ticket's PDF file not found")
+        abort(404)
+
+    now = datetime.now()
+    return send_file(
+        io.BytesIO(ticket.file),
+        as_attachment=True,
+        download_name=f"fan_ticket_users_{now.strftime('%Y-%m-%d-%H-%M-%S')}.pdf",
+        mimetype="application/pdf",
+        max_age=0,
+        last_modified=now,
+    )

@@ -75,6 +75,7 @@ def get_all():
             mem.seek(0)
 
         now = datetime.now()
+
         return send_file(
             mem,
             as_attachment=True,
