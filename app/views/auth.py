@@ -76,6 +76,8 @@ def login():
             login_user(user)
             log(log.INFO, "Login successful.")
             flash("Login successful.", "success")
+            if user.role == m.UserRole.admin.value:
+                return redirect(url_for("admin.user.get_all"))
             return redirect(url_for("main.index"))
         flash("Wrong user ID or password.", "danger")
 

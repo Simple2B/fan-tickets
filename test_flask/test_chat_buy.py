@@ -40,7 +40,7 @@ def test_get_event_name(client: FlaskClient):
 
     response = client.get(f"/buy/get_event_name?room_unique_id={room.unique_id}&user_message={event.name.lower()}")
     assert response.status_code == 200
-    assert f"We have found {len(tickets_available)} available tickets" in response.data.decode()
+    assert f"We have found {len(tickets_available)} available options" in response.data.decode()
 
 
 def test_get_events_by_location(client: FlaskClient):
@@ -60,7 +60,7 @@ def test_get_events_by_location(client: FlaskClient):
         f"/buy/get_events_by_location?room_unique_id={room.unique_id}&location_unique_id={location.unique_id}&event_name={event.name}"
     )
     assert response.status_code == 200
-    assert f"We have found {len(tickets_available)} available tickets" in response.data.decode()
+    assert f"We have found {len(tickets_available)} available options" in response.data.decode()
 
     if event.date_time:
         date_time = event.date_time + timedelta(hours=2)
@@ -94,7 +94,7 @@ def test_get_tickets(client: FlaskClient):
 
     response = client.get(f"/buy/get_tickets?room_unique_id={room.unique_id}&event_unique_id={event.unique_id}")
     assert response.status_code == 200
-    assert f"We have found {len(tickets_available)} available tickets" in response.data.decode()
+    assert f"We have found {len(tickets_available)} available options" in response.data.decode()
 
 
 def test_booking_ticket(client: FlaskClient):
@@ -175,8 +175,8 @@ def test_booking_paired_tickets(client: FlaskClient):
 
         users_payments_query = m.Payment.select().where(m.Payment.buyer_id == current_user.id)
         users_payments = db.session.scalars(users_payments_query).all()
-        assert len(users_payments) == 2
-        assert len(outbox) == 4
+        assert len(users_payments) == 1
+        assert len(outbox) == 2
 
     webhook_response.data.status = "pending"
     response = client.post("/pay/webhook", json=webhook_response.model_dump())

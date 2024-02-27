@@ -1473,6 +1473,10 @@ input:checked + .toggle-bg{
   margin-inline-start: 0.75rem;
 }
 
+.mt-0{
+  margin-top: 0px;
+}
+
 .mt-1{
   margin-top: 0.25rem;
 }
@@ -4232,24 +4236,12 @@ input[type='number']::-webkit-outer-spin-button {
     display: none;
   }
 
-  .md\:w-8\/12{
-    width: 66.666667%;
-  }
-
-  .md\:w-full{
-    width: 100%;
-  }
-
-  .md\:w-1\/3{
-    width: 33.333333%;
-  }
-
-  .md\:w-1\/2{
-    width: 50%;
-  }
-
   .md\:w-3\/5{
     width: 60%;
+  }
+
+  .md\:w-8\/12{
+    width: 66.666667%;
   }
 
   .md\:grid-cols-2{
@@ -4296,10 +4288,6 @@ input[type='number']::-webkit-outer-spin-button {
 
   .lg\:w-500{
     width: 500px;
-  }
-
-  .lg\:w-1\/3{
-    width: 33.333333%;
   }
 
   .lg\:max-w-7xl{

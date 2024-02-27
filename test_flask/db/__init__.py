@@ -157,6 +157,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 is_sold=is_sold,
                 seller_id=seller_id,
                 buyer_id=buyer_id,
+                wallet_id=faker.random_number(digits=16, fix_len=True),
             ).save(False)
             m.Notification(
                 notification_type=NotificationType.TICKET_PUBLISHED.value,

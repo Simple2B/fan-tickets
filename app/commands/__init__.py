@@ -425,3 +425,16 @@ def init_shell_commands(app: Flask):
         rooms: list[m.Room] = db.session.scalars(rooms_query).all()
         print(rooms)
         print(len(rooms), "rooms to delete")
+
+    @app.cli.command("untransfer")
+    @click.option("--email", type=str)
+    def untransfer(email: str):
+        user_query = m.User.select().where(m.User.email == email)
+        user: m.User = db.session.scalar(user_query)
+
+        tickets_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+        for ticket in tickets:
+            ticket.is_transferred = False
+            ticket.save()
+            print(ticket, "untransferred")

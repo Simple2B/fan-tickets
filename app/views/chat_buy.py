@@ -276,7 +276,7 @@ def get_tickets():
 
     if params.tickets_show_all:
         c.save_message(
-            f"Great news! We have found {len(tickets)} available tickets",
+            f"Great news! We have found {len(tickets)} available options",
             "All tickets",
             room,
         )
@@ -437,7 +437,7 @@ def payment():
         )
 
     c.save_message(
-        f"Awesome! The cost for ticket is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        f"Awesome! The cost for ticket(s) is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
         "Payment",
         room,
     )

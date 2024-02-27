@@ -223,7 +223,7 @@ def webhook():
         tickets_uuids = tickets_uuids_str.split(", ")
         log(log.INFO, "Tickets uuids: [%s]", tickets_uuids)
 
-        for ticket_uuid in tickets_uuids:
+        for i, ticket_uuid in enumerate(tickets_uuids):
             if ticket_uuid:
                 ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_uuid)
                 ticket: m.Ticket = db.session.scalar(ticket_query)
@@ -247,35 +247,40 @@ def webhook():
                 else:
                     description = f"Ticket {ticket.unique_id}. Buyer: {buyer}"
 
-                m.Payment(
-                    buyer=buyer,
-                    ticket=ticket,
-                    description=description,
-                ).save()
+                if i == 0:
+                    m.Payment(
+                        buyer=buyer,
+                        ticket=ticket,
+                        description=description,
+                    ).save()
 
-                mail_controller.send_email(
-                    [buyer],
-                    "Ticket transfer",
-                    render_template(
-                        "email/ticket_transfer.htm",
-                        event_name=ticket.event.name,
-                        date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M") if ticket.event.date_time else "",
-                        ticket_id=str(ticket.id).zfill(8),
-                        message=email_message_to_buyer,
-                    ),
-                )
+                    mail_controller.send_email(
+                        [buyer],
+                        "Ticket transfer",
+                        render_template(
+                            "email/ticket_transfer.htm",
+                            event_name=ticket.event.name,
+                            date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M")
+                            if ticket.event.date_time
+                            else "",
+                            ticket_id=str(ticket.id).zfill(8),
+                            message=email_message_to_buyer,
+                        ),
+                    )
 
-                mail_controller.send_email(
-                    [ticket.seller],
-                    "Ticket transfer",
-                    render_template(
-                        "email/ticket_transfer.htm",
-                        event_name=ticket.event.name,
-                        date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M") if ticket.event.date_time else "",
-                        ticket_id=str(ticket.id).zfill(8),
-                        message=email_message_to_seller,
-                    ),
-                )
+                    mail_controller.send_email(
+                        [ticket.seller],
+                        "Ticket transfer",
+                        render_template(
+                            "email/ticket_transfer.htm",
+                            event_name=ticket.event.name,
+                            date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M")
+                            if ticket.event.date_time
+                            else "",
+                            ticket_id=str(ticket.id).zfill(8),
+                            message=email_message_to_seller,
+                        ),
+                    )
 
                 # TODO: add a notification instance
                 ticket_data = s.FanTicketWebhookTicketData(
@@ -320,4 +325,12 @@ def transfer():
         paired_ticket.is_transferred = True
         paired_ticket.save(False)
     ticket.save()
-    return render_template("user/ticket_transfer.html")
+
+    payments_query = m.Payment.select().where(m.Payment.buyer_id == ticket.buyer.id)
+    payments = db.session.scalars(payments_query).all()
+
+    if not payments:
+        log(log.ERROR, "Payments not found")
+        abort(404)
+
+    return render_template("user/ticket_transfer.html", payments=payments)
