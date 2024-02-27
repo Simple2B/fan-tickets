@@ -67,3 +67,10 @@ def round_to_two_places(number: float) -> float:
 
 def get_ticket_subsequential_number(ticket_id: int) -> str:
     return str(ticket_id).zfill(8)
+
+
+def get_paired_wallet_id(ticket_unique_id: str) -> str:
+    ticket_query = m.Ticket.select().where(m.Ticket.pair_unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+    wallet_id = ticket.wallet_id if ticket.wallet_id else "no wallet id found"
+    return wallet_id
