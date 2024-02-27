@@ -11,9 +11,9 @@
             {{ payment.ticket.price_gross }} - {{ payment.ticket.event.name }} -
             {{ payment.ticket.event.date_time.strftime('%a, %d %b') }}
         </p>
-        <a href="{{ url_for('pay.download_pdf', ticket_unique_id=payment.ticket.unique_id)  }}">
-            <div class="relative payment-icon w-6 h-6 cursor-pointer">
-                {% if payment.ticket.file %}
+        <div class="relative payment-icon w-6 h-6 cursor-pointer">
+            {% if payment.ticket.file %}
+            <a href="{{ url_for('pay.download_pdf', ticket_unique_id=payment.ticket.unique_id)  }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -23,23 +23,23 @@
                     class="payment-hint absolute -top-12 left-3 hidden w-36 p-2 text-center z-30 rounded-md border border-white bg-black text-white">
                     Download PDF
                 </p>
-                {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
-                </svg>
-                <p
-                    class="payment-hint absolute -top-12 left-3 hidden p-2 z-30 rounded-md border border-white bg-black text-white">
-                    {{ payment.ticket.wallet_id }}
-                </p>
-                {% endif %}
-            </div>
-        </a>
+            </a>
+            {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6" onclick="copyToClipboard('testing')">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
+            </svg>
+            <p
+                class="payment-hint absolute -top-12 left-3 hidden p-2 z-30 rounded-md border border-white bg-black text-white">
+                {{ payment.ticket.wallet_id }}
+            </p>
+            {% endif %}
+        </div>
         <div class="relative payment-icon w-6 h-6 cursor-pointer">
             {% if payment.ticket.is_paired %}
+            {% if payment.ticket.file %}
             <a href="{{ url_for('pay.download_pdf', ticket_unique_id=payment.ticket.pair_unique_id)  }}">
-                {% if payment.ticket.file %}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -49,18 +49,18 @@
                     class="payment-hint absolute -top-12 left-3 hidden w-36 p-2 text-center z-30 rounded-md border border-white bg-black text-white">
                     Download PDF
                 </p>
-                {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
-                </svg>
-                <p
-                    class="payment-hint absolute -top-12 left-3 hidden p-2 z-30 rounded-md border border-white bg-black text-white">
-                    {{ payment.ticket.wallet_id }}
-                </p>
-                {% endif %}
             </a>
+            {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6" onclick="copyToClipboard('testing')">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
+            </svg>
+            <p
+                class="payment-hint absolute -top-12 left-3 hidden p-2 z-30 rounded-md border border-white bg-black text-white">
+                {{ payment.ticket.wallet_id }}
+            </p>
+            {% endif %}
             {% endif %}
         </div>
     </div>
@@ -102,3 +102,13 @@
     </div>
 </div>
 {% endfor %}
+<script>
+    function copyToClipboard(string) {
+        var input = document.createElement('input');
+        input.value = string;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+    }
+</script>
