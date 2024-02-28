@@ -22,7 +22,7 @@
                 <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
                     <div>
                         <div class="text-base font-semibold">
-                            <a href="#">
+                            <a href="{{ url_for('admin.settings.individual', user_uuid=user.uuid) }}">
                                 {{ user.name }} {{ user.last_name }}
                             </a>
                             {% if user.role == "admin"%}<span class=" text-gray-700 text-sm">admin</span>

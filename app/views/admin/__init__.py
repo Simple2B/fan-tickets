@@ -4,9 +4,11 @@ from .category import category_blueprint
 from .event import event_blueprint
 from .users import blueprint_user
 from .notification import notification_blueprint_admin
+from .settings import settings_blueprint
 
 admin_blueprint.register_blueprint(location_blueprint)
 admin_blueprint.register_blueprint(category_blueprint)
 admin_blueprint.register_blueprint(event_blueprint)
 admin_blueprint.register_blueprint(blueprint_user)
 admin_blueprint.register_blueprint(notification_blueprint_admin)
+admin_blueprint.register_blueprint(settings_blueprint)

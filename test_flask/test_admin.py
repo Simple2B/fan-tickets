@@ -9,6 +9,8 @@ from test_flask.utils import login
 
 
 CFG = config()
+TEST_SERVICE_FEE = 7
+TEST_BANK_FEE = 8
 
 
 def test_picture_upload(client: FlaskClient):
@@ -95,3 +97,44 @@ def test_events(client_with_data: FlaskClient):
     assert events[0].url in response.data.decode()
     assert events[-1].name in response.data.decode()
     assert events[-1].url in response.data.decode()
+
+
+def test_individual_fee_settings(client_with_data: FlaskClient):
+    login(client_with_data)
+    user: m.User = db.session.scalar(m.User.select())
+
+    get_response = client_with_data.get(f"/admin/settings/individual/{user.uuid}")
+    assert get_response.status_code == 200
+    assert f"{user.name} {user.last_name} - Individual fee settings" in get_response.data.decode()
+    assert b"service_fee" in get_response.data
+    assert b"bank_fee" in get_response.data
+
+    post_response = client_with_data.post(
+        f"/admin/settings/individual/{user.uuid}",
+        data={"service_fee": TEST_SERVICE_FEE, "bank_fee": TEST_BANK_FEE},
+        follow_redirects=True,
+    )
+    assert post_response.status_code == 200
+    assert f"{user.name} {user.last_name} - Individual fee settings" in post_response.data.decode()
+    assert user.service_fee == TEST_SERVICE_FEE
+    assert user.bank_fee == TEST_BANK_FEE
+
+
+def test_global_fee_settings(client_with_data: FlaskClient):
+    login(client_with_data)
+
+    get_response = client_with_data.get("/admin/settings/general")
+    assert get_response.status_code == 200
+    assert b"Global fee settings" in get_response.data
+
+    post_response = client_with_data.post(
+        "/admin/settings/general",
+        data={"service_fee": TEST_SERVICE_FEE, "bank_fee": TEST_BANK_FEE},
+        follow_redirects=True,
+    )
+    assert post_response.status_code == 200
+    assert b"Global fee settings" in post_response.data
+
+    global_fee_settings = db.session.scalar(m.GlobalFeeSettings.select())
+    assert global_fee_settings.service_fee == TEST_SERVICE_FEE
+    assert global_fee_settings.bank_fee == TEST_BANK_FEE

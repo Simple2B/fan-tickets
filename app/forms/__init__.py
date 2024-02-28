@@ -22,4 +22,4 @@ from .location import LocationForm
 from .orders import OrderForm, OrderCreateForm
 from .category import CategoryForm
 from .dispute import MessageForm
-from .settings import IndividualSettingsForm
+from .settings import FeeSettingsForm
