@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask_login import current_user
 from flask.testing import FlaskClient, FlaskCliRunner
+from werkzeug.datastructures import FileStorage
 from click.testing import Result
 from app import models as m, db
 from test_flask.utils import login
@@ -46,7 +47,7 @@ def test_delete_user(client: FlaskClient):
 
 def test_user_profile(client: FlaskClient):
     login(client)
-    response = client.get("/user/profile")
+    response = client.get("admin/user/profile")
     assert response.status_code == 200
     assert "profile" in response.data.decode()
     assert "Endereço de Email" in response.data.decode()
@@ -55,7 +56,7 @@ def test_user_profile(client: FlaskClient):
 def test_user_email_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    response = client.get("/user/profile")
+    response = client.get("admin/user/profile")
     assert response.status_code == 200
     assert user.username in response.data.decode()
     assert user.email in response.data.decode()
@@ -164,3 +165,47 @@ def test_user_deactivate_account(client: FlaskClient):
     response = client.get("/admin/user/deactivate")
     assert response.status_code == 302
     assert user.activated is False
+
+
+def test_ticket_transfer(client_with_data: FlaskClient):
+    login(client_with_data)
+    user: m.User = current_user
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select())
+    assert ticket
+    ...
+
+
+def test_ticket_pdf(client_with_data: FlaskClient):
+    login(client_with_data)
+    user: m.User = current_user
+    room = m.Room(
+        seller_id=user.id,
+        buyer_id=2,
+    ).save()
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select())
+    ticket.buyer_id = user.id
+
+    with open("test_flask/assets/pagarme/testing_ticket.pdf", "rb") as file:
+        file_instance = FileStorage(file)
+
+        data = dict(
+            room_unique_id=room.unique_id,
+            ticket_unique_id=ticket.unique_id,
+            user_unique_id=user.uuid,
+            file=[file_instance],
+        )
+
+        response = client_with_data.post("sell/get_ticket_document", data=data)
+        assert response.status_code == 200
+        assert b"Done" in response.data
+        assert b"You will receive a notification" in response.data
+
+    with open("test_flask/assets/pagarme/testing_ticket.pdf", "rb") as file:
+        file_bytes = file.read()
+        assert file_bytes == ticket.file
+
+    download_response = client_with_data.get(f"pay/download_pdf?ticket_unique_id={ticket.unique_id}")
+    assert download_response.status_code == 200
+    assert download_response.headers["Content-Type"] == "application/pdf"
+    assert download_response.headers["Content-Disposition"].startswith("attachment;")
+    assert download_response.headers["Content-Disposition"].endswith(".pdf")
