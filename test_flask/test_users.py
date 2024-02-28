@@ -14,11 +14,11 @@ def test_list(client_with_data: FlaskClient):
     assert response
     assert response.status_code == 200
     html = response.data.decode()
-    users = db.session.scalars(m.User.select().order_by(m.User.id).limit(11)).all()
+    users: list[m.User] = db.session.scalars(m.User.select().order_by(m.User.id).limit(11)).all()
     assert len(users) == 11
     for user in users[:DEFAULT_PAGE_SIZE]:
-        assert user.username in html
-    assert users[10].username not in html
+        assert user.last_name in html
+    assert users[10].last_name not in html
 
     client_with_data.application.config["PAGE_LINKS_NUMBER"] = 6
     response = client_with_data.get("/admin/user/users?page=3")

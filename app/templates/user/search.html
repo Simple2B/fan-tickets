@@ -22,7 +22,9 @@
                 <td scope="row" class="flex items-center px-6 py-4  whitespace-nowrap text-white">
                     <div>
                         <div class="text-base font-semibold">
-                            {{ user.username }}
+                            <a href="#">
+                                {{ user.name }} {{ user.last_name }}
+                            </a>
                             {% if user.role == "admin"%}<span class=" text-gray-700 text-sm">admin</span>
                             {% endif %}
                         </div>
@@ -33,11 +35,21 @@
                         <div class="flex">
                             <a href="{{url_for('admin.get_tickets', buyer_unique_id=user.uuid)}}"
                                 class="cursor-pointer">
-                                <p class="me-2 text-xs hover:text-secondary">tickets bought</p>
+                                <p class="me-2 text-xs hover:text-secondary">
+                                    tickets bought
+                                    {% if user.tickets_bought %}
+                                    ({{ user.tickets_bought | length }})
+                                    {% endif %}
+                                </p>
                             </a>
                             <a href="{{url_for('admin.get_tickets', seller_unique_id=user.uuid)}}"
                                 class="cursor-pointer">
-                                <p class="text-xs hover:text-secondary">tickets for sale</p>
+                                <p class="text-xs hover:text-secondary">
+                                    tickets for sale
+                                    {% if user.tickets_for_sale %}
+                                    ({{ user.tickets_for_sale | length }})
+                                    {% endif %}
+                                </p>
                             </a>
                         </div>
                     </div>
@@ -110,7 +122,8 @@
                     <!-- prettier-ignore -->
                     {% if p == page.page %}
                     <!-- prettier-ignore -->
-                    <a href="{{ url_for('admin.user.get_all') }}?page={{p}}&q={{page.query}}&pg=true" aria-current="page"
+                    <a href="{{ url_for('admin.user.get_all') }}?page={{p}}&q={{page.query}}&pg=true"
+                        aria-current="page"
                         class="z-10 px-3 py-2 leading-tight  border   hover:bg-blue-100 hover:text-blue-700 border-gray-700 bg-gray-700 text-white">{{p}}</a>
                     {% else %}
                     <!-- prettier-ignore -->

@@ -94,6 +94,11 @@ class User(db.Model, UserMixin, ModelMixin):
     reset_password_uuid: orm.Mapped[str] = orm.mapped_column(sa.String(64), default=gen_password_reset_id)
     role: orm.Mapped[str] = orm.mapped_column(sa.String(32), default=UserRole.client.value)
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
+
+    # Individual financial settings
+    service_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+    bank_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+
     # Relationships
     identity_document: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[identity_document_id])
     picture: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[picture_id])

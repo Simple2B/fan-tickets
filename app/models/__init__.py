@@ -12,4 +12,5 @@ from .picture import Picture
 from .payment import Payment
 from .notifications_config import NotificationsConfig
 from .user_notification import UserNotification
+from .global_fee_settings import GlobalFeeSettings
 from .utils import count, all, first, paginate, gen_uuid
