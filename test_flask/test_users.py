@@ -170,9 +170,14 @@ def test_user_deactivate_account(client: FlaskClient):
 def test_ticket_transfer(client_with_data: FlaskClient):
     login(client_with_data)
     user: m.User = current_user
-    ticket: m.Ticket = db.session.scalar(m.Ticket.select())
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select().where(m.Ticket.is_sold.is_(True)))
+    ticket.buyer_id = user.id
     assert ticket
-    ...
+    payment: m.Payment = db.session.scalar(m.Payment.select().where(m.Payment.ticket_id == ticket.id))
+    payment.buyer_id = user.id
+    response = client_with_data.get(f"pay/transfer?ticket_unique_id={ticket.unique_id}")
+    assert response.status_code == 200
+    assert ticket.is_transferred is True
 
 
 def test_ticket_pdf(client_with_data: FlaskClient):
