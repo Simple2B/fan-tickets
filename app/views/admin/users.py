@@ -75,6 +75,7 @@ def get_all():
             mem.seek(0)
 
         now = datetime.now()
+
         return send_file(
             mem,
             as_attachment=True,
@@ -151,24 +152,24 @@ def deactivate():
     return redirect(url_for("auth.login"))
 
 
-@blueprint_user.route("/profile", methods=["GET"])
-@login_required
-def profile():
-    user: m.User = current_user
-    payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
-    payments = db.session.scalars(payments_query).all()
+# @blueprint_user.route("/profile", methods=["GET"])
+# @login_required
+# def profile():
+#     user: m.User = current_user
+#     payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
+#     payments = db.session.scalars(payments_query).all()
 
-    email_form = f.EmailEditForm()
-    phone_form = f.PhoneEditForm()
-    card_form = f.CardEditForm()
-    return render_template(
-        "user/profile.html",
-        user=user,
-        payments=payments,
-        email_form=email_form,
-        phone_form=phone_form,
-        card_form=card_form,
-    )
+#     email_form = f.EmailEditForm()
+#     phone_form = f.PhoneEditForm()
+#     card_form = f.CardEditForm()
+#     return render_template(
+#         "user/profile.html",
+#         user=user,
+#         payments=payments,
+#         email_form=email_form,
+#         phone_form=phone_form,
+#         card_form=card_form,
+#     )
 
 
 @blueprint_user.route("/logo-upload", methods=["GET", "POST"])

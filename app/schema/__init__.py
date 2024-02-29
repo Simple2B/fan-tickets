@@ -40,6 +40,11 @@ from .pagarme import (
     PagarmeRecipientCreate,
     PagarmeSplitCard,
     PagarmePaymentCard,
+    PagarmePaidWebhook,
+    PagarmePaidWebhookData,
+    PagarmeWebhookItem,
+    FanTicketWebhookTicketData,
+    FanTicketWebhookProcessed,
 )
 
 from .chat_auth import (

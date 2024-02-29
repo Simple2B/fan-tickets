@@ -119,6 +119,8 @@ def test_login_and_logout(client):
     response = logout(client)
     register(
         "sam",
+        "sam",
+        "samuelson",
         "sam@test.com",
         phone="+480000000011",
         card="99998888777755",

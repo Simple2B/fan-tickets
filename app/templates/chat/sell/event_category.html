@@ -3,8 +3,9 @@ bot_message_without_date, user_message, submit_message_disable %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
   {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
-  {% set html_element %} {% set all_filters = "[name='room_unique_id'],
-  [name='renew_search'], [name='location_unique_id'], [name='event_name']" %}
+  {% set html_element %}
+  {% set all_filters = "[name='room_unique_id'], [name='renew_search'], [name='location_unique_id'],
+  [name='event_name']" %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <div class="mt-2 w-265 flex flex-col gap-3">
     <div class="flex flex-col gap-2">
@@ -22,9 +23,15 @@ bot_message_without_date, user_message, submit_message_disable %}
   {% endset %}
 
   <div id="chat-message-container" data-send-message>
-    {% if error_message %} {% include 'chat/chat_message_error.html' %} {% endif
-    %} {{ bot_message("Great! What is the category of event are you selling
-    tickets for?") }} {{ bot_message_without_date(html_element=html_element) }}
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% endif %}
+    {{ bot_message("Great! What is the category of event are you selling tickets for?") }}
+    {{ bot_message_without_date(html_element=html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

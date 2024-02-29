@@ -40,7 +40,6 @@ def create_app(environment="development") -> Flask:
         pay_blueprint,
         chat_disputes_blueprint,
         notification_blueprint,
-        blueprint_user,
     )
     from app import models as m
 
@@ -75,7 +74,6 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
     app.register_blueprint(notification_blueprint)
-    app.register_blueprint(blueprint_user)
 
     # SSE
     @sse.before_request
@@ -143,6 +141,8 @@ def create_app(environment="development") -> Flask:
         round_to_two_places,
         event_form_date,
         get_ticket_subsequential_number,
+        get_paired_wallet_id,
+        get_price_gross,
     )
 
     def get_current_user_notifications():
@@ -167,6 +167,8 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
     app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
     app.jinja_env.globals["get_room_messages"] = lambda room: db.session.scalars(room.messages.select())
+    app.jinja_env.globals["get_paired_wallet_id"] = get_paired_wallet_id
+    app.jinja_env.globals["get_price_gross"] = get_price_gross
 
     # Shell context
     @app.shell_context_processor

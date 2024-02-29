@@ -2,9 +2,7 @@
 %}
 
 <div id="chat-main" class="py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
-  {% include 'chat/chat_messages.html' %}
   {% include 'chat/chat_spinner.html' %}
-  <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 
   {% set html_element %}
   <div class="mt-2 flex justify-stretch gap-2">
@@ -23,7 +21,11 @@
 
   <div id="chat-message-container" data-send-message>
     {{ bot_message('How can I assist you today? Are you looking to buy or sell a ticket?', html_element) }}
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
+
 </div>
 
 

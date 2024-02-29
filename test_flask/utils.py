@@ -2,6 +2,7 @@ from app.models import User, NotificationsConfig
 from app import models as m
 
 TEST_ADMIN_NAME = "bob"
+TEST_ADMIN_LAST_NAME = "bobinson"
 TEST_ADMIN_EMAIL = "bob@test.com"
 TEST_ADMIN_PASSWORD = "password"
 TEST_PHONE = "+380000000012"
@@ -10,6 +11,8 @@ TEST_CARD = "0000000000001100"
 
 def register(
     username=TEST_ADMIN_NAME,
+    name=TEST_ADMIN_NAME,
+    last_name=TEST_ADMIN_LAST_NAME,
     email=TEST_ADMIN_EMAIL,
     password=TEST_ADMIN_PASSWORD,
     phone=TEST_PHONE,
@@ -18,6 +21,8 @@ def register(
 ):
     user = User(
         username=username,
+        name=name,
+        last_name=last_name,
         email=email,
         role=role,
     )

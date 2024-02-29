@@ -75,6 +75,18 @@ def validate_buy_ticket_params(request_args) -> s.ChatBuyTicketParams:
     return params
 
 
+def validate_auth_params(request_args) -> s.ChatAuthParams:
+    """
+    The function to validate chat input params.
+    """
+    try:
+        params = s.ChatAuthParams.model_validate(dict(request_args))
+    except Exception as e:
+        raise ValueError(f"Invalid auth params: {e}")
+
+    return params
+
+
 def save_message(bot_message: str, user_message: str, room: m.Room):
     """
     The function to save message for history in chat.

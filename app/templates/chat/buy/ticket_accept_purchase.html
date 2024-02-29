@@ -23,7 +23,7 @@ submit_message_disable
   </div>
   {% endset %}
 
-  {% set message = "Awesome! The cost for ticket is " ~ total_prices.net ~ ". Price for service is "
+  {% set message = "Awesome! The cost for ticket(s) is " ~ total_prices.net ~ ". Price for service is "
   ~ total_prices.service ~ ". Total price is " ~ total_prices.total %}
 
   <div id="chat-message-container" data-send-message>
@@ -31,6 +31,10 @@ submit_message_disable
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {{ bot_message(message, html_element=html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

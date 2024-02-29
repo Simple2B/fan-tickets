@@ -110,48 +110,7 @@
             Uma visão geral de todos os seus pagamentos
           </p>
           <div id="user-profile-payment-container" class="dropdown-close mb-4 flex flex-col gap-3">
-            {% for payment in payments %}
-            <div class="flex gap-12">
-              <!-- prettier-ignore -->
-              <div class="flex gap-6">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <rect width="24" height="24" rx="12" fill="#5D4B15" />
-                  <path d="M7 12H17M17 12L13 8M17 12L13 16" stroke="#F2B705" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-                <p>
-                  {{ payment.ticket.event.name }} - {{
-                  payment.ticket.event.date_time.strftime('%a, %d %b') }}
-                </p>
-              </div>
-              <!-- button
-                class="start-dispute-btn px-2 py-1 text-xs text-grey hover:text-red-800 border border-red-800 rounded-lg cursor-pointer transition-colors duration-200"
-                hx-get="{{ url_for('disputes.start_dispute', payment_id=payment.id) }}"
-                hx-target="#message-history-htmx-loader"
-                hx-swap="innerHTML"
-                hx-trigger="click">
-                Start dispute
-              </button -->
-              <!-- prettier-ignore -->
-              {% if payment.is_exist_dispute %}
-              {% if payment.is_close_dispute %}
-              <span class="px-2 py-1 text-xs text-grey">
-                Dispute Closed
-              </span>
-              {% else %}
-              <button data-payment-id="{{payment.id}}"
-                class="start-dispute-btn px-2 py-1 text-xs text-secondary hover:text-yellow-500  rounded-lg cursor-pointer transition-colors duration-200">
-                Dispute in progress
-              </button>
-              {% endif %}
-              {% else %}
-              <button data-payment-id="{{payment.id}}"
-                class="start-dispute-btn px-2 py-1 text-xs text-red-600 hover:text-red-800  rounded-lg cursor-pointer transition-colors duration-200">
-                Start dispute
-              </button>
-              {% endif %}
-            </div>
-            {% endfor %}
+            {% include 'user/ticket_transfer.html' %}
           </div>
           <button class="text-secondary underline" id="user-profile-payment-btn">
             Mostrar

@@ -30,6 +30,10 @@
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {{ bot_message_without_date(html_element=html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

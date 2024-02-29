@@ -35,4 +35,11 @@ from .payment import (
     PagarmeSplitCard,
     PagarmePaymentCard,
 )
+from .webhook import (
+    PagarmePaidWebhook,
+    PagarmePaidWebhookData,
+    PagarmeWebhookItem,
+    FanTicketWebhookTicketData,
+    FanTicketWebhookProcessed,
+)
 from .order import PagarmeCreateOrderPix, PagarmeCreateOrderResponsePix, PagarmeCreateOrderSplit

@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from urllib.parse import urlparse
 from sqlalchemy import or_
 
@@ -229,6 +230,57 @@ def buy():
     )
 
 
+@chat_auth_blueprint.route("/open", methods=["GET", "POST"])
+def open():
+    return render_template(
+        "chat/chat_home.html",
+        now=c.utcnow_chat_format(),
+    )
+
+
+@chat_auth_blueprint.route("/close")
+def close():
+    room_unique_id = request.args.get("room_unique_id")
+    if not room_unique_id:
+        return render_template(
+            "chat/chat_close.html",
+            now=c.utcnow_chat_format(),
+        )
+
+    room = c.get_room(room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    messages_query = m.Message.select().where(m.Message.room_id == room.id)
+    messages = db.session.scalars(messages_query).all()
+
+    if current_user.is_authenticated:
+        mail_controller.send_email(
+            (current_user,),
+            f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+            render_template(
+                "email/chat_history.htm",
+                user=current_user,
+                messages=messages,
+            ),
+        )
+
+    for message in messages:
+        db.session.delete(message)
+    db.session.commit()
+
+    return render_template(
+        "chat/chat_bot_close.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+    )
+
+
 @chat_auth_blueprint.route("/login_email")
 def login_email():
     try:
@@ -344,6 +396,38 @@ def login_password():
 
     return render_template(
         "chat/chat_home.html",
+        now=c.utcnow_chat_format(),
+        room=room,
+    )
+
+
+@chat_auth_blueprint.route("/reset_registration", methods=["GET"])
+def reset_registration():
+    params = s.ChatAuthParams.model_validate(dict(request.args))
+
+    room = c.get_room(params.room_unique_id)
+
+    if not room:
+        return render_template(
+            "chat/chat_error.html",
+            error_message="Form submitting error",
+            now=c.utcnow_chat_format(),
+        )
+
+    user = c.get_user(params.user_unique_id)
+
+    if not user:
+        return render_template(
+            "chat/email.html",
+            now=c.utcnow_chat_format(),
+            room=room,
+        )
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return render_template(
+        "chat/registration/email.html",
         now=c.utcnow_chat_format(),
         room=room,
     )
@@ -1006,7 +1090,6 @@ def create_user_phone():
     #     )
 
     # parse url and get the domain name
-    # TODO: add production url
     if os.environ.get("APP_ENV") == "development":
         parsed_url = urlparse(request.base_url)
         profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"

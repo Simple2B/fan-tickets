@@ -1,5 +1,6 @@
 from flask import render_template, Blueprint
-from app import models as m, db
+from flask_login import login_required, current_user
+from app import models as m, db, forms as f
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -19,3 +20,23 @@ def index():
 @main_blueprint.route("/help")
 def help():
     return render_template("help.html")
+
+
+@main_blueprint.route("/profile", methods=["GET"])
+@login_required
+def profile():
+    user: m.User = current_user
+    payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
+    payments = db.session.scalars(payments_query).all()
+
+    email_form = f.EmailEditForm()
+    phone_form = f.PhoneEditForm()
+    card_form = f.CardEditForm()
+    return render_template(
+        "user/profile.html",
+        user=user,
+        payments=payments,
+        email_form=email_form,
+        phone_form=phone_form,
+        card_form=card_form,
+    )

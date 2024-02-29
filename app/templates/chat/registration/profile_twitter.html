@@ -27,6 +27,12 @@ submit_message_get
     {{ bot_message("Do you want to add your twitter profile?") }}
     {{ bot_message_without_date("Type your link below or click 'Without Twitter' button. If you do not",
     html_element)}}
+
+    {% include 'chat/registration/renew_registration.html' %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 
