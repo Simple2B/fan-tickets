@@ -192,8 +192,34 @@ def test_get_cheapest_ticket(client_with_data: FlaskClient):
     tickets = db.session.scalars(tickets_query).all()
 
     global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
-    tickets = get_sorted_tickets(tickets, True, global_settings.tickets_sorting_by)
-    assert tickets
+    result = get_sorted_tickets(tickets, True, global_settings.tickets_sorting_by)
+    assert result
+
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0)
+    assert result == tickets
+
+
+def test_get_most_expensive_ticket(client_with_data: FlaskClient):
+    tickets_query = m.Ticket.select().limit(5)
+    tickets = db.session.scalars(tickets_query).all()
+
+    TEST_SORTING_TYPE = m.TicketsSortingType.most_expensive.value
+    result = get_sorted_tickets(tickets, True, TEST_SORTING_TYPE)
+    assert result
+
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0, reverse=True)
+    assert result == tickets
+
+
+def test_sort_tickets_by_categories(client_with_data: FlaskClient):
+    # tickets_query = m.Ticket.select().where(m.Ticket.event.has(m.Event.location.has(m.Location.name == "São Paulo")))
+    tickets_query = m.Ticket.select().limit(30)
+    tickets = db.session.scalars(tickets_query).all()
+    categories = set(ticket.event.category.name for ticket in tickets)
+
+    TEST_SORTING_TYPE = m.TicketsSortingType.category.value
+    result = get_sorted_tickets(tickets, True, TEST_SORTING_TYPE)
+    assert len(result) == len(categories)
 
 
 def test_fee_adjustment(client: FlaskClient):

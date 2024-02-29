@@ -77,7 +77,17 @@ def get_sorted_tickets(
     limit_ticket: bool,
     sorting_type: str,
 ) -> list[m.Ticket]:
-    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0)
+    is_reversed = True if sorting_type == m.TicketsSortingType.most_expensive.value else False
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0, reverse=is_reversed)
+
+    if sorting_type == m.TicketsSortingType.category.value:
+        tickets_sift = []
+        categories_seen = set()
+        for ticket in tickets:
+            if ticket.event.category.name not in categories_seen:
+                categories_seen.add(ticket.event.category.name)
+                tickets_sift.append(ticket)
+        tickets = tickets_sift
 
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]
