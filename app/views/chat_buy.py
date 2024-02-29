@@ -626,29 +626,6 @@ def compute_total_price(cart_tickets: list[m.Ticket]) -> int:
     return sum([ticket.price_gross for ticket in cart_tickets if ticket.price_gross])
 
 
-def clear_message_history(room: m.Room) -> None:
-    if not room:
-        log(log.ERROR, "Room not found: [%s]", room)
-        return
-
-    messages_query = m.Message.select().where(m.Message.room_id == room.id)
-    messages = db.session.scalars(messages_query).all()
-
-    mail_controller.send_email(
-        (current_user,),
-        f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
-        render_template(
-            "email/chat_history.htm",
-            user=current_user,
-            messages=messages,
-        ),
-    )
-
-    for message in messages:
-        db.session.delete(message)
-    db.session.commit()
-
-
 @chat_buy_blueprint.route("/pagar", methods=["GET", "POST"])
 def pagar():
     now = datetime.now()

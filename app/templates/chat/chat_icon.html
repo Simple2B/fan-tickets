@@ -1,5 +1,4 @@
-<button
-  type="button"
+<button hx-get="{{ url_for('chat.open') }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" type="button"
   id="chat-icon"
   class="fixed p-3 z-50 right-10 bottom-10 w-14 h-14 rounded-50% bg-secondary hover:scale-110 transform transition-transform duration-300">
   <!--prettier-ignore-->

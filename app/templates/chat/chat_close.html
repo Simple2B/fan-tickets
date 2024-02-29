@@ -1,0 +1,18 @@
+{% from 'chat/_macros_chat_message.html' import bot_message,
+bot_message_without_date, user_message, submit_message_dispute %}
+
+<div id="chat-main" class="bot-message eveny py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+
+  <div id="chat-close"></div>
+
+  <div id="chat-message-container" data-send-message>
+  </div>
+</div>
+
+{{ submit_message_dispute('disputes.send_message', "[name='room_unique_id'],
+[name='user_message']") }}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

@@ -16,6 +16,7 @@ from .chat import (
     get_room,
     save_message,
     ticket_details,
+    validate_auth_params,
 )
 from .chat_sell import (
     get_event_by_name_bard,

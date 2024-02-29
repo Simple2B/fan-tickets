@@ -1,0 +1,27 @@
+{% from 'chat/_macros_chat_message.html' import bot_message,
+bot_message_without_date, user_message, submit_message_disable %}
+
+<div id="chat-main" class="bot-message eveny py-3 px-4 h-475 flex-col justify-start items-stretch overflow-y-scroll">
+  {% include 'chat/chat_messages.html' %} {% include 'chat/chat_spinner.html' %}
+
+  <div id="chat-bot-close"></div>
+
+  <div id="chat-message-container" data-send-message>
+    {% if error_message %}
+    {% include 'chat/chat_message_error.html' %}
+    {% else%}
+    {% if current_user.is_authenticated %}
+    {{ bot_message("Conversation has been cleared and sent to your email. Chat will close after 5 second") }}
+    {% else %}
+    {{ bot_message("Conversation has been cleared. Chat will close after 5 second") }}
+    {% endif %}
+    {%endif %}
+  </div>
+</div>
+
+{{ submit_message_disable() }}
+
+{% block scripts %}
+<!-- prettier-ignore -->
+<script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+{% endblock %}

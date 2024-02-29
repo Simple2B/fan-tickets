@@ -116,7 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
     showMessage();
   }
 
-  chatCloseButton.addEventListener('click', closeChatWindow);
+  if (chatCloseButton) {
+    chatCloseButton.addEventListener('click', closeChatWindow);
+  }
 
   document.addEventListener('htmx:beforeRequest', e => {
     const targetElement = e.target as HTMLElement;
@@ -156,11 +158,19 @@ document.addEventListener('DOMContentLoaded', () => {
       ) as HTMLInputElement;
       messageInput.focus();
     }
+    if (targetElement.querySelector('#chat-close')) {
+      toggleChatWindow();
+    }
+    if (targetElement.querySelector('#chat-bot-close')) {
+      setTimeout(() => {
+        closeChatWindow();
+      }, 6000);
+    }
   });
 
-  chatCloseButtons.forEach(button =>
-    button.addEventListener('click', () => toggleChatWindow),
-  );
+  // chatCloseButtons.forEach(button =>
+  //   button.addEventListener('click', () => toggleChatWindow),
+  // );
 
   async function sendDisputeMessage() {
     const messageText = messageInput.value;

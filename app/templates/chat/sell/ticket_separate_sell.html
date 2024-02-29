@@ -29,6 +29,10 @@ bot_message_without_date, user_message, submit_message_get %}
     {% endif %}
     {{ bot_message("Do you allow selling tickets separately?") }}
     {{ bot_message_without_date(html_element=html_element) }}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

@@ -11,6 +11,12 @@ submit_message_get
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {{ bot_message("Please input your last name") }}
+
+    {% include 'chat/registration/renew_registration.html' %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

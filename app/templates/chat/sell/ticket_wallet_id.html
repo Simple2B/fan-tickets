@@ -18,6 +18,10 @@ bot_message_without_date, user_message, submit_message_get %}
     {% else %}
     {{ bot_message("Please input ticket's wallet id:") }}
     {% endif %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 

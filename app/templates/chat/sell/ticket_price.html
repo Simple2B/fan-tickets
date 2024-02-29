@@ -18,6 +18,10 @@ bot_message_without_date, user_message, submit_message_get %}
     {% else %}
     {{ bot_message("How much do you want for the ticket?") }}
     {% endif %}
+
+    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
+      {% include 'chat/chat_spinner_active.html' %}
+    </div>
   </div>
 </div>
 
