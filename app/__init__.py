@@ -142,6 +142,7 @@ def create_app(environment="development") -> Flask:
         event_form_date,
         get_ticket_subsequential_number,
         get_paired_wallet_id,
+        get_price_gross,
     )
 
     def get_current_user_notifications():
@@ -167,6 +168,7 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
     app.jinja_env.globals["get_room_messages"] = lambda room: db.session.scalars(room.messages.select())
     app.jinja_env.globals["get_paired_wallet_id"] = get_paired_wallet_id
+    app.jinja_env.globals["get_price_gross"] = get_price_gross
 
     # Shell context
     @app.shell_context_processor

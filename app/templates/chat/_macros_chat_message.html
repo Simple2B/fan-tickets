@@ -74,7 +74,7 @@
         Location: {{ room.ticket.event.location.name }} <br />
         Venue: {{ room.ticket.event.venue.name }} <br />
         Date: {{ cut_seconds(room.ticket.event.date_time) }} <br />
-        Price: {{ room.ticket.price_gross }} <br />
+        Price: {{ get_price_gross(room.ticket) }} <br />
         Section: {{ room.ticket.section }} <br />
         Queue: {{ room.ticket.queue }} <br />
         Seat: {{ room.ticket.seat }} <br />

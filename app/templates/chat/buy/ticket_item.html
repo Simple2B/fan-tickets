@@ -5,10 +5,10 @@
     <h3>{{ ticket.event.name }}</h3>
     <div>
       {% if ticket.is_paired %}
-      <span class="text-secondary mb-0">R${{ ticket.price_gross * 2 }}</span>
+      <span class="text-secondary mb-0">R${{ get_price_gross(ticket) * 2 }}</span>
       <small class="text-xs text-gray-500">for 2 tickets</small>
       {% else %}
-      <p class="text-secondary mt-0">R${{ ticket.price_gross }}</p>
+      <p class="text-secondary mt-0">R${{ get_price_gross(ticket) }}</p>
       {% endif %}
       <p class="text-xs text-grey">
         {% if ticket.section %}

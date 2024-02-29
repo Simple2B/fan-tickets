@@ -74,3 +74,24 @@ def get_paired_wallet_id(ticket_unique_id: str) -> str:
     ticket: m.Ticket = db.session.scalar(ticket_query)
     wallet_id = ticket.wallet_id if ticket.wallet_id else "no wallet id found"
     return wallet_id
+
+
+def get_price_gross(ticket: m.Ticket) -> int:
+    user: m.User = current_user
+    global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
+
+    if user.is_authenticated and user.service_fee is not None:
+        service_fee = user.service_fee
+    else:
+        service_fee = global_fee_settings.service_fee
+
+    if user.is_authenticated and user.bank_fee is not None:
+        bank_fee = user.bank_fee
+    else:
+        bank_fee = global_fee_settings.bank_fee
+    total_commission = 1 + (service_fee + bank_fee) / 100
+
+    price_net = ticket.price_net if ticket.price_net else 0
+    price_gross = int(round(price_net * total_commission))
+
+    return price_gross

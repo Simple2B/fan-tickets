@@ -148,7 +148,9 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         return None
 
     global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
-    total_commission = 1 + (global_fee_settings.service_fee + global_fee_settings.bank_fee) / 100
+    service_fee = user.service_fee if user.service_fee is not None else global_fee_settings.service_fee
+    bank_fee = user.bank_fee if user.bank_fee is not None else global_fee_settings.bank_fee
+    total_commission = 1 + (service_fee + bank_fee) / 100
 
     price_total = 0
     price_service = 0

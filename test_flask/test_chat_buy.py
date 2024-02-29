@@ -5,7 +5,7 @@ from flask_login import current_user
 from test_flask.utils import login
 from app import models as m, db, schema as s, mail_controller
 from .db import populate
-from app.controllers.chat_buy import get_cheapest_tickets
+from app.controllers.chat_buy import get_cheapest_tickets, calculate_total_price
 
 
 def get_available_ticket(db: Alchemical):
@@ -140,7 +140,9 @@ def test_booking_paired_tickets(client: FlaskClient):
     ticket_2.pair_unique_id = ticket_1.unique_id
 
     login(client)
-    current_user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
+    user: m.User = current_user
+    user.service_fee = 0
+    user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket_1.unique_id}")
     assert response.status_code == 200
     assert "Do you want to proceed to purchase?" in response.data.decode()
@@ -194,3 +196,20 @@ def test_get_cheapest_ticket(client_with_data: FlaskClient):
     ).save()
     tickets = get_cheapest_tickets(tickets, room, True, True)
     assert tickets
+
+
+def test_fee_adjustment(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+    user.service_fee = 0
+    user.bank_fee = 0
+
+    _, tickets_available = get_available_ticket(db)
+
+    ticket = tickets_available[0]
+    ticket.is_reserved = True
+    ticket.buyer_id = user.id
+    ticket.save()
+    result = calculate_total_price(user)
+    assert result
+    assert result.total == ticket.price_net
