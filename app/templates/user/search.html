@@ -25,7 +25,10 @@
                             <a href="{{ url_for('admin.settings.individual', user_uuid=user.uuid) }}">
                                 {{ user.name }} {{ user.last_name }}
                             </a>
-                            {% if user.role == "admin"%}<span class=" text-gray-700 text-sm">admin</span>
+                            {% if user.role == "admin"%}
+                            <span class=" text-gray-700 text-sm">admin</span>
+                            {% else %}
+                            <span class=" text-gray-700 text-sm">({{transactions_last_month(user)}})</span>
                             {% endif %}
                         </div>
                         <div class="font-normal text-gray-500">

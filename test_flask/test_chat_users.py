@@ -1,8 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
+from app.controllers.jinja_globals import transactions_last_month
+from app.models.utils import utcnow
 from test_flask.utils import login, logout
 
 
@@ -280,3 +282,54 @@ def test_chat_home(client: FlaskClient):
     response = client.get(f"/chat/home?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Are you looking to buy or sell a ticket?" in response.data.decode()
+
+
+def test_transactions_limit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    location = m.Location(
+        name="Testing Location",
+    ).save()
+    category = m.Category(
+        name="Testing Category",
+    ).save()
+
+    testing_tickets = []
+    for i in range(10):
+        event = m.Event(
+            name=f"Testing Event {i}",
+            url="https://testing.com",
+            observations="Testing observations",
+            warning="don't forget to bring your ID",
+            location_id=location.id,
+            venue="Testing venue",
+            category_id=category.id,
+            creator_id=user.id,
+            date_time=utcnow() - timedelta(days=i * 5),
+            approved=True,
+        ).save()
+
+        ticket = m.Ticket(
+            event=event,
+            seller_id=user.id,
+            price_net=100,
+            is_sold=True,
+            last_reservation_time=event.date_time + timedelta(days=1),
+        ).save()
+        testing_tickets.append(ticket)
+
+    assert len(testing_tickets) == 10
+
+    last_month_tickets_query = m.Ticket.select().where(
+        m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30)
+    )
+    last_month_tickets: list[m.Ticket] = db.session.scalars(last_month_tickets_query).all()
+    assert last_month_tickets
+
+    users_transactions_last_month = transactions_last_month(user)
+    assert users_transactions_last_month == len(last_month_tickets)
+
+    response = client.get("/chat/sell")
+    assert response.status_code == 200
+    # TODO: if more than 6 transactions, show an error message
