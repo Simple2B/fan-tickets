@@ -10,9 +10,9 @@ history_message_user_home %}
 
 <!-- prettier-ignore -->
 <div id="chat-window"
-  class="chat-window-close flex flex-col fixed bottom-28 right-10 z-50 w-96 h-650 bg-chat-window rounded-2xl">
+  class="chat-window-close flex flex-col fixed top-0 sm:top-auto sm:bottom-28 sm:right-10 z-50 w-full sm:w-96 h-screen sm:h-650 bg-chat-window sm:rounded-2xl">
   {% include 'chat/chat_header.html' %}
-  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
+  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch rounded-b-2xl">
     <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
       {% include 'chat/chat_spinner.html' %}
       {% set html_element %}

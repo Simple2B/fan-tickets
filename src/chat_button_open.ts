@@ -8,6 +8,7 @@ import {
 
 document.addEventListener('DOMContentLoaded', () => {
   const chatIcon = document.querySelector('#chat-icon');
+  // const chatIconClose = document.querySelector('#chat-icon-close');
   const chatMain = document.querySelector('#chat-main') as HTMLDivElement;
 
   chatIcon.addEventListener('click', () => {
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       resizeChat();
     }, 200);
     toggleChatWindow();
+    // chatIcon.classList.toggle('hidden');
     if (chatWindow.classList.contains('chat-window-open')) {
       showMessage();
       scrollDown(chatMain);

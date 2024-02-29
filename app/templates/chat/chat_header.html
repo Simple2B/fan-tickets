@@ -13,6 +13,7 @@
     <span class="sr-only">Home</span>
   </button>
   <span id="chat-header-title" class="text-2xl">Chatbot</span>
-  <button hx-get="{{ url_for('chat.close') }}" hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click"
-    hx-indicator="#chat-message-spinner" hx-include="{{ all_filters }}" class="w-14 h-14 ">&#x2715;</button>
+  <button id="chat-close-button" hx-get="{{ url_for('chat.close') }}" hx-target="#chat-body" hx-swap="innerHTML"
+    hx-trigger="click" hx-indicator="#chat-message-spinner" hx-include="{{ all_filters }}"
+    class="w-14 h-14 ">&#x2715;</button>
 </div>

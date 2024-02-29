@@ -9,7 +9,7 @@
         fill="#F2B705" />
     </svg>
   </div>
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     <div class="flex text-grey justify-start">
       <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
     </div>
@@ -30,7 +30,7 @@
         fill="#F2B705" />
     </svg>
   </div>
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     {% if message %}
     <div class="p-4 flex text-white bg-dark-grey rounded-t-lg rounded-br-lg justify-start">
       <p>{{ message }}</p>
@@ -49,7 +49,7 @@
         fill="#F2B705" />
     </svg>
   </div>
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     <div class="flex text-grey justify-start">
       <small class="pt-1">FanTicket {{ cut_seconds() }}</small>
     </div>
@@ -62,7 +62,7 @@
 <!-- prettier-ignore -->
 {% macro history_message_user_current(message, username, logo, room, user) -%}
 <div class="mb-2 flex gap-2 justify-end">
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     <div class="flex text-grey justify-end">
       <small class="pt-1">{{ username }} {{ cut_seconds() }}</small>
     </div>
@@ -106,7 +106,7 @@
 <!-- prettier-ignore -->
 {% macro history_message_user_home(message, username, logo) -%}
 <div class="mb-2 flex gap-2 justify-end">
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     <div class="flex text-grey justify-end">
       <small class="pt-1">{{ username }} {{ cut_seconds() }}</small>
     </div>
@@ -247,7 +247,7 @@
 <!-- prettier-ignore -->
 {% macro history_message_user(message, is_current_user=True) -%}
 <div class="mb-2 flex gap-2 {% if is_current_user %} justify-end {% else %} justify-end flex-row-reverse {% endif %}">
-  <div class="max-w-265">
+  <div class="sm:max-w-265">
     <div class="flex text-grey justify-end">
       <!-- prettier-ignore -->
       <small class="pt-1">{{ message.sender.name }} {{ cut_seconds() }}</small>

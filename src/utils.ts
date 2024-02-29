@@ -36,6 +36,11 @@ export function resizeChat() {
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');
   const chatWindow: HTMLElement = document.querySelector('#chat-window');
+  // const screenWith: number = window.innerWidth;
+
+  // if (screenWith < 640) {
+  //   return;
+  // }
 
   if (!header || !chatWindow) return;
 

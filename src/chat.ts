@@ -206,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatIconButton) {
     chatIconButton.addEventListener('click', () => {
       toggleChatWindow();
+      // chatIconButton.classList.add('hidden');
     });
   }
 });
