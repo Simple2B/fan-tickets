@@ -90,7 +90,8 @@ class BaseConfig(BaseSettings):
 
     # platform commission rate - 11%
     # 5% - platform commission rate, 3% - payment gateway commission rate that is included twice because of the 2-stage payment
-    PLATFORM_COMMISSION_RATE: float = 1.11
+    SERVICE_FEE: int = 5
+    BANK_FEE: int = 6
 
     # pagar.me
     PAGARME_BASE_URL: str = "https://api.pagar.me/core/v5/"

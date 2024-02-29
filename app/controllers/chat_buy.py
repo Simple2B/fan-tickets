@@ -147,12 +147,15 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         log(log.INFO, "Tickets not found: [%s]", user.id)
         return None
 
+    global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
+    total_commission = 1 + (global_fee_settings.service_fee + global_fee_settings.bank_fee) / 100
+
     price_total = 0
     price_service = 0
     price_net = 0
     unique_ids = ""
     for ticket in tickets:
-        ticket_price_gross = ticket.price_net * app.config["PLATFORM_COMMISSION_RATE"]
+        ticket_price_gross = ticket.price_net * total_commission
         ticket.price_gross = ticket_price_gross
 
         price_total += ticket_price_gross
