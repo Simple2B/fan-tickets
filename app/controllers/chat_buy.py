@@ -72,13 +72,12 @@ def get_tickets_by_event_id(params: s.ChatBuyTicketParams, room: m.Room) -> list
     return tickets_available
 
 
-def get_cheapest_tickets(
+def get_sorted_tickets(
     tickets: list[m.Ticket],
-    room: m.Room,
     limit_ticket: bool,
-    add_ticket: bool,
+    sorting_type: str,
 ) -> list[m.Ticket]:
-    tickets = sorted(tickets, key=lambda ticket: ticket.price_gross if ticket.price_gross else 0)
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0)
 
     if not limit_ticket:
         tickets = tickets[: app.config["TICKETS_PER_CHAT"]]

@@ -79,11 +79,11 @@ def get_event_name():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(
+        global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+        tickets_cheapest = c.get_sorted_tickets(
             tickets,
-            room,
             params.tickets_show_all,
-            params.add_ticket,
+            global_settings.tickets_sorting_by,
         )
 
         log(log.INFO, "Tickets found: [%s]", tickets)
@@ -189,11 +189,11 @@ def get_events_by_location():
                 event_unique_id=first_event.unique_id,
             )
 
-        tickets_cheapest = c.get_cheapest_tickets(
+        global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+        tickets_cheapest = c.get_sorted_tickets(
             tickets,
-            room,
             params.tickets_show_all,
-            params.add_ticket,
+            global_settings.tickets_sorting_by,
         )
 
         log(log.INFO, "Tickets found: [%s]", tickets)
@@ -281,11 +281,11 @@ def get_tickets():
             room,
         )
 
-    tickets_cheapest = c.get_cheapest_tickets(
+    global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    tickets_cheapest = c.get_sorted_tickets(
         tickets,
-        room,
         params.tickets_show_all,
-        params.add_ticket,
+        global_settings.tickets_sorting_by,
     )
 
     return render_template(

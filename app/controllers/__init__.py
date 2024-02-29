@@ -57,7 +57,7 @@ from .chat_buy import (
     get_events_by_event_name,
     get_tickets_by_event,
     get_locations_by_events,
-    get_cheapest_tickets,
+    get_sorted_tickets,
     book_ticket,
     calculate_total_price,
     get_tickets_by_event_id,

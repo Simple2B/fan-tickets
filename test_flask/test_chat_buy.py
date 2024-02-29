@@ -5,7 +5,7 @@ from flask_login import current_user
 from test_flask.utils import login
 from app import models as m, db, schema as s, mail_controller
 from .db import populate
-from app.controllers.chat_buy import get_cheapest_tickets, calculate_total_price
+from app.controllers.chat_buy import get_sorted_tickets, calculate_total_price
 
 
 def get_available_ticket(db: Alchemical):
@@ -190,11 +190,9 @@ def test_booking_paired_tickets(client: FlaskClient):
 def test_get_cheapest_ticket(client_with_data: FlaskClient):
     tickets_query = m.Ticket.select().limit(5)
     tickets = db.session.scalars(tickets_query).all()
-    room = m.Room(
-        seller_id=None,
-        buyer_id=2,
-    ).save()
-    tickets = get_cheapest_tickets(tickets, room, True, True)
+
+    global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    tickets = get_sorted_tickets(tickets, True, global_settings.tickets_sorting_by)
     assert tickets
 
 
