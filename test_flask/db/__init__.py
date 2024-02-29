@@ -47,6 +47,11 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
 
     DOMAINS = ("com", "com.br", "net", "net.br", "org", "org.br", "gov", "gov.br")
 
+    m.GlobalFeeSettings(
+        service_fee=5,
+        bank_fee=6,
+    ).save(False)
+
     for i in range(num_objects):
         first_name = fake.first_name()
         last_name = fake.last_name()

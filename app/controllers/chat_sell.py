@@ -532,6 +532,13 @@ def add_ticket_document(
 
 def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
+
+    global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
+    service_fee = global_fee_settings.service_fee
+    bank_fee = global_fee_settings.bank_fee
+
+    total_commition = 1 + (service_fee + bank_fee) / 100
+
     price_gross = int(round(price * app.config["PLATFORM_COMMISSION_RATE"]))
     if not ticket.is_paired:
         ticket.price_net = price
