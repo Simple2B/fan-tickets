@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template, abort
+from flask import Blueprint, request, redirect, url_for, render_template, flash, abort
 from app import models as m, db, forms as f
 from app.logger import log
 
@@ -28,6 +28,7 @@ def individual(user_uuid: str):
         user.bank_fee = form.bank_fee.data
         user.save()
         log(log.INFO, f"User {user.name} {user.last_name} fee settings updated")
+        flash(f"User {user.name} {user.last_name} fee settings updated")
         return redirect(url_for("admin.settings.individual", user_uuid=user_uuid))
     else:
         log(log.ERROR, "Form validation failed [%s], [%s]", form.errors, form.data)
@@ -46,7 +47,7 @@ def general():
         ).save()
         log(log.INFO, "Global fee settings created")
 
-    form = f.FeeSettingsForm()
+    form = f.FeeSettingsForm(sorting_type=global_fee_settings.tickets_sorting_by)
     if request.method == "GET":
         form.service_fee.data = global_fee_settings.service_fee
         form.bank_fee.data = global_fee_settings.bank_fee
@@ -59,8 +60,10 @@ def general():
     if form.validate_on_submit():
         global_fee_settings.service_fee = form.service_fee.data
         global_fee_settings.bank_fee = form.bank_fee.data
+        global_fee_settings.tickets_sorting_by = form.tickets_sorting_by.data
         global_fee_settings.save()
         log(log.INFO, "Global fee settings updated")
+        flash("Global fee settings updated")
         return redirect(url_for("admin.settings.general"))
     else:
         log(log.ERROR, "Form validation failed [%s], [%s]", form.errors, form.data)
