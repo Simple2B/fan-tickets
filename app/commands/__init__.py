@@ -42,6 +42,10 @@ def init_shell_commands(app: Flask):
         if db.session.execute(query).first():
             print(f"User with e-mail: [{app.config['ADMIN_EMAIL']}] already exists")
             return
+        m.GlobalFeeSettings(
+            service_fee=5,
+            bank_fee=6,
+        ).save(False)
         m.User(
             username=app.config["ADMIN_USERNAME"],
             name=app.config["ADMIN_NAME"],
@@ -425,3 +429,16 @@ def init_shell_commands(app: Flask):
         rooms: list[m.Room] = db.session.scalars(rooms_query).all()
         print(rooms)
         print(len(rooms), "rooms to delete")
+
+    @app.cli.command("untransfer")
+    @click.option("--email", type=str)
+    def untransfer(email: str):
+        user_query = m.User.select().where(m.User.email == email)
+        user: m.User = db.session.scalar(user_query)
+
+        tickets_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
+        tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+        for ticket in tickets:
+            ticket.is_transferred = False
+            ticket.save()
+            print(ticket, "untransferred")

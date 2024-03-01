@@ -1090,7 +1090,6 @@ def create_user_phone():
     #     )
 
     # parse url and get the domain name
-    # TODO: add production url
     if os.environ.get("APP_ENV") == "development":
         parsed_url = urlparse(request.base_url)
         profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"

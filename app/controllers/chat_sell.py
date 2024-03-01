@@ -3,7 +3,6 @@ import os
 import json
 import requests
 from datetime import datetime, timedelta, time
-from flask import current_app as app
 from flask_login import current_user
 from werkzeug.datastructures.file_storage import FileStorage
 import sqlalchemy as sa
@@ -532,14 +531,18 @@ def add_ticket_document(
 
 def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -> m.Ticket:
     ticket: m.Ticket = db.session.scalar(sa.select(m.Ticket).where(m.Ticket.unique_id == params.ticket_unique_id))
-    price_gross = int(round(price * app.config["PLATFORM_COMMISSION_RATE"]))
+
+    global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
+    total_commission = 1 + (global_fee_settings.service_fee + global_fee_settings.bank_fee) / 100
+
+    price_gross = int(round(price * total_commission))
     if not ticket.is_paired:
         ticket.price_net = price
         ticket.price_gross = price_gross
         c.save_message("Please, input ticket price", f"Ticket price: {price_gross}", room)
     else:
         ticket.price_net = int(round(price / 2))
-        ticket.price_gross = int(round(ticket.price_net * app.config["PLATFORM_COMMISSION_RATE"]))
+        ticket.price_gross = int(round(ticket.price_net * total_commission))
         c.save_message("Please, input the price for two tickets", f"Ticket price: {price_gross}", room)
 
     ticket.save()

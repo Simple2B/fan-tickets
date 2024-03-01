@@ -47,6 +47,10 @@ def generate_test_users(num_objects: int = NUM_TEST_USERS):
 
     DOMAINS = ("com", "com.br", "net", "net.br", "org", "org.br", "gov", "gov.br")
 
+    global_fee_settings = db.session.scalar(m.GlobalFeeSettings.select())
+    if not global_fee_settings:
+        m.GlobalFeeSettings().save(False)
+
     for i in range(num_objects):
         first_name = fake.first_name()
         last_name = fake.last_name()
@@ -134,8 +138,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             approved=True,
         ).save(False)
         for j in range(12):
-            # price_net = randint(10, 1000)
-            price_net = 1
+            price_net = randint(10, 1000)
             price_gross = int(round(price_net * 1.11))
             is_in_cart = True if j <= 1 else False
             is_reserved = True if 2 <= j <= 4 else False
@@ -157,6 +160,7 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
                 is_sold=is_sold,
                 seller_id=seller_id,
                 buyer_id=buyer_id,
+                wallet_id=faker.random_number(digits=16, fix_len=True),
             ).save(False)
             m.Notification(
                 notification_type=NotificationType.TICKET_PUBLISHED.value,

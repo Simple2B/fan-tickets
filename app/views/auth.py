@@ -76,6 +76,8 @@ def login():
             login_user(user)
             log(log.INFO, "Login successful.")
             flash("Login successful.", "success")
+            if user.role == m.UserRole.admin.value:
+                return redirect(url_for("admin.user.get_all"))
             return redirect(url_for("main.index"))
         flash("Wrong user ID or password.", "danger")
 
@@ -165,7 +167,7 @@ def phone_verification():
         if user.verification_code == full_code:
             log(log.INFO, "Verification code is correct: [%s]", full_code)
             flash("Código de verificação correto.", "success")
-            return redirect(url_for("admin.user.profile"))
+            return redirect(url_for("main.profile"))
         else:
             log(log.INFO, "Verification code is incorrect: [%s]", full_code)
             flash("Código de verificação inválido!", "danger")

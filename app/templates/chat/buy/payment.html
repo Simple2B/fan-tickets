@@ -31,6 +31,8 @@ submit_message_disable
     {% endif %}
     {{ bot_message("To proceed with the purchase, please scan QR code.") }}
     {{ bot_message_without_date(html_element=html_element) }}
+    {{ bot_message("After payment is performed you will be able to see results in pagamentos section of your profile.")
+    }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

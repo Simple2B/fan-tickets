@@ -1,17 +1,14 @@
+import io
+from datetime import datetime
 import sqlalchemy as sa
-import json
-
-from flask import render_template, Blueprint, request
+from flask import render_template, Blueprint, request, abort, send_file
 from flask_login import login_required, current_user
 
 from app.logger import log
 from app import schema as s, models as m, db
-from app import pagarme_client
+from app import pagarme_client, mail_controller
 from app import forms as f
-from app.controllers import (
-    get_room,
-    utcnow_chat_format,
-)
+from app.controllers import get_room, utcnow_chat_format
 
 pay_blueprint = Blueprint("pay", __name__, url_prefix="/pay")
 
@@ -208,21 +205,168 @@ def webhook():
     order.canceled
     """
 
-    # # If we get info about tickets that have been paid to sellers from FT pagarme account
-    # for ticket in tickets:
-    # ticket.paid_to_seller_at = datetime.now()
-    # ticket.is_deleted = True
-
-    try:
-        with open("webhook_response.json", "w") as file:
-            file.write(json.dumps(request.json))
-    except Exception as e:
-        log(log.ERROR, "Cannot save response logs to a file: [%s]", e)
-
     log(log.INFO, "Webhook received: [%s]", request.json)
-    request_data = request.json.get("data") if request.json else None
-    if request_data:
-        status = request_data.get("status")
-        if status:
-            log(log.INFO, "Webhook status: [%s]", status)
-    return {"status": "success"}, 200
+    webhook_request = s.PagarmePaidWebhook.model_validate(request.json)
+    request_data = webhook_request.data
+    status = request_data.status if request_data else None
+    if status:
+        log(log.INFO, "Webhook status: [%s]", status)
+
+    buyer_uuid = None
+    tickets_uuids_str = None
+    tickets = []
+    if status and status == "paid":
+        buyer_uuid = request_data.customer.code
+        buyer_query = m.User.select().where(m.User.uuid == buyer_uuid)
+        buyer: m.User = db.session.scalar(buyer_query)
+        log(log.INFO, "User: [%s]", buyer)
+
+        tickets_uuids_str = request_data.items[0].description
+        tickets_uuids = tickets_uuids_str.split(", ")
+        log(log.INFO, "Tickets uuids: [%s]", tickets_uuids)
+
+        for i, ticket_uuid in enumerate(tickets_uuids):
+            if ticket_uuid:
+                ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_uuid)
+                ticket: m.Ticket = db.session.scalar(ticket_query)
+                ticket.is_sold = True
+                ticket.is_deleted = True
+                if ticket.file:
+                    ticket.is_transferred = True
+                    email_message_to_buyer = "The ticket is in PDF format. Please download it in your profile."
+                    email_message_to_seller = "Ticket's PDF file is available to download for the buyer."
+                    log(log.INFO, "Ticket's PDF file is available to download")
+                else:
+                    email_message_to_buyer = (
+                        "The ticket is in wallet id format. Please confirm the transfer in your profile."
+                    )
+                    email_message_to_seller = f"Please transfer the ticket {ticket.wallet_id} to the buyer's wallet."
+                    log(log.INFO, "Ticket's wallet_id: [%s]", ticket.wallet_id)
+                ticket.save()
+
+                if ticket.is_paired:
+                    description = f"Tickets: {ticket.unique_id}, {ticket.pair_unique_id}. Buyer: {buyer}"
+                else:
+                    description = f"Ticket {ticket.unique_id}. Buyer: {buyer}"
+
+                if i == 0:
+                    m.Payment(
+                        buyer=buyer,
+                        ticket=ticket,
+                        description=description,
+                    ).save()
+
+                    mail_controller.send_email(
+                        [buyer],
+                        "Ticket transfer",
+                        render_template(
+                            "email/ticket_transfer.htm",
+                            event_name=ticket.event.name,
+                            date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M")
+                            if ticket.event.date_time
+                            else "",
+                            ticket_id=str(ticket.id).zfill(8),
+                            message=email_message_to_buyer,
+                        ),
+                    )
+
+                    mail_controller.send_email(
+                        [ticket.seller],
+                        "Ticket transfer",
+                        render_template(
+                            "email/ticket_transfer.htm",
+                            event_name=ticket.event.name,
+                            date_time=ticket.event.date_time.strftime("%Y-%m-%d %H:%M")
+                            if ticket.event.date_time
+                            else "",
+                            ticket_id=str(ticket.id).zfill(8),
+                            message=email_message_to_seller,
+                        ),
+                    )
+
+                # TODO: add a notification instance
+                ticket_data = s.FanTicketWebhookTicketData(
+                    unique_id=ticket.unique_id,
+                    is_paired=ticket.is_paired,
+                    pair_unique_id=ticket.pair_unique_id,
+                    is_reserved=ticket.is_reserved,
+                    is_sold=ticket.is_sold,
+                    is_deleted=ticket.is_deleted,
+                )
+                tickets.append(ticket_data)
+                log(log.INFO, "Ticket sold: [%s]", ticket_uuid)
+
+    return s.FanTicketWebhookProcessed(
+        status=status,
+        user_uuid=buyer_uuid,
+        tickets_uuids_str=tickets_uuids_str,
+        tickets=tickets,
+    ).model_dump()
+
+
+@pay_blueprint.route("/transfer")
+@login_required
+def transfer():
+    """
+    Transfer ticket to another user
+    """
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    if not ticket:
+        abort(404)
+
+    if ticket.buyer_id != current_user.id:
+        abort(403)
+
+    if ticket.is_transferred:
+        ticket.is_transferred = False
+    else:
+        ticket.is_transferred = True
+    if ticket.is_paired:
+        paired_ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket.pair_unique_id)
+        paired_ticket: m.Ticket = db.session.scalar(paired_ticket_query)
+        if paired_ticket.is_transferred:
+            paired_ticket.is_transferred = False
+        else:
+            paired_ticket.is_transferred = True
+        paired_ticket.save(False)
+    ticket.save()
+
+    payments_query = m.Payment.select().where(m.Payment.buyer_id == ticket.buyer.id)
+    payments = db.session.scalars(payments_query).all()
+
+    if not payments:
+        log(log.ERROR, "Payments not found")
+        abort(404)
+
+    return render_template("user/ticket_transfer.html", payments=payments)
+
+
+@pay_blueprint.route("/download_pdf")
+@login_required
+def download_pdf():
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
+    ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    if not ticket:
+        abort(404)
+
+    if ticket.buyer_id != current_user.id:
+        abort(403)
+
+    if not ticket.file:
+        log(log.ERROR, "Ticket's PDF file not found")
+        abort(404)
+
+    now = datetime.now()
+    return send_file(
+        io.BytesIO(ticket.file),
+        as_attachment=True,
+        download_name=f"fan_ticket_users_{now.strftime('%Y-%m-%d-%H-%M-%S')}.pdf",
+        mimetype="application/pdf",
+        max_age=0,
+        last_modified=now,
+    )

@@ -13,11 +13,14 @@ from flask_login import current_user, login_required
 from app import controllers as c, schema as s, models as m, forms as f, db, pagarme_client
 from app.logger import log
 from app import mail_controller
+from test_flask.assets.pagarme.webhook_response import WEBHOOK_RESPONSE
 
 from config import config
 
 
 CFG = config()
+DEVELOPMENT_BASE_URL = os.environ.get("SERVER_NAME")
+LOCAL_WEBHOOK_URL = f"http://{DEVELOPMENT_BASE_URL}/pay/webhook"
 
 chat_buy_blueprint = Blueprint("buy", __name__, url_prefix="/buy")
 
@@ -266,14 +269,14 @@ def get_tickets():
         event_date_time = tickets[0].event.date_time if tickets[0].event.date_time else datetime.now()
         event_time = event_date_time.strftime(app.config["DATE_CHAT_HISTORY_FORMAT"])
         c.save_message(
-            "Sure! When are you planning to attend? Please specify the date and time.",
+            "Sure! Please, choose available options:",
             f"{tickets[0].event.name}, {event_time}",
             room,
         )
 
     if params.tickets_show_all:
         c.save_message(
-            f"Great news! We have found {len(tickets)} available tickets",
+            f"Great news! We have found {len(tickets)} available options",
             "All tickets",
             room,
         )
@@ -434,7 +437,7 @@ def payment():
         )
 
     c.save_message(
-        f"Awesome! The cost for ticket is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        f"Awesome! The cost for ticket(s) is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
         "Payment",
         room,
     )
@@ -488,11 +491,23 @@ def payment():
     response_dict = json.loads(resp.json())
     qr_code_url = response_dict["charges"][0]["last_transaction"]["qr_code_url"]
     qr_to_copy = response_dict["charges"][0]["last_transaction"]["qr_code"]
-    response = requests.get(qr_code_url)
-    assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
-    qr = response.content
-    qr_url = response.url
+    if os.environ.get("APP_ENV") == "testing":
+        with open("test_flask/assets/pagarme/qr.png", "rb") as qr_file:
+            qr = qr_file.read()
+            qr_url = "https://api.pagar.me/core/v5/transactions/tran_236wYQRSPUnBwb08/qrcode?payment_method=pix"
+    else:
+        response = requests.get(qr_code_url)
+        assert response.status_code == 200, f"Failed to retrieve QR code image. Status code: {response.status_code}"
+        qr = response.content
+        qr_url = response.url
     qr_base64 = base64.b64encode(qr).decode()
+
+    if os.environ.get("APP_ENV") == "development":
+        webhook_response = s.PagarmePaidWebhook.model_validate(WEBHOOK_RESPONSE)
+        webhook_response.data.customer.code = current_user.uuid
+        webhook_response.data.items[0].description = total_prices.unique_ids
+        testing_webhook = requests.post(LOCAL_WEBHOOK_URL, json=webhook_response.model_dump())
+        log(log.INFO, f"Testing webhook response: {testing_webhook.status_code}")
 
     return render_template(
         "chat/buy/payment.html",
