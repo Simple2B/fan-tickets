@@ -9,10 +9,10 @@ from psycopg2 import IntegrityError
 from flask import request, Blueprint, render_template, current_app as app, url_for
 from flask_login import current_user, login_required
 
-
 from app import controllers as c, schema as s, models as m, forms as f, db, pagarme_client
 from app.logger import log
 from app import mail_controller
+from app.controllers.jinja_globals import transactions_last_month
 from test_flask.assets.pagarme.webhook_response import WEBHOOK_RESPONSE
 
 from config import config
@@ -346,6 +346,20 @@ def booking_ticket():
             now=c.utcnow_chat_format(),
             user_unique_id=current_user.uuid,
             form=form,
+        )
+
+    transactions_last_month_number = transactions_last_month(current_user)
+    if transactions_last_month_number > 6:
+        c.save_message(
+            "Unfortunately in order to avoid frauds we have to limit transactions. You can't perform more than 6 per month.",
+            f"Transactions last month: {transactions_last_month_number}",
+            room,
+        )
+        return render_template(
+            "chat/buy/transactions_limit.html",
+            error_message="You have reached the limit of 6 transactions per month",
+            now=c.utcnow_chat_format(),
+            room=room,
         )
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room)

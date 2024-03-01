@@ -4,8 +4,8 @@ from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
 from app.controllers.jinja_globals import transactions_last_month
-from app.models.utils import utcnow
 from test_flask.utils import login, logout
+from .db import get_testing_tickets
 
 
 def test_chat_window(client: FlaskClient):
@@ -288,36 +288,7 @@ def test_transactions_limit(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    location = m.Location(
-        name="Testing Location",
-    ).save()
-    category = m.Category(
-        name="Testing Category",
-    ).save()
-
-    testing_tickets = []
-    for i in range(10):
-        event = m.Event(
-            name=f"Testing Event {i}",
-            url="https://testing.com",
-            observations="Testing observations",
-            warning="don't forget to bring your ID",
-            location_id=location.id,
-            venue="Testing venue",
-            category_id=category.id,
-            creator_id=user.id,
-            date_time=utcnow() - timedelta(days=i * 5),
-            approved=True,
-        ).save()
-
-        ticket = m.Ticket(
-            event=event,
-            seller_id=user.id,
-            price_net=100,
-            is_sold=True,
-            last_reservation_time=event.date_time + timedelta(days=1),
-        ).save()
-        testing_tickets.append(ticket)
+    testing_tickets = get_testing_tickets(user)
 
     assert len(testing_tickets) == 10
 

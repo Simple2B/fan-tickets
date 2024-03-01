@@ -12,6 +12,7 @@ def individual(user_uuid: str):
     user: m.User = db.session.scalar(user_query)
     if not user:
         abort(404)
+
     form = f.FeeSettingsForm()
 
     if request.method == "GET":
@@ -51,6 +52,8 @@ def general():
     if request.method == "GET":
         form.service_fee.data = global_fee_settings.service_fee
         form.bank_fee.data = global_fee_settings.bank_fee
+        # form.selling_limit.data = global_fee_settings.selling_limit
+        # form.buying_limit.data = global_fee_settings.buying_limit
         log(
             log.INFO,
             f"General service_fee: {form.service_fee.data}, bank_fee: {form.bank_fee.data}",

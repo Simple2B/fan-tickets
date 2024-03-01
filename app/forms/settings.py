@@ -18,6 +18,8 @@ class FeeSettingsForm(FlaskForm):
 
     service_fee = IntegerField("service_fee", validators=[Optional()])
     bank_fee = IntegerField("bank_fee", validators=[Optional()])
+    selling_limit = IntegerField("selling_limit", validators=[Optional()])
+    buying_limit = IntegerField("buying_limit", validators=[Optional()])
 
     tickets_sorting_by = SelectField("tickets_sorting_by", choices=[], validators=[Optional()])
     submit = SubmitField("Save")
