@@ -136,7 +136,6 @@ def create_app(environment="development") -> Flask:
         cut_seconds,
         card_mask,
         get_categories,
-        get_chat_room_messages,
         get_chatbot_id,
         round_to_two_places,
         event_form_date,
@@ -144,6 +143,7 @@ def create_app(environment="development") -> Flask:
         get_paired_wallet_id,
         get_price_gross,
         transactions_last_month,
+        get_room_messages,
     )
 
     def get_current_user_notifications():
@@ -162,12 +162,12 @@ def create_app(environment="development") -> Flask:
     app.jinja_env.globals["cut_seconds"] = cut_seconds
     app.jinja_env.globals["card_mask"] = card_mask
     app.jinja_env.globals["get_categories"] = get_categories
-    app.jinja_env.globals["get_chat_room_messages"] = get_chat_room_messages
     app.jinja_env.globals["get_chatbot_id"] = get_chatbot_id
     app.jinja_env.globals["round_to_two_places"] = round_to_two_places
     app.jinja_env.globals["get_ticket_subsequential_number"] = get_ticket_subsequential_number
     app.jinja_env.globals["get_current_user_notifications"] = get_current_user_notifications
-    app.jinja_env.globals["get_room_messages"] = lambda room: db.session.scalars(room.messages.select())
+    # app.jinja_env.globals["get_room_messages"] = lambda room: db.session.scalars(room.messages.select())
+    app.jinja_env.globals["get_room_messages"] = get_room_messages
     app.jinja_env.globals["get_paired_wallet_id"] = get_paired_wallet_id
     app.jinja_env.globals["get_price_gross"] = get_price_gross
     app.jinja_env.globals["transactions_last_month"] = transactions_last_month

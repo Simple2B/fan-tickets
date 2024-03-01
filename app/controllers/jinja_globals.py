@@ -44,17 +44,6 @@ def get_categories() -> list[m.Category]:
     return m.Category.all()
 
 
-def get_chat_room_messages():
-    if not current_user.is_authenticated:
-        return None
-
-    room = db.session.scalar(sa.select(m.Room).where(m.Room.seller_id == current_user.id))
-    if not room:
-        return None
-
-    return db.session.scalars(room.messages.select())
-
-
 def get_chatbot_id():
     return app.config.get("CHAT_DEFAULT_BOT_ID")
 
@@ -107,3 +96,10 @@ def transactions_last_month(user: m.User) -> int:
     tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
 
     return len(tickets)
+
+
+def get_room_messages(room: m.Room) -> list[m.Message]:
+    message_query = room.messages.select().order_by(m.Message.created_at)
+    messages: list[m.Message] = db.session.scalars(message_query).all()
+
+    return messages

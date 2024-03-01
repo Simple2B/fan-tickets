@@ -12,6 +12,7 @@ from app.controllers.chat_sell import (
     parse_time_with_bard,
     create_event_date_time,
 )
+from app.controllers.jinja_globals import get_room_messages
 from .db import get_testing_tickets
 
 
@@ -166,3 +167,28 @@ def test_seller_over_transactions_limit(client_with_data: FlaskClient):
     response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
     assert response.status_code == 200
     assert b"You have reached the limit of 6 transactions per month" in response.data
+
+
+def test_chat_history(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    room = m.Room(
+        seller_id=user.id,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+
+    TESTING_MESSAGES_NUMBER = 5
+    message_list = []
+    for i in range(TESTING_MESSAGES_NUMBER):
+        message = m.Message(
+            room_id=room.id,
+            sender_id=user.id,
+            text=f"Test message {i}",
+        ).save()
+        message_list.append(message)
+
+    assert len(message_list) == TESTING_MESSAGES_NUMBER
+
+    messages = get_room_messages(room)
+    assert messages[0].text == message_list[0].text
