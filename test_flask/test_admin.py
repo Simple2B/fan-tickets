@@ -12,6 +12,8 @@ CFG = config()
 TEST_SERVICE_FEE = 7
 TEST_BANK_FEE = 8
 TEST_SORTING_TYPE = "category"
+SELLING_LIMIT = 7
+BUYING_LIMIT = 7
 
 
 def test_picture_upload(client: FlaskClient):
@@ -130,7 +132,13 @@ def test_global_fee_settings(client_with_data: FlaskClient):
 
     post_response = client_with_data.post(
         "/admin/settings/general",
-        data={"service_fee": TEST_SERVICE_FEE, "bank_fee": TEST_BANK_FEE, "tickets_sorting_by": TEST_SORTING_TYPE},
+        data={
+            "service_fee": TEST_SERVICE_FEE,
+            "bank_fee": TEST_BANK_FEE,
+            "tickets_sorting_by": TEST_SORTING_TYPE,
+            "selling_limit": SELLING_LIMIT,
+            "buying_limit": BUYING_LIMIT,
+        },
         follow_redirects=True,
     )
     assert post_response.status_code == 200

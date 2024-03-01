@@ -22,6 +22,8 @@ class GlobalFeeSettings(db.Model, ModelMixin):
         default=TicketsSortingType.cheapest.value,
         server_default=TicketsSortingType.cheapest.value,
     )
+    selling_limit: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=5, server_default="5")
+    buying_limit: orm.Mapped[int] = orm.mapped_column(sa.Integer, default=3, server_default="3")
 
     def __repr__(self):
         return f"<GlobalFeeSettings: service_fee:{self.service_fee}, bank_fee:{self.bank_fee}, sorting:{self.tickets_sorting_by}>"

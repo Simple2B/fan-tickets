@@ -43,6 +43,26 @@
                     </td>
                 </tr>
 
+                <tr class="border-b bg-black border-gray-700 hover: hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">{{ form.selling_limit.label() }}</div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+                        {{ form.selling_limit(class="w-full max-w-2xl bg-black border-0 rounded-lg
+                        focus:ring-secondary") }}
+                    </td>
+                </tr>
+
+                <tr class="border-b bg-black border-gray-700 hover: hover:bg-gray-600">
+                    <td class="w-4 p-4">
+                        <div class="flex items-center">{{ form.buying_limit.label() }}</div>
+                    </td>
+                    <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+                        {{ form.buying_limit(class="w-full max-w-2xl bg-black border-0 rounded-lg
+                        focus:ring-secondary") }}
+                    </td>
+                </tr>
+
                 <tr class="border-b bg-black border-gray-700">
                     <td class="w-4 p-4">
                         <div class="flex items-center"></div>

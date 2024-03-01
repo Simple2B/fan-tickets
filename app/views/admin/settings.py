@@ -52,8 +52,8 @@ def general():
     if request.method == "GET":
         form.service_fee.data = global_fee_settings.service_fee
         form.bank_fee.data = global_fee_settings.bank_fee
-        # form.selling_limit.data = global_fee_settings.selling_limit
-        # form.buying_limit.data = global_fee_settings.buying_limit
+        form.selling_limit.data = global_fee_settings.selling_limit
+        form.buying_limit.data = global_fee_settings.buying_limit
         log(
             log.INFO,
             f"General service_fee: {form.service_fee.data}, bank_fee: {form.bank_fee.data}",
@@ -64,6 +64,8 @@ def general():
         global_fee_settings.service_fee = form.service_fee.data
         global_fee_settings.bank_fee = form.bank_fee.data
         global_fee_settings.tickets_sorting_by = form.tickets_sorting_by.data
+        global_fee_settings.selling_limit = form.selling_limit.data
+        global_fee_settings.buying_limit = form.buying_limit.data
         global_fee_settings.save()
         log(log.INFO, "Global fee settings updated")
         flash("Global fee settings updated")
