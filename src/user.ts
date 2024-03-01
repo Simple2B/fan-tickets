@@ -130,11 +130,16 @@ if (eventImageUploadInput) {
   eventImageUploadInput.addEventListener('change', function (e: Event) {
     const target = e.target as HTMLInputElement;
     const files = target.files;
+
     if (files && files.length > 0) {
+      console.log('files inside if', files);
+
       const file = files[0];
       const instance = 'event';
       const uniqueIdInput: HTMLInputElement =
         document.querySelector('#event-unique-id');
+      console.log('uniqueIdInput', uniqueIdInput.value);
+
       handleImageUpload(file, instance, uniqueIdInput.value);
     }
   });
@@ -150,15 +155,15 @@ function handleImageUpload(file: File, instance: string, uniqueId?: string) {
 
   const reader = new FileReader();
   reader.onload = function (e) {
-    fetch('/user/logo-upload', {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => console.log('response', response))
-      .then(() => window.location.reload())
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    // fetch('/user/logo-upload', {
+    //   method: 'POST',
+    //   body: formData,
+    // })
+    //   .then(response => console.log('response', response))
+    //   .then(() => window.location.reload())
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //   });
   };
   reader.readAsDataURL(file);
 }
