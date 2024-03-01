@@ -77,8 +77,15 @@
             </button>
           </li>
           <li>
+            {% if current_user.role == 'admin' %}
             <a class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
-              href="#">Vender ingresso</a>
+              href="{{ url_for('admin.admin') }}">Vender ingresso</a>
+            {% else %}
+            <button type='button' hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
+              hx-trigger="click" id="chat-start-buy"
+              class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300 cursor-pointer">Vender
+              ingresso</button>
+            {% endif %}
           </li>
         </ul>
         <!-- prettier-ignore -->
@@ -98,7 +105,7 @@
           </li>
           <li>
             <a class="link ml-4 px-4 py-2 text-secondary border-2 rounded-xl border-current transition-colors duration-300"
-              href="#">Vender ingresso</a>
+              href="{{ url_for('auth.login') }}">Vender ingresso</a>
           </li>
         </ul>
         {% endif %}
