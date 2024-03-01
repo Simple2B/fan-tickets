@@ -6,6 +6,8 @@ from app import controllers as c
 from app import forms as f
 from app import models as m, db
 from app.logger import log
+from app.controllers.jinja_globals import transactions_last_month
+
 from config import config
 
 CFG = config()
@@ -19,6 +21,15 @@ def get_event_category():
     params = c.validate_event_sell_params(request.args)
 
     room = c.get_room(params.room_unique_id)
+
+    global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    if transactions_last_month(current_user) > global_fee_settings.selling_limit:
+        return render_template(
+            "chat/buy/transactions_limit.html",
+            error_message="You have reached the limit of 6 transactions per month",
+            now=c.utcnow_chat_format(),
+            room=room,
+        )
 
     category_name = db.session.scalar(
         m.Category.select()

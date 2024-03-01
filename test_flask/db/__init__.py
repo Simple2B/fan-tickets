@@ -221,3 +221,37 @@ def populate(count: int = NUM_TEST_USERS):
     generate_test_events()
     set_users_images()
     set_users_identity_documents()
+
+
+def get_testing_tickets(user: m.User) -> list[m.Ticket]:
+    location = m.Location(
+        name="Testing Location",
+    ).save()
+    category = m.Category(
+        name="Testing Category",
+    ).save()
+
+    testing_tickets = []
+    for i in range(10):
+        event = m.Event(
+            name=f"Testing Event {i}",
+            url="https://testing.com",
+            observations="Testing observations",
+            warning="don't forget to bring your ID",
+            location_id=location.id,
+            venue="Testing venue",
+            category_id=category.id,
+            creator_id=user.id,
+            date_time=utcnow() - timedelta(days=i * 5),
+            approved=True,
+        ).save()
+
+        ticket = m.Ticket(
+            event=event,
+            seller_id=user.id,
+            price_net=100,
+            is_sold=True,
+            last_reservation_time=event.date_time + timedelta(days=1),
+        ).save()
+        testing_tickets.append(ticket)
+    return testing_tickets

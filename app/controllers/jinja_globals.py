@@ -1,9 +1,7 @@
 import os
 import pytz
-from datetime import datetime
-
+from datetime import datetime, timedelta
 import sqlalchemy as sa
-
 from flask import current_app as app
 from flask_wtf import FlaskForm
 from flask_login import current_user
@@ -95,3 +93,17 @@ def get_price_gross(ticket: m.Ticket) -> int:
     price_gross = int(round(price_net * total_commission))
 
     return price_gross
+
+
+def transactions_last_month(user: m.User) -> int:
+    """
+    The function to get last month transactions number.
+    """
+    tickets_query = sa.select(m.Ticket).where(
+        sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
+        m.Ticket.is_sold.is_(True),
+        m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30),
+    )
+    tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+
+    return len(tickets)
