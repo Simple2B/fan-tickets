@@ -349,7 +349,8 @@ def booking_ticket():
         )
 
     transactions_last_month_number = transactions_last_month(current_user)
-    if transactions_last_month_number > 6:
+    global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    if transactions_last_month_number > global_fee_settings.buying_limit:
         c.save_message(
             "Unfortunately in order to avoid frauds we have to limit transactions. You can't perform more than 6 per month.",
             f"Transactions last month: {transactions_last_month_number}",

@@ -22,7 +22,8 @@ def get_event_category():
 
     room = c.get_room(params.room_unique_id)
 
-    if transactions_last_month(current_user) > 6:
+    global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    if transactions_last_month(current_user) > global_fee_settings.selling_limit:
         return render_template(
             "chat/buy/transactions_limit.html",
             error_message="You have reached the limit of 6 transactions per month",
