@@ -36,14 +36,19 @@ export function resizeChat() {
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');
   const chatWindow: HTMLElement = document.querySelector('#chat-window');
-
-  if (!header || !chatWindow) return;
-
+  const screenWith: number = window.innerWidth;
   const headerBottom: number = header.offsetTop + header.offsetHeight;
   const chatWindowTop: number = chatWindow.offsetTop;
   const fixedMinDistance: number = 220;
   const maxChatWindowHeight: number = 650;
   const availableSpace: number = chatWindowTop - headerBottom;
+
+  if (screenWith < 640) {
+    chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
+    return;
+  }
+
+  if (!header || !chatWindow) return;
 
   if (availableSpace < fixedMinDistance) {
     chatWindow.style.height = `calc(100vh - ${fixedMinDistance}px)`;

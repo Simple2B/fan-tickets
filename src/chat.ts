@@ -4,6 +4,10 @@ import * as htmx from 'htmx.org';
 const timeTyping = 1500;
 export let chatWindow: HTMLDivElement;
 export let chatMessageContainer: HTMLDivElement;
+export let chatIcon: HTMLDivElement;
+export let chatMain: HTMLDivElement;
+export let chatFooter: HTMLDivElement;
+export let chatBody: HTMLDivElement;
 
 let roomUuidInput: HTMLInputElement;
 let messageSendUrl: string;
@@ -20,6 +24,7 @@ export function setMessageSendUrl(url: string) {
 export function toggleChatWindow() {
   chatWindow.classList.toggle('chat-window-close');
   chatWindow.classList.toggle('chat-window-open');
+  chatIcon.classList.toggle('hidden');
 }
 
 export let sendMessage = async () => {};
@@ -27,11 +32,13 @@ export let sendMessage = async () => {};
 function closeChatWindow() {
   chatWindow.classList.remove('chat-window-open');
   chatWindow.classList.add('chat-window-close');
+  chatIcon.classList.remove('hidden');
 }
 
 export function openChatWindow() {
   chatWindow.classList.remove('chat-window-close');
   chatWindow.classList.add('chat-window-open');
+  chatIcon.classList.add('hidden');
 }
 
 export function createChatWindow() {
@@ -55,6 +62,10 @@ export async function showMessage() {
     const message = chatMessages[index];
     await showSpinnerAndMessage(message, chatSpinner);
   }
+}
+
+export function setChatMainHeight(chatMainElement: HTMLDivElement) {
+  chatMainElement.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
 }
 
 async function showSpinnerAndMessage(
@@ -83,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatCloseButton = document.querySelector(
     '#chat-close-button',
   ) as HTMLButtonElement;
-  const chatMain = document.getElementById('chat-main') as HTMLDivElement;
   const chatHeaderTitle = document.getElementById(
     'chat-header-title',
   ) as HTMLSpanElement;
@@ -97,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const csrfTokenInput = document.getElementById(
     'csrf_token',
   ) as HTMLInputElement;
+  const chatStartBuy = document.getElementById(
+    'chat-start-buy',
+  ) as HTMLButtonElement;
 
   let csrfToken = '';
 
@@ -109,7 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ) as HTMLInputElement;
 
   chatWindow = document.querySelector('#chat-window') as HTMLDivElement;
+  chatMain = document.getElementById('chat-main') as HTMLDivElement;
+  chatIcon = document.querySelector('#chat-icon') as HTMLDivElement;
   chatMessageContainer = document.querySelector('#chat-message-container');
+  chatFooter = document.querySelector('#chat-footer');
+  chatBody = document.querySelector('#chat-body');
 
   // Handlers
   if (chatMessageContainer.hasAttribute('data-send-message')) {
@@ -157,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         '.chat-message-input',
       ) as HTMLInputElement;
       messageInput.focus();
+    }
+    if (targetElement.querySelector('#chat-main')) {
+      setChatMainHeight(targetElement.querySelector('#chat-main'));
     }
     if (targetElement.querySelector('#chat-close')) {
       toggleChatWindow();
@@ -206,6 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatIconButton) {
     chatIconButton.addEventListener('click', () => {
       toggleChatWindow();
+    });
+  }
+
+  if (chatStartBuy) {
+    chatStartBuy.addEventListener('click', () => {
+      console.log('chatStartBuy');
+
+      openChatWindow();
     });
   }
 });

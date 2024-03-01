@@ -8,8 +8,6 @@ document.addEventListener('htmx:load', e => {
   const target = e.target as HTMLDivElement;
 
   if (target.classList.contains('notification-item')) {
-    console.log('notification-item loaded');
-
     // Update notifications unread count
     htmx.trigger(
       '#unread-notifications-count',
