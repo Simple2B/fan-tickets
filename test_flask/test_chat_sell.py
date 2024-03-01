@@ -12,6 +12,7 @@ from app.controllers.chat_sell import (
     parse_time_with_bard,
     create_event_date_time,
 )
+from .db import get_testing_tickets
 
 
 @pytest.mark.skipif(True, reason="no Bard API key provided")
@@ -137,3 +138,31 @@ def test_get_ticket_price(client_with_data: FlaskClient):
     )
     assert response.status_code == 200
     assert ticket.price_net == TEST_PRICE_NET
+
+
+def test_get_event_category(client_with_data: FlaskClient):
+    login(client_with_data)
+
+    room = m.Room(
+        seller_id=current_user.id,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
+    assert response.status_code == 200
+    assert b"Great! Please provide official event name" in response.data
+
+
+def test_seller_over_transactions_limit(client_with_data: FlaskClient):
+    login(client_with_data)
+    user: m.User = current_user
+
+    room = m.Room(
+        seller_id=user.id,
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+
+    get_testing_tickets(user)
+
+    response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
+    assert response.status_code == 200
+    assert b"You have reached the limit of 6 transactions per month" in response.data

@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app as app
 from flask.testing import FlaskClient
 from flask_login import current_user
 from app import models as m, db
+from app.controllers.jinja_globals import transactions_last_month
 from test_flask.utils import login, logout
+from .db import get_testing_tickets
 
 
 def test_chat_window(client: FlaskClient):
@@ -280,3 +282,25 @@ def test_chat_home(client: FlaskClient):
     response = client.get(f"/chat/home?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert "Are you looking to buy or sell a ticket?" in response.data.decode()
+
+
+def test_transactions_limit(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    testing_tickets = get_testing_tickets(user)
+
+    assert len(testing_tickets) == 10
+
+    last_month_tickets_query = m.Ticket.select().where(
+        m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30)
+    )
+    last_month_tickets: list[m.Ticket] = db.session.scalars(last_month_tickets_query).all()
+    assert last_month_tickets
+
+    users_transactions_last_month = transactions_last_month(user)
+    assert users_transactions_last_month == len(last_month_tickets)
+
+    response = client.get("/chat/sell")
+    assert response.status_code == 200
+    # TODO: if more than 6 transactions, show an error message

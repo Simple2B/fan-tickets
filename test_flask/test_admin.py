@@ -11,6 +11,9 @@ from test_flask.utils import login
 CFG = config()
 TEST_SERVICE_FEE = 7
 TEST_BANK_FEE = 8
+TEST_SORTING_TYPE = "category"
+SELLING_LIMIT = 7
+BUYING_LIMIT = 7
 
 
 def test_picture_upload(client: FlaskClient):
@@ -125,16 +128,23 @@ def test_global_fee_settings(client_with_data: FlaskClient):
 
     get_response = client_with_data.get("/admin/settings/general")
     assert get_response.status_code == 200
-    assert b"Global fee settings" in get_response.data
+    assert b"Global settings" in get_response.data
 
     post_response = client_with_data.post(
         "/admin/settings/general",
-        data={"service_fee": TEST_SERVICE_FEE, "bank_fee": TEST_BANK_FEE},
+        data={
+            "service_fee": TEST_SERVICE_FEE,
+            "bank_fee": TEST_BANK_FEE,
+            "tickets_sorting_by": TEST_SORTING_TYPE,
+            "selling_limit": SELLING_LIMIT,
+            "buying_limit": BUYING_LIMIT,
+        },
         follow_redirects=True,
     )
     assert post_response.status_code == 200
-    assert b"Global fee settings" in post_response.data
+    assert b"Global settings" in post_response.data
 
     global_fee_settings = db.session.scalar(m.GlobalFeeSettings.select())
     assert global_fee_settings.service_fee == TEST_SERVICE_FEE
     assert global_fee_settings.bank_fee == TEST_BANK_FEE
+    assert global_fee_settings.tickets_sorting_by == TEST_SORTING_TYPE

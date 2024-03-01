@@ -5,7 +5,7 @@ from flask_login import current_user
 from test_flask.utils import login
 from app import models as m, db, schema as s, mail_controller
 from .db import populate
-from app.controllers.chat_buy import get_cheapest_tickets, calculate_total_price
+from app.controllers.chat_buy import get_sorted_tickets, calculate_total_price
 
 
 def get_available_ticket(db: Alchemical):
@@ -190,12 +190,36 @@ def test_booking_paired_tickets(client: FlaskClient):
 def test_get_cheapest_ticket(client_with_data: FlaskClient):
     tickets_query = m.Ticket.select().limit(5)
     tickets = db.session.scalars(tickets_query).all()
-    room = m.Room(
-        seller_id=None,
-        buyer_id=2,
-    ).save()
-    tickets = get_cheapest_tickets(tickets, room, True, True)
-    assert tickets
+
+    global_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    result = get_sorted_tickets(tickets, True, global_settings.tickets_sorting_by)
+    assert result
+
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0)
+    assert result == tickets
+
+
+def test_get_most_expensive_ticket(client_with_data: FlaskClient):
+    tickets_query = m.Ticket.select().limit(5)
+    tickets = db.session.scalars(tickets_query).all()
+
+    TEST_SORTING_TYPE = m.TicketsSortingType.most_expensive.value
+    result = get_sorted_tickets(tickets, True, TEST_SORTING_TYPE)
+    assert result
+
+    tickets = sorted(tickets, key=lambda ticket: ticket.price_net if ticket.price_net else 0, reverse=True)
+    assert result == tickets
+
+
+def test_sort_tickets_by_categories(client_with_data: FlaskClient):
+    # tickets_query = m.Ticket.select().where(m.Ticket.event.has(m.Event.location.has(m.Location.name == "São Paulo")))
+    tickets_query = m.Ticket.select().limit(30)
+    tickets = db.session.scalars(tickets_query).all()
+    categories = set(ticket.event.category.name for ticket in tickets)
+
+    TEST_SORTING_TYPE = m.TicketsSortingType.category.value
+    result = get_sorted_tickets(tickets, True, TEST_SORTING_TYPE)
+    assert len(result) == len(categories)
 
 
 def test_fee_adjustment(client: FlaskClient):
