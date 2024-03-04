@@ -284,13 +284,14 @@ def test_chat_home(client: FlaskClient):
     assert "Are you looking to buy or sell a ticket?" in response.data.decode()
 
 
-def test_transactions_limit(client: FlaskClient):
+def test_transactions_limit_per_user(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
+    TESTING_TICKETS_NUMBER = 10
     testing_tickets = get_testing_tickets(user)
 
-    assert len(testing_tickets) == 10
+    assert len(testing_tickets) == TESTING_TICKETS_NUMBER
 
     last_month_tickets_query = m.Ticket.select().where(
         m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30)
@@ -301,6 +302,13 @@ def test_transactions_limit(client: FlaskClient):
     users_transactions_last_month = transactions_last_month(user)
     assert users_transactions_last_month == len(last_month_tickets)
 
-    response = client.get("/chat/sell")
+    m.GlobalFeeSettings().save()
+
+    room = m.Room(
+        seller_id=user.id,
+        buyer_id=2,
+    ).save()
+
+    response = client.get(f"/sell/get_event_category?room_unique_id={room.unique_id}")
     assert response.status_code == 200
-    # TODO: if more than 6 transactions, show an error message
+    assert b"You have reached the limit of 6 transactions per month" in response.data
