@@ -284,14 +284,25 @@ def test_chat_home(client: FlaskClient):
     assert "Are you looking to buy or sell a ticket?" in response.data.decode()
 
 
+def test_get_testing_tickets(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    TESTING_EVENTS_NUMBER = 2
+    TESTING_TICKETS_NUMBER = 3
+    testing_tickets = get_testing_tickets(user, TESTING_EVENTS_NUMBER, TESTING_TICKETS_NUMBER)
+
+    assert len(testing_tickets) == TESTING_TICKETS_NUMBER * TESTING_EVENTS_NUMBER
+
+    events: list[m.Event] = db.session.scalars(m.Event.select()).all()
+    assert len(events) == TESTING_EVENTS_NUMBER
+
+
 def test_transactions_limit_per_user(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    TESTING_TICKETS_NUMBER = 10
-    testing_tickets = get_testing_tickets(user)
-
-    assert len(testing_tickets) == TESTING_TICKETS_NUMBER
+    get_testing_tickets(user)
 
     last_month_tickets_query = m.Ticket.select().where(
         m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30)
@@ -312,3 +323,26 @@ def test_transactions_limit_per_user(client: FlaskClient):
     response = client.get(f"/sell/get_event_category?room_unique_id={room.unique_id}")
     assert response.status_code == 200
     assert b"You have reached the limit of 6 transactions per month" in response.data
+
+
+def test_transactions_per_event(client: FlaskClient):
+    login(client)
+    user: m.User = current_user
+
+    TESTING_EVENTS_NUMBER = 1
+    TESTING_TICKETS_NUMBER = 3
+    testing_tickets = get_testing_tickets(user, TESTING_EVENTS_NUMBER, TESTING_TICKETS_NUMBER)
+
+    assert len(testing_tickets) == TESTING_TICKETS_NUMBER
+
+    m.GlobalFeeSettings(limit_per_event=2).save()
+
+    room = m.Room(
+        seller_id=user.id,
+        buyer_id=2,
+    ).save()
+
+    ticket = testing_tickets[0]
+    response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket.unique_id}")
+    assert response.status_code == 200
+    assert b"You have reached the limit of tickets for this event" in response.data

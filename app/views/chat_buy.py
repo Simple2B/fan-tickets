@@ -351,6 +351,7 @@ def booking_ticket():
     transactions_last_month_number = transactions_last_month(current_user)
     global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
     if transactions_last_month_number > global_fee_settings.buying_limit:
+        log(log.ERROR, "Transactions limit reached: [%s]", transactions_last_month_number)
         c.save_message(
             "Unfortunately in order to avoid frauds we have to limit transactions. You can't perform more than 6 per month.",
             f"Transactions last month: {transactions_last_month_number}",
@@ -368,7 +369,7 @@ def booking_ticket():
     if isinstance(ticket, s.BookTicketError):
         log(log.ERROR, "Booking ticket error: [%s]", ticket.error_message)
         return render_template(
-            "chat/buy/get_event_name.html",
+            "chat/buy/transactions_limit.html",
             error_message=ticket.error_message,
             room=room,
             now=c.utcnow_chat_format(),
