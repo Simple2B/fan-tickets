@@ -14,7 +14,7 @@ from app import forms as f
 from app import models as m, db
 from app.logger import log
 from app import mail_controller
-
+from app.controllers.jinja_globals import transactions_last_month
 from config import config
 
 CFG = config()
@@ -188,6 +188,16 @@ def sell():
             now=c.utcnow_chat_format(),
             user_unique_id=current_user.uuid,
         )
+
+    if current_user.is_authenticated:
+        global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+        if transactions_last_month(current_user) > global_fee_settings.selling_limit:
+            return render_template(
+                "chat/buy/transactions_limit.html",
+                error_message="You have reached the limit of 6 transactions per month",
+                now=c.utcnow_chat_format(),
+                room=room,
+            )
 
     return render_template(
         template,

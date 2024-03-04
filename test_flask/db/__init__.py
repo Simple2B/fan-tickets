@@ -223,7 +223,7 @@ def populate(count: int = NUM_TEST_USERS):
     set_users_identity_documents()
 
 
-def get_testing_tickets(user: m.User) -> list[m.Ticket]:
+def get_testing_tickets(user: m.User, events_number: int = 10, tickets_per_event: int = 1) -> list[m.Ticket]:
     location = m.Location(
         name="Testing Location",
     ).save()
@@ -232,7 +232,7 @@ def get_testing_tickets(user: m.User) -> list[m.Ticket]:
     ).save()
 
     testing_tickets = []
-    for i in range(10):
+    for i in range(events_number):
         event = m.Event(
             name=f"Testing Event {i}",
             url="https://testing.com",
@@ -246,12 +246,16 @@ def get_testing_tickets(user: m.User) -> list[m.Ticket]:
             approved=True,
         ).save()
 
-        ticket = m.Ticket(
-            event=event,
-            seller_id=user.id,
-            price_net=100,
-            is_sold=True,
-            last_reservation_time=event.date_time + timedelta(days=1),
-        ).save()
-        testing_tickets.append(ticket)
+        for i in range(tickets_per_event):
+            ticket = m.Ticket(
+                event=event,
+                seller_id=user.id,
+                price_net=100,
+                section=f"Section {i}",
+                queue=f"Queue {i}",
+                seat=f"Seat {i}",
+                is_sold=True,
+                last_reservation_time=event.date_time + timedelta(days=1),
+            ).save()
+            testing_tickets.append(ticket)
     return testing_tickets

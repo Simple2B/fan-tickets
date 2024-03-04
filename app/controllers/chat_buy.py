@@ -94,7 +94,12 @@ def get_sorted_tickets(
     return tickets
 
 
-def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket | s.BookTicketError:
+def book_ticket(
+    ticket_unique_id: str,
+    user: m.User,
+    room: m.Room,
+    limit_per_event: int,
+) -> m.Ticket | s.BookTicketError:
     ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket_unique_id)
     ticket = db.session.scalar(ticket_query)
 
@@ -103,7 +108,7 @@ def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket |
         m.Ticket.event_id == ticket.event_id,
     )
     tickets_per_event = db.session.scalars(tickets_per_event_query).all()
-    if len(tickets_per_event) > 2:
+    if len(tickets_per_event) > limit_per_event:
         log(log.INFO, "Transactions per event limit reached: [%s]", ticket.event.name)
         return s.BookTicketError(
             limit_reached=True,
