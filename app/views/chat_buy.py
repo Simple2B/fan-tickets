@@ -365,11 +365,11 @@ def booking_ticket():
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room)
 
-    if not ticket:
-        log(log.ERROR, "Ticket not found: [%s]", params.ticket_unique_id)
+    if isinstance(ticket, s.BookTicketError):
+        log(log.ERROR, "Booking ticket error: [%s]", ticket.error_message)
         return render_template(
             "chat/buy/get_event_name.html",
-            error_message="Something went wrong, please choose event again",
+            error_message=ticket.error_message,
             room=room,
             now=c.utcnow_chat_format(),
         )

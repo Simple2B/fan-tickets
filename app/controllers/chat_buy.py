@@ -7,7 +7,6 @@ from app import controllers as c
 from app import schema as s
 from app import models as m
 from app.database import db
-
 from app.logger import log
 
 
@@ -95,13 +94,28 @@ def get_sorted_tickets(
     return tickets
 
 
-def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket | None:
+def book_ticket(ticket_unique_id: str, user: m.User, room: m.Room) -> m.Ticket | s.BookTicketError:
     ticket_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket_unique_id)
     ticket = db.session.scalar(ticket_query)
 
+    tickets_per_event_query = sa.select(m.Ticket).where(
+        sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
+        m.Ticket.event_id == ticket.event_id,
+    )
+    tickets_per_event = db.session.scalars(tickets_per_event_query).all()
+    if len(tickets_per_event) > 2:
+        log(log.INFO, "Transactions per event limit reached: [%s]", ticket.event.name)
+        return s.BookTicketError(
+            limit_reached=True,
+            error_message="You have reached the limit of tickets for this event",
+        )
+
     if not ticket:
         log(log.INFO, "Ticket not found: [%s]", ticket_unique_id)
-        return None
+        return s.BookTicketError(
+            not_found=True,
+            error_message="Something went wrong, please choose event again",
+        )
 
     previous_tickets_query = sa.select(m.Ticket).where(
         m.Ticket.buyer_id == user.id,

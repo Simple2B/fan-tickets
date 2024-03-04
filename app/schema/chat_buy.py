@@ -39,3 +39,11 @@ class ChatBuyTicketTotalPrice(BaseModel):
     unique_ids: str
 
     model_config = SettingsConfigDict(from_attributes=True)
+
+
+class BookTicketError(BaseModel):
+    # not_found: str | None = "Something went wrong, please choose event again"
+    # limit_reached: str | None = "You have reached the limit of tickets for this event"
+    not_found: bool | None = False
+    limit_reached: bool | None = False
+    error_message: str | None = None

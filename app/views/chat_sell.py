@@ -6,7 +6,7 @@ from app import controllers as c
 from app import forms as f
 from app import models as m, db
 from app.logger import log
-from app.controllers.jinja_globals import transactions_last_month
+from app.controllers.jinja_globals import transactions_last_month, transactions_per_event
 
 from config import config
 
@@ -101,6 +101,18 @@ def event_approve():
 
     if params.event_unique_id:
         event: m.Event = c.get_event_by_uuid(params.event_unique_id, room)
+        if transactions_per_event(current_user, event) >= 2:
+            c.save_message(
+                "Unfortunately in order to avoid frauds we have to limit transactions. You can't perform more than 2 transactions per event.",
+                f"Transactions per event: {transactions_per_event(current_user, event)}",
+                room,
+            )
+            return render_template(
+                "chat/buy/transactions_limit.html",
+                error_message="You have reached the limit of 2 transactions per event",
+                now=c.utcnow_chat_format(),
+                room=room,
+            )
         return render_template(
             "chat/sell/ticket_quantity.html",
             event_name=event.name,

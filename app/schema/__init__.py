@@ -57,7 +57,7 @@ from .chat_auth import (
     ChatAuthEmailValidate,
     ChatAuthPhoneValidate,
 )
-from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice
+from .chat_buy import ChatBuyEventParams, ChatBuyTicketParams, ChatBuyTicketTotalPrice, BookTicketError
 from .chat_sell import ChatSellEventParams, ChatSellTicketParams
 from .room import Room
 from .notification import NotificationNewUserRegistered, NotificationUserActivated

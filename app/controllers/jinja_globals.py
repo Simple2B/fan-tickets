@@ -98,6 +98,19 @@ def transactions_last_month(user: m.User) -> int:
     return len(tickets)
 
 
+def transactions_per_event(user: m.User, event: m.Event) -> int:
+    """
+    The function to get transactions per event.
+    """
+    tickets_query = sa.select(m.Ticket).where(
+        sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
+        m.Ticket.event_id == event.id,
+    )
+    tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+
+    return len(tickets)
+
+
 def get_room_messages(room: m.Room) -> list[m.Message]:
     message_query = room.messages.select().order_by(m.Message.created_at)
     messages: list[m.Message] = db.session.scalars(message_query).all()
