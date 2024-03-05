@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask.testing import FlaskClient, FlaskCliRunner
 from click.testing import Result
 from .db import generate_test_users, generate_test_events
@@ -44,3 +45,14 @@ def test_delete_user(runner: FlaskCliRunner):
     all_users_after = db.session.scalars(m.User.select()).all()
 
     assert len(all_users_before) == len(all_users_after) + 1
+
+
+def test_delete_obsolete_rooms(runner: FlaskCliRunner):
+    TESTING_ROOMS_NUMBER = 5
+    for _ in range(TESTING_ROOMS_NUMBER):
+        room: m.Room = m.Room().save()
+        room.created_at = datetime.now() - timedelta(days=3)
+
+    delete_command_output: Result = runner.invoke(args=["delete-rooms"])
+    assert f"{TESTING_ROOMS_NUMBER} rooms to delete" in delete_command_output.stdout
+    assert "0 rooms left" in delete_command_output.stdout

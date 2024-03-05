@@ -417,18 +417,34 @@ def init_shell_commands(app: Flask):
         else:
             print("No tickets to pay")
 
+    def obsolete_rooms():
+        rooms_query = m.Room.select().where(
+            or_(m.Room.seller_id.is_(None), m.Room.buyer_id.is_(None)),
+            m.Room.created_at < datetime.now() - timedelta(days=2),
+        )
+        rooms: list[m.Room] = db.session.scalars(rooms_query).all()
+        return rooms
+
     @app.cli.command("delete-rooms")
-    def delete_unused_rooms():
+    def delete_rooms():
         """
         Deletes rooms if last message was sent more than 48 hours ago
         """
-        # rooms_query = m.Room.select().where(
-        #     m.Room.messages.any(m.Message.created_at < datetime.now() - timedelta(minutes=2))
-        # )
-        rooms_query = m.Room.select()
-        rooms: list[m.Room] = db.session.scalars(rooms_query).all()
-        print(rooms)
+
+        rooms: list[m.Room] = obsolete_rooms()
         print(len(rooms), "rooms to delete")
+        for room in rooms:
+            messages_query = m.Message.select().where(m.Message.room_id == room.id)
+            messages = db.session.scalars(messages_query).all()
+            for message in messages:
+                db.session.delete(message)
+            print(room, "to delete")
+            db.session.delete(room)
+            db.session.commit()
+
+        rooms_left: list[m.Room] = obsolete_rooms()
+
+        print(len(rooms_left), "rooms left")
 
     @app.cli.command("untransfer")
     @click.option("--email", type=str)

@@ -21,6 +21,15 @@ def delete_tickets_from_cart():
 
 
 @celery.task
+def delete_obsolete_rooms():
+    log(log.INFO, "Periodic task delete_obsolete_rooms started at [%s]", datetime.now())
+    process = subprocess.Popen(["poetry", "run", "flask", "delete-rooms"])
+    process.communicate()
+
+
+# Runs the command that pays to sellers with FT credit card
+# This is a delayed decision by the client. We don't know how this payment stage will be implemented.
+@celery.task
 def pay_to_sellers():
     log(log.INFO, "Periodic task pay_to_sellers started at [%s]", datetime.now())
     process = subprocess.Popen(["poetry", "run", "flask", "pay-sellers"])
@@ -30,14 +39,21 @@ def pay_to_sellers():
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        # timedelta(minutes=CFG.TICKETS_IN_CART_CLEAN_IN),
-        timedelta(minutes=1),
+        timedelta(minutes=CFG.TICKETS_IN_CART_CLEAN_IN),
         delete_tickets_from_cart.s(),
         name="delete tickets from cart",
     )
     sender.add_periodic_task(
-        # timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
-        timedelta(minutes=1),
-        pay_to_sellers.s(),
-        name="pay to sellers",
+        timedelta(minutes=CFG.TICKETS_IN_CART_CLEAN_IN),
+        delete_obsolete_rooms.s(),
+        name="delete obsolete rooms",
     )
+
+    # 2nd stage of payments, when FT pays to sellers
+    # Delayed decision by the client. We don't know how this payment stage will be implemented.
+
+    # sender.add_periodic_task(
+    #     timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
+    #     pay_to_sellers.s(),
+    #     name="pay to sellers",
+    # )
