@@ -135,6 +135,8 @@ def delete(id: int):
         return "no user", 404
 
     user.activated = False
+    user.is_deleted = True
+    user.email = f"{user.email}_deleted_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
     user.save()
     log(log.INFO, "User deleted. User: [%s]", user)
     flash("User deleted!", "success")

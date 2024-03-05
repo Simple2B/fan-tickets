@@ -41,6 +41,6 @@ def test_delete_user(runner: FlaskCliRunner):
     delete_command_output: Result = runner.invoke(args=["delete-user", f"--email={user.email}"])
     assert delete_command_output
 
-    all_users_after = db.session.scalars(m.User.select()).all()
+    all_users_after = db.session.scalars(m.User.select().where(m.User.is_deleted.is_(False))).all()
 
     assert len(all_users_before) == len(all_users_after) + 1
