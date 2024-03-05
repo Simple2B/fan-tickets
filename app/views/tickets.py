@@ -73,3 +73,11 @@ def get_all():
         categories=m.Category.all(),
         locations=m.Location.all(),
     )
+
+
+@tickets_blueprint.route("/<int:ticket_unique_id>")
+def get_ticket(ticket_unique_id: str):
+    ticket_query = m.Ticket.select().where(m.Ticket.id == 1)
+    ticket = db.session.scalar(ticket_query)
+
+    return render_template("tickets/ticket.html", ticket=ticket)

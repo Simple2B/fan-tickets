@@ -397,6 +397,20 @@ def booking_ticket():
     )
 
 
+@chat_buy_blueprint.route("/booking_ticket_from_web", methods=["GET"])
+def booking_ticket_from_web():
+    ticket_unique_id = request.args.get("ticket_unique_id")
+    room = m.Room(
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    return render_template(
+        "chat/buy/booking_ticket_from_web.html",
+        room=room,
+        now=c.utcnow_chat_format(),
+        ticket_unique_id=ticket_unique_id,
+    )
+
+
 @chat_buy_blueprint.route("/payment")
 @login_required
 def payment():
