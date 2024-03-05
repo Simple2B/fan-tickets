@@ -492,6 +492,7 @@ def create_user_email():
             "chat/registration/email.html",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not params.user_message:
@@ -501,6 +502,7 @@ def create_user_email():
             error_message="Field is empty",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     response, user = c.create_email(params.user_message, room)
@@ -512,6 +514,7 @@ def create_user_email():
             room=room,
             now=c.utcnow_chat_format(),
             email_input=response.email,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not user:
@@ -521,6 +524,7 @@ def create_user_email():
             error_message="Form submitting error",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     try:
@@ -534,6 +538,7 @@ def create_user_email():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     mail_controller.send_email(
@@ -550,6 +555,7 @@ def create_user_email():
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=user.uuid,
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -585,6 +591,7 @@ def email_verification():
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
             form=form,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     user = c.get_user(params.user_unique_id)
@@ -606,6 +613,7 @@ def email_verification():
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
             form=form,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     c.save_message("Please confirm your email", "Email confirmed", room)
@@ -616,6 +624,7 @@ def email_verification():
         room=room,
         user_unique_id=user.uuid,
         form=form,
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -645,6 +654,7 @@ def create_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     success = c.create_password(form, room)
@@ -671,6 +681,7 @@ def create_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     return render_template(
@@ -679,6 +690,7 @@ def create_user_password():
         room=room,
         user_unique_id=form.user_unique_id.data,
         form=form,
+        ticket_unique_id=form.ticket_unique_id.data,
     )
 
 
@@ -709,6 +721,7 @@ def confirm_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     result, user = c.confirm_password(form, room)
@@ -723,6 +736,7 @@ def confirm_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     c.save_message("Please confirm your password", "Password has been confirmed", room)
@@ -733,6 +747,7 @@ def confirm_user_password():
         room=room,
         user_unique_id=form.user_unique_id.data,
         form=form_file,
+        ticket_unique_id=form.ticket_unique_id.data,
     )
 
 

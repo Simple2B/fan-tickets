@@ -20,8 +20,12 @@ submit_message_get
   </div>
 </div>
 
+{% if ticket_unique_id %}
+<input type="hidden" name="ticket_unique_id" value="{{ ticket_unique_id }}" />
+{% endif %}
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
-{{ submit_message_get('chat.create_user_email', "[name='room_unique_id'], [name='user_message']") }}
+{{ submit_message_get('chat.create_user_email', "[name='room_unique_id'], [name='user_message'],
+[name='ticket_unique_id']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

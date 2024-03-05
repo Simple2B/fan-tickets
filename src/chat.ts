@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatStartBuyTicket) {
     chatStartBuyTicket.addEventListener('click', () => {
       openChatWindow();
+      resizeChat();
     });
   }
 });

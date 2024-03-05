@@ -14,6 +14,7 @@ from app.database import db
 
 
 class ChatFileUploadForm(FlaskForm):
+    ticket_unique_id = StringField("ticket_unique_id", [DataRequired()])
     room_unique_id = StringField("room_unique_id", [DataRequired()])
     user_unique_id = StringField("user_unique_id", [DataRequired()])
     file = FileField("file", [DataRequired()])
