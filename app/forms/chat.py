@@ -36,6 +36,7 @@ class ChatPhoneForm(FlaskForm):
 
 
 class ChatAuthPasswordForm(FlaskForm):
+    ticket_unique_id = StringField("ticket_unique_id", [DataRequired()])
     room_unique_id = StringField("room_unique_id", [DataRequired()])
     user_unique_id = StringField("user_unique_id", [DataRequired()])
     password = StringField("password", [DataRequired()])

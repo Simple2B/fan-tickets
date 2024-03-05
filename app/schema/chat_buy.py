@@ -28,6 +28,22 @@ class ChatBuyTicketParams(ChatBuyRequiredParams):
     tickets_show_all: bool = False
     add_ticket: bool = False
     from_date_template: bool = False
+    from_web: bool = False
+
+    model_config = SettingsConfigDict(from_attributes=True)
+
+
+class ChatBuyTicketWithoutRequiredParams(BaseModel):
+    room_unique_id: str | None = None
+    event_unique_id: str | None = None
+    ticket_unique_id: str | None = None
+    user_message: str | None = None
+    ask_payment: bool = False
+    has_email: bool = False
+    tickets_show_all: bool = False
+    add_ticket: bool = False
+    from_date_template: bool = False
+    from_web: bool = False
 
     model_config = SettingsConfigDict(from_attributes=True)
 

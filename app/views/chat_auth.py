@@ -326,6 +326,7 @@ def login_email():
             "chat/registration/login_email.html",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not params.user_message:
@@ -335,6 +336,7 @@ def login_email():
             error_message="Please, add your email",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     user = c.get_user_by_email(params.user_message, room)
@@ -346,6 +348,7 @@ def login_email():
             error_message="Email not found, add correct email or sign up",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     return render_template(
@@ -354,6 +357,7 @@ def login_email():
         room=room,
         user_unique_id=user.uuid,
         form=f.ChatAuthPasswordForm(),
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -382,6 +386,7 @@ def login_password():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
+            ticket_unique_id=form.ticket_unique_id.data,
             form=form,
         )
 
@@ -396,6 +401,7 @@ def login_password():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
+            ticket_unique_id=form.ticket_unique_id.data,
             form=form,
         )
 
@@ -403,6 +409,14 @@ def login_password():
     log(log.INFO, "Login successful")
 
     c.save_message("Please enter your password", "You are logged in", room)
+
+    if form.ticket_unique_id.data:
+        return render_template(
+            "chat/buy/booking_ticket_from_web.html",
+            now=c.utcnow_chat_format(),
+            room=room,
+            ticket_unique_id=form.ticket_unique_id.data,
+        )
 
     return render_template(
         "chat/chat_home.html",

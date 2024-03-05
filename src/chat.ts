@@ -110,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatStartBuy = document.getElementById(
     'chat-start-buy',
   ) as HTMLButtonElement;
+  const chatStartBuyTicket = document.getElementById(
+    'chat-start-buy-ticket',
+  ) as HTMLButtonElement;
 
   let csrfToken = '';
 
@@ -231,8 +234,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (chatStartBuy) {
     chatStartBuy.addEventListener('click', () => {
-      console.log('chatStartBuy');
-
+      openChatWindow();
+    });
+  }
+  if (chatStartBuyTicket) {
+    chatStartBuyTicket.addEventListener('click', () => {
       openChatWindow();
     });
   }

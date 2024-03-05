@@ -12,6 +12,7 @@ class ChatRequiredParams(BaseModel):
 
 
 class ChatAuthEmailParams(ChatRequiredParams):
+    ticket_unique_id: str | None = None
     user_message: str | None = None
     from_sign_up: bool = False
 
