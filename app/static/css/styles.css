@@ -1184,6 +1184,10 @@ input:checked + .toggle-bg{
   top: 4rem;
 }
 
+.top-2{
+  top: 0.5rem;
+}
+
 .top-24{
   top: 6rem;
 }
@@ -2813,6 +2817,10 @@ input:checked + .toggle-bg{
   text-align: center;
 }
 
+.text-justify{
+  text-align: justify;
+}
+
 .text-start{
   text-align: start;
 }
@@ -4224,20 +4232,16 @@ input[type='number']::-webkit-outer-spin-button {
     height: 650px;
   }
 
+  .sm\:w-1\/2{
+    width: 50%;
+  }
+
   .sm\:w-96{
     width: 24rem;
   }
 
   .sm\:w-auto{
     width: auto;
-  }
-
-  .sm\:w-3\/4{
-    width: 75%;
-  }
-
-  .sm\:w-1\/2{
-    width: 50%;
   }
 
   .sm\:max-w-265{

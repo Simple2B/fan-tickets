@@ -14,11 +14,10 @@
 {% if ticket %}
 {% set all_filters = "[name='room_unique_id'],[name='event_unique_id'], [name='ticket_unique_id']" %}
 <input type="hidden" name="ticket_unique_id" value="{{ ticket.unique_id }}">
-<!-- <input type="hidden" name="user_unique_id" value="{{ current_user.uuid }}"> -->
 <button type="button" hx-get="{{ url_for('buy.booking_ticket_from_web', from_web=True) }}" hx-target="#chat-body"
   hx-swap="innerHTML" hx-trigger="click" id="chat-start-buy-ticket" hx-include="{{ all_filters }}"
-  class="p-3 w-265 sm:w-1/2 flex text-white bg-dark-grey justify-between items-center rounded-lg">
-  <div class="flex flex-col gap-1">
+  class="relative p-3 w-265 sm:w-1/2 flex text-white bg-dark-grey justify-between rounded-lg">
+  <div class="flex flex-col gap-1 text-start">
     <h3 class="mb-2">{{ ticket.event.name }}</h3>
     <span class="text-grey">{{ ticket.event.location.name }}</span>
     <span class="text-grey">{{ ticket.event.venue }}</span>
@@ -43,10 +42,10 @@
       </p>
     </div>
     {% if ticket.description %}
-    <p><span class="text-secondary">Note:</span> {{ ticket.description }}</p>
+    <p class="text-justify"><span class="text-secondary">Note:</span> {{ ticket.description }}</p>
     {% endif %}
   </div>
-  <div>
+  <div class="absolute top-2 right-2">
     <div class="flex items-center gap-2 py-1.5 px-3 bg-middle-grey rounded-full">
       <!-- prettier-ignore -->
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
