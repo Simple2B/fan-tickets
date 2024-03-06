@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from sqlalchemy.exc import IntegrityError
 
-from flask import request, Blueprint, render_template, current_app as app
+from flask import request, Blueprint, render_template, redirect, url_for, current_app as app
 from flask_login import current_user, login_user
 
 from app import controllers as c
@@ -1330,8 +1330,15 @@ def create_user_social_profile():
 
         log(log.INFO, f"User: {user.email} logged in")
 
-        # TODO: Redirect user to the booking page after registration
-        ...
+        if room.ticket:
+            return redirect(
+                url_for(
+                    "buy.booking_ticket",
+                    room_unique_id=room.unique_id,
+                    user_unique_id=user.uuid,
+                    ticket_unique_id=room.ticket.unique_id,
+                )
+            )
         return render_template(
             "chat/registration/verified.html",
             room=room,
@@ -1345,8 +1352,6 @@ def create_user_social_profile():
             db.session.commit()
             log(log.INFO, "Facebook added: [%s]", params.user_message)
 
-            # TODO: Redirect user to the booking page after registration
-            ...
             return render_template(
                 "chat/registration/profile_instagram.html",
                 room=room,
@@ -1368,8 +1373,6 @@ def create_user_social_profile():
         c.save_message("Do you want to add your facebook profile?", "Without facebook profile", room)
         log(log.INFO, "Without facebook")
 
-        # TODO: Redirect user to the booking page after registration
-        ...
         return render_template(
             "chat/registration/profile_instagram.html",
             room=room,
@@ -1383,8 +1386,6 @@ def create_user_social_profile():
             db.session.commit()
             log(log.INFO, "Instagram added: [%s]", params.user_message)
 
-            # TODO: Redirect user to the booking page after registration
-            ...
             return render_template(
                 "chat/registration/profile_twitter.html",
                 room=room,
@@ -1406,8 +1407,6 @@ def create_user_social_profile():
         c.save_message("Do you want to add your instagram profile?", "Without instagram profile", room)
         log(log.INFO, "Without instagram")
 
-        # TODO: Redirect user to the booking page after registration
-        ...
         return render_template(
             "chat/registration/profile_twitter.html",
             room=room,
@@ -1429,8 +1428,16 @@ def create_user_social_profile():
             ).save()
             log(log.INFO, f"User: {user.email} logged in")
 
-            # TODO: Redirect user to the booking page after registration
-            ...
+            if room.ticket:
+                return redirect(
+                    url_for(
+                        "buy.booking_ticket",
+                        room_unique_id=room.unique_id,
+                        user_unique_id=user.uuid,
+                        ticket_unique_id=room.ticket.unique_id,
+                    )
+                )
+
             return render_template(
                 "chat/registration/verified.html",
                 room=room,
@@ -1458,8 +1465,15 @@ def create_user_social_profile():
         ).save()
         log(log.INFO, f"User: {user.email} logged in")
 
-        # TODO: Redirect user to the booking page after registration
-        ...
+        if room.ticket:
+            return redirect(
+                url_for(
+                    "buy.booking_ticket",
+                    room_unique_id=room.unique_id,
+                    user_unique_id=user.uuid,
+                    ticket_unique_id=room.ticket.unique_id,
+                )
+            )
         return render_template(
             "chat/registration/verified.html",
             room=room,
@@ -1473,6 +1487,16 @@ def create_user_social_profile():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=user.uuid,
+        )
+
+    if room.ticket:
+        return redirect(
+            url_for(
+                "buy.booking_ticket",
+                room_unique_id=room.unique_id,
+                user_unique_id=user.uuid,
+                ticket_unique_id=room.ticket.unique_id,
+            )
         )
 
     return render_template(
