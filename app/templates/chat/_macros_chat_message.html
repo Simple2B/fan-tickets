@@ -161,7 +161,7 @@
     <form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post="/chat/{{ route }}" hx-target="#chat-body"
       hx-indicator="#chat-message-spinner" hx-include="{{ filters }}" hx-swap="innerHTML">
       {{ form.hidden_tag() }}
-      <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
+      <!-- <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" /> -->
       <input id="chat-post" rows="1" name="password" autocomplete="off"
         class="block p-2.5 w-full bg-dark-grey rounded-2xl text-sm text-white outline-none chat-message-input"
         placeholder="Write here..." />

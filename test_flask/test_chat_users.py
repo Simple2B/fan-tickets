@@ -350,3 +350,9 @@ def test_transactions_per_event(client: FlaskClient):
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket.unique_id}")
     assert response.status_code == 200
     assert b"You have reached the limit of tickets for this event" in response.data
+
+
+"""
+http://127.0.0.1:5005/chat/email_verification?ticket_unique_id=60921333-2009-4a19-9790-a9df167aeba7&ticket_unique_id=60921333-2009-4a19-9790-a9df167aeba7&user_unique_id=&user_unique_id=ab1c7027-83c6-4edd-89d3-5daa709391bf&user_unique_id=ab1c7027-83c6-4edd-89d3-5daa709391bf&room_unique_id=300a78b1-eeee-41d5-8d25-17993ae21249&room_unique_id=300a78b1-eeee-41d5-8d25-17993ae21249&user_message=708108
+http://127.0.0.1:5005/chat/email_verification?ticket_unique_id=60921333-2009-4a19-9790-a9df167aeba7&ticket_unique_id=60921333-2009-4a19-9790-a9df167aeba7&user_unique_id=&room_unique_id=8595e049-f084-4013-aec3-df72f798b651&user_message=275787
+"""

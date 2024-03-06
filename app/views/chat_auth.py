@@ -668,6 +668,7 @@ def create_user_password():
         return render_template(
             "chat/registration/password.html",
             error_message="Form submitting error. Please add your email again",
+            user_unique_id=form.user_unique_id.data,
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -738,6 +739,12 @@ def confirm_user_password():
             form=form,
             ticket_unique_id=form.ticket_unique_id.data,
         )
+
+    if form.ticket_unique_id.data:
+        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == form.ticket_unique_id.data)
+        ticket: m.Ticket = db.session.scalar(ticket_query)
+        room.ticket = ticket
+        room.save()
 
     c.save_message("Please confirm your password", "Password has been confirmed", room)
 
@@ -935,14 +942,6 @@ def create_user_name():
             now=c.utcnow_chat_format(),
         )
 
-    # if user.name:
-    #     return render_template(
-    #         "chat/registration/last_name.html",
-    #         room=room,
-    #         now=c.utcnow_chat_format(),
-    #         user_unique_id=user.unique_id,
-    #     )
-
     c.create_user_name(params.user_message, user, room)
 
     try:
@@ -956,6 +955,7 @@ def create_user_name():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     return render_template(
@@ -1035,6 +1035,7 @@ def create_user_last_name():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     return render_template(
@@ -1118,17 +1119,9 @@ def create_user_phone():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
-    # if current_user.is_authenticated:
-    #     return render_template(
-    #         "chat/registration/birth_date.html",
-    #         room=room,
-    #         now=c.utcnow_chat_format(),
-    #         user_unique_id=user.unique_id,
-    #     )
-
-    # parse url and get the domain name
     if os.environ.get("APP_ENV") == "development":
         parsed_url = urlparse(request.base_url)
         profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
@@ -1336,10 +1329,14 @@ def create_user_social_profile():
         c.save_message("You have successfully registered", "Without social profile", room)
 
         log(log.INFO, f"User: {user.email} logged in")
+
+        # TODO: Redirect user to the booking page after registration
+        ...
         return render_template(
             "chat/registration/verified.html",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     if params.facebook:
@@ -1347,6 +1344,9 @@ def create_user_social_profile():
         try:
             db.session.commit()
             log(log.INFO, "Facebook added: [%s]", params.user_message)
+
+            # TODO: Redirect user to the booking page after registration
+            ...
             return render_template(
                 "chat/registration/profile_instagram.html",
                 room=room,
@@ -1367,6 +1367,9 @@ def create_user_social_profile():
     if params.without_facebook:
         c.save_message("Do you want to add your facebook profile?", "Without facebook profile", room)
         log(log.INFO, "Without facebook")
+
+        # TODO: Redirect user to the booking page after registration
+        ...
         return render_template(
             "chat/registration/profile_instagram.html",
             room=room,
@@ -1379,6 +1382,9 @@ def create_user_social_profile():
         try:
             db.session.commit()
             log(log.INFO, "Instagram added: [%s]", params.user_message)
+
+            # TODO: Redirect user to the booking page after registration
+            ...
             return render_template(
                 "chat/registration/profile_twitter.html",
                 room=room,
@@ -1399,6 +1405,9 @@ def create_user_social_profile():
     if params.without_instagram:
         c.save_message("Do you want to add your instagram profile?", "Without instagram profile", room)
         log(log.INFO, "Without instagram")
+
+        # TODO: Redirect user to the booking page after registration
+        ...
         return render_template(
             "chat/registration/profile_twitter.html",
             room=room,
@@ -1419,6 +1428,9 @@ def create_user_social_profile():
                 text="You have successfully registered",
             ).save()
             log(log.INFO, f"User: {user.email} logged in")
+
+            # TODO: Redirect user to the booking page after registration
+            ...
             return render_template(
                 "chat/registration/verified.html",
                 room=room,
@@ -1445,6 +1457,9 @@ def create_user_social_profile():
             text="You have successfully registered",
         ).save()
         log(log.INFO, f"User: {user.email} logged in")
+
+        # TODO: Redirect user to the booking page after registration
+        ...
         return render_template(
             "chat/registration/verified.html",
             room=room,
@@ -1464,6 +1479,7 @@ def create_user_social_profile():
         "chat/registration/verified.html",
         room=room,
         now=c.utcnow_chat_format(),
+        user_unique_id=params.user_unique_id,
     )
 
 
