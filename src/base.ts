@@ -242,7 +242,7 @@ const fbShareIcons = document.querySelectorAll(
 ) as NodeListOf<HTMLAnchorElement>;
 fbShareIcons.forEach(fbIcon => {
   fbIcon.addEventListener('click', () => {
-    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    const link = encodeURIComponent(window.location.href);
     fbIcon.href = `https://www.facebook.com/share.php?u=${link}`;
     console.log(fbIcon.href);
   });
@@ -253,7 +253,7 @@ const instaShareIcons = document.querySelectorAll(
 ) as NodeListOf<HTMLAnchorElement>;
 instaShareIcons.forEach(instaIcon => {
   instaIcon.addEventListener('click', () => {
-    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    const link = encodeURIComponent(window.location.href);
     instaIcon.href = `https://www.instagram.com`;
     console.log(instaIcon.href);
   });
@@ -264,7 +264,7 @@ const twitterShareIcons = document.querySelectorAll(
 ) as NodeListOf<HTMLAnchorElement>;
 twitterShareIcons.forEach(twitterIcon => {
   twitterIcon.addEventListener('click', () => {
-    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    const link = encodeURIComponent(window.location.href);
     const text = encodeURIComponent(
       'Check out cool tickets for sale on FanTicket',
     );
