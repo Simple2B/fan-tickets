@@ -377,7 +377,7 @@ def init_shell_commands(app: Flask):
 
     def obsolete_rooms():
         rooms_query = m.Room.select().where(
-            or_(m.Room.seller_id.is_(None), m.Room.buyer_id.is_(None)),
+            sa.or_(m.Room.seller_id.is_(None), m.Room.buyer_id.is_(None)),
             m.Room.created_at < datetime.now() - timedelta(days=2),
         )
         rooms: list[m.Room] = db.session.scalars(rooms_query).all()
