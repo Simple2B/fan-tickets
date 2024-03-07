@@ -1,5 +1,5 @@
 import 'flowbite';
-import {resizeChat} from './utils';
+import {resizeChat, socialMediaShare} from './utils';
 
 const themeToggleDarkIcons = document.querySelectorAll(
   '#theme-toggle-dark-icon',
@@ -237,39 +237,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('resize', resizeChat);
 
-const fbShareIcons = document.querySelectorAll(
-  '.fb-share',
-) as NodeListOf<HTMLAnchorElement>;
-fbShareIcons.forEach(fbIcon => {
-  fbIcon.addEventListener('click', () => {
-    const link = encodeURIComponent(window.location.href);
-    fbIcon.href = `https://www.facebook.com/share.php?u=${link}`;
-    console.log(fbIcon.href);
-  });
-});
+// const fbShareIcons = document.querySelectorAll(
+//   '.fb-share',
+// ) as NodeListOf<HTMLAnchorElement>;
+// fbShareIcons.forEach(fbIcon => {
+//   fbIcon.addEventListener('click', () => {
+//     const link = encodeURIComponent(window.location.href);
+//     fbIcon.href = `https://www.facebook.com/share.php?u=${link}`;
+//     console.log(fbIcon.href);
+//   });
+// });
 
-const instaShareIcons = document.querySelectorAll(
-  '.i-share',
-) as NodeListOf<HTMLAnchorElement>;
-instaShareIcons.forEach(instaIcon => {
-  instaIcon.addEventListener('click', () => {
-    const link = encodeURIComponent(window.location.href);
-    instaIcon.href = `https://www.instagram.com`;
-    console.log(instaIcon.href);
-  });
-});
+// const instaShareIcons = document.querySelectorAll(
+//   '.i-share',
+// ) as NodeListOf<HTMLAnchorElement>;
+// instaShareIcons.forEach(instaIcon => {
+//   instaIcon.addEventListener('click', () => {
+//     const link = encodeURIComponent(window.location.href);
+//     instaIcon.href = `https://www.instagram.com`;
+//     console.log(instaIcon.href);
+//   });
+// });
 
-const twitterShareIcons = document.querySelectorAll(
-  '.x-share',
-) as NodeListOf<HTMLAnchorElement>;
-twitterShareIcons.forEach(twitterIcon => {
-  twitterIcon.addEventListener('click', () => {
-    const link = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(
-      'Check out cool tickets for sale on FanTicket',
-    );
-    const hashtags = encodeURIComponent('tickets,forsale');
-    twitterIcon.href = `https://twitter.com/share?url=${link}&text=${text}&hashtags=${hashtags}`;
-    console.log(twitterIcon.href);
-  });
-});
+// const twitterShareIcons = document.querySelectorAll(
+//   '.x-share',
+// ) as NodeListOf<HTMLAnchorElement>;
+// twitterShareIcons.forEach(twitterIcon => {
+//   twitterIcon.addEventListener('click', () => {
+//     const link = encodeURIComponent(window.location.href);
+//     const text = encodeURIComponent(
+//       'Check out cool tickets for sale on FanTicket',
+//     );
+//     const hashtags = encodeURIComponent('tickets,forsale');
+//     twitterIcon.href = `https://twitter.com/share?url=${link}&text=${text}&hashtags=${hashtags}`;
+//     console.log(twitterIcon.href);
+//   });
+// });
+
+socialMediaShare();

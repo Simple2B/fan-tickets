@@ -1,4 +1,9 @@
-import {scrollDown, scrollDownSmooth, resizeChat} from './utils';
+import {
+  scrollDown,
+  scrollDownSmooth,
+  resizeChat,
+  socialMediaShare,
+} from './utils';
 import * as htmx from 'htmx.org';
 
 const timeTyping = 1500;
@@ -140,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chatCloseButton.addEventListener('click', closeChatWindow);
   }
 
+  socialMediaShare();
+
   document.addEventListener('htmx:beforeRequest', e => {
     const targetElement = e.target as HTMLElement;
     // Change chat title
@@ -244,6 +251,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
-// const socialIcons = document.querySelectorAll('.sm-share');
-// console.log(socialIcons);

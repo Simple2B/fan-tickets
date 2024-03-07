@@ -88,14 +88,19 @@ def transactions_last_month(user: m.User) -> int:
     """
     The function to get last month transactions number.
     """
-    tickets_query = sa.select(m.Ticket).where(
-        sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
-        m.Ticket.is_sold.is_(True),
+    tickets_bought_query = sa.select(m.Ticket).where(
+        m.Ticket.buyer_id == user.id,
         m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30),
     )
-    tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
+    tickets_bought: list[m.Ticket] = db.session.scalars(tickets_bought_query).all()
 
-    return len(tickets)
+    tickets_posted_query = sa.select(m.Ticket).where(
+        m.Ticket.seller_id == user.id,
+        m.Ticket.created_at > datetime.now() - timedelta(days=30),
+    )
+    tickets_posted: list[m.Ticket] = db.session.scalars(tickets_posted_query).all()
+
+    return len(tickets_bought) + len(tickets_posted)
 
 
 def transactions_per_event(user: m.User, event: m.Event) -> int:

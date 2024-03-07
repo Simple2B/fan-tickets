@@ -170,7 +170,7 @@ class User(db.Model, UserMixin, ModelMixin):
         self.save()
 
     def __repr__(self):
-        return f"<{self.id}: {self.username},{self.email}>"
+        return f"<{self.id}: {self.name} {self.last_name},{self.email}>"
 
     @property
     def json(self):
