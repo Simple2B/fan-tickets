@@ -236,3 +236,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('resize', resizeChat);
+
+const fbShareIcons = document.querySelectorAll(
+  '.fb-share',
+) as NodeListOf<HTMLAnchorElement>;
+fbShareIcons.forEach(fbIcon => {
+  fbIcon.addEventListener('click', () => {
+    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    fbIcon.href = `https://www.facebook.com/share.php?u=${link}`;
+    console.log(fbIcon.href);
+  });
+});
+
+const instaShareIcons = document.querySelectorAll(
+  '.i-share',
+) as NodeListOf<HTMLAnchorElement>;
+instaShareIcons.forEach(instaIcon => {
+  instaIcon.addEventListener('click', () => {
+    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    instaIcon.href = `https://www.instagram.com`;
+    console.log(instaIcon.href);
+  });
+});
+
+const twitterShareIcons = document.querySelectorAll(
+  '.x-share',
+) as NodeListOf<HTMLAnchorElement>;
+twitterShareIcons.forEach(twitterIcon => {
+  twitterIcon.addEventListener('click', () => {
+    const link = encodeURIComponent('https://fan-ticket.simple2b.net/');
+    const text = encodeURIComponent(
+      'Check out cool tickets for sale on FanTicket',
+    );
+    const hashtags = encodeURIComponent('tickets,forsale');
+    twitterIcon.href = `https://twitter.com/share?url=${link}&text=${text}&hashtags=${hashtags}`;
+    console.log(twitterIcon.href);
+  });
+});

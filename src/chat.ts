@@ -244,3 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// const socialIcons = document.querySelectorAll('.sm-share');
+// console.log(socialIcons);
