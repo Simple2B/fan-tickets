@@ -156,6 +156,16 @@ const userHeaderNotificationsConfig = {
   },
 }
 
+const socialMedia = {
+  entry: {
+    main: './src/social_media.ts',
+  },
+  output: {
+    path: path.resolve(__dirname, './app/static'),
+    filename: 'js/social_media.js',
+  },
+}
+
 const configs = [
   baseConfig,
   userConfig,
@@ -171,6 +181,7 @@ const configs = [
   disputeConfig,
   profileConfig,
   userHeaderNotificationsConfig,
+  socialMedia,
 ].map(conf => merge(defaultConfig, conf));
 
 module.exports = configs;
