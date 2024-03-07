@@ -2,9 +2,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/datepicker.min.js"></script>
 {% endblock %} {% block content %}
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-  <form
-    action="{{url_for('admin.get_ticket', ticket_unique_id=ticket.unique_id)}}"
-    method="post">
+  <form action="{{url_for('admin.get_ticket', ticket_unique_id=ticket.unique_id)}}" method="post">
     {{ form.hidden_tag() }}
     <table class="w-full mt-3 text-sm text-left text-gray-400">
       <thead class="text-xs uppercase bg-secondary text-black">
@@ -18,14 +16,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">event name</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="name"
-              value="{{ ticket.event.name }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="name" value="{{ ticket.event.name }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -34,14 +26,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">price net</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="price_net"
-              value="{{ ticket.price_net }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="price_net" value="{{ ticket.price_net }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -50,14 +36,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">price gross</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="price_gross"
-              value="{{ ticket.price_gross }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="price_gross" value="{{ ticket.price_gross }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -66,9 +46,7 @@
           <td class="w-4 p-4">
             <div class="flex items-center">type</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
             {{form.ticket_type( class="max-w-2xl border-0 text-sm rounded-lg
             block w-full p-2 bg-black placeholder-white text-white
             focus:ring-secondary cursor-pointer" ) }} {% for error in
@@ -82,9 +60,7 @@
           <td class="w-4 p-4">
             <div class="flex items-center">category</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
             {{form.ticket_category( class="max-w-2xl border-0 text-sm rounded-lg
             block w-full p-2 bg-black placeholder:text-white text-white
             focus:ring-secondary cursor-pointer" ) }} {% for error in
@@ -98,13 +74,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">description</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="description"
-              value="{{ ticket.description }}"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="description" value="{{ ticket.description }}"
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -113,13 +84,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">warning</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="warning"
-              value="{{ ticket.warning }}"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="warning" value="{{ ticket.warning }}"
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -128,13 +94,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">section</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="section"
-              value="{{ ticket.section }}"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="section" value="{{ ticket.section }}"
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -143,13 +104,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">queue</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="queue"
-              value="{{ ticket.queue }}"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="queue" value="{{ ticket.queue }}"
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -158,13 +114,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">seat</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="seat"
-              value="{{ ticket.seat }}"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="seat" value="{{ ticket.seat }}"
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -173,16 +124,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">date_time</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="date_time"
-              autocomplete="off"
-              id="paid_until"
-              readonly
-              disabled
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="date_time" autocomplete="off" id="paid_until" readonly disabled
               class="max-w-2xl border-0 text-black placeholder:text-black text-sm rounded-lg focus:ring-secondary block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
               value="{{ event_form_date(ticket.event.date_time) }}" />
           </td>
@@ -192,15 +135,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">location</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="location"
-              value="{{ ticket.event.location.name }}"
-              readonly
-              disabled
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="location" value="{{ ticket.event.location.name }}" readonly disabled
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -209,15 +145,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">seller</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="seller"
-              value="{{ ticket.seller.username }}"
-              readonly
-              disabled
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="seller" value="{{ ticket.seller.username }}" readonly disabled
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -226,15 +155,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">buyer</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="buyer"
-              value="{{ ticket.buyer.username }}"
-              readonly
-              disabled
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="buyer" value="{{ ticket.buyer.username }}" readonly disabled
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -243,14 +165,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">is sold</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="is_sold"
-              value="{{ ticket.is_sold }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="is_sold" value="{{ ticket.is_sold }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -259,14 +175,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">is reserved</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="is_reserved"
-              value="{{ ticket.is_reserved }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="is_reserved" value="{{ ticket.is_reserved }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -275,14 +185,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center">is available</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <input
-              type="text"
-              name="is_available"
-              value="{{ ticket.is_available }}"
-              readonly
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <input type="text" name="is_available" value="{{ ticket.is_available }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
           </td>
         </tr>
@@ -291,9 +195,7 @@
           <td class="w-4 p-4">
             <div class="flex items-center">deleted {{ ticket.is_deleted }}</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
             {{form.deleted( class="max-w-2xl border-0 text-sm rounded-lg block
             w-full p-2 bg-black placeholder:text-white text-white
             focus:ring-secondary cursor-pointer" ) }} {% for error in
@@ -308,29 +210,18 @@
             <div class="flex items-center">ticket's document</div>
           </td>
 
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <div
-              class="relative w-full h-96 self-center border border-secondary rounded-md"
-              id="event_image">
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <div class="relative w-full h-96 self-center border border-secondary rounded-md" id="event_image">
               {% if ticket.file %}
               <div class="flex h-full justify-center items-center p-3">
-                <iframe
-                  class="w-full h-full"
-                  src="{{ ticket.base64_src }}"></iframe>
+                <iframe class="w-full h-full" src="{{ ticket.base64_src }}"></iframe>
               </div>
               {% else %}
-              <div
-                class="w-48 h-48 flex items-center justify-center bg-secondary text-black">
+              <div class="w-full h-full flex items-center justify-center bg-secondary text-black">
                 <p>No file</p>
               </div>
               {% endif %}
-              <input
-                type="hidden"
-                id="ticket-unique-id"
-                name="ticket_unique_id"
-                value="{{ticket.unique_id}}" />
+              <input type="hidden" id="ticket-unique-id" name="ticket_unique_id" value="{{ticket.unique_id}}" />
               <!-- <input id="ticket-image-input" accept=".png, .jpg" type="file" class=" rounded-b-lg" /> -->
             </div>
           </td>
@@ -340,22 +231,12 @@
           <td class="w-4 p-4">
             <div class="flex items-center">wallet id</div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
             {% if ticket.wallet_id %}
-            <input
-              type="text"
-              name="name"
-              value="{{ ticket.wallet_id }}"
-              readonly
+            <input type="text" name="name" value="{{ ticket.wallet_id }}" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
             {% else %}
-            <input
-              type="text"
-              name="name"
-              value="No wallet id"
-              readonly
+            <input type="text" name="name" value="No wallet id" readonly
               class="w-full max-w-2xl bg-black border-0 rounded-lg focus:ring-secondary" />
             {% endif %}
           </td>
@@ -365,11 +246,8 @@
           <td class="w-4 p-4">
             <div class="flex items-center"></div>
           </td>
-          <td
-            scope="row"
-            class="flex items-center px-6 py-4 whitespace-nowrap text-white">
-            <button
-              type="submit"
+          <td scope="row" class="flex items-center px-6 py-4 whitespace-nowrap text-white">
+            <button type="submit"
               class="link p-2 w-60 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
               Save
             </button>
@@ -381,8 +259,5 @@
 </div>
 
 {% endblock %} {% block scripts %}
-<script
-  src="{{ url_for('static', filename='js/user.js') }}"
-  type="text/javascript"
-  defer></script>
+<script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" defer></script>
 {% endblock %}

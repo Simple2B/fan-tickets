@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from sqlalchemy.exc import IntegrityError
 
-from flask import request, Blueprint, render_template, current_app as app
+from flask import request, Blueprint, render_template, redirect, url_for, current_app as app
 from flask_login import current_user, login_user
 
 from app import controllers as c
@@ -326,6 +326,7 @@ def login_email():
             "chat/registration/login_email.html",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not params.user_message:
@@ -335,6 +336,7 @@ def login_email():
             error_message="Please, add your email",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     user = c.get_user_by_email(params.user_message, room)
@@ -346,6 +348,7 @@ def login_email():
             error_message="Email not found, add correct email or sign up",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     return render_template(
@@ -354,6 +357,7 @@ def login_email():
         room=room,
         user_unique_id=user.uuid,
         form=f.ChatAuthPasswordForm(),
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -382,6 +386,7 @@ def login_password():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
+            ticket_unique_id=form.ticket_unique_id.data,
             form=form,
         )
 
@@ -396,6 +401,7 @@ def login_password():
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
+            ticket_unique_id=form.ticket_unique_id.data,
             form=form,
         )
 
@@ -403,6 +409,14 @@ def login_password():
     log(log.INFO, "Login successful")
 
     c.save_message("Please enter your password", "You are logged in", room)
+
+    if form.ticket_unique_id.data:
+        return render_template(
+            "chat/buy/booking_ticket_from_web.html",
+            now=c.utcnow_chat_format(),
+            room=room,
+            ticket_unique_id=form.ticket_unique_id.data,
+        )
 
     return render_template(
         "chat/chat_home.html",
@@ -478,6 +492,7 @@ def create_user_email():
             "chat/registration/email.html",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not params.user_message:
@@ -487,6 +502,7 @@ def create_user_email():
             error_message="Field is empty",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     response, user = c.create_email(params.user_message, room)
@@ -498,6 +514,7 @@ def create_user_email():
             room=room,
             now=c.utcnow_chat_format(),
             email_input=response.email,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not user:
@@ -507,6 +524,7 @@ def create_user_email():
             error_message="Form submitting error",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     try:
@@ -520,6 +538,7 @@ def create_user_email():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     mail_controller.send_email(
@@ -536,6 +555,7 @@ def create_user_email():
         now=c.utcnow_chat_format(),
         room=room,
         user_unique_id=user.uuid,
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -571,6 +591,7 @@ def email_verification():
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
             form=form,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     user = c.get_user(params.user_unique_id)
@@ -592,6 +613,7 @@ def email_verification():
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
             form=form,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     c.save_message("Please confirm your email", "Email confirmed", room)
@@ -602,6 +624,7 @@ def email_verification():
         room=room,
         user_unique_id=user.uuid,
         form=form,
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 
@@ -631,6 +654,7 @@ def create_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     success = c.create_password(form, room)
@@ -644,6 +668,7 @@ def create_user_password():
         return render_template(
             "chat/registration/password.html",
             error_message="Form submitting error. Please add your email again",
+            user_unique_id=form.user_unique_id.data,
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -657,6 +682,7 @@ def create_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     return render_template(
@@ -665,6 +691,7 @@ def create_user_password():
         room=room,
         user_unique_id=form.user_unique_id.data,
         form=form,
+        ticket_unique_id=form.ticket_unique_id.data,
     )
 
 
@@ -695,6 +722,7 @@ def confirm_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
 
     result, user = c.confirm_password(form, room)
@@ -709,7 +737,14 @@ def confirm_user_password():
             now=c.utcnow_chat_format(),
             user_unique_id=form.user_unique_id.data,
             form=form,
+            ticket_unique_id=form.ticket_unique_id.data,
         )
+
+    if form.ticket_unique_id.data:
+        ticket_query = m.Ticket.select().where(m.Ticket.unique_id == form.ticket_unique_id.data)
+        ticket: m.Ticket = db.session.scalar(ticket_query)
+        room.ticket = ticket
+        room.save()
 
     c.save_message("Please confirm your password", "Password has been confirmed", room)
 
@@ -719,6 +754,7 @@ def confirm_user_password():
         room=room,
         user_unique_id=form.user_unique_id.data,
         form=form_file,
+        ticket_unique_id=form.ticket_unique_id.data,
     )
 
 
@@ -906,14 +942,6 @@ def create_user_name():
             now=c.utcnow_chat_format(),
         )
 
-    # if user.name:
-    #     return render_template(
-    #         "chat/registration/last_name.html",
-    #         room=room,
-    #         now=c.utcnow_chat_format(),
-    #         user_unique_id=user.unique_id,
-    #     )
-
     c.create_user_name(params.user_message, user, room)
 
     try:
@@ -927,6 +955,7 @@ def create_user_name():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     return render_template(
@@ -1006,6 +1035,7 @@ def create_user_last_name():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     return render_template(
@@ -1089,17 +1119,9 @@ def create_user_phone():
             error_message="Form submitting error. Please add your email again",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
-    # if current_user.is_authenticated:
-    #     return render_template(
-    #         "chat/registration/birth_date.html",
-    #         room=room,
-    #         now=c.utcnow_chat_format(),
-    #         user_unique_id=user.unique_id,
-    #     )
-
-    # parse url and get the domain name
     if os.environ.get("APP_ENV") == "development":
         parsed_url = urlparse(request.base_url)
         profile_url = f"{parsed_url.scheme}://{parsed_url.netloc}/user/profile"
@@ -1307,10 +1329,21 @@ def create_user_social_profile():
         c.save_message("You have successfully registered", "Without social profile", room)
 
         log(log.INFO, f"User: {user.email} logged in")
+
+        if room.ticket:
+            return redirect(
+                url_for(
+                    "buy.booking_ticket",
+                    room_unique_id=room.unique_id,
+                    user_unique_id=user.uuid,
+                    ticket_unique_id=room.ticket.unique_id,
+                )
+            )
         return render_template(
             "chat/registration/verified.html",
             room=room,
             now=c.utcnow_chat_format(),
+            user_unique_id=params.user_unique_id,
         )
 
     if params.facebook:
@@ -1318,6 +1351,7 @@ def create_user_social_profile():
         try:
             db.session.commit()
             log(log.INFO, "Facebook added: [%s]", params.user_message)
+
             return render_template(
                 "chat/registration/profile_instagram.html",
                 room=room,
@@ -1338,6 +1372,7 @@ def create_user_social_profile():
     if params.without_facebook:
         c.save_message("Do you want to add your facebook profile?", "Without facebook profile", room)
         log(log.INFO, "Without facebook")
+
         return render_template(
             "chat/registration/profile_instagram.html",
             room=room,
@@ -1350,6 +1385,7 @@ def create_user_social_profile():
         try:
             db.session.commit()
             log(log.INFO, "Instagram added: [%s]", params.user_message)
+
             return render_template(
                 "chat/registration/profile_twitter.html",
                 room=room,
@@ -1370,6 +1406,7 @@ def create_user_social_profile():
     if params.without_instagram:
         c.save_message("Do you want to add your instagram profile?", "Without instagram profile", room)
         log(log.INFO, "Without instagram")
+
         return render_template(
             "chat/registration/profile_twitter.html",
             room=room,
@@ -1390,6 +1427,17 @@ def create_user_social_profile():
                 text="You have successfully registered",
             ).save()
             log(log.INFO, f"User: {user.email} logged in")
+
+            if room.ticket:
+                return redirect(
+                    url_for(
+                        "buy.booking_ticket",
+                        room_unique_id=room.unique_id,
+                        user_unique_id=user.uuid,
+                        ticket_unique_id=room.ticket.unique_id,
+                    )
+                )
+
             return render_template(
                 "chat/registration/verified.html",
                 room=room,
@@ -1416,6 +1464,16 @@ def create_user_social_profile():
             text="You have successfully registered",
         ).save()
         log(log.INFO, f"User: {user.email} logged in")
+
+        if room.ticket:
+            return redirect(
+                url_for(
+                    "buy.booking_ticket",
+                    room_unique_id=room.unique_id,
+                    user_unique_id=user.uuid,
+                    ticket_unique_id=room.ticket.unique_id,
+                )
+            )
         return render_template(
             "chat/registration/verified.html",
             room=room,
@@ -1431,10 +1489,21 @@ def create_user_social_profile():
             user_unique_id=user.uuid,
         )
 
+    if room.ticket:
+        return redirect(
+            url_for(
+                "buy.booking_ticket",
+                room_unique_id=room.unique_id,
+                user_unique_id=user.uuid,
+                ticket_unique_id=room.ticket.unique_id,
+            )
+        )
+
     return render_template(
         "chat/registration/verified.html",
         room=room,
         now=c.utcnow_chat_format(),
+        user_unique_id=params.user_unique_id,
     )
 
 

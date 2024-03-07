@@ -1,4 +1,9 @@
-import {scrollDown, scrollDownSmooth, resizeChat} from './utils';
+import {
+  scrollDown,
+  scrollDownSmooth,
+  resizeChat,
+  socialMediaShare,
+} from './utils';
 import * as htmx from 'htmx.org';
 
 const timeTyping = 1500;
@@ -110,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatStartBuy = document.getElementById(
     'chat-start-buy',
   ) as HTMLButtonElement;
+  const chatStartBuyTicket = document.getElementById(
+    'chat-start-buy-ticket',
+  ) as HTMLButtonElement;
 
   let csrfToken = '';
 
@@ -136,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatCloseButton) {
     chatCloseButton.addEventListener('click', closeChatWindow);
   }
+
+  socialMediaShare();
 
   document.addEventListener('htmx:beforeRequest', e => {
     const targetElement = e.target as HTMLElement;
@@ -231,9 +241,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (chatStartBuy) {
     chatStartBuy.addEventListener('click', () => {
-      console.log('chatStartBuy');
-
       openChatWindow();
+    });
+  }
+  if (chatStartBuyTicket) {
+    chatStartBuyTicket.addEventListener('click', () => {
+      openChatWindow();
+      resizeChat();
     });
   }
 });

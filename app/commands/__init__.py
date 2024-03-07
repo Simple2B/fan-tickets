@@ -2,8 +2,6 @@ from datetime import datetime, timedelta
 import click
 from flask import Flask
 import sqlalchemy as sa
-from sqlalchemy import or_
-
 from app import models as m
 from app import schema as s
 from app import flask_sse_notification, pagarme_client
@@ -137,52 +135,12 @@ def init_shell_commands(app: Flask):
             print(f"User with e-mail: [{email}] not found")
             return
 
-        tickets_bought_query = m.Ticket.select().where(m.Ticket.buyer_id == user.id)
-        tickets_bought: list[m.Ticket] = db.session.scalars(tickets_bought_query).all()
-
-        if tickets_bought:
-            for ticket in tickets_bought:
-                if ticket.payment:
-                    db.session.delete(ticket.payment)
-                db.session.delete(ticket)
-
-        tickets_sold_query = m.Ticket.select().where(m.Ticket.seller_id == user.id)
-        tickets_sold = db.session.scalars(tickets_sold_query).all()
-
-        if tickets_sold:
-            for ticket in tickets_sold:
-                db.session.delete(ticket)
-
-        rooms_query = m.Room.select().where(sa.or_(m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
-        rooms: m.Room = db.session.scalars(rooms_query).all()
-        messages_query = (
-            m.Message.select()
-            .join(m.Room, m.Message.room_id == m.Room.id)
-            .where(or_(m.Message.sender_id == user.id, m.Room.seller_id == user.id, m.Room.buyer_id == user.id))
-        )
-        messages = db.session.scalars(messages_query).all()
-        for message in messages:
-            db.session.delete(message)
-        for room in rooms:
-            db.session.delete(room)
-        notifications_query = m.Notification.select().where(m.Notification.users.any(m.User.id == user.id))
-        notifications = db.session.scalars(notifications_query).all()
-        print("notifications", notifications)
-        if notifications:
-            for notification in notifications:
-                db.session.delete(notification)
-
-        notification_configs_query = m.NotificationsConfig.select().where(m.NotificationsConfig.user_id == user.id)
-        notification_configs = db.session.scalars(notification_configs_query).all()
-        for notification_config in notification_configs:
-            db.session.delete(notification_config)
-        payments_query = m.Payment.select().where(m.Payment.buyer_id == user.id)
-        payments = db.session.scalars(payments_query).all()
-        if payments:
-            for payment in payments:
-                db.session.delete(payment)
-        db.session.delete(user)
-        db.session.commit()
+        user.activated = False
+        user.is_deleted = True
+        user.email = f"{user.email}_deleted_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        user.username = f"{user.username}_d"
+        user.phone = f"{user.phone}-d"
+        user.save()
         print(f"User {user.email} deleted")
 
     @app.cli.command("all-users")
@@ -419,7 +377,7 @@ def init_shell_commands(app: Flask):
 
     def obsolete_rooms():
         rooms_query = m.Room.select().where(
-            or_(m.Room.seller_id.is_(None), m.Room.buyer_id.is_(None)),
+            sa.or_(m.Room.seller_id.is_(None), m.Room.buyer_id.is_(None)),
             m.Room.created_at < datetime.now() - timedelta(days=2),
         )
         rooms: list[m.Room] = db.session.scalars(rooms_query).all()

@@ -312,8 +312,9 @@ def booking_ticket():
             now=c.utcnow_chat_format(),
         )
 
-    room = c.get_room(params.room_unique_id)
     form: f.ChatFileUploadForm = f.ChatFileUploadForm()
+
+    room = c.get_room(params.room_unique_id)
 
     if not room:
         log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
@@ -336,6 +337,7 @@ def booking_ticket():
             "chat/registration/login_form.html",
             room=room,
             now=c.utcnow_chat_format(),
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     if not current_user.activated:
@@ -346,6 +348,7 @@ def booking_ticket():
             now=c.utcnow_chat_format(),
             user_unique_id=current_user.uuid,
             form=form,
+            ticket_unique_id=params.ticket_unique_id,
         )
 
     transactions_last_month_number = transactions_last_month(current_user)
@@ -394,6 +397,20 @@ def booking_ticket():
         room=room,
         now=c.utcnow_chat_format(),
         ticket_unique_id=ticket.unique_id,
+    )
+
+
+@chat_buy_blueprint.route("/booking_ticket_from_web", methods=["GET"])
+def booking_ticket_from_web():
+    params = s.ChatBuyTicketWithoutRequiredParams.model_validate(dict(request.args))
+    room = m.Room(
+        buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
+    ).save()
+    return render_template(
+        "chat/buy/booking_ticket_from_web.html",
+        room=room,
+        now=c.utcnow_chat_format(),
+        ticket_unique_id=params.ticket_unique_id,
     )
 
 

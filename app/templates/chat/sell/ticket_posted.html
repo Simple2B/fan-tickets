@@ -8,6 +8,9 @@ bot_message_without_date, user_message, submit_message_get %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
   <input type="hidden" name="ticket_unique_id" value="{{ ticket_unique_id }}" />
+
+  {% include 'tickets/share.html' %}
+
   <div class="mt-2 w-265 flex justify-stretch gap-2">
     <button type="button" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
       hx-trigger="click" hx-include="{{ all_filters }}"
@@ -33,7 +36,9 @@ bot_message_without_date, user_message, submit_message_get %}
 </div>
 
 {{ submit_message_get('sell.get_ticket_file_type', "[name='room_unique_id'],
-[name='user_message']", disabled='disabled') }} {% block scripts %}
-<!-- prettier-ignore -->
+[name='user_message']", disabled='disabled') }}
+
+{% block scripts %}
 <script src="{{ url_for('static', filename='js/chat.js') }}" type="text/javascript" defer></script>
+<script src="{{ url_for('static', filename='js/social_media.js') }}" type="text/javascript" defer></script>
 {% endblock %}

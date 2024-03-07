@@ -1,0 +1,77 @@
+{% extends "landing/base.html" %}
+
+{% block main_content %}
+{% set all_filters = "[name='location'], [name='date_from'], [name='date_to'], [name='categories'], [name='q'],
+[name='search_args'], [name='tickets_per_page']" %}
+
+<input type="hidden" name="tickets_per_page" id="tickets_per_page" value="{{ tickets|length }}" />
+
+<div class="my-16 self-start flex flex-col gap-2">
+  <h1 class="text-6xl">Ingressos</h1>
+</div>
+
+
+{% if ticket %}
+{% set all_filters = "[name='room_unique_id'],[name='event_unique_id'], [name='ticket_unique_id']" %}
+<input type="hidden" name="ticket_unique_id" value="{{ ticket.unique_id }}">
+<button type="button" hx-get="{{ url_for('buy.booking_ticket_from_web', from_web=True) }}" hx-target="#chat-body"
+  hx-swap="innerHTML" hx-trigger="click" id="chat-start-buy-ticket" hx-include="{{ all_filters }}"
+  class="relative p-3 w-265 sm:w-1/2 flex text-white bg-dark-grey justify-between rounded-lg">
+  <div class="flex flex-col gap-1 text-start">
+    <h3 class="mb-2">{{ ticket.event.name }}</h3>
+    <span class="text-grey">{{ ticket.event.location.name }}</span>
+    <span class="text-grey">{{ ticket.event.venue }}</span>
+    <span class="text-grey">{{ cut_seconds(ticket.event.date_time) }}</span>
+    <div>
+      {% if ticket.is_paired %}
+      <span class="text-secondary mb-0">R${{ get_price_gross(ticket) * 2 }}</span>
+      <small class="text-xs text-gray-500">for 2 tickets</small>
+      {% else %}
+      <p class="text-secondary mt-0">R${{ get_price_gross(ticket) }}</p>
+      {% endif %}
+      <p class="text-xs text-grey">
+        {% if ticket.section %}
+        Section: {{ ticket.section }} &#8226;
+        {% endif %}
+        {% if ticket.queue %}
+        Q: {{ ticket.queue }} &#8226;
+        {% endif %}
+        {% if ticket.seat %}
+        Seat: {{ ticket.seat }}
+        {% endif %}
+      </p>
+    </div>
+    {% if ticket.description %}
+    <p class="text-justify"><span class="text-secondary">Note:</span> {{ ticket.description }}</p>
+    {% endif %}
+
+
+  </div>
+
+  <div class="absolute top-2 right-2">
+    <div class="flex items-center gap-2 py-1.5 px-3 bg-middle-grey rounded-full">
+      <!-- prettier-ignore -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14.8215 1.37708L14.8218 1.3766C14.9876 1.12906 15.2388 1 15.485 1H18.148C18.6187 1 19 1.38128 19 1.852V18.148C19 18.6187 18.6187 19 18.148 19H15.485C15.2388 19 14.9876 18.8709 14.8218 18.6234L14.8215 18.6229C13.7818 17.0731 12.0105 16.049 10 16.049C7.98951 16.049 6.21822 17.0731 5.17854 18.6229L5.17822 18.6234C5.01219 18.8712 4.76191 19 4.515 19H1.852C1.38128 19 1 18.6187 1 18.148V1.852C1 1.38128 1.38128 1 1.852 1H4.515C4.76122 1 5.01237 1.12906 5.17822 1.3766L5.17854 1.37708C6.21815 2.92685 7.9884 3.951 10 3.951C12.0116 3.951 13.7818 2.92685 14.8215 1.37708Z"
+          stroke="#F2B705" stroke-width="2" />
+      </svg>
+      {% if ticket.is_paired %}
+      <span class="text-secondary">2</span>
+      {% else %}
+      <span class="text-secondary">1</span>
+      {% endif %}
+    </div>
+  </div>
+</button>
+
+{% include 'tickets/share.html' %}
+{% else %}
+<h2>Nenhum ingresso encontrado</h2>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
+<script src="{{ url_for('static', filename='js/event.js') }}" type="text/javascript" defer></script>
+{% endblock %}

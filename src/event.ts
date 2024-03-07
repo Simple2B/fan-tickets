@@ -45,39 +45,49 @@ document.addEventListener('DOMContentLoaded', function () {
     '#events-filter-location-status',
   );
 
-  buttonFilterDate.addEventListener('click', () => {
-    const datePickers = document.querySelectorAll('.datepicker');
-    const datePickerArray: HTMLElement[] = Array.from(
-      datePickers,
-    ) as HTMLElement[];
+  if (buttonFilterDate) {
+    buttonFilterDate.addEventListener('click', () => {
+      const datePickers = document.querySelectorAll('.datepicker');
+      const datePickerArray: HTMLElement[] = Array.from(
+        datePickers,
+      ) as HTMLElement[];
 
-    handleHideElements(dropdownFilterDate, datePickerArray);
-  });
-
-  buttonDateApply.addEventListener('click', () => {
-    dropdownFilterDate.classList.toggle('hidden');
-  });
-
-  buttonCategories.addEventListener('click', () => {
-    handleHideElements(dropdownFilterCategories);
-  });
-
-  const dropDownLocationInput: HTMLInputElement = document.querySelector(
-    '#dropdown-location-input',
-  );
-
-  buttonLocation.addEventListener('click', () => {
-    dropDownLocationInput.focus();
-    handleHideElements(dropdownFilterLocation);
-  });
-
-  buttonLocationNames.forEach((button: HTMLDivElement) => {
-    button.addEventListener('click', () => {
-      statusFilterLocation.innerHTML = button.innerHTML;
-      handleHideElements(dropdownFilterLocation);
+      handleHideElements(dropdownFilterDate, datePickerArray);
     });
-  });
-  dropDownLocationInput.addEventListener('keyup', () => {
-    filterDropdownLocation(buttonLocationNames, dropDownLocationInput);
-  });
+  }
+
+  if (buttonDateApply) {
+    buttonDateApply.addEventListener('click', () => {
+      dropdownFilterDate.classList.toggle('hidden');
+    });
+  }
+
+  if (buttonCategories) {
+    buttonCategories.addEventListener('click', () => {
+      handleHideElements(dropdownFilterCategories);
+    });
+  }
+
+  if (statusFilterLocation) {
+    const dropDownLocationInput: HTMLInputElement = document.querySelector(
+      '#dropdown-location-input',
+    );
+
+    if (buttonLocation) {
+      buttonLocation.addEventListener('click', () => {
+        dropDownLocationInput.focus();
+        handleHideElements(dropdownFilterLocation);
+      });
+    }
+
+    buttonLocationNames.forEach((button: HTMLDivElement) => {
+      button.addEventListener('click', () => {
+        statusFilterLocation.innerHTML = button.innerHTML;
+        handleHideElements(dropdownFilterLocation);
+      });
+    });
+    dropDownLocationInput.addEventListener('keyup', () => {
+      filterDropdownLocation(buttonLocationNames, dropDownLocationInput);
+    });
+  }
 });

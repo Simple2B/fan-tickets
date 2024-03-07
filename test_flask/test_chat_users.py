@@ -41,9 +41,10 @@ def test_create_user_email(client: FlaskClient):
     assert len(db.session.scalars(room.messages.select()).all()) == 2
 
 
-def test_password(client: FlaskClient):
-    response = client.get("/chat/create_user_password")
+def test_password(client_with_data: FlaskClient):
+    response = client_with_data.get("/chat/create_user_password")
     assert response.status_code == 405
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select())
 
     TESTING_EMAIL = "new@email.com"
     room = m.Room(
@@ -58,12 +59,13 @@ def test_password(client: FlaskClient):
     messages_count = len(db.session.scalars(room.messages.select()).all())
     MESSAGES_IN_CHAT = 2
 
-    response = client.post(
+    response = client_with_data.post(
         "/chat/create_user_password",
         data=dict(
             room_unique_id=room.unique_id,
             user_unique_id=user.uuid,
             password=TEST_PASSWORD,
+            ticket_unique_id=ticket.unique_id,
         ),
     )
     messages_count += MESSAGES_IN_CHAT
@@ -72,12 +74,13 @@ def test_password(client: FlaskClient):
     assert "Password has been added" in response.data.decode()
     assert len(db.session.scalars(room.messages.select()).all()) == messages_count
 
-    response = client.post(
+    response = client_with_data.post(
         "/chat/confirm_user_password",
         data=dict(
             room_unique_id=room.unique_id,
             user_unique_id=user.uuid,
             password="000000",
+            ticket_unique_id=ticket.unique_id,
         ),
     )
     messages_count += MESSAGES_IN_CHAT
@@ -85,12 +88,13 @@ def test_password(client: FlaskClient):
     assert "Password does not match" in response.data.decode()
     assert len(db.session.scalars(room.messages.select()).all()) == messages_count
 
-    response = client.post(
+    response = client_with_data.post(
         "/chat/confirm_user_password",
         data=dict(
             room_unique_id=room.unique_id,
             user_unique_id=user.uuid,
             password=TEST_PASSWORD,
+            ticket_unique_id=ticket.unique_id,
         ),
     )
     messages_count += MESSAGES_IN_CHAT
@@ -304,14 +308,20 @@ def test_transactions_limit_per_user(client: FlaskClient):
 
     get_testing_tickets(user)
 
-    last_month_tickets_query = m.Ticket.select().where(
-        m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30)
+    last_month_tickets_bought_query = m.Ticket.select().where(
+        m.Ticket.buyer_id == user.id,
+        m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30),
     )
-    last_month_tickets: list[m.Ticket] = db.session.scalars(last_month_tickets_query).all()
-    assert last_month_tickets
+    last_month_tickets_bought: list[m.Ticket] = db.session.scalars(last_month_tickets_bought_query).all()
+
+    last_month_tickets_posted_query = m.Ticket.select().where(
+        m.Ticket.seller_id == user.id,
+        m.Ticket.created_at > datetime.now() - timedelta(days=30),
+    )
+    last_month_tickets_posted: list[m.Ticket] = db.session.scalars(last_month_tickets_posted_query).all()
 
     users_transactions_last_month = transactions_last_month(user)
-    assert users_transactions_last_month == len(last_month_tickets)
+    assert users_transactions_last_month == len(last_month_tickets_bought) + len(last_month_tickets_posted)
 
     m.GlobalFeeSettings().save()
 
