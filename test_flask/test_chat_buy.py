@@ -142,7 +142,8 @@ def test_booking_paired_tickets(client: FlaskClient):
     login(client)
     user: m.User = current_user
     user.service_fee = 0
-    user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
+    # user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
+    user.pagarme_id = "cus_PMkWepVUrSbG3gr1"
     response = client.get(f"/buy/booking_ticket?room_unique_id={room.unique_id}&ticket_unique_id={ticket_1.unique_id}")
     assert response.status_code == 200
     assert "Do you want to proceed to purchase?" in response.data.decode()

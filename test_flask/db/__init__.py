@@ -120,10 +120,10 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
         buyer_id = 4
 
         # set to seller a recipient_id
-        # seller: m.User = db.session.get(m.User, seller_id)
-        # if seller:
-        #     seller.recipient_id = "re_clsnbbg4c071b019twu0zvkio"
-        #     seller.save(False)
+        seller: m.User = db.session.get(m.User, seller_id)
+        if seller:
+            seller.recipient_id = "re_cl5qpked92pjc159tgddwh6ir"
+            seller.save(False)
 
         event = m.Event(
             name=f"{location_name} {category_name} {i}",
@@ -134,7 +134,8 @@ def generate_test_events(num_objects: int = NUM_TEST_EVENTS):
             venue=f"{location_name} venue {i}",
             category_id=category_id,
             creator_id=seller_id,
-            date_time=utcnow() + timedelta(days=randint(10, 30)),
+            # date_time=utcnow() + timedelta(days=randint(10, 30)),
+            date_time=utcnow() + timedelta(days=randint(-10, 30)),
             approved=True,
         ).save(False)
         for j in range(12):

@@ -37,14 +37,14 @@ def flask_app(session_mocker):
 
 
 @pytest.fixture()
-def app(flask_app, requests_mock):
-    # def app(flask_app):
+# def app(flask_app, requests_mock):
+def app(flask_app):
     # mock requests
     ## pagarme
-    for endpoint, json_file in PRAGMA_GET_DATA_MOCK_MAP.items():
-        with open(Path("test_flask") / "assets" / "pagarme" / json_file, "r") as json_f:
-            data_mocked = json.load(json_f)
-        requests_mock.get(re.compile(pagarme_client.__generate_url__(endpoint)), json=data_mocked)
+    # for endpoint, json_file in PRAGMA_GET_DATA_MOCK_MAP.items():
+    #     with open(Path("test_flask") / "assets" / "pagarme" / json_file, "r") as json_f:
+    #         data_mocked = json.load(json_f)
+    #     requests_mock.get(re.compile(pagarme_client.__generate_url__(endpoint)), json=data_mocked)
 
     yield flask_app
 

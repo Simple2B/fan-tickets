@@ -1,0 +1,155 @@
+{
+    "id": "or_qV363RNuAwikvwPR",
+    "code": "QVN5A8AJQR",
+    "amount": 100,
+    "currency": "BRL",
+    "closed": true,
+    "items": [
+        {
+            "id": "oi_Rrp7jxEFedF36J31",
+            "type": "product",
+            "description": "Ticket Bras\u00edlia Other 11 seller: c79d24ff-7abe-4cad-97ee-512d3ece8597",
+            "category": "elderly",
+            "amount": 100,
+            "quantity": 1,
+            "status": "active",
+            "created_at": "2024-03-08T12:42:04Z",
+            "updated_at": "2024-03-08T12:42:04Z",
+            "code": "7583d403-f9db-4150-85e7-306fbddeb336"
+        }
+    ],
+    "customer": {
+        "id": "cus_PMkWepVUrSbG3gr1",
+        "name": "Alexandre Monteiro",
+        "email": "amonteiro.sp@gmail.com",
+        "code": "09308007-332c-41f2-9642-1e3e0e7ac33b",
+        "document": "13100180810",
+        "type": "individual",
+        "delinquent": false,
+        "created_at": "2024-02-22T18:20:04Z",
+        "updated_at": "2024-02-26T16:00:28Z",
+        "birthdate": "1969-11-19T00:00:00Z",
+        "phones": {
+            "mobile_phone": {
+                "country_code": "55",
+                "number": "985558800",
+                "area_code": "11"
+            }
+        }
+    },
+    "status": "paid",
+    "created_at": "2024-03-08T12:42:04Z",
+    "updated_at": "2024-03-08T12:42:08Z",
+    "closed_at": "2024-03-08T12:42:04Z",
+    "charges": [
+        {
+            "id": "ch_x2LYwklUoJckYonJ",
+            "code": "QVN5A8AJQR",
+            "gateway_id": "2434057540",
+            "amount": 100,
+            "paid_amount": 100,
+            "status": "paid",
+            "currency": "BRL",
+            "payment_method": "credit_card",
+            "paid_at": "2024-03-08T12:42:08Z",
+            "created_at": "2024-03-08T12:42:04Z",
+            "updated_at": "2024-03-08T12:42:08Z",
+            "customer": {
+                "id": "cus_PMkWepVUrSbG3gr1",
+                "name": "Alexandre Monteiro",
+                "email": "amonteiro.sp@gmail.com",
+                "code": "09308007-332c-41f2-9642-1e3e0e7ac33b",
+                "document": "13100180810",
+                "type": "individual",
+                "delinquent": false,
+                "created_at": "2024-02-22T18:20:04Z",
+                "updated_at": "2024-02-26T16:00:28Z",
+                "birthdate": "1969-11-19T00:00:00Z",
+                "phones": {
+                    "mobile_phone": {
+                        "country_code": "55",
+                        "number": "985558800",
+                        "area_code": "11"
+                    }
+                }
+            },
+            "last_transaction": {
+                "id": "tran_4v3KXnRCDqC2QAVJ",
+                "transaction_type": "credit_card",
+                "gateway_id": "2434057540",
+                "amount": 100,
+                "status": "captured",
+                "success": true,
+                "installments": 1,
+                "statement_descriptor": "FanTicket",
+                "acquirer_name": "pagarme",
+                "acquirer_tid": "2434057540",
+                "acquirer_nsu": "2434057540",
+                "acquirer_auth_code": "044497",
+                "acquirer_message": "Transa\u00e7\u00e3o aprovada com sucesso",
+                "acquirer_return_code": "0000",
+                "operation_type": "auth_and_capture",
+                "card": {
+                    "id": "card_Yq9KMLZioH9ZQL5g",
+                    "first_six_digits": "536354",
+                    "last_four_digits": "5178",
+                    "brand": "Visa",
+                    "holder_name": "FanTicket",
+                    "holder_document": "93095135270",
+                    "exp_month": 7,
+                    "exp_year": 2024,
+                    "status": "active",
+                    "type": "credit",
+                    "label": "top",
+                    "created_at": "2024-03-08T12:42:04Z",
+                    "updated_at": "2024-03-08T12:42:04Z",
+                    "billing_address": {
+                        "zip_code": "90265333",
+                        "city": "S\u00e3o Paulo",
+                        "state": "SP",
+                        "country": "BR",
+                        "line_1": "Address Line 1",
+                        "line_2": "Address Line 2"
+                    }
+                },
+                "funding_source": "credit",
+                "created_at": "2024-03-08T12:42:04Z",
+                "updated_at": "2024-03-08T12:42:04Z",
+                "gateway_response": {
+                    "code": "200",
+                    "errors": []
+                },
+                "antifraud_response": {
+                    "status": "approved",
+                    "score": "moderated",
+                    "provider_name": "pagarme"
+                },
+                "split": [
+                    {
+                        "id": "sr_cltinc7267myy019tcig92ycr",
+                        "type": "percentage",
+                        "gateway_id": "sr_cltinc7267myy019tcig92ycr",
+                        "amount": 100,
+                        "recipient": {
+                            "id": "re_cl5qpked92pjc159tgddwh6ir",
+                            "name": "FAN TICKET",
+                            "document": "47149708000172",
+                            "type": "company",
+                            "payment_mode": "bank_transfer",
+                            "status": "active",
+                            "created_at": "2024-02-26T15:24:37Z",
+                            "updated_at": "2024-02-26T15:24:37Z"
+                        },
+                        "options": {
+                            "liable": true,
+                            "charge_processing_fee": true,
+                            "charge_remainder_fee": true
+                        }
+                    }
+                ],
+                "metadata": {}
+            }
+        }
+    ],
+    "checkouts": []
+}

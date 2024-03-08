@@ -114,14 +114,14 @@ def test_get_recipients(client: FlaskClient):
     assert response
 
 
-@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+# @pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_get_recipient(client: FlaskClient):
-    TESTING_RECIPIENT_ID = "re_clsn5rjgu04qv019tnksv6spy"
+    TESTING_RECIPIENT_ID = "re_cl5qpked92pjc159tgddwh6ir"
     response = pagarme_client.get_recipient(TESTING_RECIPIENT_ID)
     assert response
 
 
-@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+# @pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_create_recipient(client: FlaskClient):
     TESTING_DOCUMENT = "9309513"
     for i in range(4):
@@ -175,13 +175,14 @@ def test_unreserve_tickets(runner: FlaskCliRunner):
     assert f"{len(tickets)} with expired reservation unreserved" in unreserve_output.stdout
 
 
-@pytest.mark.skipif(True, reason="no pagar.me API secret key")
+# @pytest.mark.skipif(True, reason="no pagar.me API secret key")
 def test_pay_sellers(runner: FlaskCliRunner):
     command_output: Result = runner.invoke(args=["db-populate"])
     assert "populated by" in command_output.stdout
 
     events_query = m.Event.select().where(m.Event.date_time < datetime.now())
     events: list[m.Event] = db.session.scalars(events_query).all()
+    events = events[:1]
     assert events
 
     TESTING_TICKETS_TO_PAY_PER_EVENT = 5
@@ -195,8 +196,8 @@ def test_pay_sellers(runner: FlaskCliRunner):
                 event=event,
                 is_sold=True,
                 last_reservation_time=datetime.now() - timedelta(hours=49),
-                price_net=100,
-                price_gross=111,
+                price_net=1,
+                price_gross=1,
             ).save()
             tickets_to_pay.append(ticket)
     assert tickets_to_pay
