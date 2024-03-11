@@ -32,7 +32,8 @@ def delete_obsolete_rooms():
 @celery.task
 def pay_to_sellers():
     log(log.INFO, "Periodic task pay_to_sellers started at [%s]", datetime.now())
-    process = subprocess.Popen(["poetry", "run", "flask", "pay-sellers"])
+    # process = subprocess.Popen(["poetry", "run", "flask", "pay-sellers"])
+    process = subprocess.Popen(["poetry", "run", "flask", "get-unpaid-tickets"])
     process.communicate()
 
 
@@ -52,8 +53,9 @@ def setup_periodic_tasks(sender, **kwargs):
     # 2nd stage of payments, when FT pays to sellers
     # Delayed decision by the client. We don't know how this payment stage will be implemented.
 
-    # sender.add_periodic_task(
-    #     timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
-    #     pay_to_sellers.s(),
-    #     name="pay to sellers",
-    # )
+    sender.add_periodic_task(
+        # timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
+        timedelta(minutes=1),
+        pay_to_sellers.s(),
+        name="pay to sellers",
+    )

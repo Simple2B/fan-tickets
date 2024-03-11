@@ -301,7 +301,9 @@ def init_shell_commands(app: Flask):
 
     @app.cli.command("get-unpaid-tickets")
     def get_unpaid_tickets():
-        """Get all tickets"""
+        """
+        Testing command to get unpaid tickets
+        """
         tickets_query = m.Ticket.select().where(
             m.Ticket.is_sold.is_(True),
             m.Ticket.paid_to_seller_at.is_(None),
@@ -309,7 +311,20 @@ def init_shell_commands(app: Flask):
         )
         tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
         for ticket in tickets:
-            print(ticket.unique_id, ticket.paid_to_seller_at, ticket.is_deleted)
+            last_reservation_time = (
+                ticket.last_reservation_time.strftime("%Y-%m-%d %H:%M:%S") if ticket.last_reservation_time else None
+            )
+            print(
+                "Paid:",
+                ticket.paid_to_seller_at,
+                "Deleted:",
+                ticket.is_deleted,
+                "Reserved:",
+                last_reservation_time,
+                "Seller:",
+                ticket.seller.email,
+            )
+
         print(len(tickets), "tickets unpaid to sellers")
 
     @app.cli.command("pay-sellers")
@@ -407,6 +422,9 @@ def init_shell_commands(app: Flask):
     @app.cli.command("untransfer")
     @click.option("--email", type=str)
     def untransfer(email: str):
+        """
+        Command for testing untransferring tickets
+        """
         user_query = m.User.select().where(m.User.email == email)
         user: m.User = db.session.scalar(user_query)
 
