@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
@@ -71,7 +70,7 @@ class PagarmePaidWebhookData(BaseModel):
     updated_at: str
     closed_at: str
     charges: list
-    metadata: Optional[dict]
+    metadata: dict | None = {}
 
     model_config = ConfigDict(from_attributes=True)
 

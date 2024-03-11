@@ -240,7 +240,7 @@ def init_shell_commands(app: Flask):
         """Unreserve all tickets"""
         tickets_query = (
             m.Ticket.select()
-            .where(m.Ticket.is_reserved.is_(True))
+            .where(m.Ticket.is_reserved.is_(True), m.Ticket.is_deleted.is_(False), m.Ticket.is_sold.is_(False))
             .where(m.Ticket.last_reservation_time < datetime.now() - timedelta(minutes=CFG.TICKETS_IN_CART_EXPIRES_IN))
             # .where(m.Ticket.event.has(m.Event.location.has(m.Location.name.ilike("%Rio%"))))
         )
@@ -323,6 +323,8 @@ def init_shell_commands(app: Flask):
                 last_reservation_time,
                 "Seller:",
                 ticket.seller.email,
+                "Buyer:",
+                ticket.buyer.email,
             )
 
         print(len(tickets), "tickets unpaid to sellers")
