@@ -10,9 +10,9 @@ history_message_user_home %}
 
 <!-- prettier-ignore -->
 <div id="chat-window"
-  class="chat-window-close flex flex-col fixed top-0 sm:top-auto sm:bottom-28 sm:right-10 z-50 w-full sm:w-96 h-screen sm:h-650 bg-chat-window sm:rounded-2xl">
+  class="chat-window-close h-full flex flex-col fixed top-0 sm:top-auto sm:bottom-28 sm:right-10 z-50 w-full sm:w-96 bg-chat-window sm:rounded-2xl">
   {% include 'chat/chat_header.html' %}
-  <div id="chat-body" class="h-full flex justify-between flex-col items-stretch  rounded-b-2xl">
+  <div id="chat-body" class="flex justify-between flex-col items-stretch  rounded-b-2xl">
     <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
       {% include 'chat/chat_spinner.html' %}
       {% set html_element %}
@@ -42,6 +42,7 @@ history_message_user_home %}
   <input name="message_uuid" class="hidden">
   <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message"
     hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
+  <div class="h-4 py-3 sm:hidden bg-chat-window  text-secondary text-xs text-center">Powered by Simple2B</div>
 </div>
 
 {% include "chat/chat_icon.html" %}
