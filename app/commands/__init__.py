@@ -314,6 +314,7 @@ def init_shell_commands(app: Flask):
             last_reservation_time = (
                 ticket.last_reservation_time.strftime("%Y-%m-%d %H:%M:%S") if ticket.last_reservation_time else None
             )
+            reserved_from_now = datetime.now() - ticket.last_reservation_time if ticket.last_reservation_time else None
             print(
                 "Paid:",
                 ticket.paid_to_seller_at,
@@ -321,6 +322,8 @@ def init_shell_commands(app: Flask):
                 ticket.is_deleted,
                 "Reserved:",
                 last_reservation_time,
+                "Reserved from now:",
+                reserved_from_now,
                 "Seller:",
                 ticket.seller.email,
                 "Buyer:",
