@@ -7,6 +7,10 @@
   color: red;
 }
 
+body {
+  touch-action: pan-y;
+}
+
 /* backgrounds */
 .bg-main {
   background: #111 url('/static/img/backgrounds/concert_mobile.png') no-repeat

@@ -45,6 +45,7 @@ export function resizeChat() {
 
   if (screenWith < 640) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
+    document.querySelector('body').classList.add('overflow-hidden');
     return;
   }
 

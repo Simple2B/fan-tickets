@@ -184,12 +184,16 @@ document.addEventListener('DOMContentLoaded', () => {
         '.chat-message-input',
       ) as HTMLInputElement;
       messageInput.focus();
+      messageInput.addEventListener('focus', () => {
+        scrollDownSmooth(chatMain);
+      });
     }
     if (targetElement.querySelector('#chat-main')) {
       setChatMainHeight(targetElement.querySelector('#chat-main'));
     }
     if (targetElement.querySelector('#chat-close')) {
       toggleChatWindow();
+      document.querySelector('body').classList.remove('overflow-hidden');
     }
     if (targetElement.querySelector('#chat-bot-close')) {
       setTimeout(() => {
@@ -249,5 +253,38 @@ document.addEventListener('DOMContentLoaded', () => {
       openChatWindow();
       resizeChat();
     });
+  }
+
+  document.addEventListener('mousedown', function (event) {
+    handleFocus(event.target);
+  });
+
+  document.addEventListener('focus', function (event) {
+    handleFocus(event.target);
+  });
+
+  document.addEventListener('blur', function (event) {
+    resetViewport();
+  });
+
+  function handleFocus(element) {
+    if (element.tagName === 'INPUT') {
+      document.querySelector('meta[name=viewport]').remove();
+      var viewportMeta = document.createElement('meta');
+      viewportMeta.setAttribute('name', 'viewport');
+      viewportMeta.setAttribute(
+        'content',
+        'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
+      );
+      document.querySelector('head').appendChild(viewportMeta);
+    }
+  }
+
+  function resetViewport() {
+    document.querySelector('meta[name=viewport]').remove();
+    var viewportMeta = document.createElement('meta');
+    viewportMeta.setAttribute('name', 'viewport');
+    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1');
+    document.querySelector('head').appendChild(viewportMeta);
   }
 });
