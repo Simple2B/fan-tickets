@@ -256,18 +256,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('mousedown', function (event) {
-    handleFocus(event.target);
+    if (event.target instanceof HTMLElement) {
+      handleFocus(event.target);
+    }
   });
 
   document.addEventListener('focus', function (event) {
-    handleFocus(event.target);
+    if (event.target instanceof HTMLElement) {
+      handleFocus(event.target);
+    }
   });
 
   document.addEventListener('blur', function (event) {
     resetViewport();
   });
 
-  function handleFocus(element) {
+  function handleFocus(element: HTMLElement) {
     if (element.tagName === 'INPUT') {
       document.querySelector('meta[name=viewport]').remove();
       var viewportMeta = document.createElement('meta');
