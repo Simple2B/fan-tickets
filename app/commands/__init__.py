@@ -307,7 +307,7 @@ def init_shell_commands(app: Flask):
         tickets_query = m.Ticket.select().where(
             m.Ticket.is_sold.is_(True),
             m.Ticket.paid_to_seller_at.is_(None),
-            m.Ticket.is_deleted.is_(False),
+            m.Ticket.is_deleted.is_(True),
         )
         tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
         for ticket in tickets:
