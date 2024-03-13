@@ -53,9 +53,9 @@ def setup_periodic_tasks(sender, **kwargs):
     # 2nd stage of payments, when FT pays to sellers
     # Delayed decision by the client. We don't know how this payment stage will be implemented.
 
-    sender.add_periodic_task(
-        # timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
-        timedelta(minutes=1),
-        pay_to_sellers.s(),
-        name="pay to sellers",
-    )
+    # sender.add_periodic_task(
+    #     # timedelta(hours=CFG.TICKETS_SOLD_PAY_SELLERS_AFTER),
+    #     timedelta(minutes=1),
+    #     pay_to_sellers.s(),
+    #     name="pay to sellers",
+    # )
