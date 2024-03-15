@@ -1,5 +1,5 @@
 <!-- prettier-ignore -->
-<div class="p-4 flex justify-between items-center rounded-t-2xl" id="chat-header">
+<div class="sticky top-0 sm:static sm:top-auto p-4 flex justify-between items-center rounded-t-2xl" id="chat-header">
   {% set all_filters = "[name='room_unique_id']" %}
   <button type="button" hx-get="{{ url_for('chat.home') }}" hx-target="#chat-body" hx-swap="innerHTML"
     hx-trigger="click" hx-include="{{ all_filters }}"
