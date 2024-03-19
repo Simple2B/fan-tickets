@@ -11,7 +11,7 @@ from .db import get_testing_tickets
 def test_chat_window(client: FlaskClient):
     login(client)
     response = client.get("/")
-    assert "Hello! Welcome to FanTicketBot" in response.data.decode()
+    assert "How can I assist you" in response.data.decode()
 
 
 def test_chat_sell(client: FlaskClient):

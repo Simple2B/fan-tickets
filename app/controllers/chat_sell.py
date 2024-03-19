@@ -135,15 +135,19 @@ def create_event_date_time(date: str, time: str) -> datetime:
     return date_time
 
 
-def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room) -> list[m.Event]:
+def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room, from_buy=False) -> list[m.Event]:
     assert params.user_message
-    c.save_message(
-        "Please, input official event name (matching the official website)",
-        f"{params.user_message}",
-        room,
-    )
+
+    if not from_buy:
+        c.save_message(
+            "Please, input official event name (matching the official website)",
+            f"{params.user_message}",
+            room,
+        )
     # Firstly try to find event in database by exact match
-    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{params.user_message}%"))
+    event_query = sa.select(m.Event).where(
+        m.Event.name.ilike(f"%{params.user_message}%"), m.Event.date_time >= datetime.now()
+    )
     events = db.session.scalars(event_query).all()
     if events:
         return events
@@ -152,7 +156,7 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
     search_key_words = params.user_message.split(" ") if params.user_message else []
     events = []
     for word in search_key_words:
-        event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
+        event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"), m.Event.date_time >= datetime.now())
         events_search = db.session.scalars(event_query).all()
         events.extend(events_search)
 
