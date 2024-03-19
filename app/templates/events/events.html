@@ -183,7 +183,7 @@
             <input name="categories" id="events-filter-categories-input-{{ category.id }}" type="checkbox"
               value="{{ category.name }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#events-list"
               hx-include="{{ all_filters }}" hx-get="{{ url_for('events.search_events') }}"
-              class="w-4 h-4 text-grey   rounded input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent" />
+              class="w-4 h-4 text-secondary   rounded input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent" />
             <label for="events-filter-categories-input-{{ category.id }}"
               class="ms-2 text-sm font-medium text-white dark:text-gray-300">{{ category.name }}</label>
           </div>

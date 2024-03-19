@@ -18,6 +18,13 @@
       }
     },
     {
+      "name": "Launch Chrome",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:5005",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "name": "Python: Flask",
       "type": "debugpy",
       "request": "launch",

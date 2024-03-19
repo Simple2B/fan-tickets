@@ -15,6 +15,26 @@ function hideElements(
   }
 }
 
+export function unlockScroll() {
+  const scrollY = document.body.style.top;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  window.scrollTo(0, parseInt(scrollY || '0') * -1);
+
+  console.log('unlock scroll');
+}
+
+export function lockScroll() {
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${window.scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+
+  console.log('lock scroll');
+}
+
 export function handleHideElements(
   element: HTMLElement,
   otherElement: HTMLElement[] = [],
@@ -39,13 +59,14 @@ export function resizeChat() {
   const screenWith: number = window.innerWidth;
   const headerBottom: number = header.offsetTop + header.offsetHeight;
   const chatWindowTop: number = chatWindow.offsetTop;
-  const fixedMinDistance: number = 220;
+  const fixedMinDistance: number = 250;
   const maxChatWindowHeight: number = 650;
   const availableSpace: number = chatWindowTop - headerBottom;
 
   if (screenWith < 640) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
-    document.querySelector('body').classList.add('overflow-hidden');
+
+    lockScroll();
     return;
   }
 
@@ -54,9 +75,12 @@ export function resizeChat() {
   if (availableSpace < fixedMinDistance) {
     chatWindow.style.height = `calc(100vh - ${fixedMinDistance}px)`;
   }
-  if (chatWindow.offsetHeight > maxChatWindowHeight) {
-    chatWindow.style.height = `${maxChatWindowHeight}px`;
-  }
+
+  setTimeout(() => {
+    if (chatWindow.offsetHeight > maxChatWindowHeight) {
+      chatWindow.style.height = `${maxChatWindowHeight}px`;
+    }
+  }, 200);
 
   if (chatMain && chatFooter) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
