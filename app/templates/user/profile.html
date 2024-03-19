@@ -24,7 +24,7 @@
         <div class="pb-8 border-b border-grey">
           <p class="font-medium text-3xl">Endereço de Email</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_email" hx-post="{{ url_for('admin.user.save_email') }}"
+          <form method="post" id="profile_email" hx-post="{{ url_for('profile.save_email') }}"
             hx-target="#profile_email" hx-swap="innerHTML">
             {{ email_form.hidden_tag() }} {% include 'user/email_save.html' %}
           </form>
@@ -33,7 +33,7 @@
         <div class="py-8 border-b border-grey">
           <p class="font-medium text-3xl">Phone</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_phone" hx-post="{{ url_for('admin.user.save_phone') }}"
+          <form method="post" id="profile_phone" hx-post="{{ url_for('profile.save_phone') }}"
             hx-target="#profile_phone" hx-swap="innerHTML">
             {{ phone_form.hidden_tag() }} {% include 'user/phone_save.html' %}
           </form>
@@ -120,8 +120,8 @@
         <div class="py-8 border-b border-grey">
           <p class="mb-3 font-medium text-3xl">Dados bancários</p>
           <!-- prettier-ignore -->
-          <form method="post" id="profile_card" hx-post="{{ url_for('admin.user.save_card') }}"
-            hx-target="#profile_card" hx-swap="innerHTML">
+          <form method="post" id="profile_card" hx-post="{{ url_for('profile.save_card') }}" hx-target="#profile_card"
+            hx-swap="innerHTML">
             {{ card_form.hidden_tag() }} {% include 'user/card_save.html' %}
           </form>
         </div>
@@ -150,10 +150,10 @@
       </div>
     </div>
     <div class="flex gap-8 justify-center">
-      <a class="p-2 text-lg text-secondary underline cursor-pointer" href="{{url_for('admin.user.export')}}">
+      <a class="p-2 text-lg text-secondary underline cursor-pointer" href="{{url_for('profile.export')}}">
         Exportar meus dados
       </a>
-      <a class="p-2 text-lg text-danger underline cursor-pointer" href="{{url_for('admin.user.deactivate')}}">
+      <a class="p-2 text-lg text-danger underline cursor-pointer" href="{{url_for('profile.deactivate')}}">
         Remover minha conta
       </a>
     </div>
