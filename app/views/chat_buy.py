@@ -55,7 +55,7 @@ def get_event_name():
         room,
     )
 
-    events = c.get_event_by_name_bard(params, room)
+    events = c.get_event_by_name_bard(params, room, from_buy=True)
 
     if not events:
         log(log.INFO, "Events not found: [%s]", params.user_message)
@@ -559,6 +559,7 @@ def subscribe_on_event():
     params = c.validate_buy_ticket_params(request.args)
 
     room = c.get_room(params.room_unique_id)
+    user: m.User = current_user
 
     if not params.event_unique_id:
         return render_template(
@@ -645,6 +646,12 @@ def subscribe_on_event():
             event_name=event.name,
             url=url,
         ),
+    )
+
+    c.save_message(
+        "Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket appears?",
+        "Yes",
+        room,
     )
 
     return render_template(

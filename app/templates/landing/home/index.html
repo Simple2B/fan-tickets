@@ -10,7 +10,7 @@
     Pagamento seguro com ingresso garantido
   </p>
 </div>
-<form class="w-full md:w-8/12 lg:w-4/12 mb-28">
+<form action="{{url_for('events.get_events')}}" class="w-full md:w-8/12 lg:w-4/12 mb-28">
   <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
   <div class="relative">
     <div class="absolute inset-y-0 start-1 flex items-center ps-3 pointer-events-none">
@@ -21,7 +21,7 @@
           stroke="#828282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </div>
-    <input type="search" id="default-search"
+    <input type="search" id="default-search" name="event_name"
       class="block w-full px-9 py-4 ps-12 text-sm button-gradient-grey focus:ring-0 focus:border-transparent"
       placeholder="Busque por evento, categoria ou palavra-chave" required />
     <button class="absolute inset-y-0 right-0 pe-5">

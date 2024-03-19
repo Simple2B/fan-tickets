@@ -11,6 +11,31 @@
   </p>
 </div>
 
+<form action="{{url_for('events.get_events')}}" class="w-full md:w-8/12 lg:w-4/12 mb-28">
+  <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+  <div class="relative">
+    <div class="absolute inset-y-0 start-1 flex items-center ps-3 pointer-events-none">
+      <!-- prettier-ignore -->
+      <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M15.9 15.4L19.5 19M18.3 9.4C18.3 14.0392 14.5392 17.8 9.9 17.8C5.26081 17.8 1.5 14.0392 1.5 9.4C1.5 4.76081 5.26081 1 9.9 1C14.5392 1 18.3 4.76081 18.3 9.4Z"
+          stroke="#828282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+    <input type="search" id="default-search" name="event_name"
+      class="block w-full px-9 py-4 ps-12 text-sm button-gradient-grey focus:ring-0 focus:border-transparent"
+      placeholder="Busque por evento, categoria ou palavra-chave" required />
+    <button class="absolute inset-y-0 right-0 pe-5">
+      <!-- prettier-ignore -->
+      <svg width="19" height="12" viewBox="0 0 19 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M8.5 12H10.5C11.05 12 11.5 11.55 11.5 11C11.5 10.45 11.05 10 10.5 10H8.5C7.95 10 7.5 10.45 7.5 11C7.5 11.55 7.95 12 8.5 12ZM0.5 1C0.5 1.55 0.95 2 1.5 2H17.5C18.05 2 18.5 1.55 18.5 1C18.5 0.45 18.05 0 17.5 0H1.5C0.95 0 0.5 0.45 0.5 1ZM4.5 7H14.5C15.05 7 15.5 6.55 15.5 6C15.5 5.45 15.05 5 14.5 5H4.5C3.95 5 3.5 5.45 3.5 6C3.5 6.55 3.95 7 4.5 7Z"
+          fill="#99A1A3" />
+      </svg>
+    </button>
+  </div>
+</form>
+
 <!-- Filters -->
 <div class="mb-8 self-start flex flex-col lg:flex-row gap-8">
   <!-- Location   -->
@@ -158,7 +183,7 @@
             <input name="categories" id="events-filter-categories-input-{{ category.id }}" type="checkbox"
               value="{{ category.name }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#events-list"
               hx-include="{{ all_filters }}" hx-get="{{ url_for('events.search_events') }}"
-              class="w-4 h-4 text-grey   rounded input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent" />
+              class="w-4 h-4 text-secondary   rounded input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent" />
             <label for="events-filter-categories-input-{{ category.id }}"
               class="ms-2 text-sm font-medium text-white dark:text-gray-300">{{ category.name }}</label>
           </div>

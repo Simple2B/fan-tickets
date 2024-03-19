@@ -128,7 +128,7 @@ def add_identity_document_number(identity_number: str, user: m.User, room: m.Roo
     user.document_identity_number = identity_number
     user.save()
 
-    c.save_message("Please input your identification number", f"Identification number: {identity_number}", room)
+    c.save_message("Please input your CPF number", f"CPF number: {identity_number}", room)
 
     return
 

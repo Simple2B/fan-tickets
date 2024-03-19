@@ -3,6 +3,7 @@ import {
   scrollDownSmooth,
   resizeChat,
   socialMediaShare,
+  unlockScroll,
 } from './utils';
 import * as htmx from 'htmx.org';
 
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (targetElement.querySelector('#chat-close')) {
       toggleChatWindow();
-      document.querySelector('body').classList.remove('overflow-hidden');
+      unlockScroll();
     }
     if (targetElement.querySelector('#chat-bot-close')) {
       setTimeout(() => {

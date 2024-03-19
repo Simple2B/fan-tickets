@@ -11,7 +11,7 @@ from app.logger import log
 
 
 def get_events_by_event_name(event_name: str, room: m.Room) -> list[m.Event]:
-    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{event_name}%"))
+    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{event_name}%"), m.Event.date_time >= datetime.now())
     events = db.session.scalars(event_query).all()
     if not events:
         log(log.INFO, "Events not found: [%s]", event_name)
@@ -26,7 +26,11 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
         log(log.INFO, "Location not found: [%s]", params.location_unique_id)
         return None
 
-    event_query = sa.select(m.Event).where(m.Event.name == params.event_name, m.Event.location_id == location.id)
+    event_query = sa.select(m.Event).where(
+        m.Event.name == params.event_name,
+        m.Event.location_id == location.id,
+        m.Event.date_time >= datetime.now(),
+    )
     events = db.session.scalars(event_query).all()
 
     if not events:

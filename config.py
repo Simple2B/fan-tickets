@@ -18,7 +18,7 @@ class BaseConfig(BaseSettings):
     """Base configuration."""
 
     ENV: str = "base"
-    APP_NAME: str = "Fan Ticket"
+    APP_NAME: str = "FanTicket"
     VERSION: str = get_version()
     SECRET_KEY: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False

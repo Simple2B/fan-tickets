@@ -61,11 +61,11 @@ def test_user_email_edit(client: FlaskClient):
     assert user.username in response.data.decode()
     assert user.email in response.data.decode()
 
-    response = client.get("/admin/user/edit_email")
+    response = client.get("/profile/edit_email")
     assert response.status_code == 200
 
     response = client.post(
-        "/admin/user/save_email",
+        "/profile/save_email",
         data={"email": "new@email.com"},
         follow_redirects=True,
     )
@@ -76,11 +76,11 @@ def test_user_email_edit(client: FlaskClient):
 def test_user_phone_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    response = client.get("/admin/user/edit_phone")
+    response = client.get("/profile/edit_phone")
     assert response.status_code == 200
 
     response = client.post(
-        "/admin/user/save_phone",
+        "/profile/save_phone",
         data={"phone": "123456789"},
         follow_redirects=True,
     )
@@ -92,11 +92,11 @@ def test_user_card_edit(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/admin/user/edit_card")
+    response = client.get("/profile/edit_card")
     assert response.status_code == 200
 
     response = client.post(
-        "/admin/user/save_card",
+        "/profile/save_card",
         data={"card": "0000111122223333"},
         follow_redirects=True,
     )
@@ -105,7 +105,7 @@ def test_user_card_edit(client: FlaskClient):
     assert user.activated
 
     response = client.post(
-        "/admin/user/save_card",
+        "/profile/save_card",
         data={"card": "1"},
         follow_redirects=True,
     )
@@ -150,7 +150,7 @@ def test_user_export_data(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/admin/user/export")
+    response = client.get("/profile/export")
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "text/csv; charset=utf-8"
     assert response.headers["Content-Disposition"].startswith("attachment;")
@@ -162,7 +162,7 @@ def test_user_deactivate_account(client: FlaskClient):
     login(client)
     user: m.User = current_user
 
-    response = client.get("/admin/user/deactivate")
+    response = client.get("/profile/deactivate")
     assert response.status_code == 302
     assert user.activated is False
 

@@ -1,10 +1,9 @@
 <div class="scroll-x-container">
   <div class="scroll-x-modules h-517 p-1">
     {% for location in locations %}
-    <a href="#" class="scroll-x-module w-80 h-517 relative rounded-2xl">
-      <img
-        class="absolute w-full h-full rounded-2xl"
-        src="{{ location.picture.base64_src }}"
+    <a href="{{ url_for('events.get_events', location=location.name) }}"
+      class="scroll-x-module w-80 h-517 relative rounded-2xl">
+      <img class="absolute w-full h-full rounded-2xl" src="{{ location.picture.base64_src }}"
         alt="{{ location.name }}" />
       <div class="relative top-1/2">
         <p class="text-3xl">{{ location.name }}</p>
