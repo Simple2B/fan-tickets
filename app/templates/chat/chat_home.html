@@ -20,10 +20,13 @@
   {% endset %}
 
   <div id="chat-message-container" data-send-message>
-    {{ bot_message('How can I assist you today? Are you looking to buy or sell a ticket?', html_element) }}
-    <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
-      {% include 'chat/chat_spinner_active.html' %}
-    </div>
+    {% if current_user.is_authenticated %}
+    {{ bot_message('Hi, ' + current_user.name + '! How can I assist you
+    today? Are you looking to buy or sell a ticket?', html_element) }}
+    {% else %}
+    {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you
+    today? Are you looking to buy or sell a ticket?', html_element) }}
+    {% endif %}
   </div>
 
 </div>

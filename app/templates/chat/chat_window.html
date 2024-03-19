@@ -31,8 +31,13 @@ history_message_user_home %}
       {% endset %}
 
       <div id="chat-message-container" data-send-message>
-        {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a
-        ticket?', html_element) }}
+        {% if current_user.is_authenticated %}
+        {{ bot_message('Hi, ' + current_user.name + '! How can I assist you
+        today? Are you looking to buy or sell a ticket?', html_element) }}
+        {% else %}
+        {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you
+        today? Are you looking to buy or sell a ticket?', html_element) }}
+        {% endif %}
       </div>
     </div>
 
