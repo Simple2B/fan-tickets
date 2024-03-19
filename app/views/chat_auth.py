@@ -866,7 +866,7 @@ def create_passport_identity_number():
         log(log.ERROR, "No identity number provided: [%s]", params.user_message)
         return render_template(
             "chat/registration/passport_identity_number.html",
-            error_message="Please, add your identity number",
+            error_message="Please, add your CPF number",
             room=room,
             now=c.utcnow_chat_format(),
             user_unique_id=params.user_unique_id,
@@ -883,7 +883,7 @@ def create_passport_identity_number():
         )
 
     if user.document_identity_number:
-        c.save_message("Please input your identification number", f"Identification number: {params.user_message}", room)
+        c.save_message("Please input your CPF number", f"CPF number: {params.user_message}", room)
         return render_template(
             "chat/registration/name.html",
             room=room,
