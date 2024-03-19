@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>{{ config.APP_NAME }}</title>
-    <!-- meta -->
-    <meta name="description" content="Fan Ticket App" />
-    <meta name="author" content="Simple2B" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    {% block meta %}{% endblock %}
+<head>
+  <meta charset="utf-8" />
+  <title>{{ config.APP_NAME }}</title>
+  <!-- meta -->
+  <meta name="description" content="FanTicket" />
+  <meta name="author" content="Simple2B" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <!-- styles -->
+  {% block meta %}{% endblock %}
+
+  <!-- styles -->
   <style type="text/css">
     body {
       background: #1c1c1c;
@@ -18,18 +19,17 @@
     }
   </style>
 
-    <link
-      href="{{ url_for('static', filename='css/styles.css') }}"
-      rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
 
-    {% block links %} {% endblock %}
-  </head>
+  {% block links %} {% endblock %}
+</head>
 
-  <body class="bg-white dark:bg-black text-white font-body">
-    <!-- Header -->
-    {% include 'header.html' %}
-<body class="bg-black text-white font-body">
-  <!-- Flash message-->
+<body class="bg-white dark:bg-black text-white font-body">
+  <!-- Header -->
+  {% include 'header.html' %}
+
+  <body class="bg-black text-white font-body">
+    <!-- Flash message-->
     {% include "flash_message.html" %}
     {% block body %}
     <!-- SideBar -->
@@ -49,4 +49,5 @@
 
     {% block scripts %} {% endblock %}
   </body>
+
 </html>
