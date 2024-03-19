@@ -31,7 +31,7 @@ history_message_user_home %}
       {% endset %}
 
       <div id="chat-message-container" data-send-message>
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated and current_user.name %}
         {{ bot_message('Hi, ' + current_user.name + '! How can I assist you
         today? Are you looking to buy or sell a ticket?', html_element) }}
         {% else %}

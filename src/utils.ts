@@ -16,7 +16,7 @@ function hideElements(
 }
 
 export function unlockScroll() {
-  const scrollY = this.body.style.top;
+  const scrollY = document.body.style.top;
   document.body.style.position = '';
   document.body.style.top = '';
   document.body.style.left = '';
