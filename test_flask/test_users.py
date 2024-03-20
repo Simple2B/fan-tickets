@@ -130,7 +130,7 @@ def test_user_notifications_edit(client: FlaskClient):
         new_buyers_payment=True,
     )
     response = client.post(
-        "/admin/user/set_notifications",
+        "/profile/set_notifications",
         data=notification_data,
         follow_redirects=True,
     )

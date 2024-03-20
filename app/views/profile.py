@@ -113,6 +113,29 @@ def save_card():
     return render_template("user/card_save.html", user=user, card_form=card_form)
 
 
+@blueprint_profile.route("/set_notifications", methods=["GET", "POST"])
+@login_required
+def set_notifications():
+    form = f.NotificationsConfigForm()
+    if form.validate_on_submit():
+        user: m.User = current_user
+        user.notifications_config.new_event = form.new_event.data
+        user.notifications_config.new_ticket = form.new_ticket.data
+        user.notifications_config.new_message = form.new_message.data
+        user.notifications_config.new_buyers_payment = form.new_buyers_payment.data
+        user.notifications_config.your_payment_received = form.your_payment_received.data
+        user.notifications_config.ticket_transfer_confirmed = form.ticket_transfer_confirmed.data
+        user.notifications_config.dispute_started = form.dispute_started.data
+        user.notifications_config.dispute_resolved = form.dispute_resolved.data
+        user.save()
+        log(log.INFO, "Notifications settings saved. User: [%s]", user)
+        flash_message = "Notifications settings saved!"
+    else:
+        log(log.ERROR, "Notifications settings save errors: [%s]", form.errors)
+        flash_message = "Could not save notifications settings"
+    return render_template("user/notifications_save.html", user=user, form=form, flash_message=flash_message)
+
+
 @blueprint_profile.route("/export", methods=["GET", "POST"])
 @login_required
 def export():
