@@ -1,9 +1,5 @@
 <p class="mb-4 text-grey">{{ user.phone }}</p>
-<button
-  class="text-secondary underline"
-  hx-get="{{ url_for('admin.user.edit_phone') }}"
-  hx-target="#profile_phone"
-  hx-swap="outerHTML"
-  hx-trigger="click">
+<button class="text-secondary underline" hx-get="{{ url_for('profile.edit_phone') }}" hx-target="#profile_phone"
+  hx-swap="outerHTML" hx-trigger="click">
   Editar
 </button>

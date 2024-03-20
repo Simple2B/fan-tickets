@@ -2,11 +2,7 @@
   {% if user.card %} {{ card_mask(user.card) }} {% else %} Nenhum cartão
   cadastrado {% endif %}
 </p>
-<button
-  class="text-secondary underline"
-  hx-get="{{ url_for('admin.user.edit_card') }}"
-  hx-target="#profile_card"
-  hx-swap="outerHTML"
-  hx-trigger="click">
+<button class="text-secondary underline" hx-get="{{ url_for('profile.edit_card') }}" hx-target="#profile_card"
+  hx-swap="outerHTML" hx-trigger="click">
   Editar
 </button>

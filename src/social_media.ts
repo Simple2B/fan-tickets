@@ -35,3 +35,18 @@ twitterShareIcons.forEach(twitterIcon => {
     console.log(twitterIcon.href);
   });
 });
+
+const tiktokShareIcons = document.querySelectorAll(
+  '.tiktok-share',
+) as NodeListOf<HTMLAnchorElement>;
+tiktokShareIcons.forEach(tiktokIcon => {
+  tiktokIcon.addEventListener('click', () => {
+    const link = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(
+      'Check out cool tickets for sale on FanTicket',
+    );
+    const hashtags = encodeURIComponent('tickets,forsale');
+    tiktokIcon.href = `https://tiktok.com/`;
+    console.log(tiktokIcon.href);
+  });
+});

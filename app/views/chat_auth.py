@@ -232,7 +232,7 @@ def sell():
         if transactions_last_month(current_user) > global_fee_settings.selling_limit:
             return render_template(
                 "chat/buy/transactions_limit.html",
-                error_message="You have reached the limit of 6 transactions per month",
+                error_message="You have reached the limit of transactions per month",
                 now=c.utcnow_chat_format(),
                 room=room,
             )

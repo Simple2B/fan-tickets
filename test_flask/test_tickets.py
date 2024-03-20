@@ -1,5 +1,5 @@
 from flask.testing import FlaskClient
-from app import models as m
+from app import models as m, db
 from config import config
 
 CFG = config()
@@ -45,3 +45,15 @@ def test_get_all_tickets(client_with_data: FlaskClient):
     for t in m.all(stmt):
         tt: m.Ticket = t
         assert f"TICKET_ID:{tt.unique_id}" in res.text
+
+
+def test_get_ticket(client_with_data: FlaskClient):
+    client = client_with_data
+    ticket: m.Ticket = db.session.scalar(m.Ticket.select())
+    assert ticket
+    response = client.get(f"/tickets/{ticket.unique_id}")
+    assert response.status_code == 200
+    assert f"{ticket.event.name}" in response.text
+    assert f"{ticket.event.location.name}" in response.text
+    assert f"{ticket.event.venue}" in response.text
+    assert f"{ticket.description}" in response.text

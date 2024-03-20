@@ -75,9 +75,9 @@ def get_all():
     )
 
 
-@tickets_blueprint.route("/<int:ticket_unique_id>")
+@tickets_blueprint.route("/<ticket_unique_id>")
 def get_ticket(ticket_unique_id: str):
-    ticket_query = m.Ticket.select().where(m.Ticket.id == 1)
+    ticket_query = m.Ticket.select().where(m.Ticket.unique_id == ticket_unique_id)
     ticket = db.session.scalar(ticket_query)
 
     return render_template("tickets/ticket.html", ticket=ticket)

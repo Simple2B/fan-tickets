@@ -1,4 +1,4 @@
-# Fan Ticket App
+# FanTicket App
 
 1. Run
 

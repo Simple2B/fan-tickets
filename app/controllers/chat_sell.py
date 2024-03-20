@@ -188,6 +188,19 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
 
         event_date_time = create_event_date_time(event_data.date, event_data.time)
 
+        # Checking if there is already an event with the same name
+        event_query = sa.select(m.Event).where(m.Event.name == event_data.event_name)
+        event: m.Event = db.session.scalar(event_query)
+
+        if event:
+            log(log.INFO, "Event already exists: [%s]", event_data.event_name)
+            c.save_message(
+                "Super! Please check if this event is right?",
+                event.name,
+                room,
+            )
+            return [event]
+
         # Creating a new event in database if we have at least minimal data
         event = m.Event(
             name=event_data.event_name,
@@ -334,11 +347,13 @@ def create_paired_ticket(params: s.ChatSellTicketParams, room: m.Room) -> m.Tick
         seller_id=current_user.id,
         is_paired=True,
         pair_unique_id=first_ticket.unique_id,
+        is_deleted=True,
     )
     db.session.add(second_ticket)
     db.session.flush()
     first_ticket.pair_unique_id = second_ticket.unique_id
-    db.session.commit()
+    # db.session.commit()
+    first_ticket.save()
 
     log(log.INFO, "Paired tickets created: [%s], [%s]", first_ticket.unique_id, second_ticket.unique_id)
 
@@ -353,6 +368,11 @@ def add_ticket_category(params: s.ChatSellTicketParams, room: m.Room) -> m.Ticke
 
     if params.ticket_category:
         ticket.ticket_category = params.ticket_category.replace(" ", "_").lower()
+        # TODO: paired ticket
+        if ticket.is_paired:
+            ticket2_query = sa.select(m.Ticket).where(m.Ticket.unique_id == ticket.pair_unique_id)
+            ticket2: m.Ticket = db.session.scalar(ticket2_query)
+            ticket2.ticket_category = ticket.ticket_category
     ticket.save()
 
     c.save_message("Please, add ticket category", f"Ticket category: {params.ticket_category}", room)

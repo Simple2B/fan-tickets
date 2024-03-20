@@ -40,6 +40,7 @@ def create_app(environment="development") -> Flask:
         pay_blueprint,
         chat_disputes_blueprint,
         notification_blueprint,
+        blueprint_profile,
     )
     from app import models as m
 
@@ -74,6 +75,7 @@ def create_app(environment="development") -> Flask:
     app.register_blueprint(pay_blueprint)
     app.register_blueprint(chat_disputes_blueprint)
     app.register_blueprint(notification_blueprint)
+    app.register_blueprint(blueprint_profile)
 
     # SSE
     @sse.before_request
