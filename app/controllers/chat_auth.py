@@ -173,6 +173,8 @@ def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
     # TODO: Move to birth_date route when it will be added
     user.activated = True
+    if not user.notifications_config:
+        user.notifications_config = m.NotificationsConfig(user_id=user.id)
     user.save(False)
 
     c.save_message("Please input your address", f"Address: {address}", room)
@@ -188,6 +190,8 @@ def create_birth_date(birth_date: str, user: m.User, room: m.Room) -> bool:
 
     user.birth_date = datetime.strptime(birth_date, CFG.CHAT_USER_FORMAT)
     user.activated = True
+    if not user.notifications_config:
+        user.notifications_config = m.NotificationsConfig(user_id=user.id)
     user.save(False)
 
     c.save_message("Please input your birth date in format DD/MM/YYYY 📅", f"Birth date: {birth_date}", room)

@@ -44,6 +44,7 @@ class BaseConfig(BaseSettings):
     ADMIN_LAST_NAME: str = "Admin_last_name"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
+    SUPER_ADMIN_PASSWORD: str | None = None
 
     # Pagination
     DEFAULT_PAGE_SIZE: int
@@ -59,7 +60,7 @@ class BaseConfig(BaseSettings):
     DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
     PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     # PATTERN_PHONE: str = r"^\+?\d{10,13}$"
-    PATTERN_PHONE: str = r"\+?(\d{2})-(\d{2})-(\d{8})"
+    PATTERN_PHONE: str = r"\+?(\d{2})-(\d{2})-(\d{9})"
 
     # API
     IS_API: bool = False

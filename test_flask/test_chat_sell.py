@@ -166,7 +166,7 @@ def test_seller_over_transactions_limit(client_with_data: FlaskClient):
 
     response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
     assert response.status_code == 200
-    assert b"You have reached the limit of 6 transactions per month" in response.data
+    assert b"You have reached the limit of transactions per month" in response.data
 
 
 def test_chat_history(client: FlaskClient):

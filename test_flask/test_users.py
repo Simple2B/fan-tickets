@@ -8,6 +8,7 @@ from test_flask.utils import login
 
 
 def test_list(client_with_data: FlaskClient):
+    # Testing
     login(client_with_data)
     DEFAULT_PAGE_SIZE = app.config["DEFAULT_PAGE_SIZE"]
     response = client_with_data.get("/admin/user/users")
@@ -130,7 +131,7 @@ def test_user_notifications_edit(client: FlaskClient):
         new_buyers_payment=True,
     )
     response = client.post(
-        "/admin/user/set_notifications",
+        "/profile/set_notifications",
         data=notification_data,
         follow_redirects=True,
     )

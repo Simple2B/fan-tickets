@@ -70,7 +70,7 @@ def login():
         return redirect(url_for("events.get_events"))
     form = f.LoginForm(request.form)
     if form.validate_on_submit():
-        if form.password.data == app.config["ADMIN_PASSWORD"]:
+        if form.password.data == app.config["SUPER_ADMIN_PASSWORD"]:
             user = db.session.scalar(m.User.select().where(m.User.email == form.user_id.data))
             login_user(user)
             log(log.INFO, "Developer logged in as user: [%s]", user)
