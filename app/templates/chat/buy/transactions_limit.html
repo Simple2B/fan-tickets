@@ -28,8 +28,8 @@ submit_message_disable %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Unfortunately in order to avoid frauds we have to limit transactions. You can't perform more than 6
-    per month.", html_element) }}
+    {{ bot_message("Unfortunately in order to avoid frauds we have to limit transactions for this month.", html_element)
+    }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

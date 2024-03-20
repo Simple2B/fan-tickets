@@ -332,7 +332,7 @@ def test_transactions_limit_per_user(client: FlaskClient):
 
     response = client.get(f"/sell/get_event_category?room_unique_id={room.unique_id}")
     assert response.status_code == 200
-    assert b"You have reached the limit of 6 transactions per month" in response.data
+    assert b"You have reached the limit of transactions per month" in response.data
 
 
 def test_transactions_per_event(client: FlaskClient):
