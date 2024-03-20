@@ -855,6 +855,9 @@ def get_ticket_file_type():
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
+
+    c.ticket_details(ticket, room)
+
     if params.user_message == "PDF":
         log(log.INFO, "User choose PDF file type: [%s]", params.user_message)
         c.save_message("What version of ticket do you have?", "PDF", room)

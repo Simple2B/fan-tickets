@@ -45,6 +45,7 @@ export function openChatWindow() {
   chatWindow.classList.remove('chat-window-close');
   chatWindow.classList.add('chat-window-open');
   chatIcon.classList.add('hidden');
+  resizeChat();
 }
 
 export function createChatWindow() {

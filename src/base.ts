@@ -1,5 +1,5 @@
 import 'flowbite';
-import {resizeChat, socialMediaShare} from './utils';
+import {disableDateFlowbite, resizeChat, socialMediaShare} from './utils';
 
 const themeToggleDarkIcons = document.querySelectorAll(
   '#theme-toggle-dark-icon',
@@ -233,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 200);
     });
   }
+  disableDateFlowbite();
 });
 
 window.addEventListener('resize', resizeChat);
