@@ -802,6 +802,16 @@ def get_ticket_price():
                 room=room,
                 now=c.utcnow_chat_format(),
             )
+    else:
+        log(log.ERROR, "No ticket price provided: [%s]", params.user_message)
+        return render_template(
+            "chat/sell/ticket_price.html",
+            error_message="No ticket price provided, please, add ticket price",
+            ticket_unique_id=params.ticket_unique_id,
+            event_unique_id=params.event_unique_id,
+            room=room,
+            now=c.utcnow_chat_format(),
+        )
 
     ticket_query = m.Ticket.select().where(m.Ticket.unique_id == params.ticket_unique_id)
     ticket: m.Ticket = db.session.scalar(ticket_query)
