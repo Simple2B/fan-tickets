@@ -10,7 +10,7 @@ from flask import (
     url_for,
     send_file,
 )
-from flask_login import login_required, current_user
+from flask_login import login_required
 import sqlalchemy as sa
 from app.controllers import create_pagination
 from app import models as m, db
