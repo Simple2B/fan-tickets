@@ -44,7 +44,7 @@ class BaseConfig(BaseSettings):
     ADMIN_LAST_NAME: str = "Admin_last_name"
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
-    SUPER_ADMIN_PASSWORD: str
+    SUPER_ADMIN_PASSWORD: str | None = None
 
     # Pagination
     DEFAULT_PAGE_SIZE: int

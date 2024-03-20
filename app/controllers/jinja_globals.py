@@ -89,14 +89,18 @@ def transactions_last_month(user: m.User) -> int:
     The function to get last month transactions number.
     """
     tickets_bought_query = sa.select(m.Ticket).where(
+        m.Ticket.is_deleted.is_(False),
         m.Ticket.buyer_id == user.id,
         m.Ticket.last_reservation_time > datetime.now() - timedelta(days=30),
+        m.Ticket.event.has(m.Event.approved.is_(True)),
     )
     tickets_bought: list[m.Ticket] = db.session.scalars(tickets_bought_query).all()
 
     tickets_posted_query = sa.select(m.Ticket).where(
+        m.Ticket.is_deleted.is_(False),
         m.Ticket.seller_id == user.id,
         m.Ticket.created_at > datetime.now() - timedelta(days=30),
+        m.Ticket.event.has(m.Event.approved.is_(True)),
     )
     tickets_posted: list[m.Ticket] = db.session.scalars(tickets_posted_query).all()
 
@@ -109,7 +113,9 @@ def transactions_per_event(user: m.User, event: m.Event) -> int:
     """
     tickets_query = sa.select(m.Ticket).where(
         sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
+        m.Ticket.is_deleted.is_(False),
         m.Ticket.event_id == event.id,
+        m.Ticket.event.has(m.Event.approved.is_(True)),
     )
     tickets: list[m.Ticket] = db.session.scalars(tickets_query).all()
 
