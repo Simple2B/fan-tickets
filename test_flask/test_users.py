@@ -8,6 +8,7 @@ from test_flask.utils import login
 
 
 def test_list(client_with_data: FlaskClient):
+    # Testing
     login(client_with_data)
     DEFAULT_PAGE_SIZE = app.config["DEFAULT_PAGE_SIZE"]
     response = client_with_data.get("/admin/user/users")
