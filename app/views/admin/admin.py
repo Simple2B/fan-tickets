@@ -49,7 +49,7 @@ def get_tickets():
     ticket_category = request.args.get("ticket_category")
     ticket_category = None if ticket_category == "all" or ticket_category == "None" else ticket_category
 
-    tickets_query = m.Ticket.select().order_by(m.Ticket.created_at.desc())
+    tickets_query = m.Ticket.select().where(m.Ticket.is_deleted.is_(False)).order_by(m.Ticket.created_at.desc())
     count_query = sa.select(sa.func.count()).select_from(m.Ticket)
 
     if buyer_unique_id:

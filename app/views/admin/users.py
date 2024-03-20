@@ -28,7 +28,7 @@ def get_all():
     q = request.args.get("q")
     pg = request.args.get("pg")
     query = m.User.select().where(m.User.activated.is_(True)).order_by(m.User.id)
-    count_query = sa.select(sa.func.count()).select_from(m.User)
+    count_query = sa.select(sa.func.count()).select_from(m.User).where(m.User.activated.is_(True))
 
     template = "user/users.html"
 

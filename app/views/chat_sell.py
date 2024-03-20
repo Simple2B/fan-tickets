@@ -475,7 +475,12 @@ def get_ticket_type():
 
     try:
         ticket.ticket_type = params.ticket_type.replace(" ", "_").lower()
-        db.session.commit()
+        # TODO: paired ticket
+        if ticket.is_paired:
+            ticket2_query = m.Ticket.select().where(m.Ticket.unique_id == ticket.pair_unique_id)
+            ticket2: m.Ticket = db.session.scalar(ticket2_query)
+            ticket2.ticket_type = ticket.ticket_type
+        ticket.save()
         log(log.INFO, "Ticket type added: [%s]", ticket.unique_id)
         c.save_message(
             "Got it! What is the type of ticket are you selling?",
