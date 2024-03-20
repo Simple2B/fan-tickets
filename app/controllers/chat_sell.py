@@ -188,6 +188,19 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
 
         event_date_time = create_event_date_time(event_data.date, event_data.time)
 
+        # Checking if there is already an event with the same name
+        event_query = sa.select(m.Event).where(m.Event.name == event_data.event_name)
+        event: m.Event = db.session.scalar(event_query)
+
+        if event:
+            log(log.INFO, "Event already exists: [%s]", event_data.event_name)
+            c.save_message(
+                "Super! Please check if this event is right?",
+                event.name,
+                room,
+            )
+            return [event]
+
         # Creating a new event in database if we have at least minimal data
         event = m.Event(
             name=event_data.event_name,
