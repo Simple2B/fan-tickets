@@ -171,9 +171,6 @@ def create_phone(phone: str, user: m.User, room: m.Room) -> str:
 
 def create_address(address: str, user: m.User, room: m.Room):
     user.address = address
-    # TODO: Move to birth_date route when it will be added
-    user.activated = True
-    user.save(False)
 
     c.save_message("Please input your address", f"Address: {address}", room)
     return
