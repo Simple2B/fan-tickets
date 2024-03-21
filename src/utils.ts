@@ -52,6 +52,8 @@ export function handleHideElements(
 }
 
 export function resizeChat() {
+  console.log('resizeChat');
+
   const header: HTMLElement = document.querySelector('.header');
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');
@@ -80,7 +82,7 @@ export function resizeChat() {
     if (chatWindow.offsetHeight > maxChatWindowHeight) {
       chatWindow.style.height = `${maxChatWindowHeight}px`;
     }
-  }, 200);
+  }, 500);
 
   if (chatMain && chatFooter) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
@@ -141,4 +143,45 @@ export function socialMediaShare() {
       console.log(twitterIcon.href);
     });
   });
+}
+
+export function disableDateFlowbite() {
+  setTimeout(() => {
+    const allDates = document.querySelectorAll('.datepicker-cell');
+
+    const currentMonth = new Date().getMonth();
+    allDates.forEach((date: HTMLDivElement) => {
+      const timeStamp = date.getAttribute('data-date');
+      const dateMonth = new Date(parseInt(timeStamp)).getMonth();
+      dateMonth !== currentMonth
+        ? (date.style.color = '#99a1a3')
+        : (date.style.color = '#fff');
+    });
+
+    const calendarButtons = document.querySelectorAll('.next-btn, .prev-btn');
+
+    calendarButtons.forEach((button: HTMLButtonElement) => {
+      button.addEventListener('click', (event: Event) => {
+        const target = event.target as HTMLElement;
+        const datePicker = target.closest('.datepicker-picker');
+
+        if (!datePicker) return;
+
+        const monthTitle = datePicker.querySelector('.view-switch');
+        const month = monthTitle.textContent.split(' ')[0];
+        const year = monthTitle.textContent.split(' ')[1];
+        const currentDate = new Date(`${month} 1, ${year}`).getMonth();
+        const allDates = datePicker.querySelectorAll('.datepicker-cell');
+
+        allDates.forEach((date: HTMLDivElement) => {
+          const timeStamp = date.getAttribute('data-date');
+          const dateMonth = new Date(parseInt(timeStamp)).getMonth();
+
+          dateMonth !== currentDate
+            ? (date.style.color = '#99a1a3')
+            : (date.style.color = '#fff');
+        });
+      });
+    });
+  }, 1000);
 }

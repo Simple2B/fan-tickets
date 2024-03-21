@@ -78,11 +78,18 @@ def start_dispute():
             db.session,
             NotificationType.DISPUTE_CREATED,
         )
+        user: m.User = current_user
+        recipients = []
+
+        if user.notifications_config.dispute_started:
+            recipients.append(user)
+        if payment.ticket.seller.notifications_config.dispute_started:
+            recipients.append(payment.ticket.seller)
 
         # send email notification (Admins + room users)
         admins = db.session.scalars(m.User.select().where(m.User.role == m.UserRole.admin.value)).all()
         mail_controller.send_email(
-            admins + [current_user, payment.ticket.seller],
+            admins + recipients,
             "Dispute created",
             render_template(
                 "email/dispute_created.html",
@@ -237,10 +244,17 @@ def close_dispute():
     room.is_open = False
     db.session.commit()
 
+    recipients = []
+
+    if room.seller.notifications_config.dispute_resolved:
+        recipients.append(room.seller)
+    if room.buyer.notifications_config.dispute_resolved:
+        recipients.append(room.buyer)
+
     # send email notification
     admins = db.session.scalars(m.User.select().where(m.User.role == m.UserRole.admin.value)).all()
     mail_controller.send_email(
-        admins + [room.seller, room.buyer],
+        admins + recipients,
         "Dispute closed",
         render_template(
             "email/dispute_closed.html",

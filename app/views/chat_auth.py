@@ -104,12 +104,50 @@ def sell():
     seller_id = current_user.id if current_user.is_authenticated else None
     room_unique_id = request.args.get("room_unique_id")
     renew_search = request.args.get("renew_search")
+    save_history = request.args.get("save_history", False, type=bool)
     room = None
+    template = "chat/chat_auth.html"
+
+    if save_history:
+        if not room_unique_id:
+            log(log.ERROR, "room_unique_id is not provided")
+            return render_template(
+                "chat/chat_error.html",
+                error_message="Form submitting error",
+                now=c.utcnow_chat_format(),
+            )
+        room = c.get_room(room_unique_id)
+
+        if not room:
+            log(log.ERROR, "Room not found: [%s]", room_unique_id)
+            return render_template(
+                "chat/chat_error.html",
+                error_message="Form submitting error",
+                now=c.utcnow_chat_format(),
+            )
+
+        messages_query = m.Message.select().where(m.Message.room_id == room.id)
+        messages = db.session.scalars(messages_query).all()
+
+        if current_user.is_authenticated:
+            mail_controller.send_email(
+                (current_user,),
+                f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+                render_template(
+                    "email/chat_history.htm",
+                    user=current_user,
+                    messages=messages,
+                ),
+            )
+
+        for message in messages:
+            db.session.delete(message)
+        db.session.commit()
 
     if room_unique_id:
         room = c.get_room(room_unique_id)
         c.save_message(
-            "How can I assist you? Are you looking to buy or sell a ticket?",
+            f"{current_user.name}, how can I assist you? Are you looking to buy or sell a ticket?",
             "Sell",
             room,
         )
@@ -211,10 +249,48 @@ def sell():
 @chat_auth_blueprint.route("/buy")
 def buy():
     room_unique_id = request.args.get("room_unique_id")
+    save_history = request.args.get("save_history", False, type=bool)
+
+    if save_history:
+        if not room_unique_id:
+            log(log.ERROR, "room_unique_id is not provided")
+            return render_template(
+                "chat/chat_error.html",
+                error_message="Form submitting error",
+                now=c.utcnow_chat_format(),
+            )
+        room = c.get_room(room_unique_id)
+
+        if not room:
+            log(log.ERROR, "Room not found: [%s]", room_unique_id)
+            return render_template(
+                "chat/chat_error.html",
+                error_message="Form submitting error",
+                now=c.utcnow_chat_format(),
+            )
+
+        messages_query = m.Message.select().where(m.Message.room_id == room.id)
+        messages = db.session.scalars(messages_query).all()
+
+        if current_user.is_authenticated:
+            mail_controller.send_email(
+                (current_user,),
+                f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+                render_template(
+                    "email/chat_history.htm",
+                    user=current_user,
+                    messages=messages,
+                ),
+            )
+
+        for message in messages:
+            db.session.delete(message)
+        db.session.commit()
+
     if room_unique_id:
         room = c.get_room(room_unique_id)
         c.save_message(
-            "How can I assist you? Are you looking to buy or sell a ticket?",
+            f"{current_user.name}, how can I assist you? Are you looking to buy or sell a ticket?",
             "Buy",
             room,
         )
@@ -1278,6 +1354,22 @@ def create_user_birth_date():
         )
 
     if current_user.is_authenticated:
+        messages_query = m.Message.select().where(m.Message.room_id == room.id)
+        messages = db.session.scalars(messages_query).all()
+
+        mail_controller.send_email(
+            (current_user,),
+            f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+            render_template(
+                "email/chat_history.htm",
+                user=current_user,
+                messages=messages,
+            ),
+        )
+        for message in messages:
+            db.session.delete(message)
+        db.session.commit()
+
         return render_template(
             "chat/chat_home.html",
             room=room,
@@ -1326,7 +1418,11 @@ def create_user_social_profile():
 
     if params.without_social_profile:
         login_user(user)
-        c.save_message("You have successfully registered", "Without social profile", room)
+        c.save_message(
+            "You have successfully registered. The history will be emailed and deleted after selecting an action",
+            "Without social profile",
+            room,
+        )
 
         log(log.INFO, f"User: {user.email} logged in")
 
@@ -1510,7 +1606,7 @@ def create_user_social_profile():
 @chat_auth_blueprint.route("/home")
 def home():
     try:
-        params = s.ChatRequiredParams.model_validate(dict(request.args))
+        params = s.ChatAuthEmailParams.model_validate(dict(request.args))
     except Exception as e:
         log(log.ERROR, "Form submitting error: [%s]", e)
         return render_template(
@@ -1520,6 +1616,7 @@ def home():
         )
 
     if not params.room_unique_id:
+        log(log.ERROR, "room_unique_id not found: [%s]", params.room_unique_id)
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
@@ -1529,11 +1626,30 @@ def home():
     room = c.get_room(params.room_unique_id)
 
     if not room:
+        log(log.ERROR, "Room not found: [%s]", params.room_unique_id)
         return render_template(
             "chat/chat_error.html",
             error_message="Form submitting error",
             now=c.utcnow_chat_format(),
         )
+
+    if params.save_history:
+        messages_query = m.Message.select().where(m.Message.room_id == room.id)
+        messages = db.session.scalars(messages_query).all()
+
+        if current_user.is_authenticated:
+            mail_controller.send_email(
+                (current_user,),
+                f"Today's chat history {datetime.now().strftime(app.config['DATE_CHAT_HISTORY_FORMAT'])}",
+                render_template(
+                    "email/chat_history.htm",
+                    user=current_user,
+                    messages=messages,
+                ),
+            )
+            for message in messages:
+                db.session.delete(message)
+            db.session.commit()
 
     return render_template(
         "chat/chat_home.html",

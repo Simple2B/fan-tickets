@@ -266,6 +266,7 @@ def webhook():
                             if ticket.event.date_time
                             else "",
                             ticket_id=str(ticket.id).zfill(8),
+                            ticket=ticket,
                             message=email_message_to_buyer,
                         ),
                     )
@@ -281,6 +282,7 @@ def webhook():
                             else "",
                             ticket_id=str(ticket.id).zfill(8),
                             message=email_message_to_seller,
+                            ticket=ticket,
                         ),
                     )
 

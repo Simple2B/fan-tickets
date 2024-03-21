@@ -12,13 +12,13 @@ submit_message_disable
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
   <div class="mt-2 flex gap-2">
-    <button type="button" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
+    <button type="button" hx-get="{{ url_for('chat.sell', save_history=True) }}" hx-target="#chat-body"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}" hx-indicator="#chat-message-spinner"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Sell
     </button>
-    <button type="button" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body" hx-swap="innerHTML"
-      hx-trigger="click" hx-include="{{ all_filters }}"
+    <button type="button" hx-get="{{ url_for('chat.buy', save_history=True) }}" hx-target="#chat-body"
+      hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}" hx-indicator="#chat-message-spinner"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Buy
     </button>
@@ -29,7 +29,12 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("How can I assist you? Are you looking to buy or sell a ticket?", html_element) }}
+    {% if current_user.name %}
+    {{ bot_message(current_user.name + ", how can I assist you? Are you looking to buy or sell a ticket?",
+    html_element)}}
+    {% else %}
+    {{ bot_message("How can I assist you? Are you looking to buy or sell a ticket?", html_element)}}
+    {% endif %}
 
     {% include 'chat/registration/renew_registration.html' %}
 
