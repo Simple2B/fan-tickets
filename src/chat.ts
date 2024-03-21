@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (targetElement.querySelector('#chat-close')) {
       toggleChatWindow();
+      console.log('close chat');
+      document.body.style.overflow = 'auto';
     }
     if (targetElement.querySelector('#chat-bot-close')) {
       setTimeout(() => {

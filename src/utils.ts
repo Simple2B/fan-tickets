@@ -52,8 +52,6 @@ export function handleHideElements(
 }
 
 export function resizeChat() {
-  console.log('resizeChat');
-
   const header: HTMLElement = document.querySelector('.header');
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');
@@ -67,7 +65,9 @@ export function resizeChat() {
 
   if (screenWith < 640) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
+    console.log('body hidden', document.body);
 
+    document.body.style.overflow = 'hidden';
     return;
   }
 
