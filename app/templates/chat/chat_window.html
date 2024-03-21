@@ -47,7 +47,7 @@ history_message_user_home %}
   <input name="message_uuid" class="hidden">
   <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message"
     hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
-  <div class="h-4 py-3 sm:hidden bg-chat-window  text-secondary text-xs text-center">Powered by Simple2B</div>
+  <div class="h-4 py-3 pb-6 sm:hidden bg-chat-window  text-secondary text-xs text-center">Powered by Simple2B</div>
 </div>
 
 {% include "chat/chat_icon.html" %}
