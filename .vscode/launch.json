@@ -39,7 +39,29 @@
       "args": [
         "run",
         "--port",
-        "5005"
+        "5005",
+      ],
+      "jinja": true,
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Mobile Flask",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "wsgi:app",
+        "APP_ENV": "development",
+        "FLASK_DEBUG": "1",
+        "DEBUG": "true",
+        "SERVER_NAME": "127.0.0.1:5005",
+      },
+      "args": [
+        "run",
+        "--port",
+        "5005",
+        "--host",
+        "0.0.0.0"
       ],
       "jinja": true,
       "justMyCode": false

@@ -15,25 +15,25 @@ function hideElements(
   }
 }
 
-export function unlockScroll() {
-  const scrollY = document.body.style.top;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
+// export function unlockScroll() {
+//   const scrollY = document.body.style.top;
+//   document.body.style.position = '';
+//   document.body.style.top = '';
+//   document.body.style.left = '';
+//   document.body.style.right = '';
+//   window.scrollTo(0, parseInt(scrollY || '0') * -1);
 
-  console.log('unlock scroll');
-}
+//   console.log('unlock scroll');
+// }
 
-export function lockScroll() {
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${window.scrollY}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
+// export function lockScroll() {
+//   document.body.style.position = 'fixed';
+//   document.body.style.top = `-${window.scrollY}px`;
+//   document.body.style.left = '0';
+//   document.body.style.right = '0';
 
-  console.log('lock scroll');
-}
+//   console.log('lock scroll');
+// }
 
 export function handleHideElements(
   element: HTMLElement,
@@ -68,7 +68,6 @@ export function resizeChat() {
   if (screenWith < 640) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
 
-    lockScroll();
     return;
   }
 
