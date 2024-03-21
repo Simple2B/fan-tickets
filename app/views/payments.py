@@ -282,6 +282,7 @@ def webhook():
                             else "",
                             ticket_id=str(ticket.id).zfill(8),
                             message=email_message_to_seller,
+                            ticket=ticket,
                         ),
                     )
 

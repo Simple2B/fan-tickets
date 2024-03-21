@@ -29,8 +29,12 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message(current_user.name + ", how can I assist you? Are you looking to buy or sell a ticket?", html_element)
-    }}
+    {% if current_user.name %}
+    {{ bot_message(current_user.name + ", how can I assist you? Are you looking to buy or sell a ticket?",
+    html_element)}}
+    {% else %}
+    {{ bot_message("How can I assist you? Are you looking to buy or sell a ticket?", html_element)}}
+    {% endif %}
 
     {% include 'chat/registration/renew_registration.html' %}
 
