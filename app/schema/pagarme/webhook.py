@@ -61,15 +61,15 @@ class PagarmePaidWebhookData(BaseModel):
     id: str
     code: str
     amount: int
-    currency: str
-    closed: bool
+    currency: str | None = "BRL"
+    closed: bool | None = True
     items: list[PagarmeWebhookItem]
     customer: PagarmeWebhookCustomer
-    status: str
-    created_at: str
-    updated_at: str
-    closed_at: str
-    charges: list
+    status: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    closed_at: str | None = None
+    charges: list | None = []
     metadata: dict | None = {}
 
     model_config = ConfigDict(from_attributes=True)

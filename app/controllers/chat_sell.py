@@ -567,6 +567,8 @@ def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -
     else:
         ticket.price_net = int(round(price / 2))
         ticket.price_gross = int(round(ticket.price_net * total_commission))
+        if ticket.price_gross == ticket.price_net:
+            ticket.price_gross += 1
         c.save_message("Please, input the price for two tickets", f"Ticket price: {price_gross}", room)
 
     ticket.save()

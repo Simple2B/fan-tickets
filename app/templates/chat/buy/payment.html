@@ -6,8 +6,8 @@ submit_message_disable
   {% include 'chat/chat_messages.html' %}
   {% include 'chat/chat_spinner.html' %}
 
-  {% set html_element %}
   {% set all_filters = "[name='room_unique_id'], [name='renew_search']" %}
+  {% set html_element %}
   <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
   <div>
     <a href={{qr_url}}>

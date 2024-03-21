@@ -23,8 +23,7 @@ submit_message_disable
   </div>
   {% endset %}
 
-  {% set message = "Awesome! The cost for ticket(s) is " ~ total_prices.net ~ ". Price for service is "
-  ~ total_prices.service ~ ". Total price is " ~ total_prices.total %}
+  {% set message = "Awesome! The cost for ticket(s) is " ~ total_prices.total %}
 
   <div id="chat-message-container" data-send-message>
     {% if error_message %}

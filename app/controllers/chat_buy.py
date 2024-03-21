@@ -45,7 +45,10 @@ def get_events_by_location_event_name(params: s.ChatBuyEventParams, room: m.Room
 
 
 def get_tickets_by_event(event: m.Event, room: m.Room) -> list[m.Ticket] | None:
-    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id)
+    tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.event_id == event.id,
+        m.Ticket.is_deleted.is_(False),
+    )
     tickets = db.session.scalars(tickets_query).all()
 
     tickets_available = [ticket for ticket in tickets if ticket.is_available]
@@ -64,7 +67,10 @@ def get_tickets_by_event_id(params: s.ChatBuyTicketParams, room: m.Room) -> list
         log(log.INFO, "Event not found: [%s]", params.event_unique_id)
         return None
 
-    tickets_query = sa.select(m.Ticket).where(m.Ticket.event_id == event.id)
+    tickets_query = sa.select(m.Ticket).where(
+        m.Ticket.event_id == event.id,
+        m.Ticket.is_deleted.is_(False),
+    )
     tickets = db.session.scalars(tickets_query).all()
 
     if not tickets:
@@ -110,6 +116,7 @@ def book_ticket(
     tickets_per_event_query = sa.select(m.Ticket).where(
         sa.or_(m.Ticket.seller_id == user.id, m.Ticket.buyer_id == user.id),
         m.Ticket.event_id == ticket.event_id,
+        m.Ticket.is_sold.is_(True),
     )
     tickets_per_event = db.session.scalars(tickets_per_event_query).all()
     if len(tickets_per_event) > limit_per_event:

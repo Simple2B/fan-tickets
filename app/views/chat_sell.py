@@ -29,6 +29,7 @@ def get_event_category():
             error_message="You have reached the limit of transactions per month",
             now=c.utcnow_chat_format(),
             room=room,
+            selling=True,
         )
 
     category_name = db.session.scalar(
@@ -112,6 +113,7 @@ def event_approve():
                 error_message="You have reached the limit of transactions per event",
                 now=c.utcnow_chat_format(),
                 room=room,
+                selling=True,
             )
         return render_template(
             "chat/sell/ticket_quantity.html",
