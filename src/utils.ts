@@ -66,9 +66,6 @@ export function resizeChat() {
 
   if (screenWith < 640) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
-    console.log('body hidden', document.body);
-
-    document.body.style.overflow = 'hidden';
     return;
   }
 
@@ -86,6 +83,24 @@ export function resizeChat() {
 
   if (chatMain && chatFooter) {
     chatMain.style.height = `calc(100% - ${chatFooter.offsetHeight}px)`;
+  }
+}
+
+export function lockScrollBody() {
+  console.log('lockScrollBody');
+
+  const screenWith: number = window.innerWidth;
+  if (screenWith < 640) {
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+export function unlockScrollBody() {
+  console.log('unlockScrollBody');
+
+  const screenWith: number = window.innerWidth;
+  if (screenWith < 640) {
+    document.body.style.overflow = 'auto';
   }
 }
 

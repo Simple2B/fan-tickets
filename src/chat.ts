@@ -3,6 +3,8 @@ import {
   scrollDownSmooth,
   resizeChat,
   socialMediaShare,
+  lockScrollBody,
+  unlockScrollBody,
 } from './utils';
 import * as htmx from 'htmx.org';
 
@@ -201,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetElement.querySelector('#chat-close')) {
       toggleChatWindow();
       console.log('close chat');
-      document.body.style.overflow = 'auto';
+      unlockScrollBody();
     }
     if (targetElement.querySelector('#chat-bot-close')) {
       setTimeout(() => {
@@ -248,12 +250,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatIconButton) {
     chatIconButton.addEventListener('click', () => {
       toggleChatWindow();
+      lockScrollBody();
+      console.log('click icon');
     });
   }
 
   if (chatStartBuy) {
     chatStartBuy.addEventListener('click', () => {
       openChatWindow();
+      resizeChat();
     });
   }
   if (chatStartBuyTicket) {
