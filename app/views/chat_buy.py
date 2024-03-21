@@ -365,6 +365,7 @@ def booking_ticket():
             error_message="You have reached the limit of transactions per month",
             now=c.utcnow_chat_format(),
             room=room,
+            buying=True,
         )
 
     ticket = c.book_ticket(params.ticket_unique_id, current_user, room, global_fee_settings.limit_per_event)
@@ -374,6 +375,7 @@ def booking_ticket():
         return render_template(
             "chat/buy/transactions_limit.html",
             error_message=ticket.error_message,
+            buying=True,
             room=room,
             now=c.utcnow_chat_format(),
         )
@@ -470,7 +472,7 @@ def payment():
         )
 
     c.save_message(
-        f"Awesome! The cost for ticket(s) is {total_prices.net}. Price for service is {total_prices.service}. Total price is {total_prices.total}. Please proceed to payment",
+        f"Awesome! The cost for ticket(s) is  {total_prices.total}. Please proceed to payment",
         "Payment",
         room,
     )
