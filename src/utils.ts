@@ -52,6 +52,7 @@ export function handleHideElements(
 }
 
 export function resizeChat() {
+  console.log('resizeChat');
   const header: HTMLElement = document.querySelector('.header');
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');

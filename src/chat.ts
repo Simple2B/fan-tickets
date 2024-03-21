@@ -46,6 +46,8 @@ export function openChatWindow() {
   if (chatIcon) {
     chatIcon.classList.add('hidden');
   }
+  console.log('resizeChat inside openChatWindow');
+
   resizeChat();
 }
 
@@ -163,6 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetElement = e.target as HTMLElement;
 
     if (targetElement.classList.contains('chat-dispute-messages')) {
+      console.log('chat-dispute-messages and resizeChat open');
+
       resizeChat();
       chatMain.scrollTo(0, targetElement.scrollHeight);
     } else if (targetElement.classList.contains('new_message')) {
@@ -255,6 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatStartBuyTicket) {
     chatStartBuyTicket.addEventListener('click', () => {
       openChatWindow();
+      console.log('resizeChat inside chatStartBuyTicket');
+
       resizeChat();
     });
   }
