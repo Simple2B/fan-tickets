@@ -10,12 +10,12 @@
 
   {% set html_element %}
   <div class="mt-2 flex gap-2">
-    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.login_email') }}" hx-target="#chat-body"
+    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.auth.login_email') }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Log in
     </button>
-    <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.create_user_email') }}"
+    <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.auth.user_email.create') }}"
       hx-target="#chat-body" hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Sign up

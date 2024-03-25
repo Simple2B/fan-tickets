@@ -563,13 +563,13 @@ def add_ticket_price(params: s.ChatSellTicketParams, room: m.Room, price: int) -
     if not ticket.is_paired:
         ticket.price_net = price
         ticket.price_gross = price_gross
-        c.save_message("Please, input ticket price", f"Ticket price: {price_gross}", room)
+        c.save_message("Please, input ticket price", f"Ticket price: {price}", room)
     else:
         ticket.price_net = int(round(price / 2))
         ticket.price_gross = int(round(ticket.price_net * total_commission))
         if ticket.price_gross == ticket.price_net:
             ticket.price_gross += 1
-        c.save_message("Please, input the price for two tickets", f"Ticket price: {price_gross}", room)
+        c.save_message("Please, input the price for two tickets", f"Ticket price: {price}", room)
 
     ticket.save()
     log(log.INFO, "Ticket price added: [%s], price_gross: [%s]", params.ticket_notes, price_gross)

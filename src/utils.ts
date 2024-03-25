@@ -170,41 +170,48 @@ export function socialMediaShare() {
 
 export function disableDateFlowbite() {
   setTimeout(() => {
-    const allDates = document.querySelectorAll('.datepicker-cell');
+    const datePickers = document.querySelectorAll('.datepicker-picker');
 
-    const currentMonth = new Date().getMonth();
-    allDates.forEach((date: HTMLDivElement) => {
-      const timeStamp = date.getAttribute('data-date');
-      const dateMonth = new Date(parseInt(timeStamp)).getMonth();
-      dateMonth !== currentMonth
-        ? (date.style.color = '#99a1a3')
-        : (date.style.color = '#fff');
-    });
+    if (datePickers) {
+      datePickers.forEach((datePicker: HTMLDivElement) => {
+        setGreyDates(datePicker);
+      });
+    }
 
     const calendarButtons = document.querySelectorAll('.next-btn, .prev-btn');
 
     calendarButtons.forEach((button: HTMLButtonElement) => {
       button.addEventListener('click', (event: Event) => {
         const target = event.target as HTMLElement;
-        const datePicker = target.closest('.datepicker-picker');
+        const datePicker = target.closest(
+          '.datepicker-picker',
+        ) as HTMLDivElement;
 
         if (!datePicker) return;
 
-        const monthTitle = datePicker.querySelector('.view-switch');
-        const month = monthTitle.textContent.split(' ')[0];
-        const year = monthTitle.textContent.split(' ')[1];
-        const currentDate = new Date(`${month} 1, ${year}`).getMonth();
-        const allDates = datePicker.querySelectorAll('.datepicker-cell');
+        setGreyDates(datePicker);
 
-        allDates.forEach((date: HTMLDivElement) => {
-          const timeStamp = date.getAttribute('data-date');
-          const dateMonth = new Date(parseInt(timeStamp)).getMonth();
-
-          dateMonth !== currentDate
-            ? (date.style.color = '#99a1a3')
-            : (date.style.color = '#fff');
+        datePicker.addEventListener('DOMSubtreeModified', () => {
+          setGreyDates(datePicker);
         });
       });
     });
   }, 1000);
+}
+
+function setGreyDates(datePicker: HTMLDivElement) {
+  const monthTitle = datePicker.querySelector('.view-switch');
+  const month = monthTitle.textContent.split(' ')[0];
+  const year = monthTitle.textContent.split(' ')[1];
+  const currentDate = new Date(`${month} 1, ${year}`).getMonth();
+  const allDates = datePicker.querySelectorAll('.datepicker-cell');
+
+  allDates.forEach((date: HTMLDivElement) => {
+    const timeStamp = date.getAttribute('data-date');
+    const dateMonth = new Date(parseInt(timeStamp)).getMonth();
+
+    dateMonth !== currentDate
+      ? (date.style.color = '#99a1a3')
+      : (date.style.color = '#fff');
+  });
 }

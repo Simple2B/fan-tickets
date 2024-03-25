@@ -201,7 +201,7 @@ def test_ticket_pdf(client_with_data: FlaskClient):
             file=[file_instance],
         )
 
-        response = client_with_data.post("sell/get_ticket_document", data=data)
+        response = client_with_data.post("/chat/sell/ticket/get_ticket_document", data=data)
         assert response.status_code == 200
         assert b"Done" in response.data
         assert b"You will receive a notification" in response.data
