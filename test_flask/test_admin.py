@@ -9,8 +9,10 @@ from test_flask.utils import login
 
 
 CFG = config()
-TEST_SERVICE_FEE = 7
-TEST_BANK_FEE = 8
+TEST_SERVICE_FEE_BUYER = 4
+TEST_SERVICE_FEE_SELLER = 3
+TEST_BANK_FEE_BUYER = 5
+TEST_BANK_FEE_SELLER = 3
 TEST_SORTING_TYPE = "category"
 SELLING_LIMIT = 7
 BUYING_LIMIT = 7
@@ -114,13 +116,20 @@ def test_individual_fee_settings(client_with_data: FlaskClient):
 
     post_response = client_with_data.post(
         f"/admin/settings/individual/{user.uuid}",
-        data={"service_fee": TEST_SERVICE_FEE, "bank_fee": TEST_BANK_FEE},
+        data={
+            "service_fee_buyer": TEST_SERVICE_FEE_BUYER,
+            "service_fee_seller": TEST_SERVICE_FEE_SELLER,
+            "bank_fee_buyer": TEST_BANK_FEE_BUYER,
+            "bank_fee_seller": TEST_BANK_FEE_SELLER,
+        },
         follow_redirects=True,
     )
     assert post_response.status_code == 200
     assert f"{user.name} {user.last_name} - Individual fee settings" in post_response.data.decode()
-    assert user.service_fee == TEST_SERVICE_FEE
-    assert user.bank_fee == TEST_BANK_FEE
+    assert user.buyers_service_fee == TEST_SERVICE_FEE_BUYER
+    assert user.sellers_service_fee == TEST_SERVICE_FEE_SELLER
+    assert user.buyers_bank_fee == TEST_BANK_FEE_BUYER
+    assert user.sellers_bank_fee == TEST_BANK_FEE_SELLER
 
 
 def test_global_fee_settings(client_with_data: FlaskClient):
@@ -133,8 +142,10 @@ def test_global_fee_settings(client_with_data: FlaskClient):
     post_response = client_with_data.post(
         "/admin/settings/general",
         data={
-            "service_fee": TEST_SERVICE_FEE,
-            "bank_fee": TEST_BANK_FEE,
+            "service_fee_buyer": TEST_SERVICE_FEE_BUYER,
+            "service_fee_seller": TEST_SERVICE_FEE_SELLER,
+            "bank_fee_buyer": TEST_BANK_FEE_BUYER,
+            "bank_fee_seller": TEST_BANK_FEE_SELLER,
             "tickets_sorting_by": TEST_SORTING_TYPE,
             "selling_limit": SELLING_LIMIT,
             "buying_limit": BUYING_LIMIT,
@@ -144,7 +155,11 @@ def test_global_fee_settings(client_with_data: FlaskClient):
     assert post_response.status_code == 200
     assert b"Global settings" in post_response.data
 
-    global_fee_settings = db.session.scalar(m.GlobalFeeSettings.select())
-    assert global_fee_settings.service_fee == TEST_SERVICE_FEE
-    assert global_fee_settings.bank_fee == TEST_BANK_FEE
+    global_fee_settings: m.GlobalFeeSettings = db.session.scalar(m.GlobalFeeSettings.select())
+    assert global_fee_settings.service_fee_buyer == TEST_SERVICE_FEE_BUYER
+    assert global_fee_settings.service_fee_seller == TEST_SERVICE_FEE_SELLER
+    assert global_fee_settings.service_fee == TEST_SERVICE_FEE_BUYER + TEST_SERVICE_FEE_SELLER
+    assert global_fee_settings.bank_fee_buyer == TEST_BANK_FEE_BUYER
+    assert global_fee_settings.bank_fee_seller == TEST_BANK_FEE_SELLER
+    assert global_fee_settings.bank_fee == TEST_BANK_FEE_BUYER + TEST_BANK_FEE_SELLER
     assert global_fee_settings.tickets_sorting_by == TEST_SORTING_TYPE
