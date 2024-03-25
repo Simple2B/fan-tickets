@@ -15,12 +15,12 @@ from config import config
 
 CFG = config()
 
-chat_disputes_blueprint = Blueprint("disputes", __name__, url_prefix="/disputes")
+disputes_blueprint = Blueprint("disputes", __name__, url_prefix="/disputes")
 
 CHAT_MESSAGES_PER_PAGE = 5
 
 
-@chat_disputes_blueprint.route("/", methods=["GET"])
+@disputes_blueprint.route("/", methods=["GET"])
 def start_dispute():
     payment_id = request.args.get("payment_id")
 
@@ -108,7 +108,7 @@ def start_dispute():
     return room.unique_id, HTTPStatus.OK
 
 
-@chat_disputes_blueprint.route("/get_message", methods=["GET"])
+@disputes_blueprint.route("/get_message", methods=["GET"])
 @login_required
 def get_message():
     message_uuid = request.args.get("message_uuid")
@@ -133,7 +133,7 @@ def get_message():
     return render_template("chat/chat_dispute_message.html", message=message)
 
 
-@chat_disputes_blueprint.route("/get_messages", methods=["GET"])
+@disputes_blueprint.route("/get_messages", methods=["GET"])
 @login_required
 def get_messages():
     page = request.args.get("page", 1, type=int)
@@ -183,7 +183,7 @@ def get_messages():
     )
 
 
-@chat_disputes_blueprint.route("/send", methods=["POST"])
+@disputes_blueprint.route("/send", methods=["POST"])
 @login_required
 def send_message():
     form = f.MessageForm()
@@ -220,7 +220,7 @@ def send_message():
     return "OK", HTTPStatus.OK
 
 
-@chat_disputes_blueprint.route("/close", methods=["GET"])
+@disputes_blueprint.route("/close", methods=["GET"])
 @login_required
 def close_dispute():
     room_unique_id = request.args.get("room_unique_id")

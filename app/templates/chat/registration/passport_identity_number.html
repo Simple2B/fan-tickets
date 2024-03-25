@@ -22,7 +22,7 @@ submit_message_get
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-{{ submit_message_get('chat.create_passport_identity_number', "[name='room_unique_id'], [name='user_unique_id'],
+{{ submit_message_get('chat.auth.user_passport.create', "[name='room_unique_id'], [name='user_unique_id'],
 [name='user_message']") }}
 
 {% block scripts %}

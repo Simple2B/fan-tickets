@@ -8,7 +8,7 @@ submit_message_get
 
   {% set html_element %}
   <div class="mt-2 flex gap-2">
-    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.login_email') }}" hx-target="#chat-body"
+    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.auth.login_email') }}" hx-target="#chat-body"
       hx-swap="innerHTML" hx-trigger="click" hx-include="{{ all_filters }}"
       class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
       Log in
@@ -33,7 +33,7 @@ submit_message_get
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-{{ submit_message_get('chat.create_user_name', "[name='room_unique_id'], [name='user_unique_id'],
+{{ submit_message_get('chat.auth.user_name.create_first_name', "[name='room_unique_id'], [name='user_unique_id'],
 [name='user_message']") }}
 
 {% block scripts %}

@@ -23,7 +23,7 @@ submit_message_file
 <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 
-{{ submit_message_file('create_user_passport', "[name='user_unique_id'], [name='room_unique_id'],
+{{ submit_message_file('chat.auth.user_passport.upload', "[name='user_unique_id'], [name='room_unique_id'],
 [name='file']", form=form) }}
 
 {% block scripts %}

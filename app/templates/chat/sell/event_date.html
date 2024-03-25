@@ -21,7 +21,7 @@ submit_message_get
 
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="event_unique_id" value="{{ event_unique_id }}" />
-{{ submit_message_get('sell.get_event_date', "[name='room_unique_id'], [name='user_message'],
+{{ submit_message_get('chat.sell.get_event_date', "[name='room_unique_id'], [name='user_message'],
 [name='event_unique_id']
 ") }}
 

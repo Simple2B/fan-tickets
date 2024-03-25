@@ -25,7 +25,7 @@ submit_message_get
 {% endif %}
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" />
-{{ submit_message_get('chat.email_verification', "[name='room_unique_id'], [name='user_unique_id'],
+{{ submit_message_get('chat.auth.user_email.verification', "[name='room_unique_id'], [name='user_unique_id'],
 [name='user_message'], [name='ticket_unique_id']") }}
 
 {% block scripts %}

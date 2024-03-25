@@ -25,7 +25,7 @@ bot_message_without_date, user_message, submit_ticket_pdf %}
   </div>
 </div>
 
-{{ submit_ticket_pdf('get_ticket_document', "[name='user_unique_id'],
+{{ submit_ticket_pdf('chat.sell.ticket.get_ticket_document', "[name='user_unique_id'],
 [name='room_unique_id'], [name='ticket_unique_id'], [name='file']", form=form)
 }} {% block scripts %}
 <!-- prettier-ignore -->

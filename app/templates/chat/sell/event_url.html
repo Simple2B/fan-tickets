@@ -12,7 +12,7 @@ submit_message_get
     {% else %}
     {{ bot_message("Please provide us with a link of event👇") }}
     {% endif %}
-
+    <p>{{ event_name}}</p>
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}
     </div>
@@ -22,9 +22,10 @@ submit_message_get
 <input type="hidden" name="room_unique_id" value="{{ room.unique_id }}" />
 <input type="hidden" name="event_category_id" value="{{ event_category_id }}" />
 <input type="hidden" name="event_name" value="{{ event_name }}" />
-{{ submit_message_get('sell.get_event_url', "[name='room_unique_id'], [name='user_message'], [name='event_category_id'],
-[name='event_name']
-") }}
+<input type="hidden" name="event_name_hidden" value="{{ event_name }}" />
+{{ submit_message_get('chat.sell.get_event_url', "[name='room_unique_id'], [name='event_name'],
+[name='event_name_hidden'], [name='user_message'],
+[name='event_category_id']") }}
 
 {% block scripts %}
 <!-- prettier-ignore -->

@@ -1,0 +1,15 @@
+# ruff: noqa: F401
+from .auth import auth_blueprint
+from .user_email import user_email_blueprint
+from .user_password import user_password_blueprint
+from .user_passport import user_passport_blueprint
+from .user_name import user_name_blueprint
+from .user_second_data import user_second_data_blueprint
+from .user_social_profile import user_social_profile_blueprint
+
+auth_blueprint.register_blueprint(user_email_blueprint)
+auth_blueprint.register_blueprint(user_password_blueprint)
+auth_blueprint.register_blueprint(user_passport_blueprint)
+auth_blueprint.register_blueprint(user_name_blueprint)
+auth_blueprint.register_blueprint(user_second_data_blueprint)
+auth_blueprint.register_blueprint(user_social_profile_blueprint)
