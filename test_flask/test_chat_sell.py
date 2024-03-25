@@ -96,7 +96,7 @@ def test_get_event_with_bard(client_with_data: FlaskClient):
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     response = client_with_data.get(
-        f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
+        f"/chat/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
     )
     assert response.status_code == 200
     assert "Please provide us with a link of even" in response.text
@@ -112,7 +112,7 @@ def test_get_events_from_db(client_with_data: FlaskClient):
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
     response = client_with_data.get(
-        f"/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
+        f"/chat/sell/get_event_name?room_unique_id={room.unique_id}&event_category_id=Show&user_message={TEST_EVENT_NAME}"
     )
     assert response.status_code == 200
     assert response
@@ -135,7 +135,7 @@ def test_get_ticket_price(client_with_data: FlaskClient):
 
     TEST_PRICE_NET = 100
     response = client_with_data.get(
-        f"/sell/get_ticket_price?ticket_unique_id={ticket.unique_id}&room_unique_id={room.unique_id}&user_message={TEST_PRICE_NET}"
+        f"/chat/sell/ticket/get_price?ticket_unique_id={ticket.unique_id}&room_unique_id={room.unique_id}&user_message={TEST_PRICE_NET}"
     )
     assert response.status_code == 200
     assert ticket.price_net == TEST_PRICE_NET
@@ -148,7 +148,7 @@ def test_get_event_category(client_with_data: FlaskClient):
         seller_id=current_user.id,
         buyer_id=app.config["CHAT_DEFAULT_BOT_ID"],
     ).save()
-    response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
+    response = client_with_data.get(f"/chat/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
     assert response.status_code == 200
     assert b"Great! Please provide official event name" in response.data
 
@@ -164,7 +164,7 @@ def test_seller_over_transactions_limit(client_with_data: FlaskClient):
 
     get_testing_tickets(user)
 
-    response = client_with_data.get(f"/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
+    response = client_with_data.get(f"/chat/sell/get_event_category?room_unique_id={room.unique_id}&user_message=Show")
     assert response.status_code == 200
     assert b"You have reached the limit of transactions per month" in response.data
 

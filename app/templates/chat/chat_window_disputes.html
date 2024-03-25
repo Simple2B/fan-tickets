@@ -11,16 +11,16 @@
       <div id="chat-message-container" data-send-message></div>
       <div id="new_messages"></div>
     </div>
-    {% block chat_footer %}{{ submit_message_dispute('disputes.send_message', "[name='room_unique_id'],
+    {% block chat_footer %}{{ submit_message_dispute('chat.disputes.get_message', "[name='room_unique_id'],
     [name='user_message']") }}{% endblock %}
   </div>
 
   <input name="message_uuid" class="hidden">
-  <div id="new_message_loader" hx-get="{{url_for('disputes.get_message')}}" hx-trigger="load_new_message"
+  <div id="new_message_loader" hx-get="{{url_for('chat.disputes.get_message')}}" hx-trigger="load_new_message"
     hx-swap="beforeend" hx-target="#new_messages" hx-include="[name='message_uuid']"></div>
 
   <input name="room_uuid" class="hidden">
-  <div id="message_history_loader" hx-get="{{ url_for('disputes.get_messages') }}" hx-include="[name='room_uuid']"
+  <div id="message_history_loader" hx-get="{{ url_for('chat.disputes.get_messages') }}" hx-include="[name='room_uuid']"
     hx-target="#chat-message-container" hx-swap="innerHTML" hx-trigger="load_message_history"></div>
 
 </div>

@@ -158,7 +158,7 @@
 <div id="chat-footer">
   <label for="chat-post" class="sr-only">Your message</label>
   <div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
-    <form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post="/chat/{{ route }}" hx-target="#chat-body"
+    <form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-post="{{ url_for(route) }}" hx-target="#chat-body"
       hx-indicator="#chat-message-spinner" hx-include="{{ filters }}" hx-swap="innerHTML">
       {{ form.hidden_tag() }}
       <!-- <input type="hidden" name="user_unique_id" value="{{ user_unique_id }}" /> -->
@@ -222,7 +222,7 @@
   <label for="chat-post" class="sr-only">Your message</label>
   <div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
     <form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-encoding="multipart/form-data"
-      hx-post="/chat/{{ route }}" hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML"
+      hx-post="{{ url_for(route) }}" hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML"
       hx-indicator="#chat-message-spinner">
       {{ form.hidden_tag() }}
       <input name="file" placeholder="Upload identity document" type="file"
@@ -253,7 +253,7 @@
   <label for="chat-post" class="sr-only">Your message</label>
   <div class="py-3 px-4 flex gap-2 items-center text-grey rounded-b-2xl">
     <form class="w-full p-2.5 flex bg-dark-grey rounded-2xl" hx-encoding="multipart/form-data"
-      hx-post="/sell/{{ route }}" hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML"
+      hx-post="{{ url_for(route) }}" hx-target="#chat-body" hx-include="{{ filters }}" hx-swap="innerHTML"
       hx-indicator="#chat-message-spinner">
       {{ form.hidden_tag() }}
       <input name="file" placeholder="Upload ticket's PDF" type="file" multiple
