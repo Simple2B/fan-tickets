@@ -161,16 +161,7 @@ def book_ticket(
 
     room.ticket = ticket
 
-    m.Message(
-        sender_id=app.config["CHAT_DEFAULT_BOT_ID"],
-        room_id=room.id,
-        text="We have found tickets. What ticket do you want?",
-    ).save(False)
-    m.Message(
-        room_id=room.id,
-        text="Ticket details:",
-        details=True,
-    ).save()
+    c.ticket_details(ticket, room, buy=True)
 
     return ticket
 
