@@ -117,50 +117,10 @@ def ticket_details(ticket: m.Ticket, room: m.Room, buy=False) -> bool:
         + f"Ticket section: {ticket.section}\n"
         + f"Ticket price net: {ticket.price_net}\n"
         + f"Ticket price gross: {ticket.price_gross}\n"
-        + f"Ticket description: {ticket.description}"
+        + f"Ticket description: {ticket.description}\n"
     )
     if buy:
-        c.save_message("We have found tickets. What ticket do you want?", "Ticket details:", room)
-        m.Message(
-            room_id=room.id,
-            text=f"Event: {ticket.event.name}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Location: {ticket.event.location.name}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Venue: {ticket.event.venue}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Date time: {date_time}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket type: {ticket.ticket_type}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket category: {ticket.ticket_category}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket section: {ticket.section}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket price net: {ticket.price_net}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket price gross: {ticket.price_gross}\n",
-        ).save(False)
-        m.Message(
-            room_id=room.id,
-            text=f"Ticket description: {ticket.description}",
-        ).save()
+        c.save_message("We have found tickets. What ticket do you want?", f"Ticket details: \n{ticket_details}", room)
     else:
         c.save_message(ticket_details, "Got it", room)
 
