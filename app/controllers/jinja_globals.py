@@ -6,6 +6,7 @@ from flask import current_app as app
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from app import models as m, db
+from .utils import get_tickets_fees
 
 
 def today():
@@ -64,18 +65,11 @@ def get_paired_wallet_id(ticket_unique_id: str) -> str:
 
 
 def get_price_gross(ticket: m.Ticket) -> int:
-    user: m.User = current_user
+    buyer: m.User = current_user
+    seller: m.User = ticket.seller
     global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
 
-    if user.is_authenticated and user.service_fee is not None:
-        service_fee = user.service_fee
-    else:
-        service_fee = global_fee_settings.service_fee
-
-    if user.is_authenticated and user.bank_fee is not None:
-        bank_fee = user.bank_fee
-    else:
-        bank_fee = global_fee_settings.bank_fee
+    service_fee, bank_fee = get_tickets_fees(buyer, seller, global_fee_settings)
     total_commission = 1 + (service_fee + bank_fee) / 100
 
     price_net = ticket.price_net if ticket.price_net else 0

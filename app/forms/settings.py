@@ -16,8 +16,12 @@ class FeeSettingsForm(FlaskForm):
 
             self.tickets_sorting_by.choices.extend([(sorting_type, sorting_type) for sorting_type in sorting_types])
 
-    service_fee = IntegerField("service_fee", validators=[Optional()])
-    bank_fee = IntegerField("bank_fee", validators=[Optional()])
+    service_fee_buyer = IntegerField("service_fee_buyer", validators=[Optional()])
+    service_fee_seller = IntegerField("service_fee_seller", validators=[Optional()])
+    total_service_fee = IntegerField("total_service_fee", validators=[Optional()])
+    bank_fee_buyer = IntegerField("bank_fee_buyer", validators=[Optional()])
+    bank_fee_seller = IntegerField("bank_fee_seller", validators=[Optional()])
+    total_bank_fee = IntegerField("total_bank_fee", validators=[Optional()])
     selling_limit = IntegerField("selling_limit", validators=[Optional()])
     buying_limit = IntegerField("buying_limit", validators=[Optional()])
 

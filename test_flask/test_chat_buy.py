@@ -147,7 +147,7 @@ def test_booking_paired_tickets(client: FlaskClient):
 
     login(client)
     user: m.User = current_user
-    user.service_fee = 0
+    user.buyers_service_fee = 0
     user.pagarme_id = "cus_LD8jWxauYfOm9yEe"
     response = client.get(
         f"/chat/buy/ticket/booking?room_unique_id={room.unique_id}&ticket_unique_id={ticket_1.unique_id}"
@@ -235,14 +235,16 @@ def test_sort_tickets_by_categories(client_with_data: FlaskClient):
 def test_fee_adjustment(client: FlaskClient):
     login(client)
     user: m.User = current_user
-    user.service_fee = 0
-    user.bank_fee = 0
+    user.buyers_service_fee = 0
+    user.buyers_bank_fee = 0
 
     _, tickets_available = get_available_ticket(db)
 
     ticket = tickets_available[0]
     ticket.is_reserved = True
     ticket.buyer_id = user.id
+    ticket.seller.sellers_service_fee = 0
+    ticket.seller.sellers_bank_fee = 0
     ticket.save()
     result = calculate_total_price(user)
     assert result
