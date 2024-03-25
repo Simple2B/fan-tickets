@@ -16,17 +16,21 @@ def individual(user_uuid: str):
     form = f.FeeSettingsForm()
 
     if request.method == "GET":
-        form.service_fee.data = user.service_fee
-        form.bank_fee.data = user.bank_fee
+        form.service_fee_buyer.data = user.buyers_service_fee
+        form.service_fee_seller.data = user.sellers_service_fee
+        form.bank_fee_buyer.data = user.buyers_bank_fee
+        form.bank_fee_seller.data = user.sellers_bank_fee
         log(
             log.INFO,
-            f"{user.name} {user.last_name} service_fee: {form.service_fee.data}, bank_fee: {form.bank_fee.data}",
+            f"{user.name} {user.last_name} service_fee_buyer: {form.service_fee_buyer.data}, service_fee_seller: {form.service_fee_seller.data}, bank_fee_buyer: {form.bank_fee_buyer.data}, bank_fee_seller: {form.bank_fee_seller.data}",
         )
         return render_template("admin/individual_settings.html", form=form, user=user)
 
     if form.validate_on_submit():
-        user.service_fee = form.service_fee.data
-        user.bank_fee = form.bank_fee.data
+        user.buyers_service_fee = form.service_fee_buyer.data
+        user.sellers_service_fee = form.service_fee_seller.data
+        user.buyers_bank_fee = form.bank_fee_buyer.data
+        user.sellers_bank_fee = form.bank_fee_seller.data
         user.save()
         log(log.INFO, f"User {user.name} {user.last_name} fee settings updated")
         flash(f"User {user.name} {user.last_name} fee settings updated")
@@ -42,27 +46,30 @@ def general():
 
     if not global_fee_settings:
         log(log.ERROR, "Global fee settings not found")
-        global_fee_settings = m.GlobalFeeSettings(
-            service_fee=5,
-            bank_fee=6,
-        ).save()
+        global_fee_settings = m.GlobalFeeSettings().save()
         log(log.INFO, "Global fee settings created")
 
     form = f.FeeSettingsForm(sorting_type=global_fee_settings.tickets_sorting_by)
     if request.method == "GET":
-        form.service_fee.data = global_fee_settings.service_fee
-        form.bank_fee.data = global_fee_settings.bank_fee
+        form.service_fee_buyer.data = global_fee_settings.service_fee_buyer
+        form.service_fee_seller.data = global_fee_settings.service_fee_seller
+        form.total_service_fee.data = global_fee_settings.service_fee
+        form.bank_fee_buyer.data = global_fee_settings.bank_fee_buyer
+        form.bank_fee_seller.data = global_fee_settings.bank_fee_seller
+        form.total_bank_fee.data = global_fee_settings.bank_fee
         form.selling_limit.data = global_fee_settings.selling_limit
         form.buying_limit.data = global_fee_settings.buying_limit
         log(
             log.INFO,
-            f"General service_fee: {form.service_fee.data}, bank_fee: {form.bank_fee.data}",
+            f"General service_fee_buyer: {form.service_fee_buyer.data}, service_fee_seller: {form.service_fee_seller.data}, bank_fee_buyer: {form.bank_fee_buyer.data} bank_fee_seller: {form.bank_fee_seller.data}",
         )
         return render_template("admin/global_settings.html", form=form)
 
     if form.validate_on_submit():
-        global_fee_settings.service_fee = form.service_fee.data
-        global_fee_settings.bank_fee = form.bank_fee.data
+        global_fee_settings.service_fee_buyer = form.service_fee_buyer.data
+        global_fee_settings.service_fee_seller = form.service_fee_seller.data
+        global_fee_settings.bank_fee_buyer = form.bank_fee_buyer.data
+        global_fee_settings.bank_fee_seller = form.bank_fee_seller.data
         global_fee_settings.tickets_sorting_by = form.tickets_sorting_by.data
         global_fee_settings.selling_limit = form.selling_limit.data
         global_fee_settings.buying_limit = form.buying_limit.data

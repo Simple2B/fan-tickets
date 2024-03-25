@@ -96,8 +96,10 @@ class User(db.Model, UserMixin, ModelMixin):
     is_deleted: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
 
     # Individual financial settings
-    service_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
-    bank_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+    buyers_service_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+    sellers_service_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+    buyers_bank_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
+    sellers_bank_fee: orm.Mapped[int | None] = orm.mapped_column(default=None, server_default=sa.text("NULL"))
 
     # Relationships
     identity_document: orm.Mapped["Picture"] = orm.relationship(foreign_keys=[identity_document_id])

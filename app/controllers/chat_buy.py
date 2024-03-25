@@ -8,6 +8,7 @@ from app import schema as s
 from app import models as m
 from app.database import db
 from app.logger import log
+from .utils import get_tickets_fees
 
 
 def get_events_by_event_name(event_name: str, room: m.Room) -> list[m.Event]:
@@ -178,15 +179,14 @@ def calculate_total_price(user: m.User) -> s.ChatBuyTicketTotalPrice | None:
         return None
 
     global_fee_settings = db.session.scalar(sa.select(m.GlobalFeeSettings))
-    service_fee = user.service_fee if user.service_fee is not None else global_fee_settings.service_fee
-    bank_fee = user.bank_fee if user.bank_fee is not None else global_fee_settings.bank_fee
-    total_commission = 1 + (service_fee + bank_fee) / 100
 
     price_total = 0
     price_service = 0
     price_net = 0
     unique_ids = ""
     for ticket in tickets:
+        service_fee, bank_fee = get_tickets_fees(user, ticket.seller, global_fee_settings)
+        total_commission = 1 + (service_fee + bank_fee) / 100
         ticket_price_gross = ticket.price_net * total_commission
         ticket.price_gross = ticket_price_gross
 
