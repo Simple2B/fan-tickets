@@ -20,7 +20,7 @@
                 <th scope="col" class="px-6 py-3">Name</th>
                 <th scope="col" class="px-6 py-3">En</th>
                 <th scope="col" class="px-6 py-3">Pt</th>
-                <th scope="col" class="px-6 py-3">Remove</th>
+                <th scope="col" class="px-6 py-3 text-center">Remove</th>
                 <th scope="col" class="px-6 py-3"></th>
             </tr>
         </thead>
@@ -33,31 +33,36 @@
                 </td>
 
                 <td class="p-4 space-x-2 whitespace-nowrap text-white">
-                    <a href="#">
+                    <a href="{{url_for('admin.translations.update', translation_id=translation.id)}}">
                         <p class="text-base font-semibold">{{ translation.name }}</p>
                     </a>
                 </td>
 
                 <td class="p-4 space-x-2 whitespace-nowrap text-white">
-                    <a href="#">
+                    <a href="{{url_for('admin.translations.update', translation_id=translation.id)}}">
                         <p class="text-base font-semibold">{{ translation.en }}</p>
                     </a>
                 </td>
 
                 <td class="p-4 space-x-2 whitespace-nowrap text-white">
-                    <a href="#">
+                    <a href="{{url_for('admin.translations.update', translation_id=translation.id)}}">
                         <p class="text-base font-semibold">{{ translation.pt }}</p>
                     </a>
                 </td>
 
                 <!-- Remove button -->
-                <td class="p-4 space-x-2 whitespace-nowrap">
-                    <a href="#" onclick="return confirm('Are you sure?');">
-                        <svg class="w-6 h-6 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 18 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M1 5h16M7 8v8m4-8v8M7 1h4a1 1 0 0 1 1 1v3H6V2a1 1 0 0 1 1-1ZM3 5h12v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5Z" />
-                        </svg>
+                <td class="p-4 space-x-2 whitespace-nowrap text-center">
+                    <a class="text-center"
+                        href="{{url_for('admin.translations.delete', translation_id=translation.id)}}"
+                        onclick="return confirm('Are you sure?');">
+                        <div class="flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 18 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M1 5h16M7 8v8m4-8v8M7 1h4a1 1 0 0 1 1 1v3H6V2a1 1 0 0 1 1-1ZM3 5h12v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5Z" />
+                            </svg>
+                        </div>
                     </a>
                 </td>
             </tr>

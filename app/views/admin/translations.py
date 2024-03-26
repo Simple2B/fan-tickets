@@ -39,3 +39,45 @@ def add():
 
         log(log.INFO, "Translation saved: [%s]", translation)
         return redirect(url_for("admin.translations.get_all"))
+
+
+@translations_blueprint.route("/update/<translation_id>", methods=["GET", "POST"])
+def update(translation_id: int):
+    form = f.TranslationForm()
+
+    translation = db.session.get(m.Translation, translation_id)
+
+    if not translation:
+        log(log.WARNING, "Translation not found: [%s]", translation_id)
+        flash("Translation not found", "danger")
+        return redirect(url_for("admin.translations.get_all"))
+
+    if request.method == "GET":
+        return render_template("admin/translation_update.html", form=form, translation=translation)
+
+    if form.validate_on_submit():
+        translation.name = form.name.data
+        translation.en = form.en.data
+        translation.pt = form.pt.data
+
+        db.session.commit()
+
+        log(log.INFO, "Translation updated: [%s]", translation)
+        return redirect(url_for("admin.translations.get_all"))
+
+
+@translations_blueprint.route("/delete/<translation_id>", methods=["GET"])
+def delete(translation_id):
+    translation = db.session.get(m.Translation, translation_id)
+
+    if not translation:
+        log(log.WARNING, "Translation not found: [%s]", translation_id)
+        flash("Translation not found", "danger")
+        return redirect(url_for("admin.translations.get_all"))
+
+    db.session.delete(translation)
+    db.session.commit()
+    log(log.INFO, "Translation deleted: [%s]", translation_id)
+
+    flash("Translation deleted", "success")
+    return redirect(url_for("admin.translations.get_all"))
