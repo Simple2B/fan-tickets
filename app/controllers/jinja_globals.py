@@ -1,4 +1,5 @@
 import os
+import re
 import pytz
 from datetime import datetime, timedelta
 import sqlalchemy as sa
@@ -6,6 +7,7 @@ from flask import current_app as app
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from app import models as m, db
+from .chat_bard_translation import bot_message_translation
 from .utils import get_tickets_fees
 
 
@@ -123,3 +125,25 @@ def get_room_messages(room: m.Room) -> list[m.Message]:
     messages: list[m.Message] = db.session.scalars(message_query).all()
 
     return messages
+
+
+def pt(text_en: str, chat_screen: str) -> str:
+    text_en = re.sub(r"\s+", " ", text_en)
+
+    translation_query = sa.select(m.Translation).where(m.Translation.en == text_en)
+    translation: m.Translation = db.session.scalar(translation_query)
+
+    if not translation:
+        text_pt = bot_message_translation(text_en)
+        translation = m.Translation(
+            name=chat_screen,
+            en=text_en,
+            pt=text_pt,
+        ).save()
+        return text_en
+
+    if translation.pt:
+        translated_text = translation.pt
+    else:
+        translated_text = bot_message_translation(text_en)
+    return translated_text

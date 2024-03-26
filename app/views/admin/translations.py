@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, request, redirect, url_for, render_template, flash, abort
 import sqlalchemy as sa
 from app import models as m, db, forms as f
@@ -23,17 +24,18 @@ def add():
         return render_template("admin/add_translation.html", form=form)
 
     if form.validate_on_submit():
-        translation_query = sa.select(m.Translation).where(m.Translation.en == form.en.data)
+        text_en = re.sub(r"\s+", " ", form.en.data)
+        translation_query = sa.select(m.Translation).where(m.Translation.en == text_en)
         translation: m.Translation = db.session.scalar(translation_query)
 
         if translation:
-            log(log.WARNING, "Translation already exists: [%s]", form.en.data)
-            flash(f"Translation already exists: {form.en.data}", "danger")
+            log(log.WARNING, "Translation already exists: [%s]", text_en)
+            flash(f"Translation already exists: {text_en}", "danger")
             return render_template("admin/add_translation.html", form=form)
 
         translation = m.Translation(
             name=form.name.data,
-            en=form.en.data,
+            en=text_en,
             pt=form.pt.data,
         ).save()
 
@@ -56,8 +58,9 @@ def update(translation_id: int):
         return render_template("admin/translation_update.html", form=form, translation=translation)
 
     if form.validate_on_submit():
+        text_en = re.sub(r"\s+", " ", form.en.data)
         translation.name = form.name.data
-        translation.en = form.en.data
+        translation.en = text_en
         translation.pt = form.pt.data
 
         db.session.commit()

@@ -24,8 +24,9 @@
     {{ bot_message('Hi, ' + current_user.name + '! How can I assist you
     today? Are you looking to buy or sell a ticket?', html_element) }}
     {% else %}
-    {{ bot_message('Hello! Welcome to FanTicketBot. How can I assist you
-    today? Are you looking to buy or sell a ticket??', html_element) }}
+    <!-- prettier ignore -->
+    {{ bot_message(pt('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a
+    ticket??', "chat_home"), html_element) }}
     {% endif %}
   </div>
 
