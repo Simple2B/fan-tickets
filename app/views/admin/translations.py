@@ -1,5 +1,5 @@
 import re
-from flask import Blueprint, request, redirect, url_for, render_template, flash, abort
+from flask import Blueprint, request, redirect, url_for, render_template, flash
 import sqlalchemy as sa
 from app import models as m, db, forms as f
 from app.logger import log
