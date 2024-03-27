@@ -145,5 +145,8 @@ def pt(text_en: str, chat_screen: str) -> str:
     if translation.pt:
         translated_text = translation.pt
     else:
-        translated_text = bot_message_translation(text_en)
+        translated_text, is_portuguese = bot_message_translation(text_en)
+        if is_portuguese:
+            translation.pt = translated_text
+            translation.save()
     return translated_text

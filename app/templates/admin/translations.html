@@ -40,13 +40,13 @@
 
                 <td class="p-4 space-x-2 whitespace-nowrap text-white">
                     <a href="{{url_for('admin.translations.update', translation_id=translation.id)}}">
-                        <p class="text-base font-semibold">{{ translation.en }}</p>
+                        <p class="text-base font-semibold">{{ translation.en[:32] }}...</p>
                     </a>
                 </td>
 
                 <td class="p-4 space-x-2 whitespace-nowrap text-white">
                     <a href="{{url_for('admin.translations.update', translation_id=translation.id)}}">
-                        <p class="text-base font-semibold">{{ translation.pt }}</p>
+                        <p class="text-base font-semibold">{{ translation.pt[:32] }}...</p>
                     </a>
                 </td>
 
