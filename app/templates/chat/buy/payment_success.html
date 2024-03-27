@@ -29,7 +29,7 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Awesome! Payment approved!", html_element=html_element) }}
+    {{ bot_message(pt("Awesome! Payment approved!", 'chat_buy_payment_success'), html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

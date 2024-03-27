@@ -9,9 +9,9 @@ submit_message_get
   <div id="chat-message-container" data-send-message>
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
-    {{ bot_message("Please provide official event name👇") }}
+    {{ bot_message(pt("Please provide official event name👇", 'chat_sell_event_name_after_error')) }}
     {% else %}
-    {{ bot_message("Great! Please provide official event name👇") }}
+    {{ bot_message(pt("Great! Please provide official event name👇", 'chat_sell_event_name')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

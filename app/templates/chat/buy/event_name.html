@@ -6,8 +6,8 @@ bot_message_without_date, user_message, submit_message_get %}
 
   <div id="chat-message-container" data-send-message>
     {% if error_message %} {% include 'chat/chat_message_error.html' %} {% else
-    %} {{ bot_message("Great! To get started, could you please write below name
-    of the event you're looking for?") }} {% endif %}
+    %} {{ bot_message(pt("Great! To get started, could you please write below name
+    of the event you're looking for?", 'chat_buy_event_name')) }} {% endif %}
   </div>
 
   <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

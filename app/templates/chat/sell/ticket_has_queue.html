@@ -28,7 +28,7 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("Does the ticket have a queue?") }}
+    {{ bot_message(pt("Does the ticket have a queue?", 'chat_sell_has_queue')) }}
     {{bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

@@ -40,7 +40,8 @@ submit_message_disable
   </div>
   {% endset %}
 
-  {% set message = "Great news! We have found " ~ tickets_all_length ~ " available options" %}
+  {% set message = pt("Great news! We have found ", 'chat_buy_ticket_list_found') ~ tickets_all_length ~ pt(" available
+  options", 'chat_buy_ticket_list_options') %}
 
   <div id="chat-message-container" data-send-message>
     {% if error_message %}

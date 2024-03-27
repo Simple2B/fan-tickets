@@ -34,8 +34,9 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a ticket
-    appears?", html_element) }}
+    {{ bot_message(зе("Oops, it seems like we don´t have tickets for this event😢 Would you like to be notified if a
+    ticket
+    appears?", 'chat_buy_ticket_not_found_notify'), html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

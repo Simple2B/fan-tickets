@@ -10,7 +10,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% else %}
-    {{ bot_message("Nice! Please specify the date in format DD/MM/YYYY 📅") }}
+    {{ bot_message(pt("Nice! Please specify the date in format DD/MM/YYYY 📅", 'chat_auth_event_date')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

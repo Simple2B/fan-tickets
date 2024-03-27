@@ -29,7 +29,7 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Do you want to add your social profile?", html_element) }}
+    {{ bot_message(pt("Do you want to add your social profile?", 'chat_auth_ask_social_profile'), html_element) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

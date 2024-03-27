@@ -28,7 +28,8 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Oops, it seems like there is no such event found😢 ", html_element) }}
+    {{ bot_message(pt("Oops, it seems like there is no such event found😢 ", 'chat_buy_event_not_found'), html_element)
+    }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

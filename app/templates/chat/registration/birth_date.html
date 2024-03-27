@@ -10,7 +10,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Please input your birth date in format DD/MM/YYYY 📅") }}
+    {{ bot_message(pt("Please input your birth date in format DD/MM/YYYY 📅", 'chat_auth_birth_date')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

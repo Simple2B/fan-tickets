@@ -29,7 +29,8 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Got it! Do you want to proceed to purchase?", html_element=html_element) }}
+    {{ bot_message(pt("Got it! Do you want to proceed to purchase?", 'chat_buy_ticket_ask_another_one'),
+    html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

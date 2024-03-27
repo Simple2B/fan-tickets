@@ -24,8 +24,9 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Do you want to add your twitter profile?") }}
-    {{ bot_message_without_date("Type your link below or click 'Without Twitter' button. If you do not",
+    {{ bot_message(pt("Do you want to add your twitter profile?", 'chat_auth_twitter')) }}
+    {{ bot_message_without_date(pt("Type your link below or click 'Without Twitter' button. If you do not",
+    'chat_auth_twitter_without'),
     html_element)}}
 
     {% include 'chat/registration/renew_registration.html' %}

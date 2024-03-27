@@ -29,7 +29,7 @@
 
   <div id="chat-message-container" data-send-message>
     {% if not error_message %}
-    {{ bot_message("To continue you need to sign in or sign up") }}
+    {{ bot_message(pt("To continue you need to sign in or sign up", 'chat_auth_login_form')) }}
     {% else %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}

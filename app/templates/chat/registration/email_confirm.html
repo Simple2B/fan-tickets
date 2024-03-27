@@ -10,7 +10,8 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("We sent verification code to your email. Please input the code below.") }}
+    {{ bot_message(pt("We sent verification code to your email. Please input the code below.",
+    'chat_auth_email_confirm')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

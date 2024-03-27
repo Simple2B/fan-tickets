@@ -39,9 +39,10 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("To proceed with the purchase, please scan QR code.") }}
+    {{ bot_message(pt("To proceed with the purchase, please scan QR code.", 'chat_buy_payment_step_1')) }}
     {{ bot_message_without_date(html_element=html_element) }}
-    {{ bot_message("After payment is performed you will be able to see results in pagamentos section of your profile.")
+    {{ bot_message(pt("After payment is performed you will be able to see results in pagamentos section of your
+    profile.", 'chat_buy_payment_step_2'))
     }}
     {{ bot_message_without_date(html_element=html_element_end_conversation) }}
 

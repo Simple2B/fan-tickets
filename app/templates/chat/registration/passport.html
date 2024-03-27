@@ -10,7 +10,7 @@ submit_message_file
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Please upload your identification document (CPF)") }}
+    {{ bot_message(pt("Please upload your identification document (CPF)", 'chat_auth_upload_cpf')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

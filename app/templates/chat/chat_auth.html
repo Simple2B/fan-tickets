@@ -28,7 +28,7 @@
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
 
-    {{ bot_message('You do not log in. Please log in or sign up', html_element) }}
+    {{ bot_message(pt('You do not log in. Please log in or sign up', 'chat_auth'), html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}

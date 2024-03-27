@@ -14,9 +14,9 @@ bot_message_without_date, user_message, submit_message_get %}
     {% endif%}
 
     {% if ticket_paired %}
-    {{ bot_message("How much do you want for two tickets?") }}
+    {{ bot_message(pt("How much do you want for two tickets?", 'chat_sell_ticket_price_paired')) }}
     {% else %}
-    {{ bot_message("How much do you want for the ticket?") }}
+    {{ bot_message(pt("How much do you want for the ticket?", 'chat_sell_ticket_price')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

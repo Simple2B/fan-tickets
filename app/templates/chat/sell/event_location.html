@@ -8,7 +8,7 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% else %}
-    {{ bot_message("Got it! Please provide the city of the event. ex. Sao Paulo👇") }}
+    {{ bot_message(pt("Got it! Please provide the city of the event. ex. Sao Paulo👇", 'chat_sell_event_location')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

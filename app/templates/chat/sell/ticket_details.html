@@ -26,7 +26,7 @@ bot_message_without_date, user_message, submit_message_disable %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("Great! Here is summary for your ticket:") }}
+    {{ bot_message(pt("Great! Here is summary for your ticket:", 'chat_sell_ticket_details')) }}
 
     <div class="chat-message mb-2 flex gap-2 test_bot_message">
       <div class="p-2 h-max self-end rounded-full bg-dark-grey">

@@ -28,7 +28,7 @@ bot_message_without_date, user_message, submit_message_disable %}
 
     <div id="chat-message-container" data-send-message>
         {% if error_message %} {% include 'chat/chat_message_error.html' %} {% endif
-        %} {{ bot_message("Please provide ticket category") }}
+        %} {{ bot_message(pt("Please provide ticket category", 'chat_sell_ticket_category')) }}
         {{ bot_message_without_date(html_element=html_element) }}
 
         <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

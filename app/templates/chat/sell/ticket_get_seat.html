@@ -14,9 +14,10 @@ bot_message_without_date, user_message, submit_message_get %}
     {% endif%}
 
     {% if ticket_paired %}
-    {{ bot_message("Please enter seats for both tickets separating them with comma. For example: 23,24") }}
+    {{ bot_message(pt("Please enter seats for both tickets separating them with comma. For example: 23,24",
+    'chat_sell_seat_paired')) }}
     {% else %}
-    {{ bot_message("Please enter ticket's seat") }}
+    {{ bot_message(pt("Please enter ticket's seat", 'chat_sell_seat')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

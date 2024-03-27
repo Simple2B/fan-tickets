@@ -24,8 +24,9 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Do you want to add your instagram profile?") }}
-    {{ bot_message_without_date("Type your link below or click 'Without Instagram' button. If you do not",
+    {{ bot_message(pt("Do you want to add your instagram profile?", 'chat_auth_instagram')) }}
+    {{ bot_message_without_date(pt("Type your link below or click 'Without Instagram' button. If you do not",
+    'chat_auth_instagram_without'),
     html_element)}}
 
     {% include 'chat/registration/renew_registration.html' %}

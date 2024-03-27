@@ -26,7 +26,8 @@ bot_message_without_date, user_message, submit_message_disable %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Great! What is the category of event are you selling tickets for?") }}
+    {{ bot_message(pt("Great! What is the category of event are you selling tickets for?", 'chat_auth_event_category'))
+    }}
     {{ bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

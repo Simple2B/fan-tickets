@@ -49,7 +49,8 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Fantastic choice! There are several location for this event. Please choose below👇") }}
+    {{ bot_message(pt("Fantastic choice! There are several location for this event. Please choose below👇",
+    'chat_buy_location_list')) }}
     {{ bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

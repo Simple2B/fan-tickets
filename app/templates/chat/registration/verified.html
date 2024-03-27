@@ -30,10 +30,12 @@ submit_message_disable
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
     {% if current_user.name %}
-    {{ bot_message(current_user.name + ", how can I assist you? Are you looking to buy or sell a ticket?",
+    {{ bot_message(current_user.name + pt(", how can I assist you? Are you looking to buy or sell a ticket?",
+    'chat_auth_how_can_i_assist_verify'),
     html_element)}}
     {% else %}
-    {{ bot_message("How can I assist you? Are you looking to buy or sell a ticket?", html_element)}}
+    {{ bot_message(pt("How can I assist you? Are you looking to buy or sell a ticket?",
+    'chat_auth_how_can_i_assist_unverify'), html_element)}}
     {% endif %}
 
     {% include 'chat/registration/renew_registration.html' %}

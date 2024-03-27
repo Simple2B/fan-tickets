@@ -14,9 +14,9 @@ bot_message_without_date, user_message, submit_message_get %}
     {% endif%}
 
     {% if is_second_wallet_id_input %}
-    {{ bot_message("Please input 2nd wallet id:") }}
+    {{ bot_message(pt("Please input 2nd wallet id:", 'chat_sell_wallet_id_paired')) }}
     {% else %}
-    {{ bot_message("Please input ticket's wallet id:") }}
+    {{ bot_message(pt("Please input ticket's wallet id:", 'chat_sell_wallet_id')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

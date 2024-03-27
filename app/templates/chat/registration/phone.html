@@ -10,7 +10,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Please input your phone in format +55-11-222233334") }}
+    {{ bot_message(pt("Please input your phone in format +55-11-222233334", 'chat_auth_phone')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

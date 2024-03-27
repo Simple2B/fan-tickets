@@ -2,34 +2,7 @@
 %}
 
 <div id="chat-main" class="py-3 px-4 flex-col justify-start items-stretch overflow-y-scroll">
-  {% include 'chat/chat_spinner.html' %}
-
-  {% set html_element %}
-  <div class="mt-2 flex justify-stretch gap-2">
-    <button type="button" id="chat-window-buy" hx-get="{{ url_for('chat.sell') }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click" hx-include="[name='room_unique_id']"
-      class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      Selling
-    </button>
-    <button type="button" id="chat-window-events" hx-get="{{ url_for('chat.buy') }}" hx-target="#chat-body"
-      hx-swap="innerHTML" hx-trigger="click" hx-include="[name='room_unique_id']"
-      class="link p-2 w-full text-center text-secondary border border-secondary rounded-2xl transition-colors duration-200">
-      Buying
-    </button>
-  </div>
-  {% endset %}
-
-  <div id="chat-message-container" data-send-message>
-    {% if current_user.is_authenticated and current_user.name %}
-    {{ bot_message('Hi, ' + current_user.name + '! How can I assist you
-    today? Are you looking to buy or sell a ticket?', html_element) }}
-    {% else %}
-    <!-- prettier ignore -->
-    {{ bot_message(pt('Hello! Welcome to FanTicketBot. How can I assist you today? Are you looking to buy or sell a
-    ticket??', "chat_home"), html_element) }}
-    {% endif %}
-  </div>
-
+  {% include 'chat/chat_greeting.html' %}
 </div>
 
 

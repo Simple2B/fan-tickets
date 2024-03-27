@@ -19,9 +19,10 @@ submit_message_get
   <div id="chat-message-container" data-send-message>
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
-    {{ bot_message_without_date("You have already sign up with this email. Just log in", html_element) }}
+    {{ bot_message_without_date(pt("You have already sign up with this email. Just log in",
+    'chat_auth_redirect_to_login'), html_element) }}
     {% endif %}
-    {{ bot_message("Please input your name") }}
+    {{ bot_message(pt("Please input your name", 'chat_auth_first_name')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

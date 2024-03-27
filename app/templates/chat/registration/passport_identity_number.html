@@ -10,7 +10,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Please input your CPF number") }}
+    {{ bot_message(pt("Please input your CPF number", 'chat_auth_input_cpf')) }}
 
     {% include 'chat/registration/renew_registration.html' %}
 

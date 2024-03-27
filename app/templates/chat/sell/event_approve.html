@@ -49,7 +49,7 @@ submit_message_disable
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Super! Please check if this event is right?") }}
+    {{ bot_message(pt("Super! Please check if this event is right?", 'chat_sell_event_approve')) }}
     {{ bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

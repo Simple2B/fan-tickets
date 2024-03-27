@@ -10,9 +10,9 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% else %}
-    {{ bot_message("Please provide us with a link of event👇") }}
+    {{ bot_message(pt("Please provide us with a link of event👇", 'chat_auth_event_url')) }}
     {% endif %}
-    <p>{{ event_name}}</p>
+    <p>{{ event_name }}</p>
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
       {% include 'chat/chat_spinner_active.html' %}
     </div>

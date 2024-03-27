@@ -26,7 +26,7 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("What version of ticket do you have?") }}
+    {{ bot_message(pt("What version of ticket do you have?", 'chat_sell_ticket_file_type')) }}
     {{bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

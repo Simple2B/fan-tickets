@@ -35,7 +35,8 @@ submit_message_disable %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Unfortunately in order to avoid frauds we have to limit transactions for this month.", html_element)
+    {{ bot_message(pt("Unfortunately in order to avoid frauds we have to limit transactions for this month.",
+    'chat_buy_transactions_limit'), html_element)
     }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

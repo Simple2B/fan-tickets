@@ -20,12 +20,13 @@ submit_message_get
 
   <div id="chat-message-container" data-send-message>
     {% if not error_message %}
-    {{ bot_message("Then let's get started!") }}
+    {{ bot_message(pt("Then let's get started!", 'chat_auth_email_1')) }}
     {{ bot_message_without_date("Please input your email") }}
     {% else %}
     {% include 'chat/chat_message_error.html' %}
-    {{ bot_message_without_date("You have already sign up with this email. Just press Log in", html_element) }}
-    {{ bot_message_without_date("Or type another email please") }}
+    {{ bot_message_without_date(pt("You have already sign up with this email. Just press Log in", 'chat_auth_email_2'),
+    html_element) }}
+    {{ bot_message_without_date(pt("Or type another email please", 'chat_auth_email_3')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

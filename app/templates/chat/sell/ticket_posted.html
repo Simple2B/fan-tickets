@@ -29,9 +29,10 @@ bot_message_without_date, user_message, submit_message_get %}
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
-    {{ bot_message("Done🎉 Now a little patience, we need to verify your posting. You will receive a notification and a
+    {{ bot_message(pt("Done🎉 Now a little patience, we need to verify your posting. You will receive a notification and
+    a
     letter to your email
-    as soon as possible!") }}
+    as soon as possible!", 'chat_sell_ticket_posted')) }}
     {{bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

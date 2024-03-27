@@ -10,7 +10,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% else %}
-    {{ bot_message("Nice! Please provide the location name (ex. Sao Paulo Stadium)") }}
+    {{ bot_message(pt("Nice! Please provide the location name (ex. Sao Paulo Stadium)", 'chat_sell_event_venue')) }}
     {% endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

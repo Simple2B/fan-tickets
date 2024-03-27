@@ -37,7 +37,7 @@ submit_message_get
     {% if error_message %}
     {% include 'chat/chat_message_error.html' %}
     {% endif %}
-    {{ bot_message("Sure! Please, choose available options:") }}
+    {{ bot_message(pt("Sure! Please, choose available options:", 'chat_buy_ticket_choose_date')) }}
     {{ bot_message_without_date(html_element=html_element) }}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">

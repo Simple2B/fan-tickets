@@ -25,7 +25,7 @@
 
   <div id="chat-message-container" data-send-message>
     {% if not error_message %}
-    {{ bot_message("To sign in, please input your email") }}
+    {{ bot_message(pt("To sign in, please input your email", 'chat_auth_email_input')) }}
     {% else %}
     {% include 'chat/chat_message_error.html' %}
     {{ bot_message_without_date(html_element=html_element) }}

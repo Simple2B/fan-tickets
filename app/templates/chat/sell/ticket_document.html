@@ -14,9 +14,9 @@ bot_message_without_date, user_message, submit_ticket_pdf %}
     {% include 'chat/chat_message_error.html' %}
     {% endif%}
     {% if ticket_paired %}
-    {{ bot_message("Please upload two PDF files") }}
+    {{ bot_message(pt("Please upload two PDF files", 'chat_sell_ticket_document_paired')) }}
     {% else %}
-    {{ bot_message("Please upload ticket's PDF document") }}
+    {{ bot_message(pt("Please upload ticket's PDF document", 'chat_sell_ticket_document')) }}
     {%endif %}
 
     <div id="chat-message-spinner" class="htmx-indicator flex gap-2 justify-start">
