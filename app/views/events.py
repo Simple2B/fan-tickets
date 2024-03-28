@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any
 
 from flask import request, Blueprint, render_template
-import sqlalchemy as sa
 from app import schema as s
 from app import models as m, db
 from app.logger import log
