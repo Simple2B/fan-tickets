@@ -134,7 +134,8 @@ def pt(text_en: str, chat_screen: str) -> str:
     translation: m.Translation = db.session.scalar(translation_query)
 
     if not translation:
-        text_pt = bot_message_translation(text_en)
+        translated_text, is_portuguese = bot_message_translation(text_en)
+        text_pt = translated_text if is_portuguese else ""
         translation = m.Translation(
             name=chat_screen,
             en=text_en,
