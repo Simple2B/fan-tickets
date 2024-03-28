@@ -74,7 +74,7 @@ class EventsInput(BaseModel):
 
 
 class EventFilter(BaseModel):
-    event_name: str | None = None
+    name: str | None = None
     location: str | None = None
     date_from: str | None = None
     date_to: str | None = None

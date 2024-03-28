@@ -21,7 +21,7 @@ BARD_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:gene
 
 
 def ask_bard_for_event(event_name: str) -> tuple[str, bool]:
-    question = f'Could you please tell me if there is an event in Brasil that has name similar to "{event_name}" and if yes give me a json with event details. For example:'
+    question = f'Could you please tell me if there is an upcoming event in Brasil that has name similar to "{event_name}" and if yes give me a json with event details. For example:'
     json_example = """
         {
         "event_name": "official event name",
@@ -135,10 +135,15 @@ def create_event_date_time(date: str, time: str) -> datetime:
     return date_time
 
 
-def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams, room, from_buy=False) -> list[m.Event]:
+def get_event_by_name_bard(
+    params: s.ChatSellEventParams | s.ChatBuyEventParams,
+    room: m.Room | None = None,
+    from_web=False,
+    from_buy=False,
+) -> list[m.Event]:
     assert params.user_message
 
-    if not from_buy:
+    if not from_buy and room:
         c.save_message(
             "Please, input official event name (matching the official website)",
             f"{params.user_message}",
@@ -156,6 +161,8 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
     search_key_words = params.user_message.split(" ") if params.user_message else []
     events = []
     for word in search_key_words:
+        if len(word) < 3:
+            continue
         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"), m.Event.date_time >= datetime.now())
         events_search = db.session.scalars(event_query).all()
         events.extend(events_search)
@@ -192,7 +199,7 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
         event_query = sa.select(m.Event).where(m.Event.name == event_data.event_name)
         event: m.Event = db.session.scalar(event_query)
 
-        if event:
+        if event and room:
             log(log.INFO, "Event already exists: [%s]", event_data.event_name)
             c.save_message(
                 "Super! Please check if this event is right?",
@@ -201,7 +208,11 @@ def get_event_by_name_bard(params: s.ChatSellEventParams | s.ChatBuyEventParams,
             )
             return [event]
 
-        # Creating a new event in database if we have at least minimal data
+        # Returning an empty list if the event is in the past
+        if datetime.now() > event_date_time:
+            return events
+
+        # Creating a new event in database if we have at least minimal data and relevant date
         event = m.Event(
             name=event_data.event_name,
             url=event_data.official_url,

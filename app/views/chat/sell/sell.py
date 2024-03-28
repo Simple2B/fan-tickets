@@ -76,6 +76,7 @@ def get_event_name():
     if events:
         return render_template(
             "chat/sell/event_approve.html",
+            event_name=params.user_message,
             events=events,
             event_category_id=params.event_category_id,
             room=room,
