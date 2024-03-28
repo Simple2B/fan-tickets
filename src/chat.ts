@@ -9,6 +9,8 @@ import {
 import * as htmx from 'htmx.org';
 
 const timeTyping = 1500;
+const CHAT_CLOSE_TIMER = 70000;
+
 export let chatWindow: HTMLDivElement;
 export let chatMessageContainer: HTMLDivElement;
 export let chatIcon: HTMLDivElement;
@@ -203,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetElement.querySelector('#chat-bot-close')) {
       setTimeout(() => {
         closeChatWindow();
-      }, 6000);
+      }, CHAT_CLOSE_TIMER || 10000);
     }
   });
 

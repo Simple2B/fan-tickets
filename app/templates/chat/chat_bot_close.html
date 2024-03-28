@@ -11,9 +11,10 @@ bot_message_without_date, user_message, submit_message_disable %}
     {% include 'chat/chat_message_error.html' %}
     {% else%}
     {% if current_user.is_authenticated %}
-    {{ bot_message("Conversation has been cleared and sent to your email. Chat will close after 5 second") }}
+    {{ bot_message("Thank you for using FanTicket. Conversation has been cleared and sent to your email. Chat will close
+    after 5 second") }}
     {% else %}
-    {{ bot_message("Conversation has been cleared. Chat will close after 5 second") }}
+    {{ bot_message("Thank you for using FanTicket. Conversation has been cleared. Chat will close after 5 second") }}
     {% endif %}
     {%endif %}
   </div>
