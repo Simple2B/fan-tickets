@@ -67,12 +67,12 @@ def get_tickets():
         count_query = count_query.where(m.Ticket.event.has(m.Event.location_id == int(location_id)))
 
     if date_from_str:
-        date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
+        date_from = datetime.strptime(date_from_str, "%d/%m/%Y")
         tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.date_time >= date_from))
         count_query = count_query.where(m.Ticket.event.has(m.Event.date_time >= date_from))
 
     if date_to_str:
-        date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
+        date_to = datetime.strptime(date_to_str, "%d/%m/%Y")
         tickets_query = tickets_query.where(m.Ticket.event.has(m.Event.date_time <= date_to))
         count_query = count_query.where(m.Ticket.event.has(m.Event.date_time <= date_to))
 

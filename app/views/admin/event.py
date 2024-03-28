@@ -57,12 +57,12 @@ def get_events():
         location_unique_id = db.session.scalar(sa.select(m.Location.unique_id).where(m.Location.id == int(location_id)))
 
     if date_from_str:
-        date_from = datetime.strptime(date_from_str, "%m/%d/%Y")
+        date_from = datetime.strptime(date_from_str, "%d/%m/%Y")
         events_query = events_query.where(m.Event.date_time >= date_from)
         count_query = count_query.where(m.Event.date_time >= date_from)
 
     if date_to_str:
-        date_to = datetime.strptime(date_to_str, "%m/%d/%Y")
+        date_to = datetime.strptime(date_to_str, "%d/%m/%Y")
         events_query = events_query.where(m.Event.date_time <= date_to)
         count_query = count_query.where(m.Event.date_time <= date_to)
 
