@@ -30,7 +30,8 @@
       class="w-6 h-6 {% if not current_user.unread_notifications_count %} hidden {% endif %} rounded-full text-center font-bold bg-ultra-light-grey text-black"
       id="unread-notifications-count" hx-get="{{ url_for('notification.get_unread_notifications') }}"
       hx-trigger="update_unread_notifications_count">{{
-      current_user.unread_notifications_count}}</div>
+      current_user.unread_notifications_count}}
+    </div>
   </a>
   <a href="{{ url_for('auth.logout') }}" class="mb-6 flex gap-4 items-center">
     <!--prettier-ignore-->

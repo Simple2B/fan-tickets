@@ -52,7 +52,6 @@ export function handleHideElements(
 }
 
 export function resizeChat() {
-  console.log('resizeChat');
   const header: HTMLElement = document.querySelector('.header');
   const chatMain: HTMLElement = document.querySelector('#chat-body');
   const chatFooter: HTMLElement = document.querySelector('#chat-footer');
@@ -87,8 +86,6 @@ export function resizeChat() {
 }
 
 export function lockScrollBody() {
-  console.log('lockScrollBody');
-
   const screenWith: number = window.innerWidth;
   if (screenWith < 640) {
     document.body.style.position = 'fixed';
@@ -99,8 +96,6 @@ export function lockScrollBody() {
 }
 
 export function unlockScrollBody() {
-  console.log('unlockScrollBody');
-
   const screenWith: number = window.innerWidth;
   if (screenWith < 640) {
     const scrollY = document.body.style.top;
@@ -129,7 +124,6 @@ export function scrollDownSmooth(element: HTMLDivElement) {
 }
 
 export function socialMediaShare() {
-  console.log('socialMediaShare');
   const fbShareIcons = document.querySelectorAll(
     '.fb-share',
   ) as NodeListOf<HTMLAnchorElement>;

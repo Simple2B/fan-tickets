@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   chatIcon.addEventListener('click', () => {
     setTimeout(() => {
-      console.log('chat icon clicked inside chat_button_open');
-
       resizeChat();
     }, 200);
     toggleChatWindow();

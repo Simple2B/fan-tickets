@@ -236,7 +236,7 @@
   </div>
   <div class="hidden lg:block">{% include 'landing/home/cities.html' %}</div>
   <a class="link py-4 px-8 text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300"
-    href="#">Listar todos os eventos
+    href="{{ url_for('events.get_events') }}">Listar todos os eventos
   </a>
 </section>
 <section class="relative bg-main-review">
