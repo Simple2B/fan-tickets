@@ -55,9 +55,9 @@ class BaseConfig(BaseSettings):
 
     # UI config
     CHAT_USER_FORMAT: str = "%d/%m/%Y"
-    DATE_PICKER_FORMAT: str = "%m/%d/%Y"
+    DATE_PICKER_FORMAT: str = "%d/%m/%Y"
     DATE_PLATFORM_FORMAT: str = "%d %b %Y"
-    DATE_CHAT_HISTORY_FORMAT: str = "%m/%d/%Y %H:%M"
+    DATE_CHAT_HISTORY_FORMAT: str = "%d/%m/%Y %H:%M"
     PATTERN_EMAIL: str = r"^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     # PATTERN_PHONE: str = r"^\+?\d{10,13}$"
     PATTERN_PHONE: str = r"\+?(\d{2})-(\d{2})-(\d{9})"

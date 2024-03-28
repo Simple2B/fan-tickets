@@ -10,7 +10,7 @@ from .utils import get_tickets_fees
 
 
 def today():
-    return datetime.today().strftime("%Y/%m/%d")
+    return datetime.today().strftime("%d/%m/%Y")
 
 
 def form_hidden_tag():
@@ -19,7 +19,7 @@ def form_hidden_tag():
 
 
 def date_from_datetime(date_time: datetime):
-    return date_time.date()
+    return date_time.strftime("%d-%m-%Y")
 
 
 def event_form_date(date_time: datetime):
@@ -34,7 +34,7 @@ def time_delta(created_at: datetime) -> int:
 
 
 def cut_seconds(created_at: datetime = datetime.now()) -> str:
-    return created_at.strftime("%Y-%m-%d %H:%M")
+    return created_at.strftime("%d-%m-%Y %H:%M")
 
 
 def card_mask(card_number: str = "000000000000000000") -> str:

@@ -11,43 +11,25 @@
       <div class="flex items-center justify-center bg-black">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative">
-          <div
-            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              class="w-5 h-5 text-gray-400"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg class="w-5 h-5 text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
-              <path
-                fill-rule="evenodd"
+              <path fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                 clip-rule="evenodd"></path>
             </svg>
           </div>
           <!-- prettier-ignore -->
-          <input {% if q %} value="{{ q }}" {% endif %}
-            id="table-search-events"
-            hx-get="{{url_for('admin.event.get_events', search=True)}}"
-            hx-swap="outerHTML"
-            hx-target="#events_list"
-            hx-trigger="click, keyup changed delay:1000ms"
-            hx-include="{{all_filters}}"
-            name="q"
-            autocomplete="off"
+          <input {% if q %} value="{{ q }}" {% endif %} id="table-search-events"
+            hx-get="{{url_for('admin.event.get_events', search=True)}}" hx-swap="outerHTML" hx-target="#events_list"
+            hx-trigger="click, keyup changed delay:1000ms" hx-include="{{all_filters}}" name="q" autocomplete="off"
             class="block p-2 pl-10 text-sm border rounded-lg w-80 input-gradient-black focus:outline-none focus:border-transparent focus:ring-0 active:ring-0 active:border-transparent"
             placeholder="Search for events" />
         </div>
 
-        <button
-          type="button"
-          id="table-search-events-button"
+        <button type="button" id="table-search-events-button"
           class="px-3 py-2 text-xs text-gray-600 border border-gray-600 hover:text-white hover:border-white focus:outline-none ml-2 font-medium rounded-lg text-center inline-flex items-center mr-2 hover:bg-middle-grey focus:ring-0">
-          <svg
-            class="w-5 h-5 fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            height="16"
-            width="18"
+          <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" height="16" width="18"
             viewBox="0 0 576 512">
             <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
             <path
@@ -57,8 +39,7 @@
       </div>
 
       <a href="{{url_for('admin.event.add_event')}}" class="w-44 mx-3 my-6">
-        <button
-          type="button"
+        <button type="button"
           class="link p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
           Add
         </button>
@@ -69,8 +50,7 @@
       <div class="flex flex-col lg:flex-row gap-2 justify-between">
         <div class="cursor-pointer">
           <p class="text-gray-400">Location {{location_selected}}</p>
-          <select
-            name="location_id"
+          <select name="location_id"
             class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
             <option value="all">All</option>
             {% for location in locations %} {% if location.unique_id ==
@@ -86,46 +66,28 @@
 
         <div class="relative w-max cursor-pointer">
           <p class="text-gray-400">Dates</p>
-          <div
-            id="event-dates"
+          <div id="event-dates"
             class="relative z-20 admin-select w-40 h-10 flex items-center bg-transparent text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
             <p class="ms-3">Choose dates</p>
           </div>
 
-          <div
-            id="event-dates-dropdown"
+          <div id="event-dates-dropdown"
             class="hidden absolute bg-black border border-gray-400 rounded-lg text-gray-400">
             <p class="m-2">Date from</p>
-            <input
-              datepicker
-              datepicker-autohide
-              type="text"
-              name="date_from"
-              autocomplete="off"
-              id="date-from"
+            <input datepicker datepicker-format="dd/mm/yyyy" datepicker-autohide type="text" name="date_from"
+              value="{{ today() }}" autocomplete="off" id="date-from"
               class="max-w-2xl border-0 text-sm rounded-lg block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}" />
 
             <p class="m-2">Date to</p>
-            <input
-              datepicker
-              datepicker-autohide
-              type="text"
-              name="date_to"
-              autocomplete="off"
-              id="date-to"
+            <input datepicker datepicker-format="dd/mm/yyyy" datepicker-autohide type="text" name="date_to"
+              value="{{ today() }}" autocomplete="off" id="date-to"
               class="max-w-2xl border-0 text-sm rounded-lg block w-full p-2 bg-black placeholder-white text-white focus:ring-secondary cursor-pointer"
               placeholder="{{ today() }}" />
           </div>
-          <svg
-            class="z-0 absolute right-2 top-1/2 w-5 fill-current"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
+          <svg class="z-0 absolute right-2 top-1/2 w-5 fill-current" width="24" height="24" viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg">
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+            <path fill-rule="evenodd" clip-rule="evenodd"
               d="M18.601 8.39897C18.269 8.06702 17.7309 8.06702 17.3989 8.39897L12 13.7979L6.60099 8.39897C6.26904 8.06702 5.73086 8.06702 5.39891 8.39897C5.06696 8.73091 5.06696 9.2691 5.39891 9.60105L11.3989 15.601C11.7309 15.933 12.269 15.933 12.601 15.601L18.601 9.60105C18.9329 9.2691 18.9329 8.73091 18.601 8.39897Z"
               fill="rgb(120 120 120)"></path>
           </svg>
@@ -133,8 +95,7 @@
 
         <div class="cursor-pointer">
           <p class="text-gray-400">Category</p>
-          <select
-            name="category_id"
+          <select name="category_id"
             class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
             <option value="all">All</option>
             {% for category in categories %} {% if category.name ==
@@ -150,8 +111,7 @@
 
         <div class="cursor-pointer">
           <p class="text-gray-400">Status</p>
-          <select
-            name="status"
+          <select name="status"
             class="admin-select w-40 bg-black text-gray-400 border border-gray-400 rounded-lg cursor-pointer">
             <option value="all">All</option>
             {% if status_selected == "pending" %}
@@ -173,16 +133,14 @@
 
       <div class="my-5 flex justify-center">
         <div>
-          <button
-            type="submit"
+          <button type="submit"
             class="link mx-2 p-2 w-44 text-center text-secondary border border-secondary rounded-xl transition-colors duration-200">
             Apply
           </button>
         </div>
 
         <a href="{{url_for('admin.event.get_events')}}">
-          <button
-            type="button"
+          <button type="button"
             class="link mx-2 p-2 w-44 text-center text-gray-400 border border-gray-400 rounded-xl transition-colors duration-200">
             reset
           </button>
@@ -196,12 +154,6 @@
 </div>
 
 {% endblock %} {% block scripts %}
-<script
-  src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}"
-  type="text/javascript"
-  defer></script>
-<script
-  src="{{ url_for('static', filename='js/admin.js') }}"
-  type="text/javascript"
-  defer></script>
+<script src="{{ url_for('static', filename='js/flowbite_datepicker.js') }}" type="text/javascript" defer></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}" type="text/javascript" defer></script>
 {% endblock %}

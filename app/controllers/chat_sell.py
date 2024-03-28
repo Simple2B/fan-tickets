@@ -131,7 +131,7 @@ def create_event_date_time(date: str, time: str) -> datetime:
     if not date and not time:
         return datetime.now() + timedelta(days=CFG.DAYS_TO_EVENT_MINIMUM)
 
-    date_time = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
+    date_time = datetime.strptime(f"{date} {time}", "%d-%m-%Y %H:%M")
     return date_time
 
 

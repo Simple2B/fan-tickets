@@ -293,12 +293,12 @@
                                           style=" line-height: 24px; font-size: 16px; width: 100%; margin: 0; padding: 20px; "
                                           align="left">
                                           {% for message in messages %}
-                                          {% if message.sender.name %}
+                                          {% if not message.sender.name %}
                                           <div style="margin-bottom: 14px;">
                                             <span
                                               style="display:block; font-size:12px; margin-bottom:4px; line-height:12px; color:#1c1c1c;">
-                                              {{ message.sender.name }} {{ message.sender.last_name }}, [{{
-                                              message.created_at.strftime("%m/%d/%Y
+                                              {{ user.name }} {{ user.last_name }}, [{{
+                                              message.created_at.strftime("%d/%m/%Y
                                               %H:%M:%S") }}]</span>
                                             <p style="margin:0px; color:#99a1a3;">
                                               {{ message.text }}</p>
@@ -307,7 +307,7 @@
                                           <div style="margin-bottom: 14px;">
                                             <span
                                               style="display:block; font-size:12px; margin-bottom:4px; line-height:12px; color:#1c1c1c;">
-                                              FanTicket Bot, [{{ message.created_at.strftime("%m/%d/%Y
+                                              FanTicket Bot, [{{ message.created_at.strftime("%d/%m/%Y
                                               %H:%M:%S") }}]</span>
                                             <p style="display:inline-block; margin:0px; color:#99a1a3;">
                                               {{ message.text }}</p>
