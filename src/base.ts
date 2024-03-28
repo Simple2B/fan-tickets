@@ -229,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (chatIcon) {
     chatIcon.addEventListener('click', () => {
       setTimeout(() => {
-        console.log('chat icon clicked inside base');
         resizeChat();
       }, 200);
     });

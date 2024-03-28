@@ -36,7 +36,7 @@ def get_filter_events():
     data["categories"] = request.args.getlist("categories")
     event_filter = s.EventFilter.model_validate(data)
 
-    events_query = m.Event.select().where(m.Event.approved.is_(True))
+    events_query = m.Event.select().where(m.Event.approved.is_(True), m.Event.date_time >= datetime.now())
 
     if event_filter.event_name:
         return get_events_by_name(event_filter.event_name)
