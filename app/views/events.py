@@ -7,6 +7,8 @@ from app import schema as s
 from app import models as m, db
 from app.logger import log
 
+# from app.controllers.bard import home_search_by_bard
+from app.controllers import ask_bard_for_event
 from config import config
 
 CFG = config()
@@ -27,7 +29,11 @@ def get_events_by_name(event_name: str) -> list[m.Event]:
         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
         events_search = db.session.scalars(event_query).all()
         events.extend(events_search)
+    if events:
+        return events
 
+    events, success = ask_bard_for_event(event_name)
+    events = events if success else []
     return events
 
 

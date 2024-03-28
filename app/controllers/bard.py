@@ -31,3 +31,7 @@ def bot_message_translation(text_en: str) -> tuple[str, bool]:
         log(log.ERROR, "Error translating text: [%s]", e)
         response_text = text_en
         return response_text, False
+
+
+def home_search_by_bard(event_name: str):
+    return

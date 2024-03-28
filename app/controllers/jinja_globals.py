@@ -7,7 +7,7 @@ from flask import current_app as app
 from flask_wtf import FlaskForm
 from flask_login import current_user
 from app import models as m, db
-from .chat_bard_translation import bot_message_translation
+from .bard import bot_message_translation
 from .utils import get_tickets_fees
 
 
