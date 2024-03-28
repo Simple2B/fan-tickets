@@ -53,7 +53,7 @@ def test_parse_time_with_bard():
 
 
 def test_create_event_date_time():
-    event_date = "2023-03-24"
+    event_date = "24-03-2025"
     event_time = "13:00"
     event_date_time = create_event_date_time(event_date, event_time)
     assert event_date_time
