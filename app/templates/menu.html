@@ -1,11 +1,7 @@
-<div
-  id="menu"
-  class="menu-mobile fixed z-60 top-0 inset-x-0 w-full h-full bg-black">
+<div id="menu" class="menu-mobile fixed z-60 top-0 inset-x-0 w-full h-full bg-black">
   <div class="relative">
-    <img
-      class="absolute inset-0 object-cover w-full h-full"
-      src="{{url_for('static',filename='img/backgrounds/menu.png')}}"
-      alt="concert blur" />
+    <img class="absolute inset-0 object-cover w-full h-full"
+      src="{{url_for('static',filename='img/backgrounds/menu.png')}}" alt="concert blur" />
     <div class="relative z-10 p-8 mb-6 flex justify-between items-center">
       <!--prettier-ignore-->
       <svg xmlns="http://www.w3.org/2000/svg" width="180" height="37" viewBox="0 0 180 37" fill="none">
@@ -51,22 +47,6 @@
         </defs>
       </svg>
       <div class="flex gap-8 items-center">
-        {% if current_user.is_authenticated %}
-        <div class="relative">
-          <a href="{{ url_for('main.index') }}">
-            <!--prettier-ignore-->
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
-              <path
-                d="M2.66663 2.95581H4.40818C4.7362 2.95581 4.90021 2.95581 5.0322 3.01613C5.14852 3.06929 5.24709 3.15478 5.31616 3.2624C5.39454 3.38454 5.41773 3.5469 5.46412 3.87163L6.0952 8.28914M6.0952 8.28914L7.49772 18.5977C7.6757 19.9058 7.76469 20.5599 8.07743 21.0523C8.353 21.4861 8.74807 21.8311 9.2151 22.0456C9.74511 22.2891 10.4052 22.2891 11.7254 22.2891H23.1359C24.3927 22.2891 25.0211 22.2891 25.5346 22.063C25.9874 21.8637 26.3758 21.5423 26.6563 21.1348C26.9745 20.6726 27.0921 20.0554 27.3273 18.8208L29.0921 9.5554C29.1749 9.12089 29.2162 8.90363 29.1563 8.73381C29.1037 8.58484 28.9999 8.45939 28.8634 8.37983C28.7078 8.28914 28.4866 8.28914 28.0443 8.28914H6.0952ZM13.3333 28.2891C13.3333 29.0255 12.7363 29.6225 12 29.6225C11.2636 29.6225 10.6666 29.0255 10.6666 28.2891C10.6666 27.5528 11.2636 26.9558 12 26.9558C12.7363 26.9558 13.3333 27.5528 13.3333 28.2891ZM24 28.2891C24 29.0255 23.403 29.6225 22.6666 29.6225C21.9302 29.6225 21.3333 29.0255 21.3333 28.2891C21.3333 27.5528 21.9302 26.9558 22.6666 26.9558C23.403 26.9558 24 27.5528 24 28.2891Z"
-                stroke="#F2B705" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-          <span
-            class="absolute -right-3 -top-1 w-5 h-5 text-xs text-center flex justify-center items-center bg-red-600 rounded-full"
-            >2</span
-          >
-        </div>
-        {% endif %}
         <button type="button" id="menu-button-close">
           <!--prettier-ignore-->
           <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -82,66 +62,7 @@
     </div>
   </div>
   <div class="relative z-10 p-8 flex flex-col gap-4">
-    <div class="dropdown relative" data-dropdown>
-      <button
-        data-dropdown-button
-        id="menu-dropdown-categories-button"
-        type="button"
-        class="dropdown-button w-full flex justify-between pb-4 border-b border-b-grey">
-        <div class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M8.4 3H4.6C4.03995 3 3.75992 3 3.54601 3.10899C3.35785 3.20487 3.20487 3.35785 3.10899 3.54601C3 3.75992 3 4.03995 3 4.6V8.4C3 8.96005 3 9.24008 3.10899 9.45399C3.20487 9.64215 3.35785 9.79513 3.54601 9.89101C3.75992 10 4.03995 10 4.6 10H8.4C8.96005 10 9.24008 10 9.45399 9.89101C9.64215 9.79513 9.79513 9.64215 9.89101 9.45399C10 9.24008 10 8.96005 10 8.4V4.6C10 4.03995 10 3.75992 9.89101 3.54601C9.79513 3.35785 9.64215 3.20487 9.45399 3.10899C9.24008 3 8.96005 3 8.4 3Z"
-              stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path
-              d="M19.4 3H15.6C15.0399 3 14.7599 3 14.546 3.10899C14.3578 3.20487 14.2049 3.35785 14.109 3.54601C14 3.75992 14 4.03995 14 4.6V8.4C14 8.96005 14 9.24008 14.109 9.45399C14.2049 9.64215 14.3578 9.79513 14.546 9.89101C14.7599 10 15.0399 10 15.6 10H19.4C19.9601 10 20.2401 10 20.454 9.89101C20.6422 9.79513 20.7951 9.64215 20.891 9.45399C21 9.24008 21 8.96005 21 8.4V4.6C21 4.03995 21 3.75992 20.891 3.54601C20.7951 3.35785 20.6422 3.20487 20.454 3.10899C20.2401 3 19.9601 3 19.4 3Z"
-              stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path
-              d="M19.4 14H15.6C15.0399 14 14.7599 14 14.546 14.109C14.3578 14.2049 14.2049 14.3578 14.109 14.546C14 14.7599 14 15.0399 14 15.6V19.4C14 19.9601 14 20.2401 14.109 20.454C14.2049 20.6422 14.3578 20.7951 14.546 20.891C14.7599 21 15.0399 21 15.6 21H19.4C19.9601 21 20.2401 21 20.454 20.891C20.6422 20.7951 20.7951 20.6422 20.891 20.454C21 20.2401 21 19.9601 21 19.4V15.6C21 15.0399 21 14.7599 20.891 14.546C20.7951 14.3578 20.6422 14.2049 20.454 14.109C20.2401 14 19.9601 14 19.4 14Z"
-              stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path
-              d="M8.4 14H4.6C4.03995 14 3.75992 14 3.54601 14.109C3.35785 14.2049 3.20487 14.3578 3.10899 14.546C3 14.7599 3 15.0399 3 15.6V19.4C3 19.9601 3 20.2401 3.10899 20.454C3.20487 20.6422 3.35785 20.7951 3.54601 20.891C3.75992 21 4.03995 21 4.6 21H8.4C8.96005 21 9.24008 21 9.45399 20.891C9.64215 20.7951 9.79513 20.6422 9.89101 20.454C10 20.2401 10 19.9601 10 19.4V15.6C10 15.0399 10 14.7599 9.89101 14.546C9.79513 14.3578 9.64215 14.2049 9.45399 14.109C9.24008 14 8.96005 14 8.4 14Z"
-              stroke="#F2B705" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium">Categorias</span>
-        </div>
-        <!--prettier-ignore-->
-        <svg class="dropdown-arrow transform transition-all duration-300" xmlns="http://www.w3.org/2000/svg" width="25"
-          height="24" viewBox="0 0 25 24" fill="none">
-          <path d="M6.5 9L12.5 15L18.5 9" stroke="white" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      </button>
-      <div
-        id="menu-dropdown-categories"
-        class="dropdown-list relative flex flex-col gap-4">
-        {% for category in get_categories() %}
-        <a
-          href="{{ url_for('events.search_events', categories=category) }}"
-          class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18L15 12L9 6" stroke="#99A1A3" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium text-grey">{{ category.name }}</span>
-        </a>
-        {% endfor %}
-
-        <a href="{{ url_for('events.search_events') }}" class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18L15 12L9 6" stroke="#99A1A3" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium text-grey">Outras Categorias</span>
-        </a>
-      </div>
-    </div>
-    <a
-      href="{{ url_for('main.help') }}"
-      class="pb-4 flex gap-4 border-b border-b-grey">
+    <a href="{{ url_for('main.help') }}" class="pb-4 flex gap-4 border-b border-b-grey">
       <!--prettier-ignore-->
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
@@ -150,9 +71,7 @@
       </svg>
       <span class="font-medium">Como funciona</span>
     </a>
-    <a
-      href="{{ url_for('main.help') }}"
-      class="pb-4 flex gap-4 border-b border-b-grey">
+    <a href="{{ url_for('main.help') }}" class="pb-4 flex gap-4 border-b border-b-grey">
       <!--prettier-ignore-->
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
@@ -163,16 +82,11 @@
     </a>
     {% if current_user.is_authenticated %}
     <div class="dropdown relative" data-dropdown>
-      <button
-        id="menu-dropdown-user-button"
-        data-dropdown-button
-        type="button"
+      <button id="menu-dropdown-user-button" data-dropdown-button type="button"
         class="dropdown-button pb-4 w-full flex justify-between items-center border-b border-b-grey">
         <div class="flex gap-4 items-center">
-          <img
-            class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
-            src="{{ current_user.picture.base64_src }}"
-            alt="Profile picture" />
+          <img class="w-8 h-8 rounded-full hover:scale-110 transform transition-all duration-300"
+            src="{{ current_user.picture.base64_src }}" alt="Profile picture" />
           <span class="font-medium text-white">{{ current_user.name }}</span>
         </div>
         <!-- prettier-ignore -->
@@ -182,42 +96,7 @@
             stroke-linejoin="round" />
         </svg>
       </button>
-      <div
-        id="menu-dropdown-user"
-        class="dropdown-list relative flex flex-col gap-4">
-        <a href="{{ url_for('main.index') }}" class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
-            fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path
-              d="M23.3333 13V15.0408M23.3333 19.1224V21.1633M23.3333 25.2449V27.2857M12.2222 13C11.6329 13 11.0676 13.215 10.6509 13.5977C10.2341 13.9805 10 14.4996 10 15.0408V18.102C10.5894 18.102 11.1546 18.3171 11.5713 18.6998C11.9881 19.0825 12.2222 19.6016 12.2222 20.1429C12.2222 20.6841 11.9881 21.2032 11.5713 21.5859C11.1546 21.9687 10.5894 22.1837 10 22.1837V25.2449C10 25.7862 10.2341 26.3052 10.6509 26.688C11.0676 27.0707 11.6329 27.2857 12.2222 27.2857H27.7778C28.3671 27.2857 28.9324 27.0707 29.3491 26.688C29.7659 26.3052 30 25.7862 30 25.2449V22.1837C29.4106 22.1837 28.8454 21.9687 28.4287 21.5859C28.0119 21.2032 27.7778 20.6841 27.7778 20.1429C27.7778 19.6016 28.0119 19.0825 28.4287 18.6998C28.8454 18.3171 29.4106 18.102 30 18.102V15.0408C30 14.4996 29.7659 13.9805 29.3491 13.5977C28.9324 13.215 28.3671 13 27.7778 13H12.2222Z"
-              stroke="#F2B705" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <span class="font-medium text-grey">Ingressos comprados</span>
-        </a>
-        <a href="{{ url_for('main.index') }}" class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
-            fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path
-              d="M29.8 11H10.2C10.09 11 10 11.0959 10 11.2131V12.9176C10 13.0348 10.09 13.1307 10.2 13.1307H29.8C29.91 13.1307 30 13.0348 30 12.9176V11.2131C30 11.0959 29.91 11 29.8 11ZM29.8 27.6193H10.2C10.09 27.6193 10 27.7152 10 27.8324V29.5369C10 29.6541 10.09 29.75 10.2 29.75H29.8C29.91 29.75 30 29.6541 30 29.5369V27.8324C30 27.7152 29.91 27.6193 29.8 27.6193ZM29.8 19.3097H10.2C10.09 19.3097 10 19.4055 10 19.5227V21.2273C10 21.3445 10.09 21.4403 10.2 21.4403H29.8C29.91 21.4403 30 21.3445 30 21.2273V19.5227C30 19.4055 29.91 19.3097 29.8 19.3097Z"
-              fill="#F2B705" />
-          </svg>
-          <span class="font-medium text-grey">Ingressos à venda</span>
-        </a>
-        <a href="{{ url_for('main.index') }}" class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
-            fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M9 16.9596C9 12.9457 11.9175 10 15.7204 10C17.5194 10 19.0226 10.732 20.1135 11.8907C21.2055 10.7304 22.6977 10 24.5018 10C28.3048 10 31.2222 12.9457 31.2222 16.9596C31.2222 19.3574 30.1765 21.6437 28.4649 23.7366C26.7538 25.8289 24.3285 27.7908 21.4282 29.574L21.4118 29.584L21.3951 29.5935C21.2494 29.6763 21.0669 29.7685 20.8721 29.8431C20.6979 29.9097 20.4192 30 20.1111 30C19.8028 30 19.5239 29.9098 19.348 29.8418C19.1519 29.766 18.9674 29.6713 18.8177 29.5822L18.8048 29.5745L18.8048 29.5744C15.8994 27.7913 13.4714 25.8294 11.7588 23.7369C10.0458 21.6438 9 19.3575 9 16.9596ZM15.7204 12.2222C13.199 12.2222 11.2222 14.118 11.2222 16.9596C11.2222 18.6866 11.974 20.4912 13.4785 22.3294C14.9821 24.1666 17.1891 25.9746 19.9599 27.676C20.0082 27.7044 20.0623 27.7322 20.1122 27.7538C20.1648 27.7315 20.2243 27.7022 20.2824 27.6698C23.0433 25.9704 25.2441 24.1647 26.7447 22.3298C28.2481 20.4914 29 18.6867 29 16.9596C29 14.118 27.0232 12.2222 24.5018 12.2222C23.0425 12.2222 21.9064 12.951 21.1573 14.1688C20.6762 14.9507 19.5383 14.9454 19.0629 14.163C18.3329 12.9618 17.1821 12.2222 15.7204 12.2222Z"
-              fill="#F2B705" />
-          </svg>
-          <span class="font-medium text-grey">Eventos salvos</span>
-        </a>
+      <div id="menu-dropdown-user" class="dropdown-list relative flex flex-col gap-4">
         <a href="{{ url_for('main.profile') }}" class="flex gap-4">
           <!--prettier-ignore-->
           <svg class="w-7 h-7" width="40" height="40" viewBox="0 0 40 40" fill="none"
@@ -230,30 +109,27 @@
               d="M20.002 14C18.072 14 16.502 15.57 16.502 17.5C16.502 19.43 18.072 21 20.002 21C21.932 21 23.502 19.43 23.502 17.5C23.502 15.57 21.932 14 20.002 14ZM20.002 19C19.172 19 18.502 18.33 18.502 17.5C18.502 16.67 19.172 16 20.002 16C20.832 16 21.502 16.67 21.502 17.5C21.502 18.33 20.832 19 20.002 19Z"
               fill="#F2B705" />
           </svg>
-          <span class="font-medium text-grey">Gerenciar Conta</span>
+          <span class="font-medium text-grey">Conta</span>
         </a>
         <!-- prettier-ignore -->
-        <a href="{{ url_for('notification.notification_page') }}" class="flex gap-4">
+        <a href="{{ url_for('notification.notification_page') }}" class="flex gap-4 items-center justify-between">
           <!--prettier-ignore-->
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
-            fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path
-              d="M28.4 20.4V28.4C28.4 28.8243 28.2314 29.2313 27.9314 29.5314C27.6313 29.8314 27.2243 30 26.8 30H11.6C11.1757 30 10.7687 29.8314 10.4686 29.5314C10.1686 29.2313 10 28.8243 10 28.4V13.2C10 12.7757 10.1686 12.3687 10.4686 12.0686C10.7687 11.7686 11.1757 11.6 11.6 11.6H19.6C19.8122 11.6 20.0157 11.6843 20.1657 11.8343C20.3157 11.9843 20.4 12.1878 20.4 12.4C20.4 12.6122 20.3157 12.8157 20.1657 12.9657C20.0157 13.1157 19.8122 13.2 19.6 13.2H11.6V28.4H26.8V20.4C26.8 20.1878 26.8843 19.9843 27.0343 19.8343C27.1843 19.6843 27.3878 19.6 27.6 19.6C27.8122 19.6 28.0157 19.6843 28.1657 19.8343C28.3157 19.9843 28.4 20.1878 28.4 20.4ZM26.4 10C25.688 10 24.992 10.2111 24.3999 10.6067C23.8079 11.0023 23.3465 11.5645 23.074 12.2223C22.8016 12.8802 22.7303 13.604 22.8692 14.3023C23.0081 15.0007 23.3509 15.6421 23.8544 16.1456C24.3579 16.6491 24.9993 16.9919 25.6977 17.1308C26.396 17.2697 27.1198 17.1984 27.7777 16.926C28.4355 16.6535 28.9977 16.1921 29.3933 15.6001C29.7889 15.008 30 14.312 30 13.6C30 12.6452 29.6207 11.7295 28.9456 11.0544C28.2705 10.3793 27.3548 10 26.4 10Z"
-              fill="#F2B705" />
-          </svg>
-          <span class="font-medium text-grey">Notificações</span>
-        </a>
-        <a href="{{ url_for('main.index') }}" class="flex gap-4">
-          <!--prettier-ignore-->
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
-            fill="none">
-            <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M14.2677 24.6154L11.5385 26.8V13.0769C11.5385 12.6689 11.7005 12.2776 11.9891 11.9891C12.2776 11.7005 12.6689 11.5385 13.0769 11.5385H26.9231C27.3311 11.5385 27.7224 11.7005 28.0109 11.9891C28.2995 12.2776 28.4615 12.6689 28.4615 13.0769V23.0769C28.4615 23.4849 28.2995 23.8763 28.0109 24.1648C27.7224 24.4533 27.3311 24.6154 26.9231 24.6154H14.2677ZM11.2492 29L14.8077 26.1538H26.9231C27.7391 26.1538 28.5218 25.8297 29.0988 25.2526C29.6758 24.6756 30 23.893 30 23.0769V13.0769C30 12.2609 29.6758 11.4782 29.0988 10.9012C28.5218 10.3242 27.7391 10 26.9231 10H13.0769C12.2609 10 11.4782 10.3242 10.9012 10.9012C10.3242 11.4782 10 12.2609 10 13.0769V28.4C10.0002 28.5447 10.0412 28.6865 10.1184 28.809C10.1956 28.9314 10.3057 29.0296 10.4362 29.0923C10.5667 29.155 10.7122 29.1796 10.856 29.1632C10.9998 29.1469 11.1361 29.0903 11.2492 29ZM23.8476 19.231H16.1553C15.6425 19.231 15.386 19.4874 15.386 20.0002C15.386 20.513 15.6425 20.7694 16.1553 20.7694H23.8476C24.3604 20.7694 24.6168 20.513 24.6168 20.0002C24.6168 19.4874 24.3604 19.231 23.8476 19.231ZM23.8476 14.6156H16.1553C15.6425 14.6156 15.386 14.872 15.386 15.3848C15.386 15.8976 15.6425 16.154 16.1553 16.154H23.8476C24.3604 16.154 24.6168 15.8976 24.6168 15.3848C24.6168 14.872 24.3604 14.6156 23.8476 14.6156Z"
-              fill="#F2B705" />
-          </svg>
-          <span class="font-medium text-grey">Conversas</span>
+          <div class="flex gap-4">
+            <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"
+              fill="none">
+              <circle cx="20" cy="20" r="19" stroke="#F2B705" stroke-width="2" />
+              <path
+                d="M28.4 20.4V28.4C28.4 28.8243 28.2314 29.2313 27.9314 29.5314C27.6313 29.8314 27.2243 30 26.8 30H11.6C11.1757 30 10.7687 29.8314 10.4686 29.5314C10.1686 29.2313 10 28.8243 10 28.4V13.2C10 12.7757 10.1686 12.3687 10.4686 12.0686C10.7687 11.7686 11.1757 11.6 11.6 11.6H19.6C19.8122 11.6 20.0157 11.6843 20.1657 11.8343C20.3157 11.9843 20.4 12.1878 20.4 12.4C20.4 12.6122 20.3157 12.8157 20.1657 12.9657C20.0157 13.1157 19.8122 13.2 19.6 13.2H11.6V28.4H26.8V20.4C26.8 20.1878 26.8843 19.9843 27.0343 19.8343C27.1843 19.6843 27.3878 19.6 27.6 19.6C27.8122 19.6 28.0157 19.6843 28.1657 19.8343C28.3157 19.9843 28.4 20.1878 28.4 20.4ZM26.4 10C25.688 10 24.992 10.2111 24.3999 10.6067C23.8079 11.0023 23.3465 11.5645 23.074 12.2223C22.8016 12.8802 22.7303 13.604 22.8692 14.3023C23.0081 15.0007 23.3509 15.6421 23.8544 16.1456C24.3579 16.6491 24.9993 16.9919 25.6977 17.1308C26.396 17.2697 27.1198 17.1984 27.7777 16.926C28.4355 16.6535 28.9977 16.1921 29.3933 15.6001C29.7889 15.008 30 14.312 30 13.6C30 12.6452 29.6207 11.7295 28.9456 11.0544C28.2705 10.3793 27.3548 10 26.4 10Z"
+                fill="#F2B705" />
+            </svg>
+            <span class="font-medium text-grey">Notificações</span>
+          </div>
+          <div
+            class="w-6 h-6 {% if not current_user.unread_notifications_count %} hidden {% endif %} rounded-full text-center font-bold bg-ultra-light-grey text-black"
+            id="unread-notifications-count" hx-get="{{ url_for('notification.get_unread_notifications') }}"
+            hx-trigger="update_unread_notifications_count">{{
+            current_user.unread_notifications_count}}
+          </div>
         </a>
         <a href="{{ url_for('auth.logout') }}" class="flex gap-4">
           <!--prettier-ignore-->
@@ -288,11 +164,9 @@
       <span class="font-medium">Entrar</span>
     </button>
     <div>
-      <a
-        href="{{ url_for('main.index') }}"
-        class="link py-2 w-full block text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300"
-        >Quero vender</a
-      >
+      <a href="{{ url_for('main.index') }}"
+        class="link py-2 w-full block text-center text-secondary border rounded-2xl border-secondary transition-colors duration-300">Quero
+        vender</a>
     </div>
     {% endif %}
   </div>
