@@ -268,6 +268,7 @@ def webhook():
                             ticket_id=str(ticket.id).zfill(8),
                             ticket=ticket,
                             message=email_message_to_buyer,
+                            user=buyer,
                         ),
                     )
 
@@ -283,6 +284,7 @@ def webhook():
                             ticket_id=str(ticket.id).zfill(8),
                             message=email_message_to_seller,
                             ticket=ticket,
+                            user=buyer,
                         ),
                     )
 
