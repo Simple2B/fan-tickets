@@ -150,7 +150,7 @@ function handleImageUpload(file: File, instance: string, uniqueId?: string) {
 
   const reader = new FileReader();
   reader.onload = function (e) {
-    fetch('/admin/user/logo-upload', {
+    fetch('/profile/logo-upload', {
       method: 'POST',
       body: formData,
     })

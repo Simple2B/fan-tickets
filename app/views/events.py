@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import Any
 
 from flask import request, Blueprint, render_template
-import sqlalchemy as sa
 from app import schema as s
 from app import models as m, db
 from app.logger import log
 
+from app.controllers import get_event_by_name_bard
 from config import config
 
 CFG = config()
@@ -15,20 +15,24 @@ CFG = config()
 events_blueprint = Blueprint("events", __name__, url_prefix="/events")
 
 
-def get_events_by_name(event_name: str) -> list[m.Event]:
-    event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{event_name}%"))
-    events = db.session.scalars(event_query).all()
-    if events:
-        return events
+# def get_events_by_name(event_name: str) -> list[m.Event]:
+#     event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{event_name}%"))
+#     events = db.session.scalars(event_query).all()
+#     if events:
+#         return events
 
-    search_key_words = event_name.split(" ") if event_name else []
-    events = []
-    for word in search_key_words:
-        event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
-        events_search = db.session.scalars(event_query).all()
-        events.extend(events_search)
+#     search_key_words = event_name.split(" ") if event_name else []
+#     events = []
+#     for word in search_key_words:
+#         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
+#         events_search = db.session.scalars(event_query).all()
+#         events.extend(events_search)
+#     if events:
+#         return events
 
-    return events
+#     events, success = ask_bard_for_event(event_name)
+#     events = events if success else []
+#     return events
 
 
 def get_filter_events():
@@ -38,8 +42,14 @@ def get_filter_events():
 
     events_query = m.Event.select().where(m.Event.approved.is_(True))
 
-    if event_filter.event_name:
-        return get_events_by_name(event_filter.event_name)
+    if event_filter.name:
+        return get_event_by_name_bard(
+            s.ChatSellEventParams(
+                room_unique_id="",
+                user_message=event_filter.name,
+            ),
+            from_web=True,
+        )
 
     if event_filter.location:
         events_query = events_query.where(m.Event.location.has(name=event_filter.location))

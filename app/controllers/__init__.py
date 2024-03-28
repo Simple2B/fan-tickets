@@ -19,6 +19,7 @@ from .chat import (
     validate_auth_params,
 )
 from .chat_sell import (
+    ask_bard_for_event,
     get_event_by_name_bard,
     get_event_by_uuid,
     add_event_location,

@@ -214,3 +214,13 @@ def test_ticket_pdf(client_with_data: FlaskClient):
     assert download_response.headers["Content-Type"] == "application/pdf"
     assert download_response.headers["Content-Disposition"].startswith("attachment;")
     assert download_response.headers["Content-Disposition"].endswith(".pdf")
+
+
+def test_logo_upload(client: FlaskClient):
+    with open("test_logo.png", "wb") as file:
+        file.write(b"Test logo data")
+    logo_file = FileStorage(stream=open("test_logo.png", "rb"), filename="test_logo.png")
+
+    response = client.post("/profile/logo-upload", data={"logo": logo_file}, follow_redirects=True)
+
+    assert response.status_code == 200

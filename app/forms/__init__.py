@@ -23,3 +23,4 @@ from .orders import OrderForm, OrderCreateForm
 from .category import CategoryForm
 from .dispute import MessageForm
 from .settings import FeeSettingsForm
+from .translation import TranslationForm
