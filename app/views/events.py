@@ -15,26 +15,6 @@ CFG = config()
 events_blueprint = Blueprint("events", __name__, url_prefix="/events")
 
 
-# def get_events_by_name(event_name: str) -> list[m.Event]:
-#     event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{event_name}%"))
-#     events = db.session.scalars(event_query).all()
-#     if events:
-#         return events
-
-#     search_key_words = event_name.split(" ") if event_name else []
-#     events = []
-#     for word in search_key_words:
-#         event_query = sa.select(m.Event).where(m.Event.name.ilike(f"%{word}%"))
-#         events_search = db.session.scalars(event_query).all()
-#         events.extend(events_search)
-#     if events:
-#         return events
-
-#     events, success = ask_bard_for_event(event_name)
-#     events = events if success else []
-#     return events
-
-
 def get_filter_events():
     data: dict[str, Any] = dict(request.args)
     data["categories"] = request.args.getlist("categories")
