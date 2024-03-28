@@ -34,7 +34,7 @@ def time_delta(created_at: datetime) -> int:
 
 
 def cut_seconds(created_at: datetime = datetime.now()) -> str:
-    return created_at.strftime("%Y-%m-%d %H:%M")
+    return created_at.strftime("%d-%m-%Y %H:%M")
 
 
 def card_mask(card_number: str = "000000000000000000") -> str:

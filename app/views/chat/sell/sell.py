@@ -360,6 +360,12 @@ def get_event_time():
             now=c.utcnow_chat_format(),
         )
 
+    c.save_message(
+        "Nice! Please specify the time",
+        f"{params.user_message}",
+        room,
+    )
+
     return render_template(
         "chat/sell/ticket_quantity.html",
         event_unique_id=params.event_unique_id,
